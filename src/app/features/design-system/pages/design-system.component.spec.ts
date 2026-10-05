@@ -34,9 +34,9 @@ describe('DesignSystemComponent', () => {
 
   it('pinta los cinco estados con su forma de punto, en píldora y en fila, y los cuatro roles', () => {
     const { host } = montar();
-    const formas = Array.from(host.querySelectorAll('.st--pill .st__dot')).map((dot) => dot.className.replace(/.*st__dot--(\w+).*/, '$1'));
+    const formas = Array.from(host.querySelectorAll('.row .st--pill .st__dot')).map((dot) => dot.className.replace(/.*st__dot--(\w+).*/, '$1'));
     expect(formas).toEqual(['circle', 'ring', 'square', 'square', 'dash']);
-    expect(host.querySelectorAll('.st--inline').length).toBe(5);
+    expect(host.querySelectorAll('.card .st--inline').length).toBe(5);
     expect(host.querySelectorAll('dba-role-tag').length).toBe(4);
     expect(host.querySelector('.st--active')?.textContent).toContain('Activa');
     expect(host.querySelector('.role--superadmin')?.textContent).toMatch(/superadmin/i);
@@ -51,7 +51,7 @@ describe('DesignSystemComponent', () => {
 
   it('el cuadro de componentes trae acciones, campo, KPI, cuotas, módulos, eventos, filtros y entornos', () => {
     const { fixture, host } = montar();
-    const variantes = Array.from(host.querySelectorAll('[dba-button]')).map(
+    const variantes = Array.from(host.querySelectorAll('.cards [dba-button]')).map(
       (b) => b.className.match(/btn--(primary|secondary|destructive|dark)/)?.[1],
     );
     expect(variantes).toEqual(['primary', 'secondary', 'dark', 'secondary', 'destructive', 'secondary']);
@@ -85,6 +85,28 @@ describe('DesignSystemComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
     expect(host.querySelector('.challenge__result')?.textContent).toContain('Confirmada');
+  });
+
+  it('trae la tabla densa con 10 filas, 7 columnas, la fila elegida en morado y la paginación en ventana', () => {
+    const { fixture, host } = montar();
+    expect(host.querySelectorAll('.tbl__th').length).toBe(7);
+    expect(host.querySelectorAll('dba-data-table .dba-tr').length).toBe(10);
+    expect(host.querySelector('.dba-tr--on .org-id')?.textContent?.trim()).toBe('ORG-0412');
+    expect(host.querySelector('.tbl__range')?.textContent).toContain('1\u201310 de 312');
+    expect([...host.querySelectorAll('.tbl__page')].map((b) => b.textContent?.trim())).toEqual(['1', '2', '32']);
+    expect(host.querySelector('.usage__fill--warn')).not.toBeNull();
+
+    host.querySelectorAll<HTMLButtonElement>('dba-data-table .dba-tr')[3].click();
+    fixture.detectChanges();
+    expect(host.querySelector('.dba-tr--on .org-id')?.textContent?.trim()).toBe('ORG-0419');
+  });
+
+  it('la cabecera de ficha trae migas, nombre, estado y las seis pestañas', () => {
+    const { host } = montar();
+    expect(host.querySelector('.rec__name')?.textContent?.trim()).toBe('Aeropuerto Sierra Norte');
+    expect(host.querySelector('dba-record-header .st--active')).not.toBeNull();
+    expect(host.querySelectorAll('db-underline-tabs .tab').length).toBe(6);
+    expect(host.querySelector('db-underline-tabs .tab--on')?.textContent).toContain('Resumen');
   });
 
   it('nada sale como llave cruda', () => {

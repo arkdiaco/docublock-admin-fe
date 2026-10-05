@@ -1,0 +1,55 @@
+.dba-tr {
+  display: grid;
+  grid-template-columns: var(--dba-cols);
+  gap: 12px;
+  align-items: center;
+  height: var(--dba-row-h, var(--dba-height-row));
+  padding: 0 18px;
+  border: 0;
+  border-bottom: 1px solid var(--dba-border-row);
+  background: var(--dba-surface);
+  font-family: var(--dba-font-ui);
+  text-align: left;
+  cursor: pointer;
+}
+
+.dba-tr:last-of-type {
+  border-bottom: 0;
+}
+
+.dba-tr:hover {
+  background: var(--dba-surface-hover);
+}
+
+.dba-tr--on,
+.dba-tr--on:hover {
+  background: var(--dba-surface-selected);
+}
+
+.dba-tr:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--dba-focus-halo);
+}
+
+.dba-td {
+  min-width: 0;
+  font-size: var(--dba-text-cell);
+  color: var(--dba-text);
+}
+
+.dba-td--mono {
+  font-family: var(--dba-font-mono);
+  font-size: var(--dba-text-small);
+  color: var(--dba-text-muted);
+}
+
+.dba-td--end {
+  display: flex;
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.dba-td--center {
+  display: flex;
+  justify-content: center;
+}

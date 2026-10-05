@@ -1,9 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { TranslatePipe } from '@ngx-translate/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { DialogService } from '../../../core/ui/dialog.service';
-import { ORG_STATES } from '../../../shared/domain/org-state';
+import { ORG_STATES, quotaToneOf } from '../../../shared/domain/org-state';
 import { PLATFORM_ROLES } from '../../../shared/domain/platform-role';
 import { AuditEventComponent } from '../../../shared/ui/audit-event.component';
+import { DataTableComponent, type DataColumn } from '../../../shared/ui/data-table.component';
+import { RecordHeaderComponent } from '../../../shared/ui/record-header.component';
+import { UnderlineTabsComponent, type UnderlineTab } from '../../../shared/ui/underline-tabs.component';
 import { ButtonComponent } from '../../../shared/ui/button.component';
 import { EnvPillComponent } from '../../../shared/ui/env-pill.component';
 import { FieldComponent } from '../../../shared/ui/field.component';
@@ -75,6 +78,57 @@ const FILTERS: readonly FilterPill[] = [
   { key: 'suspended', labelKey: 'org.state.suspended', count: 1 },
 ];
 
+interface OrgSeed {
+  id: string;
+  name: string;
+  domain: string;
+  plan: string;
+  users: number;
+  userLimit: number;
+  gb: number;
+  gbLimit: number;
+  state: string;
+}
+
+const ORGS: readonly OrgSeed[] = [
+  { id: 'ORG-0412', name: 'Aeropuerto Sierra Norte', domain: 'sierranorte.aero', plan: 'Corporativo', users: 48, userLimit: 60, gb: 184.2, gbLimit: 200, state: 'active' },
+  { id: 'ORG-0398', name: 'Clínica Santa Rita', domain: 'santarita.es', plan: 'Equipo', users: 22, userLimit: 25, gb: 41, gbLimit: 100, state: 'active' },
+  { id: 'ORG-0405', name: 'Grupo Logístico Andino', domain: 'gla.com.pe', plan: 'Corporativo', users: 131, userLimit: 150, gb: 96.4, gbLimit: 500, state: 'active' },
+  { id: 'ORG-0419', name: 'Notaría 14 de Bogotá', domain: 'notaria14.co', plan: 'Prueba', users: 4, userLimit: 10, gb: 2.1, gbLimit: 20, state: 'trial' },
+  { id: 'ORG-0377', name: 'Puerto de Valparaíso', domain: 'puertovalpo.cl', plan: 'Corporativo', users: 77, userLimit: 80, gb: 403, gbLimit: 400, state: 'warning' },
+  { id: 'ORG-0351', name: 'Banca Cooperativa del Sur', domain: 'bcsur.coop', plan: 'Corporativo', users: 210, userLimit: 250, gb: 512.6, gbLimit: 1000, state: 'active' },
+  { id: 'ORG-0402', name: 'Textiles Herrera', domain: 'textilesherrera.mx', plan: 'Equipo', users: 12, userLimit: 25, gb: 18.7, gbLimit: 100, state: 'suspended' },
+  { id: 'ORG-0388', name: 'Universidad del Litoral', domain: 'unilitoral.edu.ar', plan: 'Equipo', users: 25, userLimit: 25, gb: 88.9, gbLimit: 100, state: 'warning' },
+  { id: 'ORG-0420', name: 'Despacho Riaño Abogados', domain: 'riano.legal', plan: 'Prueba', users: 2, userLimit: 10, gb: 0.4, gbLimit: 20, state: 'trial' },
+  { id: 'ORG-0290', name: 'Minera Cerro Blanco', domain: 'cerroblanco.cl', plan: 'Corporativo', users: 0, userLimit: 60, gb: 0, gbLimit: 200, state: 'closed' },
+];
+
+const ORG_COLUMNS: readonly DataColumn[] = [
+  { key: 'id', labelKey: 'org.col.id', width: '84px' },
+  { key: 'org', labelKey: 'org.col.name', width: 'minmax(0, 1.6fr)' },
+  { key: 'plan', labelKey: 'org.col.plan', width: '110px' },
+  { key: 'users', labelKey: 'org.col.users', width: '150px' },
+  { key: 'storage', labelKey: 'org.col.storage', width: '170px' },
+  { key: 'state', labelKey: 'org.col.state', width: '120px' },
+  { key: 'chevron', width: '40px', align: 'end' },
+];
+
+const ORG_TAB_KEYS = ['summary', 'users', 'modules', 'plan', 'security', 'audit'] as const;
+
+const initialsOf = (name: string): string =>
+  name
+    .split(/\s+/)
+    .filter((word) => word.length > 2)
+    .slice(0, 2)
+    .map((word) => word[0]?.toUpperCase() ?? '')
+    .join('');
+
+const gbText = (value: number): string =>
+  `${Number.isInteger(value) ? String(value) : String(value).replace('.', ',')} GB`;
+
+const pctOf = (used: number, limit: number): string =>
+  `${limit > 0 ? Math.min(100, (used / limit) * 100) : 0}%`;
+
 @Component({
   selector: 'dba-design-system',
   imports: [
@@ -90,6 +144,9 @@ const FILTERS: readonly FilterPill[] = [
     RoleTagComponent,
     EnvPillComponent,
     IconComponent,
+    DataTableComponent,
+    RecordHeaderComponent,
+    UnderlineTabsComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -255,6 +312,65 @@ const FILTERS: readonly FilterPill[] = [
             <p class="dba-body">{{ 'sys.c.pillsNote' | translate }}</p>
           </div>
         </div>
+      </section>
+
+      <section class="sys__components">
+        <header class="sys__head">
+          <h2 class="dba-section">{{ 'sys.pieces' | translate }}</h2>
+          <p class="dba-body sys__lead">{{ 'sys.piecesNote' | translate }}</p>
+        </header>
+
+        <dba-record-header
+          [crumbs]="recordCrumbs"
+          initials="SN"
+          title="Aeropuerto Sierra Norte"
+          state="active"
+          meta="ORG-0412 · sierranorte.aero · Corporativo · alta 14/03/2024"
+        >
+          <div actions class="rec-actions">
+            <button dba-button variant="secondary">{{ 'org.edit' | translate }}</button>
+            <button dba-button variant="secondary" iconOnly [attr.aria-label]="'sys.c.more' | translate">
+              <db-icon name="moreVertical" [size]="15" />
+            </button>
+          </div>
+        </dba-record-header>
+
+        <db-underline-tabs [tabs]="recordTabs()" [active]="tab()" (picked)="tab.set($event)" />
+
+        <dba-data-table
+          [columns]="orgColumns"
+          [label]="'nav.organizations' | translate"
+          [total]="312"
+          [from]="1"
+          [to]="10"
+          [page]="page()"
+          [pageCount]="32"
+          (pageChange)="page.set($event)"
+        >
+          @for (row of rows(); track row.id) {
+            <button type="button" class="dba-tr" [class.dba-tr--on]="row.id === selected()" (click)="selected.set(row.id)">
+              <code class="dba-td org-id" [class.org-id--on]="row.id === selected()">{{ row.id }}</code>
+              <div class="dba-td org-cell">
+                <span class="org-cell__avatar" aria-hidden="true">{{ row.initials }}</span>
+                <span class="org-cell__text">
+                  <span class="org-cell__name" [class.org-cell__name--on]="row.id === selected()">{{ row.name }}</span>
+                  <span class="org-cell__domain">{{ row.domain }}</span>
+                </span>
+              </div>
+              <span class="dba-td org-plan">{{ row.plan }}</span>
+              <span class="dba-td usage">
+                <code class="usage__value">{{ row.usersText }}</code>
+                <span class="usage__track"><span class="usage__fill" [class]="'usage__fill usage__fill--' + row.usersTone" [style.width]="row.usersPct"></span></span>
+              </span>
+              <span class="dba-td usage">
+                <code class="usage__value usage__value--wide">{{ row.gbText }}</code>
+                <span class="usage__track"><span class="usage__fill" [class]="'usage__fill usage__fill--' + row.gbTone" [style.width]="row.gbPct"></span></span>
+              </span>
+              <dba-org-state class="dba-td" [state]="row.state" variant="inline" />
+              <db-icon class="dba-td dba-td--end org-chevron" name="chevronRight" [size]="15" />
+            </button>
+          }
+        </dba-data-table>
       </section>
     </div>
   `,
@@ -482,10 +598,122 @@ const FILTERS: readonly FilterPill[] = [
         grid-template-columns: 1fr;
       }
     }
+    .rec-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .org-id {
+      font-family: var(--dba-font-mono);
+      font-size: var(--dba-text-small);
+      color: var(--dba-text-muted);
+    }
+
+    .org-id--on {
+      color: var(--dba-violet-700);
+    }
+
+    .org-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .org-cell__avatar {
+      display: flex;
+      flex: none;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: var(--dba-radius-avatar);
+      background: var(--dba-violet-100);
+      font-size: var(--dba-text-eyebrow);
+      font-weight: 700;
+      color: var(--dba-violet-700);
+    }
+
+    .org-cell__text {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .org-cell__name {
+      font-size: var(--dba-text-cell);
+      font-weight: 500;
+      color: var(--dba-ink);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .org-cell__name--on {
+      font-weight: 600;
+    }
+
+    .org-cell__domain {
+      font-size: var(--dba-text-meta);
+      color: var(--dba-text-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .org-plan {
+      font-size: var(--dba-text-label);
+      color: var(--dba-text);
+    }
+
+    .usage {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .usage__value {
+      flex: none;
+      width: 58px;
+      font-family: var(--dba-font-mono);
+      font-size: var(--dba-text-small);
+      color: var(--dba-text);
+      white-space: nowrap;
+    }
+
+    .usage__value--wide {
+      width: 70px;
+    }
+
+    .usage__track {
+      flex: 1;
+      display: flex;
+      height: 5px;
+      border-radius: var(--dba-radius-bar);
+      background: var(--dba-border-row);
+      overflow: hidden;
+    }
+
+    .usage__fill {
+      background: var(--dba-quota-ok);
+    }
+
+    .usage__fill--warn {
+      background: var(--dba-quota-warn);
+    }
+
+    .usage__fill--over {
+      background: var(--dba-quota-over);
+    }
+
+    .org-chevron {
+      color: var(--dba-text-faint);
+    }
   `,
 })
 export class DesignSystemComponent {
   private readonly dialogs = inject(DialogService);
+  private readonly translate = inject(TranslateService);
 
   protected readonly ramp = RAMP;
   protected readonly states = ORG_STATES;
@@ -494,11 +722,37 @@ export class DesignSystemComponent {
   protected readonly kpis = KPIS;
   protected readonly quotas = QUOTAS;
   protected readonly filters = FILTERS;
+  protected readonly orgColumns = ORG_COLUMNS;
+  protected readonly recordCrumbs = ['nav.crumbRoot', 'nav.organizations', 'ORG-0412'];
 
   protected readonly domain = signal('sierranorte.aero');
   protected readonly modules = signal(MODULES);
   protected readonly filter = signal('all');
   protected readonly challengeResult = signal('');
+  protected readonly selected = signal('ORG-0412');
+  protected readonly page = signal(1);
+  protected readonly tab = signal('summary');
+
+  protected readonly recordTabs = computed<UnderlineTab[]>(() =>
+    ORG_TAB_KEYS.map((key) => ({ key, label: this.translate.instant('org.tab.' + key) as string })),
+  );
+
+  protected readonly rows = computed(() =>
+    ORGS.map((org) => ({
+      id: org.id,
+      name: org.name,
+      domain: org.domain,
+      initials: initialsOf(org.name),
+      plan: org.plan,
+      state: org.state,
+      usersText: `${org.users} / ${org.userLimit}`,
+      usersTone: quotaToneOf(org.users, org.userLimit),
+      usersPct: pctOf(org.users, org.userLimit),
+      gbText: gbText(org.gb),
+      gbTone: quotaToneOf(org.gb, org.gbLimit),
+      gbPct: pctOf(org.gb, org.gbLimit),
+    })),
+  );
 
   protected toggleModule(abbr: string, on: boolean): void {
     this.modules.update((list) => list.map((mod) => (mod.abbr === abbr ? { ...mod, on } : mod)));

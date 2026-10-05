@@ -186,7 +186,9 @@
       "fAll": "All",
       "pills": "Environment and inline state",
       "pillsNote": "In tables the state has no background: text in its family and a shaped dot. The environment is always spelled out, in mono."
-    }
+    },
+    "pieces": "Table and record",
+    "piecesNote": "The organizations table and the record header, with sample data. Mono header, 48 px rows, the selected row in soft purple with its identifier in purple 700; windowed pagination. «Impersonate» is not built: the record opens instead."
   },
   "org": {
     "state": {
@@ -202,7 +204,24 @@
       "warning": "Quota at 90 % or invoice overdue less than 15 days.",
       "suspended": "Access cut; data kept for 90 days.",
       "closed": "Closed on request. Read-only for support and legal."
-    }
+    },
+    "col": {
+      "id": "ID",
+      "name": "Organization",
+      "plan": "Plan",
+      "users": "Users",
+      "storage": "Storage",
+      "state": "State"
+    },
+    "tab": {
+      "summary": "Summary",
+      "users": "Users",
+      "modules": "Modules",
+      "plan": "Plan & invoices",
+      "security": "Security",
+      "audit": "Audit"
+    },
+    "edit": "Edit"
   },
   "role": {
     "superadmin": "SUPERADMIN",
@@ -242,5 +261,8 @@
   "placeholder": {
     "title": "Nothing to show yet.",
     "lead": "This module arrives with its block; the chassis is already waiting for it."
+  },
+  "tbl": {
+    "range": "{{from}}–{{to}} of {{total}}"
   }
 }

@@ -186,7 +186,9 @@
       "fAll": "Todas",
       "pills": "Entorno y estado en fila",
       "pillsNote": "En tablas el estado va sin fondo: texto de su familia y punto con forma. El entorno siempre escrito completo, en mono."
-    }
+    },
+    "pieces": "Tabla y ficha",
+    "piecesNote": "La tabla de organizaciones y la cabecera de la ficha, con datos de muestra. Cabecera en mono, filas de 48 px, fila elegida en morado tenue con el identificador en morado 700; paginación con ventana. «Entrar como» no se construye: se abre la ficha."
   },
   "org": {
     "state": {
@@ -202,7 +204,24 @@
       "warning": "Cuota al 90 % o factura vencida menos de 15 días.",
       "suspended": "Acceso cortado; los datos se conservan 90 días.",
       "closed": "Cerrada a petición. Solo lectura para soporte y legal."
-    }
+    },
+    "col": {
+      "id": "ID",
+      "name": "Organización",
+      "plan": "Plan",
+      "users": "Usuarios",
+      "storage": "Almacenamiento",
+      "state": "Estado"
+    },
+    "tab": {
+      "summary": "Resumen",
+      "users": "Usuarios",
+      "modules": "Módulos",
+      "plan": "Plan y facturas",
+      "security": "Seguridad",
+      "audit": "Auditoría"
+    },
+    "edit": "Editar"
   },
   "role": {
     "superadmin": "SUPERADMIN",
@@ -242,5 +261,8 @@
   "placeholder": {
     "title": "Nada que mostrar todavía.",
     "lead": "Este módulo entra con su bloque; el chasis ya lo espera."
+  },
+  "tbl": {
+    "range": "{{from}}–{{to}} de {{total}}"
   }
 }
