@@ -75,6 +75,9 @@
   --dba-quota-over: #c4341f;
 
   --dba-radius-key: 4px;
+  --dba-radius-tag: 5px;
+  --dba-radius-bar: 3px;
+  --dba-radius-card: 10px;
   --dba-radius-env: 6px;
   --dba-radius-avatar: 7px;
   --dba-radius-control: 8px;
@@ -91,6 +94,14 @@
   --dba-height-pill: 32px;
   --dba-height-env: 30px;
   --dba-height-search: 36px;
+  --dba-height-tag: 22px;
+  --dba-height-state: 26px;
+  --dba-size-switch-w: 34px;
+  --dba-size-switch-h: 20px;
+  --dba-size-knob: 16px;
+  --dba-size-tile: 30px;
+  --dba-size-dot: 8px;
+  --dba-size-dot-event: 9px;
 
   --dba-grid-width: 1168px;
   --dba-grid-margin: 32px;
@@ -116,7 +127,8 @@
   --dba-tracking-page: -0.025em;
   --dba-tracking-eyebrow: 0.16em;
   --dba-tracking-th: 0.14em;
-  --dba-tracking-tag: 0.1em;
+  --dba-tracking-tag: 0.06em;
+  --dba-tracking-env: 0.08em;
 
   --db-font: var(--dba-font-ui);
   --db-font-mono: var(--dba-font-mono);

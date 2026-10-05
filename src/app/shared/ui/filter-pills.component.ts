@@ -25,7 +25,7 @@ export interface FilterPill {
         >
           {{ pill.labelKey | translate }}
           @if (pill.count !== undefined) {
-            <span class="pill__count">{{ pill.count }}</span>
+            <code class="pill__count">{{ pill.count }}</code>
           }
         </button>
       }
@@ -34,79 +34,72 @@ export interface FilterPill {
   styles: `
     .pills {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       gap: 8px;
     }
 
     .pill {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 7px;
-      height: 33px;
-      padding: 0 13px;
-      border: 1px solid var(--db-border-subtle);
-      border-radius: var(--db-radius-pill);
-      background: var(--db-surface);
-      font-family: var(--db-font);
-      font-size: var(--db-text-small);
-      font-weight: 500;
-      color: var(--db-ink-muted);
+      gap: 6px;
+      height: var(--dba-height-pill);
+      padding: 0 12px;
+      border: 1px solid var(--dba-border-control);
+      border-radius: var(--dba-radius-pill);
+      background: var(--dba-surface);
+      font-family: var(--dba-font-ui);
+      font-size: var(--dba-text-label);
+      font-weight: 600;
+      color: var(--dba-text);
       white-space: nowrap;
       cursor: pointer;
+      transition:
+        background 0.15s,
+        border-color 0.15s;
     }
 
     .pill:hover {
-      background: var(--db-surface-sunken);
+      border-color: var(--dba-violet-300);
+      background: var(--dba-surface-hover);
     }
 
-    .pill--on {
-      border: 0;
-      background: var(--db-primary);
-      font-weight: 600;
-      color: var(--db-primary-contrast);
+    .pill:focus-visible {
+      outline: none;
+      border-color: var(--dba-violet-500);
+      box-shadow: 0 0 0 3px var(--dba-focus-halo);
     }
 
+    .pill--on,
     .pill--on:hover {
-      background: var(--db-primary-ink);
+      border-color: var(--dba-ink);
+      background: var(--dba-ink);
+      color: var(--dba-surface);
     }
 
     .pill--danger {
-      border-color: var(--db-danger-border);
-      background: var(--db-danger-tint);
-      font-weight: 600;
-      color: var(--db-danger-ink);
+      border-color: var(--dba-state-suspended-border);
+      background: var(--dba-state-suspended-bg);
+      color: var(--dba-state-suspended-fg);
     }
 
     .pill--danger:hover {
-      background: var(--db-danger-wash);
+      border-color: var(--dba-state-suspended-dot);
+      background: var(--dba-state-suspended-bg);
     }
 
-    .pill--danger .pill__count {
-      color: var(--db-danger-ink);
-    }
-
-    .pill--danger.pill--on {
-      background: var(--db-danger);
-      color: var(--db-primary-contrast);
-    }
-
+    .pill--danger.pill--on,
     .pill--danger.pill--on:hover {
-      background: var(--db-danger-ink);
-    }
-
-    .pill--danger.pill--on .pill__count {
-      color: var(--db-primary-contrast);
+      border-color: var(--dba-state-suspended-dot);
+      background: var(--dba-state-suspended-dot);
+      color: var(--dba-surface);
     }
 
     .pill__count {
-      font-family: var(--db-font-mono);
-      font-size: var(--db-text-nano);
-      font-weight: 600;
-      color: var(--db-ink-ghost);
-    }
-
-    .pill--on .pill__count {
-      color: var(--db-primary-contrast);
+      font-family: var(--dba-font-mono);
+      font-size: var(--dba-text-micro);
+      font-weight: 500;
+      opacity: 0.75;
     }
   `,
 })

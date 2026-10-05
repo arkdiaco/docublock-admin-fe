@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { environment } from '../../../environments/environment';
-import { API_BASE_URL, APP_ENV, envLabelKey } from './api.tokens';
+import { envLabelKey } from '../../shared/domain/environment';
+import { API_BASE_URL, APP_ENV } from './api.tokens';
 
 interface Runtime {
   __env?: { apiBaseUrl?: string; environment?: string };

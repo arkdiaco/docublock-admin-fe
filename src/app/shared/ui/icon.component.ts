@@ -354,6 +354,14 @@ const GLYPHS = {
     ],
   },
   plus: { stroke: 2.1, shapes: [{ t: 'path', d: 'M12 5.6v12.8M5.6 12h12.8' }] },
+  moreVertical: {
+    stroke: 2,
+    shapes: [
+      { t: 'circle', cx: 12, cy: 5, r: 1.4 },
+      { t: 'circle', cx: 12, cy: 12, r: 1.4 },
+      { t: 'circle', cx: 12, cy: 19, r: 1.4 },
+    ],
+  },
   bell: {
     stroke: 1.8,
     shapes: [

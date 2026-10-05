@@ -21,7 +21,7 @@ module.exports = defineConfig([
       ],
       '@angular-eslint/component-selector': [
         'error',
-        { type: 'element', prefix: ['dba', 'db', 'app'], style: 'kebab-case' },
+        { type: ['element', 'attribute'], prefix: ['dba', 'db', 'app'], style: 'kebab-case' },
       ],
       'no-restricted-globals': [
         'error',

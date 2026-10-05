@@ -85,3 +85,17 @@
   letter-spacing: var(--dba-tracking-tag);
   color: var(--dba-surface);
 }
+
+.dba-ref {
+  font-family: var(--dba-font-mono);
+  font-size: var(--dba-text-small);
+  font-weight: 500;
+  color: var(--dba-violet-700);
+}
+
+.dba-btn-id {
+  font-family: var(--dba-font-mono);
+  font-size: var(--dba-text-meta);
+  font-weight: 500;
+  color: var(--dba-violet-300);
+}

@@ -54,6 +54,12 @@ export interface DialogRequest {
   warnings?: string[];
   context?: DialogContext;
   reason?: DialogReason;
+  challenge?: DialogChallenge;
+}
+
+export interface DialogChallenge {
+  identifier: string;
+  actionKey: string;
 }
 
 export interface DialogResult {
@@ -135,12 +141,34 @@ const ANCHOS: Record<DialogSize, number> = { compact: 400, standard: 460, wide: 
         </span>
       }
 
-      @if (request().context || request().reason || request().warnings) {
+      @if (request().context || request().reason || request().warnings || request().challenge) {
         <div class="body">
           @if (request().context; as context) {
             <div class="body__card">
               <span class="body__cardTitle">{{ context.title }}</span>
               <span class="body__cardDetail">{{ context.detail }}</span>
+            </div>
+          }
+
+          @if (request().challenge; as challenge) {
+            <div class="body__challenge">
+              <p class="body__challengeText">
+                {{ 'dialog.challenge.write' | translate }}
+                <code class="body__challengeId">{{ challenge.identifier }}</code>
+                {{ 'dialog.challenge.toDo' | translate: { action: (challenge.actionKey | translate) } }}
+              </p>
+              <input
+                #challengeInput
+                type="text"
+                class="body__challengeInput"
+                autocomplete="off"
+                autocapitalize="characters"
+                spellcheck="false"
+                [placeholder]="challengePlaceholder()"
+                [attr.aria-label]="'dialog.challenge.aria' | translate: { id: challenge.identifier }"
+                [value]="typed()"
+                (input)="onTyped($event)"
+              />
             </div>
           }
 
@@ -197,6 +225,7 @@ const ANCHOS: Record<DialogSize, number> = { compact: 400, standard: 460, wide: 
             [class.btn--primary]="intent() !== 'danger'"
             [class.btn--danger]="intent() === 'danger' && !request().outlined"
             [class.btn--dangerOutline]="intent() === 'danger' && request().outlined"
+            [disabled]="confirmBlocked()"
             (click)="answer('confirm')"
           >
             {{ request().confirmLabel | translate }}
@@ -414,6 +443,50 @@ const ANCHOS: Record<DialogSize, number> = { compact: 400, standard: 460, wide: 
       color: var(--db-ink-soft);
     }
 
+    .body__challenge {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 14px;
+      border: 1px solid var(--dba-border-card);
+      border-radius: var(--dba-radius-card);
+    }
+
+    .body__challengeText {
+      margin: 0;
+      font-size: var(--dba-text-cell);
+      line-height: 1.5;
+      color: var(--dba-text);
+    }
+
+    .body__challengeId {
+      font-family: var(--dba-font-mono);
+      font-size: var(--dba-text-id);
+      font-weight: 600;
+      color: var(--dba-state-suspended-fg);
+    }
+
+    .body__challengeInput {
+      height: var(--dba-height-control);
+      padding: 0 12px;
+      border: 1px solid var(--dba-border-control);
+      border-radius: var(--dba-radius-control);
+      background: var(--dba-surface);
+      font-family: var(--dba-font-mono);
+      font-size: var(--dba-text-cell);
+      color: var(--dba-ink);
+    }
+
+    .body__challengeInput:focus {
+      outline: none;
+      border-color: var(--dba-violet-500);
+      box-shadow: 0 0 0 3px var(--dba-focus-halo);
+    }
+
+    .body__challengeInput::placeholder {
+      color: var(--dba-text-faint);
+    }
+
     .body__reason {
       display: block;
     }
@@ -503,6 +576,11 @@ const ANCHOS: Record<DialogSize, number> = { compact: 400, standard: 460, wide: 
       font-size: var(--db-text-eyebrow);
       line-height: 16.5px;
       color: var(--db-ink-ghost);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
     .btn {
@@ -647,7 +725,9 @@ export class DialogComponent {
   readonly closed = output<DialogResult>();
 
   protected readonly reason = signal('');
+  protected readonly typed = signal('');
   private readonly box = viewChild<ElementRef<HTMLElement>>('box');
+  private readonly challengeInput = viewChild<ElementRef<HTMLInputElement>>('challengeInput');
   private readonly host: ElementRef<HTMLElement> = inject(ElementRef);
 
   protected readonly layout = computed(() => this.request().layout ?? 'confirm');
@@ -663,6 +743,18 @@ export class DialogComponent {
     return this.layout() === 'confirm' && this.intent() === 'danger' ? 23 : 21;
   });
 
+  protected readonly confirmBlocked = computed(() => {
+    const challenge = this.request().challenge;
+    if (!challenge) return false;
+    return this.typed().trim().toUpperCase() !== challenge.identifier.trim().toUpperCase();
+  });
+
+  protected readonly challengePlaceholder = computed(() => {
+    const identifier = this.request().challenge?.identifier ?? '';
+    const dash = identifier.indexOf('-');
+    return dash > 0 ? identifier.slice(0, dash + 1) : '';
+  });
+
   protected readonly meterPercent = computed(() => {
     const meter = this.request().meter;
     if (!meter?.quota) return 0;
@@ -673,8 +765,13 @@ export class DialogComponent {
     effect(() => {
       this.request();
       this.reason.set('');
-      queueMicrotask(() => this.box()?.nativeElement.focus());
+      this.typed.set('');
+      queueMicrotask(() => (this.challengeInput()?.nativeElement ?? this.box()?.nativeElement)?.focus());
     });
+  }
+
+  protected onTyped(event: Event): void {
+    this.typed.set((event.target as HTMLInputElement).value);
   }
 
   protected onReason(event: Event): void {

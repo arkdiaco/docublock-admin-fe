@@ -36,7 +36,12 @@
     "demoTitle": "Dialogs, alerts and notices",
     "demoHint": "One colour per intent · the action lives in the button · primary on the right",
     "reason": "Reason for rejection · the sender will see it",
-    "quotaMeter": "{{used}} of {{quota}} documents used"
+    "quotaMeter": "{{used}} of {{quota}} documents used",
+    "challenge": {
+      "write": "Type",
+      "toDo": "to {{action}}",
+      "aria": "Type {{id}} to confirm"
+    }
   },
   "nav": {
     "noAccess": "Your role doesn't have access to that section."
@@ -98,6 +103,53 @@
       "menu": "Organizations",
       "id": "ORG-0412 · 48 / 60 users · 184.2 GB · v4.12.0",
       "eyebrow": "Billing"
+    },
+    "components": "Components",
+    "componentsNote": "Height 40 for actions and fields, 48 per table row, radius 8 on controls and 14 on panels. Focus: 1.5 purple-500 border and a 3 px halo. Destructive actions ask you to type the identifier.",
+    "c": {
+      "actions": "Actions",
+      "openFile": "Open record",
+      "more": "More actions",
+      "suspend": "Suspend organization",
+      "field": "Field with focus",
+      "domainLabel": "Verified domain",
+      "dnsOk": "DNS OK",
+      "challenge": "Destructive confirmation",
+      "tryChallenge": "Try the confirmation",
+      "suspendTitle": "Suspend Aeropuerto Sierra Norte?",
+      "suspendMessage": "All 48 users lose access immediately. Data is kept for 90 days.",
+      "suspendVerb": "suspend",
+      "confirmed": "Confirmed: the organization would be suspended.",
+      "cancelled": "Cancelled: nothing happened.",
+      "kpi": "KPI · figure in Poppins, delta in mono",
+      "kpiOrgs": "Organizations",
+      "kpiOrgsDelta": "+6 this month",
+      "kpiUsers": "Active users",
+      "kpiUsersDelta": "+2.1 % vs. Sep",
+      "kpiSigns": "Signatures this month",
+      "kpiSignsDelta": "+4.2 % vs. Sep",
+      "kpiWarn": "With notice",
+      "kpiWarnDelta": "3 for storage",
+      "quota": "Quota · usage against contract",
+      "quotaUsers": "Users",
+      "quotaStorage": "Storage",
+      "quotaSigns": "Signatures per month",
+      "quotaNote": "Purple while it counts; amber at 90 % and red at 100 %. Never green: being under quota is not an achievement.",
+      "modules": "Modules · switch per organization",
+      "modMeta": "v{{version}} · {{n}} users",
+      "modNotContracted": "not contracted",
+      "audit": "Audit event",
+      "ev1a": "changed the plan of",
+      "ev1b": "from Team to Corporate",
+      "ev2": "sent the 90 % quota notice to 2 administrators",
+      "ev3": "enabled the Promissory notes module",
+      "ev4": "opened the record of",
+      "system": "System",
+      "supportActor": "Support (D. Ortiz)",
+      "filters": "Filters · pills with count",
+      "fAll": "All",
+      "pills": "Environment and inline state",
+      "pillsNote": "In tables the state has no background: text in its family and a shaped dot. The environment is always spelled out, in mono."
     }
   },
   "org": {

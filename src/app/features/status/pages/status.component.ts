@@ -3,7 +3,8 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { TranslatePipe } from '@ngx-translate/core';
 import { catchError, finalize, map, of } from 'rxjs';
 import { AuthStore } from '../../../core/auth/auth.store';
-import { API_BASE_URL, APP_ENV, envLabelKey } from '../../../core/config/api.tokens';
+import { API_BASE_URL, APP_ENV } from '../../../core/config/api.tokens';
+import { envLabelKey } from '../../../shared/domain/environment';
 import { SILENT_ERRORS, SKIP_AUTH } from '../../../core/http/http.interceptors';
 import { LoaderComponent } from '../../../shared/ui/loader.component';
 

@@ -1,7 +1,19 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
+import { DialogService } from '../../../core/ui/dialog.service';
 import { ORG_STATES } from '../../../shared/domain/org-state';
 import { PLATFORM_ROLES } from '../../../shared/domain/platform-role';
+import { AuditEventComponent } from '../../../shared/ui/audit-event.component';
+import { ButtonComponent } from '../../../shared/ui/button.component';
+import { EnvPillComponent } from '../../../shared/ui/env-pill.component';
+import { FieldComponent } from '../../../shared/ui/field.component';
+import { FilterPillsComponent, type FilterPill } from '../../../shared/ui/filter-pills.component';
+import { IconComponent } from '../../../shared/ui/icon.component';
+import { KpiCardComponent } from '../../../shared/ui/kpi-card.component';
+import { ModuleToggleComponent } from '../../../shared/ui/module-toggle.component';
+import { OrgStateComponent } from '../../../shared/ui/org-state.component';
+import { QuotaBarComponent } from '../../../shared/ui/quota-bar.component';
+import { RoleTagComponent } from '../../../shared/ui/role-tag.component';
 
 const RAMP = [
   ['50', '#F5F3FF'],
@@ -27,9 +39,58 @@ const TYPE_SAMPLES = [
   { tag: 'eyebrow/10', cls: 'dba-eyebrow', key: 'sys.sample.eyebrow' },
 ] as const;
 
+const KPIS = [
+  { key: 'sys.c.kpiOrgs', value: '312', delta: 'sys.c.kpiOrgsDelta', tone: 'good' },
+  { key: 'sys.c.kpiUsers', value: '4 812', delta: 'sys.c.kpiUsersDelta', tone: 'good' },
+  { key: 'sys.c.kpiSigns', value: '1 120', delta: 'sys.c.kpiSignsDelta', tone: 'good' },
+  { key: 'sys.c.kpiWarn', value: '9', delta: 'sys.c.kpiWarnDelta', tone: 'warn' },
+] as const;
+
+const QUOTAS = [
+  { key: 'sys.c.quotaUsers', used: 48, limit: 60, text: '48 / 60' },
+  { key: 'sys.c.quotaStorage', used: 184.2, limit: 200, text: '184,2 / 200 GB' },
+  { key: 'sys.c.quotaSigns', used: 1120, limit: 1500, text: '1 120 / 1 500' },
+] as const;
+
+interface ModuleSample {
+  abbr: string;
+  name: string;
+  version: string;
+  users: number;
+  on: boolean;
+}
+
+const MODULES: readonly ModuleSample[] = [
+  { abbr: 'PG', name: 'Pagarés', version: '1.4', users: 48, on: true },
+  { abbr: 'CI', name: 'Consentimiento informado', version: '1.2', users: 12, on: true },
+  { abbr: 'BR', name: 'Bienes raíces', version: '1.0', users: 7, on: true },
+  { abbr: 'IN', name: 'Integraciones v2', version: '2.0', users: 0, on: false },
+];
+
+const FILTERS: readonly FilterPill[] = [
+  { key: 'all', labelKey: 'sys.c.fAll', count: 312 },
+  { key: 'active', labelKey: 'org.state.active', count: 6 },
+  { key: 'trial', labelKey: 'org.state.trial', count: 2 },
+  { key: 'warning', labelKey: 'org.state.warning', count: 2 },
+  { key: 'suspended', labelKey: 'org.state.suspended', count: 1 },
+];
+
 @Component({
   selector: 'dba-design-system',
-  imports: [TranslatePipe],
+  imports: [
+    TranslatePipe,
+    ButtonComponent,
+    FieldComponent,
+    KpiCardComponent,
+    QuotaBarComponent,
+    ModuleToggleComponent,
+    AuditEventComponent,
+    FilterPillsComponent,
+    OrgStateComponent,
+    RoleTagComponent,
+    EnvPillComponent,
+    IconComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="sys">
@@ -57,10 +118,7 @@ const TYPE_SAMPLES = [
           <h2 class="dba-eyebrow sys__eyebrow">{{ 'sys.states' | translate }}</h2>
           @for (state of states; track state.key) {
             <div class="row">
-              <span class="pill pill--{{ state.key }}">
-                <span class="pill__dot pill__dot--{{ state.shape }}"></span>
-                {{ state.labelKey | translate }}
-              </span>
+              <dba-org-state [state]="state.key" />
               <span class="dba-body">{{ state.descKey | translate }}</span>
             </div>
           }
@@ -70,7 +128,7 @@ const TYPE_SAMPLES = [
           <h2 class="dba-eyebrow sys__eyebrow">{{ 'sys.roles' | translate }}</h2>
           @for (role of roles; track role.key) {
             <div class="row">
-              <span class="role role--{{ role.key }}">{{ role.labelKey | translate }}</span>
+              <dba-role-tag [role]="role.key" />
               <span class="dba-body">{{ role.descKey | translate }}</span>
             </div>
           }
@@ -88,6 +146,114 @@ const TYPE_SAMPLES = [
               <span [class]="sample.cls">{{ sample.key | translate }}</span>
             </div>
           }
+        </div>
+      </section>
+
+      <section class="sys__components">
+        <header class="sys__head">
+          <h2 class="dba-section">{{ 'sys.components' | translate }}</h2>
+          <p class="dba-body sys__lead">{{ 'sys.componentsNote' | translate }}</p>
+        </header>
+
+        <div class="cards">
+          <div class="card">
+            <h3 class="dba-eyebrow">{{ 'sys.c.actions' | translate }}</h3>
+            <div class="card__row">
+              <button dba-button block>{{ 'common.save' | translate }}</button>
+              <button dba-button variant="secondary" block>{{ 'common.cancel' | translate }}</button>
+            </div>
+            <div class="card__row">
+              <button dba-button variant="dark" block>
+                {{ 'sys.c.openFile' | translate }}
+                <span class="dba-btn-id">ORG-0412</span>
+              </button>
+              <button dba-button variant="secondary" iconOnly [attr.aria-label]="'sys.c.more' | translate">
+                <db-icon name="moreVertical" [size]="15" />
+              </button>
+            </div>
+            <button dba-button variant="destructive" block>{{ 'sys.c.suspend' | translate }}</button>
+
+            <h3 class="dba-eyebrow card__eyebrow">{{ 'sys.c.field' | translate }}</h3>
+            <dba-field label="sys.c.domainLabel" [(value)]="domain" badge="sys.c.dnsOk" badgeTone="ok" />
+
+            <h3 class="dba-eyebrow card__eyebrow">{{ 'sys.c.challenge' | translate }}</h3>
+            <div class="card__row">
+              <button dba-button variant="secondary" class="challenge" (click)="tryChallenge()">
+                {{ 'sys.c.tryChallenge' | translate }}
+              </button>
+              @if (challengeResult(); as result) {
+                <span class="dba-meta challenge__result">{{ result | translate }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 class="dba-eyebrow">{{ 'sys.c.kpi' | translate }}</h3>
+            <div class="card__grid2">
+              @for (kpi of kpis; track kpi.key) {
+                <dba-kpi-card dense [label]="kpi.key" [value]="kpi.value" [delta]="kpi.delta | translate" [deltaTone]="kpi.tone" />
+              }
+            </div>
+
+            <h3 class="dba-eyebrow card__eyebrow">{{ 'sys.c.quota' | translate }}</h3>
+            <div class="card__stack">
+              @for (quota of quotas; track quota.key) {
+                <dba-quota-bar [label]="quota.key" [used]="quota.used" [limit]="quota.limit" [valueText]="quota.text" />
+              }
+            </div>
+            <p class="dba-body">{{ 'sys.c.quotaNote' | translate }}</p>
+          </div>
+
+          <div class="card">
+            <h3 class="dba-eyebrow">{{ 'sys.c.modules' | translate }}</h3>
+            <div class="card__list">
+              @for (mod of modules(); track mod.abbr) {
+                <dba-module-toggle
+                  [abbr]="mod.abbr"
+                  [name]="mod.name"
+                  [meta]="
+                    mod.on ? ('sys.c.modMeta' | translate: { version: mod.version, n: mod.users }) : ('sys.c.modNotContracted' | translate)
+                  "
+                  [on]="mod.on"
+                  (toggled)="toggleModule(mod.abbr, $event)"
+                />
+              }
+            </div>
+
+            <h3 class="dba-eyebrow card__eyebrow">{{ 'sys.c.audit' | translate }}</h3>
+            <div class="card__events">
+              <dba-audit-event actor="Marta Vidal" meta="03-oct-2026 16:42 UTC · ip 10.4.1.18 · evt 8f3a…c21d">
+                {{ 'sys.c.ev1a' | translate }} <code class="dba-ref">ORG-0412</code> {{ 'sys.c.ev1b' | translate }}
+              </dba-audit-event>
+              <dba-audit-event kind="system" [actor]="'sys.c.system' | translate" meta="28-sep-2026 09:00 UTC · evt 71bb…0e4f">
+                {{ 'sys.c.ev2' | translate }}
+              </dba-audit-event>
+              <dba-audit-event actor="Lucía Paredes" meta="21-sep-2026 11:18 UTC · evt 02c9…aa10">
+                {{ 'sys.c.ev3' | translate }}
+              </dba-audit-event>
+              <dba-audit-event kind="support" [actor]="'sys.c.supportActor' | translate" meta="14-sep-2026 15:05 UTC · evt e5d1…77b2" last>
+                {{ 'sys.c.ev4' | translate }} <code class="dba-ref">ORG-0412</code>
+              </dba-audit-event>
+            </div>
+
+            <h3 class="dba-eyebrow card__eyebrow">{{ 'sys.c.filters' | translate }}</h3>
+            <db-filter-pills [pills]="filters" [active]="filter()" (activeChange)="filter.set($event)" />
+          </div>
+
+          <div class="card">
+            <h3 class="dba-eyebrow">{{ 'sys.c.pills' | translate }}</h3>
+            <div class="card__row card__row--wrap">
+              <dba-env-pill env="production" />
+              <dba-env-pill env="canary" />
+              <dba-env-pill env="dev" />
+            </div>
+            <div class="card__row card__row--wrap">
+              @for (state of states; track state.key) {
+                <dba-org-state [state]="state.key" variant="inline" />
+              }
+            </div>
+            <p class="dba-body">{{ 'sys.c.pillsNote' | translate }}</p>
+          </div>
         </div>
       </section>
     </div>
@@ -122,14 +288,18 @@ const TYPE_SAMPLES = [
       background: var(--dba-surface);
     }
 
+    .sys__eyebrow {
+      margin: 0 0 8px;
+    }
+
+    .sys__note {
+      margin: 12px 0 0;
+    }
+
     .sys__cols {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: var(--dba-grid-gap);
-    }
-
-    .sys__eyebrow {
-      margin: 0 0 8px;
     }
 
     .sys__forbidden {
@@ -142,8 +312,10 @@ const TYPE_SAMPLES = [
       color: var(--dba-state-suspended-fg);
     }
 
-    .sys__note {
-      margin: 12px 0 0;
+    .sys__components {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
 
     .ramp {
@@ -198,56 +370,6 @@ const TYPE_SAMPLES = [
       border-bottom: 0;
     }
 
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      height: 26px;
-      padding: 0 10px;
-      border: 1px solid;
-      border-radius: var(--dba-radius-pill);
-      font-size: var(--dba-text-small);
-      font-weight: 600;
-      white-space: nowrap;
-    }
-
-    .pill--active { background: var(--dba-state-active-bg); border-color: var(--dba-state-active-border); color: var(--dba-state-active-fg); --dot: var(--dba-state-active-dot); }
-    .pill--trial { background: var(--dba-state-trial-bg); border-color: var(--dba-state-trial-border); color: var(--dba-state-trial-fg); --dot: var(--dba-state-trial-dot); }
-    .pill--warning { background: var(--dba-state-warning-bg); border-color: var(--dba-state-warning-border); color: var(--dba-state-warning-fg); --dot: var(--dba-state-warning-dot); }
-    .pill--suspended { background: var(--dba-state-suspended-bg); border-color: var(--dba-state-suspended-border); color: var(--dba-state-suspended-fg); --dot: var(--dba-state-suspended-dot); }
-    .pill--closed { background: var(--dba-state-closed-bg); border-color: var(--dba-state-closed-border); color: var(--dba-state-closed-fg); --dot: var(--dba-state-closed-dot); }
-
-    .pill__dot {
-      flex: none;
-      width: 8px;
-      height: 8px;
-      background: var(--dot);
-    }
-
-    .pill__dot--circle { border-radius: 999px; }
-    .pill__dot--ring { border-radius: 999px; background: transparent; border: 2px solid var(--dot); }
-    .pill__dot--square { border-radius: 1px; }
-    .pill__dot--dash { height: 2px; border-radius: 0; }
-
-    .role {
-      display: inline-flex;
-      align-items: center;
-      height: 22px;
-      padding: 0 8px;
-      border: 1px solid;
-      border-radius: var(--dba-radius-key);
-      font-family: var(--dba-font-mono);
-      font-size: var(--dba-text-eyebrow);
-      font-weight: 600;
-      letter-spacing: var(--dba-tracking-tag);
-      white-space: nowrap;
-    }
-
-    .role--superadmin { background: var(--dba-role-superadmin-bg); border-color: var(--dba-role-superadmin-border); color: var(--dba-role-superadmin-fg); }
-    .role--support { background: var(--dba-role-support-bg); border-color: var(--dba-role-support-border); color: var(--dba-role-support-fg); }
-    .role--orgAdmin { background: var(--dba-role-org-bg); border-color: var(--dba-role-org-border); color: var(--dba-role-org-fg); }
-    .role--readonly { background: var(--dba-role-readonly-bg); border-color: var(--dba-role-readonly-border); color: var(--dba-role-readonly-fg); }
-
     .type {
       display: flex;
       flex-direction: column;
@@ -274,6 +396,76 @@ const TYPE_SAMPLES = [
       padding-bottom: 4px;
     }
 
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+      padding: 20px;
+      border: 1px solid var(--dba-border-card);
+      border-radius: var(--dba-radius-panel);
+      background: var(--dba-surface);
+    }
+
+    .card__eyebrow {
+      margin-top: 6px;
+    }
+
+    .card__row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card__row--wrap {
+      flex-wrap: wrap;
+      gap: 10px 14px;
+    }
+
+    .card__grid2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .card__stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card__list {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      border: 1px solid var(--dba-border-card);
+      border-radius: var(--dba-radius-card);
+      background: var(--dba-border-card);
+      overflow: hidden;
+    }
+
+    .card__events {
+      display: flex;
+      flex-direction: column;
+      padding: 12px 14px;
+      border: 1px solid var(--dba-border-card);
+      border-radius: var(--dba-radius-card);
+    }
+
+    .challenge {
+      flex: none;
+    }
+
+    .challenge__result {
+      min-width: 0;
+    }
+
     @media (max-width: 760px) {
       .sys {
         padding: 24px 16px;
@@ -292,12 +484,42 @@ const TYPE_SAMPLES = [
         grid-template-columns: 1fr;
         gap: 6px;
       }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
     }
   `,
 })
 export class DesignSystemComponent {
+  private readonly dialogs = inject(DialogService);
+
   protected readonly ramp = RAMP;
   protected readonly states = ORG_STATES;
   protected readonly roles = PLATFORM_ROLES;
   protected readonly samples = TYPE_SAMPLES;
+  protected readonly kpis = KPIS;
+  protected readonly quotas = QUOTAS;
+  protected readonly filters = FILTERS;
+
+  protected readonly domain = signal('sierranorte.aero');
+  protected readonly modules = signal(MODULES);
+  protected readonly filter = signal('all');
+  protected readonly challengeResult = signal('');
+
+  protected toggleModule(abbr: string, on: boolean): void {
+    this.modules.update((list) => list.map((mod) => (mod.abbr === abbr ? { ...mod, on } : mod)));
+  }
+
+  protected async tryChallenge(): Promise<void> {
+    const result = await this.dialogs.open({
+      intent: 'danger',
+      icon: 'triangleAlert',
+      title: 'sys.c.suspendTitle',
+      message: 'sys.c.suspendMessage',
+      confirmLabel: 'sys.c.suspend',
+      challenge: { identifier: 'ORG-0412', actionKey: 'sys.c.suspendVerb' },
+    });
+    this.challengeResult.set(result.answer === 'confirm' ? 'sys.c.confirmed' : 'sys.c.cancelled');
+  }
 }

@@ -240,4 +240,35 @@ describe('DialogComponent', () => {
     expect(svgs.length).toBe(1);
     expect(svgs.every((s) => s.getAttribute('fill') === 'none')).toBe(true);
   });
+
+  it('la confirmación destructiva exige escribir el identificador, sin distinguir mayúsculas', () => {
+    const host = montar();
+    fixture.componentInstance.request.set({
+      intent: 'danger',
+      title: 'sys.c.suspendTitle',
+      confirmLabel: 'sys.c.suspend',
+      challenge: { identifier: 'ORG-0412', actionKey: 'sys.c.suspendVerb' },
+    });
+    fixture.detectChanges();
+
+    const confirmar = host.querySelectorAll<HTMLButtonElement>('.btn')[1];
+    const campo = host.querySelector<HTMLInputElement>('.body__challengeInput')!;
+    expect(host.querySelector('.body__challengeText')?.textContent).toContain('Escribe');
+    expect(host.querySelector('.body__challengeId')?.textContent).toBe('ORG-0412');
+    expect(host.querySelector('.body__challengeText')?.textContent).toContain('para suspender');
+    expect(campo.placeholder).toBe('ORG-');
+    expect(confirmar.disabled).toBe(true);
+
+    campo.value = 'org-041';
+    campo.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(confirmar.disabled).toBe(true);
+
+    campo.value = 'org-0412';
+    campo.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(confirmar.disabled).toBe(false);
+    confirmar.click();
+    expect(fixture.componentInstance.result()?.answer).toBe('confirm');
+  });
 });

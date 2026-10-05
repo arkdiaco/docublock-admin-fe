@@ -36,7 +36,12 @@
     "demoTitle": "Modales, alertas y avisos",
     "demoHint": "Un color por intención · la acción vive en el botón · primario a la derecha",
     "reason": "Motivo del rechazo · lo verá quien lo envió",
-    "quotaMeter": "{{used}} de {{quota}} documentos usados"
+    "quotaMeter": "{{used}} de {{quota}} documentos usados",
+    "challenge": {
+      "write": "Escribe",
+      "toDo": "para {{action}}",
+      "aria": "Escribe {{id}} para confirmar"
+    }
   },
   "nav": {
     "noAccess": "Tu rol no tiene acceso a esa sección."
@@ -98,6 +103,53 @@
       "menu": "Organizaciones",
       "id": "ORG-0412 · 48 / 60 usuarios · 184,2 GB · v4.12.0",
       "eyebrow": "Facturación"
+    },
+    "components": "Componentes",
+    "componentsNote": "Altura 40 para acciones y campos, 48 por fila de tabla, radio 8 en controles y 14 en paneles. Foco: borde 1,5 morado 500 y halo de 3 px. Las acciones destructivas piden escribir el identificador.",
+    "c": {
+      "actions": "Acciones",
+      "openFile": "Abrir ficha",
+      "more": "Más acciones",
+      "suspend": "Suspender organización",
+      "field": "Campo con foco",
+      "domainLabel": "Dominio verificado",
+      "dnsOk": "DNS OK",
+      "challenge": "Confirmación destructiva",
+      "tryChallenge": "Probar la confirmación",
+      "suspendTitle": "¿Suspender Aeropuerto Sierra Norte?",
+      "suspendMessage": "Los 48 usuarios pierden acceso de inmediato. Los datos se conservan 90 días.",
+      "suspendVerb": "suspender",
+      "confirmed": "Confirmada: la organización quedaría suspendida.",
+      "cancelled": "Cancelada: no pasó nada.",
+      "kpi": "KPI · cifra en Poppins, delta en mono",
+      "kpiOrgs": "Organizaciones",
+      "kpiOrgsDelta": "+6 este mes",
+      "kpiUsers": "Usuarios activos",
+      "kpiUsersDelta": "+2,1 % vs. sep",
+      "kpiSigns": "Firmas del mes",
+      "kpiSignsDelta": "+4,2 % vs. sep",
+      "kpiWarn": "Con aviso",
+      "kpiWarnDelta": "3 por almacenamiento",
+      "quota": "Cuota · consumo contra contrato",
+      "quotaUsers": "Usuarios",
+      "quotaStorage": "Almacenamiento",
+      "quotaSigns": "Firmas al mes",
+      "quotaNote": "Morada mientras cuenta; ámbar al 90 % y roja al 100 %. Nunca verde: estar por debajo de la cuota no es un logro.",
+      "modules": "Módulos · interruptor por organización",
+      "modMeta": "v{{version}} · {{n}} usuarios",
+      "modNotContracted": "no contratado",
+      "audit": "Evento de auditoría",
+      "ev1a": "cambió el plan de",
+      "ev1b": "de Equipo a Corporativo",
+      "ev2": "envió aviso de cuota al 90 % a 2 administradores",
+      "ev3": "activó el módulo Pagarés",
+      "ev4": "abrió la ficha de",
+      "system": "Sistema",
+      "supportActor": "Soporte (D. Ortiz)",
+      "filters": "Filtros · píldoras con conteo",
+      "fAll": "Todas",
+      "pills": "Entorno y estado en fila",
+      "pillsNote": "En tablas el estado va sin fondo: texto de su familia y punto con forma. El entorno siempre escrito completo, en mono."
     }
   },
   "org": {
