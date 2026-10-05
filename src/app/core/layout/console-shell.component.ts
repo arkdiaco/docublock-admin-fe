@@ -25,6 +25,16 @@ import { SearchDialogComponent } from './search-dialog.component';
   template: `
     <a class="skip" href="#dba-main">{{ 'shell.skip' | translate }}</a>
     <header class="bar">
+      <button
+        type="button"
+        class="bar__burger"
+        [attr.aria-label]="'shell.menu' | translate"
+        [attr.aria-expanded]="menuOpen()"
+        aria-controls="dba-drawer"
+        (click)="menuOpen.set(true)"
+      >
+        <db-icon name="lines" [size]="18" />
+      </button>
       <a class="bar__brand" routerLink="/panel" [attr.aria-label]="'shell.brand' | translate">
         <dba-logo />
         <span class="dba-tag bar__tag">{{ 'shell.product' | translate }}</span>
@@ -80,6 +90,33 @@ import { SearchDialogComponent } from './search-dialog.component';
     @if (searchOpen()) {
       <dba-search-dialog (closed)="searchOpen.set(false)" />
     }
+
+    @if (menuOpen()) {
+      <div class="drawer">
+        <button type="button" class="drawer__scrim" [attr.aria-label]="'common.close' | translate" (click)="menuOpen.set(false)"></button>
+        <nav id="dba-drawer" class="drawer__panel" [attr.aria-label]="'shell.menu' | translate">
+          <div class="drawer__head">
+            <dba-logo />
+            <span class="dba-tag">{{ 'shell.product' | translate }}</span>
+          </div>
+          @for (entry of entries(); track entry.key) {
+            <a
+              class="drawer__link"
+              [routerLink]="'/' + entry.path"
+              routerLinkActive="drawer__link--on"
+              #drawerActive="routerLinkActive"
+              [attr.aria-current]="drawerActive.isActive ? 'page' : null"
+              (click)="menuOpen.set(false)"
+            >
+              <span class="drawer__label">{{ entry.labelKey | translate }}</span>
+              @if (counts()[entry.key]; as count) {
+                <code class="drawer__count">{{ count }}</code>
+              }
+            </a>
+          }
+        </nav>
+      </div>
+    }
   `,
   styles: `
     :host {
@@ -133,6 +170,29 @@ import { SearchDialogComponent } from './search-dialog.component';
       align-items: center;
       gap: 8px;
       text-decoration: none;
+    }
+
+    .bar__burger {
+      display: none;
+      flex: none;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border: 1px solid var(--dba-border-control);
+      border-radius: var(--dba-radius-control);
+      background: var(--dba-surface);
+      color: var(--dba-ink);
+      cursor: pointer;
+    }
+
+    .bar__burger:hover {
+      background: var(--dba-surface-hover);
+    }
+
+    .bar__burger:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px var(--dba-focus-halo);
     }
 
     .bar__tag {
@@ -304,6 +364,98 @@ import { SearchDialogComponent } from './search-dialog.component';
       padding: 0 var(--dba-grid-margin) var(--dba-grid-margin);
     }
 
+    .drawer {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+    }
+
+    .drawer__scrim {
+      position: absolute;
+      inset: 0;
+      padding: 0;
+      border: 0;
+      background: rgba(22, 18, 31, 0.42);
+      cursor: default;
+    }
+
+    .drawer__panel {
+      position: absolute;
+      inset: 0 auto 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      width: min(288px, 82vw);
+      padding: 16px 12px;
+      background: var(--dba-surface);
+      border-right: 1px solid var(--dba-border-card);
+      overflow-y: auto;
+      animation: drawer-in 0.18s ease;
+    }
+
+    @keyframes drawer-in {
+      from {
+        transform: translateX(-100%);
+      }
+    }
+
+    .drawer__head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 8px 14px;
+      margin-bottom: 6px;
+      border-bottom: 1px solid var(--dba-border-card);
+    }
+
+    .drawer__head dba-logo {
+      width: 118px;
+    }
+
+    .drawer__head .dba-tag {
+      text-transform: uppercase;
+    }
+
+    .drawer__link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      height: 44px;
+      padding: 0 12px;
+      border-radius: var(--dba-radius-control);
+      font-size: var(--dba-text-field);
+      font-weight: 500;
+      color: var(--dba-text);
+      text-decoration: none;
+    }
+
+    .drawer__link:hover {
+      background: var(--dba-surface-hover);
+    }
+
+    .drawer__link:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--dba-focus-halo);
+    }
+
+    .drawer__link--on {
+      background: var(--dba-violet-100);
+      font-weight: 600;
+      color: var(--dba-violet-700);
+    }
+
+    .drawer__count {
+      font-family: var(--dba-font-mono);
+      font-size: var(--dba-text-eyebrow);
+      font-weight: 600;
+      color: var(--dba-text-muted);
+    }
+
+    .drawer__link--on .drawer__count {
+      color: var(--dba-violet-700);
+    }
+
     @media (max-width: 960px) {
       .bar__search {
         width: var(--dba-height-search);
@@ -319,33 +471,21 @@ import { SearchDialogComponent } from './search-dialog.component';
 
     @media (max-width: 760px) {
       .bar {
-        flex-wrap: wrap;
-        height: auto;
         gap: 10px;
-        padding: 10px 12px;
+        padding: 0 12px;
       }
 
-      .bar__brand {
-        order: 1;
+      .bar__burger {
+        display: grid;
+      }
+
+      .bar__nav,
+      .bar__search {
+        display: none;
       }
 
       .bar__tools {
-        order: 2;
-        margin-left: auto;
         gap: 8px;
-      }
-
-      .bar__nav {
-        order: 3;
-        flex-basis: 100%;
-        gap: 2px;
-        overflow-x: auto;
-        scrollbar-width: none;
-      }
-
-      .bar__link {
-        flex: none;
-        padding: 6px 10px 8px;
       }
 
       .bar__tag {
@@ -372,6 +512,7 @@ export class ConsoleShellComponent {
 
   protected readonly accountMenu = viewChild<Menu>('account');
   protected readonly searchOpen = signal(false);
+  protected readonly menuOpen = signal(false);
   protected readonly counts = this.navCounts.counts;
 
   protected readonly entries = computed(() => {
@@ -406,6 +547,10 @@ export class ConsoleShellComponent {
   }
 
   protected onKey(event: KeyboardEvent): void {
+    if (event.key === 'Escape' && this.menuOpen()) {
+      this.menuOpen.set(false);
+      return;
+    }
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
       event.preventDefault();
       this.searchOpen.update((open) => !open);

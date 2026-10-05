@@ -120,6 +120,31 @@ describe('ConsoleShellComponent', () => {
     expect([...host.querySelectorAll('.crumbs__item')].map((c) => c.textContent?.trim())).toEqual(['Admin', 'Sistema']);
   });
 
+  it('la hamburguesa abre el cajón con las entradas permitidas y se cierra al elegir una o con Escape', async () => {
+    entrar(TODOS);
+    const { fixture, host } = await montar('/panel');
+    expect(host.querySelector('.drawer')).toBeNull();
+    host.querySelector<HTMLButtonElement>('.bar__burger')!.click();
+    fixture.detectChanges();
+    const enlaces = [...host.querySelectorAll('.drawer__link')];
+    expect(enlaces.length).toBe(8);
+    expect(enlaces[0].textContent).toContain('Visión general');
+    expect(enlaces[0].getAttribute('href')).toBe('/panel');
+
+    host.querySelector<HTMLButtonElement>('.bar__burger')!.click();
+    fixture.detectChanges();
+    enlaces[1].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    fixture.detectChanges();
+    expect(host.querySelector('.drawer')).toBeNull();
+
+    host.querySelector<HTMLButtonElement>('.bar__burger')!.click();
+    fixture.detectChanges();
+    expect(host.querySelector('.drawer')).not.toBeNull();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    fixture.detectChanges();
+    expect(host.querySelector('.drawer')).toBeNull();
+  });
+
   it('⌘K y la caja abren el buscador; Escape lo cierra', async () => {
     const { fixture, host } = await montar();
     expect(host.querySelector('dba-search-dialog')).toBeNull();
