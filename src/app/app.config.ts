@@ -10,6 +10,7 @@ import {
   type ApplicationConfig,
 } from '@angular/core';
 import {
+  TitleStrategy,
   provideRouter,
   withComponentInputBinding,
   withInMemoryScrolling,
@@ -26,6 +27,7 @@ import {
   errorInterceptor,
 } from './core/http/http.interceptors';
 import { provideI18n } from './core/i18n/i18n.providers';
+import { ConsoleTitleStrategy } from './core/layout/console-title.strategy';
 import { DocublockPreset } from './core/theme/docublock-preset';
 
 registerLocaleData(localeEs);
@@ -43,6 +45,7 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ scrollPositionRestoration: 'top' }),
       withNavigationErrorHandler((error) => void inject(AppUpdate).recover(error.error, error.url)),
     ),
+    { provide: TitleStrategy, useClass: ConsoleTitleStrategy },
     provideHttpClient(withInterceptors([baseUrlInterceptor, authInterceptor, errorInterceptor])),
     providePrimeNG({
       theme: {

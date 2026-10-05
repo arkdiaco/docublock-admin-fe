@@ -89,6 +89,6 @@ describe('DesignSystemComponent', () => {
 
   it('nada sale como llave cruda', () => {
     const { host } = montar();
-    expect(host.textContent).not.toMatch(/\b(sys|org|role|shell|env|common|dialog)\.[a-zA-Z]/);
+    expect(host.textContent).not.toMatch(/\b(sys|org|role|shell|env|common|dialog|nav)\.[a-zA-Z]/);
   });
 });

@@ -44,7 +44,16 @@
     }
   },
   "nav": {
-    "noAccess": "Your role doesn't have access to that section."
+    "noAccess": "Your role doesn't have access to that section.",
+    "crumbRoot": "Admin",
+    "overview": "Overview",
+    "organizations": "Organizations",
+    "users": "Users",
+    "plans": "Plans",
+    "billing": "Billing",
+    "security": "Security",
+    "audit": "Audit",
+    "system": "System"
   },
   "auth": {
     "title": "Platform access",
@@ -60,16 +69,20 @@
   },
   "shell": {
     "brand": "Docublock",
-    "product": "Platform",
+    "product": "Admin",
     "logout": "Sign out",
-    "nav": {
-      "panel": "Panel",
-      "status": "Status"
-    }
+    "menu": "Main menu",
+    "crumbs": "Path",
+    "search": "Search…",
+    "searchAria": "Global search",
+    "searchHint": "Organizations, users or invoices by name or identifier.",
+    "searchEmpty": "Search is not available yet.",
+    "account": "Account",
+    "enter": "Sign in"
   },
   "status": {
-    "title": "Status",
-    "lead": "Live check that the admin reaches its backend.",
+    "title": "System",
+    "lead": "Environment, backend and session of this console.",
     "api": "Core API",
     "checking": "Checking…",
     "ok": "Responds",
@@ -80,10 +93,6 @@
     "staff": "Platform staff",
     "yes": "Yes",
     "no": "No"
-  },
-  "panel": {
-    "title": "Panel",
-    "lead": "Nothing to show yet: each module arrives with its block."
   },
   "sys": {
     "title": "Design system",
@@ -184,5 +193,27 @@
     "production": "PRODUCTION",
     "canary": "CANARY",
     "dev": "DEVELOPMENT"
+  },
+  "overview": {
+    "greeting": {
+      "morning": "Good morning, {{name}}",
+      "afternoon": "Good afternoon, {{name}}",
+      "evening": "Good evening, {{name}}"
+    },
+    "kpiOrgs": "Organizations",
+    "kpiUsers": "Active users",
+    "kpiSigns": "Signatures this month",
+    "kpiWarn": "With notice",
+    "noData": "no data yet",
+    "actions": "Needs action",
+    "actionsEmpty": "Nothing pending for now.",
+    "actionsLead": "Organizations with exhausted quota, unpaid invoices or trials about to end will show up here.",
+    "activity": "Activity",
+    "activityEmpty": "No events recorded yet.",
+    "activityLead": "Platform audit arrives with its block."
+  },
+  "placeholder": {
+    "title": "Nothing to show yet.",
+    "lead": "This module arrives with its block; the chassis is already waiting for it."
   }
 }

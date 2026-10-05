@@ -17,8 +17,8 @@ type Check = 'checking' | 'ok' | 'fail';
   template: `
     <section class="status">
       <header class="status__head">
-        <span class="db-eyebrow">{{ 'shell.product' | translate }}</span>
-        <h1 class="status__title">{{ 'status.title' | translate }}</h1>
+        <span class="dba-eyebrow">{{ 'nav.crumbRoot' | translate }}</span>
+        <h1 class="dba-page">{{ 'status.title' | translate }}</h1>
         <p class="status__lead">{{ 'status.lead' | translate }}</p>
       </header>
 
@@ -55,16 +55,8 @@ type Check = 'checking' | 'ok' | 'fail';
   styles: `
     .status {
       max-width: 720px;
-      padding: 32px 26px;
       font-family: var(--db-font);
       color: var(--db-ink-strong);
-    }
-
-    .status__title {
-      margin: 6px 0 4px;
-      font-size: var(--db-text-display);
-      font-weight: 600;
-      letter-spacing: var(--db-tracking-title);
     }
 
     .status__lead {

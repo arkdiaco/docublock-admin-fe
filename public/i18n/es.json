@@ -44,7 +44,16 @@
     }
   },
   "nav": {
-    "noAccess": "Tu rol no tiene acceso a esa sección."
+    "noAccess": "Tu rol no tiene acceso a esa sección.",
+    "crumbRoot": "Admin",
+    "overview": "Visión general",
+    "organizations": "Organizaciones",
+    "users": "Usuarios",
+    "plans": "Planes",
+    "billing": "Facturación",
+    "security": "Seguridad",
+    "audit": "Auditoría",
+    "system": "Sistema"
   },
   "auth": {
     "title": "Acceso a la plataforma",
@@ -60,16 +69,20 @@
   },
   "shell": {
     "brand": "Docublock",
-    "product": "Plataforma",
+    "product": "Admin",
     "logout": "Cerrar sesión",
-    "nav": {
-      "panel": "Panel",
-      "status": "Estado"
-    }
+    "menu": "Menú principal",
+    "crumbs": "Ruta",
+    "search": "Buscar…",
+    "searchAria": "Búsqueda global",
+    "searchHint": "Organizaciones, usuarios o facturas por nombre o identificador.",
+    "searchEmpty": "Aún no hay búsqueda disponible.",
+    "account": "Cuenta",
+    "enter": "Entrar"
   },
   "status": {
-    "title": "Estado",
-    "lead": "Comprobación en vivo de que el administrador alcanza su backend.",
+    "title": "Sistema",
+    "lead": "Entorno, backend y sesión de esta consola.",
     "api": "API del core",
     "checking": "Comprobando…",
     "ok": "Responde",
@@ -80,10 +93,6 @@
     "staff": "Personal de plataforma",
     "yes": "Sí",
     "no": "No"
-  },
-  "panel": {
-    "title": "Panel",
-    "lead": "Nada que mostrar todavía: cada módulo entra con su bloque."
   },
   "sys": {
     "title": "Sistema de diseño",
@@ -184,5 +193,27 @@
     "production": "PRODUCCIÓN",
     "canary": "CANARY",
     "dev": "DESARROLLO"
+  },
+  "overview": {
+    "greeting": {
+      "morning": "Buenos días, {{name}}",
+      "afternoon": "Buenas tardes, {{name}}",
+      "evening": "Buenas noches, {{name}}"
+    },
+    "kpiOrgs": "Organizaciones",
+    "kpiUsers": "Usuarios activos",
+    "kpiSigns": "Firmas del mes",
+    "kpiWarn": "Con aviso",
+    "noData": "sin datos todavía",
+    "actions": "Requiere acción",
+    "actionsEmpty": "Nada pendiente por ahora.",
+    "actionsLead": "Aquí aparecerán las organizaciones con cuota agotada, impagos o pruebas a punto de vencer.",
+    "activity": "Actividad",
+    "activityEmpty": "Sin eventos registrados todavía.",
+    "activityLead": "La auditoría de la plataforma llega con su bloque."
+  },
+  "placeholder": {
+    "title": "Nada que mostrar todavía.",
+    "lead": "Este módulo entra con su bloque; el chasis ya lo espera."
   }
 }

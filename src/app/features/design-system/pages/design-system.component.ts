@@ -95,8 +95,8 @@ const FILTERS: readonly FilterPill[] = [
   template: `
     <div class="sys">
       <header class="sys__head">
-        <span class="dba-eyebrow">{{ 'shell.product' | translate }} · F0</span>
-        <h1 class="dba-section">{{ 'sys.title' | translate }}</h1>
+        <span class="dba-eyebrow">{{ 'nav.system' | translate }} · F0</span>
+        <h1 class="dba-page">{{ 'sys.title' | translate }}</h1>
         <p class="dba-body sys__lead">{{ 'sys.lead' | translate }}</p>
       </header>
 
@@ -260,9 +260,6 @@ const FILTERS: readonly FilterPill[] = [
   `,
   styles: `
     .sys {
-      max-width: var(--dba-grid-width);
-      margin: 0 auto;
-      padding: var(--dba-grid-margin);
       display: flex;
       flex-direction: column;
       gap: 24px;
@@ -467,10 +464,6 @@ const FILTERS: readonly FilterPill[] = [
     }
 
     @media (max-width: 760px) {
-      .sys {
-        padding: 24px 16px;
-      }
-
       .sys__cols {
         grid-template-columns: 1fr;
       }
