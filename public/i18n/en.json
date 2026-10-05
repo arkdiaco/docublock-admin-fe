@@ -226,6 +226,30 @@
     },
     "edit": "Edit"
   },
+  "orgs": {
+    "count": "{{total}} organizations",
+    "csv": "Export CSV",
+    "searchPlaceholder": "Business name, tax ID or email",
+    "loading": "Loading organizations…",
+    "emptyTitle": "No organizations",
+    "emptyLead": "None match the filter.",
+    "errorTitle": "Couldn't load",
+    "errorLead": "Try again.",
+    "noPlan": "No plan",
+    "warning": "Documents at 90% or more",
+    "filterAll": "All",
+    "state": {
+      "active": "Active",
+      "suspended": "Suspended",
+      "expired": "Expired",
+      "no_subscription": "No subscription"
+    },
+    "col": {
+      "country": "Country",
+      "documents": "Documents",
+      "members": "Members"
+    }
+  },
   "role": {
     "superadmin": "SUPERADMIN",
     "support": "SUPPORT",

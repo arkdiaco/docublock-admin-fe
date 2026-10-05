@@ -226,6 +226,30 @@
     },
     "edit": "Editar"
   },
+  "orgs": {
+    "count": "{{total}} organizaciones",
+    "csv": "Exportar CSV",
+    "searchPlaceholder": "Razón social, NIT o correo",
+    "loading": "Cargando organizaciones…",
+    "emptyTitle": "Sin organizaciones",
+    "emptyLead": "Ninguna coincide con el filtro.",
+    "errorTitle": "No se pudo cargar",
+    "errorLead": "Inténtalo de nuevo.",
+    "noPlan": "Sin plan",
+    "warning": "Documentos al 90 % o más",
+    "filterAll": "Todas",
+    "state": {
+      "active": "Activa",
+      "suspended": "Suspendida",
+      "expired": "Vencida",
+      "no_subscription": "Sin suscripción"
+    },
+    "col": {
+      "country": "País",
+      "documents": "Documentos",
+      "members": "Miembros"
+    }
+  },
   "role": {
     "superadmin": "SUPERADMIN",
     "support": "SOPORTE",

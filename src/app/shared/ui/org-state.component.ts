@@ -11,7 +11,7 @@ export type OrgStateVariant = 'pill' | 'inline';
   template: `
     <span class="st" [class]="'st st--' + view().key + ' st--' + variant()">
       <span class="st__dot" [class]="'st__dot st__dot--' + view().shape" aria-hidden="true"></span>
-      {{ view().labelKey | translate }}
+      {{ (labelKey() || view().labelKey) | translate }}
     </span>
   `,
   styles: `
@@ -116,6 +116,7 @@ export type OrgStateVariant = 'pill' | 'inline';
 export class OrgStateComponent {
   readonly state = input.required<string>();
   readonly variant = input<OrgStateVariant>('pill');
+  readonly labelKey = input('');
 
   protected readonly view = computed(() => orgStateOf(this.state()));
 }

@@ -25,8 +25,14 @@ export const routes: Routes = [
       {
         path: 'organizaciones',
         canMatch: [authGuard, platformMatchGuard],
-        loadComponent: placeholder,
         data: { titleKey: 'nav.organizations', platform: ROUTE_ACCESS.organizations },
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./features/organizations/pages/organizations.component').then((m) => m.OrganizationsComponent),
+          },
+          { path: ':id', loadComponent: placeholder, data: { titleKey: 'nav.organizations' } },
+        ],
       },
       {
         path: 'usuarios',
