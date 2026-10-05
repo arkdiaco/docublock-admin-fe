@@ -250,6 +250,50 @@
       "members": "Miembros"
     }
   },
+  "orgd": {
+    "loading": "Cargando la organización…",
+    "errorTitle": "No se pudo cargar",
+    "errorLead": "Inténtalo de nuevo.",
+    "soonTitle": "Esta sección llega pronto",
+    "soonLead": "La estamos construyendo en una fase siguiente.",
+    "reseller": "Reseller",
+    "test": "Prueba",
+    "profile": "Perfil",
+    "modules": "Módulos contratados",
+    "planUsage": "Plan y consumo",
+    "noPlan": "Sin suscripción",
+    "noExpiry": "Sin vencimiento",
+    "f": {
+      "nit": "NIT",
+      "country": "País",
+      "email": "Correo",
+      "phone": "Teléfono",
+      "address": "Dirección",
+      "web": "Sitio web",
+      "created": "Alta",
+      "plan": "Plan",
+      "source": "Origen",
+      "validity": "Vigencia",
+      "documents": "Documentos",
+      "members": "Miembros"
+    },
+    "module": {
+      "pagares": "Pagarés",
+      "consent": "Consentimiento informado",
+      "realEstate": "Bienes raíces"
+    },
+    "tab": {
+      "summary": "Resumen",
+      "subscription": "Suscripción",
+      "quotas": "Cupos",
+      "members": "Miembros",
+      "integrations": "Integraciones",
+      "validations": "Validaciones",
+      "marketplace": "Marketplace",
+      "documents": "Documentos",
+      "audit": "Auditoría"
+    }
+  },
   "role": {
     "superadmin": "SUPERADMIN",
     "support": "SOPORTE",

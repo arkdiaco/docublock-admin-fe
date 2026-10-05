@@ -39,3 +39,35 @@ export interface PlatformOrgQuery {
   countryId?: string;
   reseller?: boolean;
 }
+
+export interface PlatformOrgDetail {
+  id: string;
+  businessName: string;
+  tributaryNumber: string;
+  type: number;
+  countryId?: string;
+  countryName?: string;
+  cityId?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  webSite?: string;
+  constitutionDate?: string;
+  logo?: string;
+  state: PlatformOrgState;
+  suspendedAt?: string;
+  isReseller: boolean;
+  resellerId?: string;
+  isTest: boolean;
+  createdAt?: string;
+  plan?: {
+    code: string;
+    name: string;
+    source: string;
+    periodStart: string;
+    periodEnd: string | null;
+  };
+  documents: { used: number; limit: number | null };
+  members: number;
+  modules: string[];
+}

@@ -250,6 +250,50 @@
       "members": "Members"
     }
   },
+  "orgd": {
+    "loading": "Loading organization…",
+    "errorTitle": "Couldn't load",
+    "errorLead": "Try again.",
+    "soonTitle": "This section is coming soon",
+    "soonLead": "We're building it in a later phase.",
+    "reseller": "Reseller",
+    "test": "Test",
+    "profile": "Profile",
+    "modules": "Contracted modules",
+    "planUsage": "Plan and usage",
+    "noPlan": "No subscription",
+    "noExpiry": "No expiry",
+    "f": {
+      "nit": "Tax ID",
+      "country": "Country",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "web": "Website",
+      "created": "Created",
+      "plan": "Plan",
+      "source": "Source",
+      "validity": "Validity",
+      "documents": "Documents",
+      "members": "Members"
+    },
+    "module": {
+      "pagares": "Promissory notes",
+      "consent": "Informed consent",
+      "realEstate": "Real estate"
+    },
+    "tab": {
+      "summary": "Summary",
+      "subscription": "Subscription",
+      "quotas": "Quotas",
+      "members": "Members",
+      "integrations": "Integrations",
+      "validations": "Validations",
+      "marketplace": "Marketplace",
+      "documents": "Documents",
+      "audit": "Audit"
+    }
+  },
   "role": {
     "superadmin": "SUPERADMIN",
     "support": "SUPPORT",

@@ -31,7 +31,11 @@ export const routes: Routes = [
             path: '',
             loadComponent: () => import('./features/organizations/pages/organizations.component').then((m) => m.OrganizationsComponent),
           },
-          { path: ':id', loadComponent: placeholder, data: { titleKey: 'nav.organizations' } },
+          {
+            path: ':id',
+            loadComponent: () => import('./features/organizations/pages/organization-detail.component').then((m) => m.OrganizationDetailComponent),
+            data: { titleKey: 'nav.organizations' },
+          },
         ],
       },
       {

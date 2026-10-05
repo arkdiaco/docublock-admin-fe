@@ -24,7 +24,7 @@ import { OrgStateComponent } from './org-state.component';
         <div class="rec__line">
           <h1 class="rec__name">{{ title() }}</h1>
           @if (state()) {
-            <dba-org-state [state]="state()!" />
+            <dba-org-state [state]="state()!" [labelKey]="stateLabelKey()" />
           }
         </div>
         @if (meta()) {
@@ -137,5 +137,6 @@ export class RecordHeaderComponent {
   readonly initials = input.required<string>();
   readonly title = input.required<string>();
   readonly state = input<string | null>(null);
+  readonly stateLabelKey = input('');
   readonly meta = input('');
 }
