@@ -1,0 +1,43 @@
+html {
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 0;
+  font-family: var(--db-font);
+  font-size: var(--db-text-body);
+  font-weight: 400;
+  line-height: var(--db-leading-body);
+  color: var(--db-ink);
+  background: var(--db-surface-sunken);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--db-primary-ink);
+}
+
+code,
+.db-mono {
+  font-family: var(--db-font-mono);
+}
+
+:focus-visible {
+  outline: 2px solid var(--db-primary);
+  outline-offset: 2px;
+}

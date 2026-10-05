@@ -1,0 +1,68 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Docublock Admin — pipeline de Cloud Build
+#
+# UNA sola imagen para los dos ambientes: la URL del backend NO va compilada,
+# la inyecta el contenedor al arrancar (env.js vía envsubst) leyendo la variable
+# CORE_API_URL del servicio de Cloud Run. La imagen probada en canary es byte a
+# byte la que se promueve a producción.
+#
+#   Trigger canary      (rama canary):  _SERVICE=docublock-admin-fe-canary  _ENV=canary
+#   Trigger producción  (rama main):    _SERVICE=docublock-admin-fe         _ENV=production
+#
+# En cada servicio de Cloud Run debe existir:
+#   CORE_API_URL   URL pública del core de ese ambiente, CON /api/core
+# ─────────────────────────────────────────────────────────────────────────────
+
+substitutions:
+  _REGION: us-east1
+  _SERVICE: docublock-admin-fe-canary
+  _ENV: canary
+  _IMAGE: us-east1-docker.pkg.dev/PROJECT/docublock/docublock-admin-fe
+
+steps:
+  - id: test
+    name: node:22
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -e
+        npm ci
+        npx ng lint
+        node scripts/check-units.mjs
+        npx depcruise src --config .dependency-cruiser.cjs
+        npx ng test --watch=false
+
+  - id: build
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - ${_IMAGE}:${SHORT_SHA}
+      - -t
+      - ${_IMAGE}:${_ENV}
+      - .
+
+  - id: push
+    name: gcr.io/cloud-builders/docker
+    args: [push, --all-tags, '${_IMAGE}']
+
+  - id: deploy
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - ${_SERVICE}
+      - --image=${_IMAGE}:${SHORT_SHA}
+      - --region=${_REGION}
+      - --platform=managed
+      - --port=80
+      - --allow-unauthenticated
+
+images:
+  - '${_IMAGE}:${SHORT_SHA}'
+  - '${_IMAGE}:${_ENV}'
+
+options:
+  logging: CLOUD_LOGGING_ONLY

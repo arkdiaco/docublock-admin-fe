@@ -1,0 +1,57 @@
+.table {
+  border: 1px solid var(--db-border-card);
+  border-radius: var(--db-radius-card);
+  background: var(--db-surface);
+  overflow: clip;
+}
+
+.table__head,
+.table__row {
+  display: grid;
+  gap: 12px;
+  align-items: center;
+}
+
+.table__head {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--db-border-head);
+  background: var(--db-surface-head);
+  font-size: var(--db-text-micro);
+  font-weight: 600;
+  letter-spacing: var(--db-tracking-label);
+  text-transform: uppercase;
+  color: var(--db-ink-eyebrow);
+}
+
+.table__row {
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--db-surface-tile);
+}
+
+.table__row:last-child {
+  border-bottom: 0;
+}
+
+.table__row:hover {
+  background: var(--db-surface-sunken);
+}
+
+.table__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 13px 20px;
+  border-top: 1px solid var(--db-border-head);
+  background: var(--db-surface-head);
+}
+
+.table__range {
+  font-size: var(--db-text-counter);
+  color: var(--db-ink-faint);
+}
+
+.table__range strong {
+  font-weight: 600;
+  color: var(--db-ink-strong);
+}

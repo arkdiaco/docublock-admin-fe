@@ -1,0 +1,83 @@
+{
+  "app": {
+    "name": "Docublock",
+    "update": {
+      "text": "A new version of Docublock is available.",
+      "cta": "Update"
+    }
+  },
+  "calendar": {
+    "today": "Today",
+    "clear": "Clear"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "deleteDetail": "This action cannot be undone.",
+    "required": "This field is required",
+    "language": "Language",
+    "close": "Close",
+    "pagination": "Pagination",
+    "prevPage": "Previous page",
+    "nextPage": "Next page",
+    "goPage": "Go to page {{page}}",
+    "understood": "Got it",
+    "retry": "Retry",
+    "pick": "Pick an option",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "dialog": {
+    "quick": "Quick",
+    "deleteTitle": "Delete {{count}} documents?",
+    "deleteMessage": "They will go to the bin and leave every active flow. You can restore them for 30 days.",
+    "deleteConfirm": "Delete {{count}} documents",
+    "demoTitle": "Dialogs, alerts and notices",
+    "demoHint": "One colour per intent · the action lives in the button · primary on the right",
+    "reason": "Reason for rejection · the sender will see it",
+    "quotaMeter": "{{used}} of {{quota}} documents used"
+  },
+  "nav": {
+    "noAccess": "Your role doesn't have access to that section."
+  },
+  "auth": {
+    "title": "Platform access",
+    "lead": "Only Docublock staff can enter here.",
+    "identification": "Identification number",
+    "sendCode": "Send code",
+    "code": "Access code",
+    "enter": "Enter",
+    "back": "Change identification",
+    "notStaff": "Your user is not platform staff",
+    "codeSent": "We sent the code to your registered channels",
+    "sessionExpired": "Your session expired. Sign in again."
+  },
+  "shell": {
+    "brand": "Docublock",
+    "product": "Platform",
+    "logout": "Sign out",
+    "nav": {
+      "panel": "Panel",
+      "status": "Status"
+    }
+  },
+  "status": {
+    "title": "Status",
+    "lead": "Live check that the admin reaches its backend.",
+    "api": "Core API",
+    "checking": "Checking…",
+    "ok": "Responds",
+    "fail": "Not responding",
+    "retry": "Check again",
+    "env": "Environment",
+    "session": "Session",
+    "staff": "Platform staff",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "panel": {
+    "title": "Panel",
+    "lead": "Nothing to show yet: each module arrives with its block."
+  }
+}

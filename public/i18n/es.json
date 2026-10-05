@@ -1,0 +1,83 @@
+{
+  "app": {
+    "name": "Docublock",
+    "update": {
+      "text": "Hay una versión nueva de Docublock.",
+      "cta": "Actualizar"
+    }
+  },
+  "calendar": {
+    "today": "Hoy",
+    "clear": "Limpiar"
+  },
+  "common": {
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "deleteDetail": "Esta acción no se puede deshacer.",
+    "required": "Este campo es obligatorio",
+    "language": "Idioma",
+    "close": "Cerrar",
+    "pagination": "Paginación",
+    "prevPage": "Página anterior",
+    "nextPage": "Página siguiente",
+    "goPage": "Ir a la página {{page}}",
+    "understood": "Entendido",
+    "retry": "Reintentar",
+    "pick": "Elige una opción",
+    "yes": "Sí",
+    "no": "No"
+  },
+  "dialog": {
+    "quick": "Rápidos",
+    "deleteTitle": "¿Eliminar {{count}} documentos?",
+    "deleteMessage": "Se moverán a la papelera y saldrán de todos los flujos activos. Podrás restaurarlos por 30 días.",
+    "deleteConfirm": "Eliminar {{count}} documentos",
+    "demoTitle": "Modales, alertas y avisos",
+    "demoHint": "Un color por intención · la acción vive en el botón · primario a la derecha",
+    "reason": "Motivo del rechazo · lo verá quien lo envió",
+    "quotaMeter": "{{used}} de {{quota}} documentos usados"
+  },
+  "nav": {
+    "noAccess": "Tu rol no tiene acceso a esa sección."
+  },
+  "auth": {
+    "title": "Acceso a la plataforma",
+    "lead": "Solo el personal de Docublock entra aquí.",
+    "identification": "Número de identificación",
+    "sendCode": "Enviar código",
+    "code": "Código de acceso",
+    "enter": "Entrar",
+    "back": "Cambiar identificación",
+    "notStaff": "Tu usuario no pertenece al personal de la plataforma",
+    "codeSent": "Te enviamos el código a tus canales registrados",
+    "sessionExpired": "Tu sesión expiró. Inicia sesión de nuevo."
+  },
+  "shell": {
+    "brand": "Docublock",
+    "product": "Plataforma",
+    "logout": "Cerrar sesión",
+    "nav": {
+      "panel": "Panel",
+      "status": "Estado"
+    }
+  },
+  "status": {
+    "title": "Estado",
+    "lead": "Comprobación en vivo de que el administrador alcanza su backend.",
+    "api": "API del core",
+    "checking": "Comprobando…",
+    "ok": "Responde",
+    "fail": "No responde",
+    "retry": "Volver a comprobar",
+    "env": "Entorno",
+    "session": "Sesión",
+    "staff": "Personal de plataforma",
+    "yes": "Sí",
+    "no": "No"
+  },
+  "panel": {
+    "title": "Panel",
+    "lead": "Nada que mostrar todavía: cada módulo entra con su bloque."
+  }
+}

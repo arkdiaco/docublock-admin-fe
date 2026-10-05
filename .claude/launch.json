@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "docublock-admin-fe-4208",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["ng", "serve", "--port", "4208"],
+      "port": 4208,
+      "autoPort": false
+    }
+  ]
+}

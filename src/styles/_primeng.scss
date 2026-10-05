@@ -1,0 +1,107 @@
+body {
+  .p-component,
+  .p-button,
+  .p-inputtext,
+  .p-menu,
+  .p-card,
+  .p-toast {
+    font-family: var(--db-font);
+  }
+
+  .p-button,
+  .p-button .p-button-label {
+    font-size: var(--db-text-body);
+    line-height: var(--db-leading-body);
+  }
+
+  .p-button-sm,
+  .p-button-sm .p-button-label {
+    font-size: var(--db-text-small);
+  }
+
+  .p-button-icon {
+    font-size: var(--db-text-nav);
+    line-height: 1;
+  }
+
+  .p-button {
+    border-width: 0;
+  }
+
+  .p-button-secondary:not(.p-button-text),
+  .p-button-outlined {
+    border-width: 1px;
+  }
+
+  .p-inputtext {
+    font-size: var(--db-text-body);
+  }
+
+  .p-select,
+  .p-autocomplete,
+  .p-datepicker {
+    font-size: var(--db-text-body);
+  }
+
+  .p-select-label,
+  .p-autocomplete-input,
+  .p-datepicker-input {
+    font-size: inherit;
+  }
+
+  .p-select-overlay,
+  .p-autocomplete-overlay {
+    max-width: calc(100vw - 32px);
+  }
+
+  .p-select-option,
+  .p-autocomplete-option {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .p-card {
+    border: 1px solid var(--db-border);
+  }
+
+  .p-menu {
+    font-size: var(--db-text-body);
+  }
+
+  .p-menu-item-label {
+    font-weight: 500;
+  }
+
+  .p-menu-item.db-active > .p-menu-item-content {
+    background: var(--db-primary-wash);
+    box-shadow: var(--db-ring-active);
+  }
+
+  .p-menu-item.db-active > .p-menu-item-content .p-menu-item-label {
+    font-weight: 600;
+    color: var(--db-ink-strong);
+  }
+
+  .p-menu-item.db-active > .p-menu-item-content .p-menu-item-icon {
+    color: var(--db-primary-ink);
+  }
+
+  .p-datatable-header-cell,
+  .p-datatable thead th {
+    font-size: var(--db-text-micro);
+    font-weight: 600;
+    letter-spacing: var(--db-tracking-label);
+    text-transform: uppercase;
+    color: var(--db-ink-faint);
+  }
+
+  .p-datatable-tbody > tr > td {
+    font-size: var(--db-text-body);
+  }
+
+  .p-badge-circle {
+    border-radius: var(--db-radius-pill);
+    padding: 2px 7px;
+    width: auto;
+  }
+}

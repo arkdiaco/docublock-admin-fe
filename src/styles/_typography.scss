@@ -1,0 +1,78 @@
+.db-display {
+  font-size: var(--db-text-display);
+  font-weight: 600;
+  line-height: var(--db-leading-display);
+  letter-spacing: var(--db-tracking-display);
+  color: var(--db-ink-strong);
+  text-wrap: balance;
+}
+
+.db-metric {
+  font-size: var(--db-text-metric);
+  font-weight: 600;
+  line-height: var(--db-leading-metric);
+  letter-spacing: var(--db-tracking-display);
+  color: var(--db-ink-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.db-title {
+  font-size: var(--db-text-title);
+  font-weight: 600;
+  letter-spacing: var(--db-tracking-title);
+  color: var(--db-ink-strong);
+}
+
+.db-eyebrow {
+  font-size: var(--db-text-eyebrow);
+  font-weight: 600;
+  letter-spacing: var(--db-tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--db-ink-faint);
+}
+
+.db-eyebrow--alert {
+  color: var(--db-danger);
+}
+
+.db-label {
+  font-size: var(--db-text-micro);
+  font-weight: 600;
+  letter-spacing: var(--db-tracking-label);
+  text-transform: uppercase;
+  color: var(--db-ink-faint);
+}
+
+.db-rail-label {
+  font-size: var(--db-text-micro);
+  font-weight: 700;
+  letter-spacing: var(--db-tracking-rail);
+  text-transform: uppercase;
+  color: var(--db-ink-label);
+}
+
+.db-meta {
+  font-size: var(--db-text-body);
+  font-weight: 400;
+  color: var(--db-ink-faint);
+}
+
+.db-muted {
+  color: var(--db-ink-faint);
+}
+
+.db-counter {
+  font-size: var(--db-text-counter);
+  font-weight: 600;
+  color: var(--db-ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
