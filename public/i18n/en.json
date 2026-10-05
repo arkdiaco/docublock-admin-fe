@@ -105,7 +105,10 @@
     "searchHint": "Organizations, users or invoices by name or identifier.",
     "searchEmpty": "Search is not available yet.",
     "account": "Account",
-    "enter": "Sign in"
+    "enter": "Sign in",
+    "skip": "Skip to content",
+    "densityCompact": "Compact rows",
+    "densityCozy": "Comfortable rows"
   },
   "status": {
     "title": "System",

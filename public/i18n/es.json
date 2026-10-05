@@ -105,7 +105,10 @@
     "searchHint": "Organizaciones, usuarios o facturas por nombre o identificador.",
     "searchEmpty": "Aún no hay búsqueda disponible.",
     "account": "Cuenta",
-    "enter": "Entrar"
+    "enter": "Entrar",
+    "skip": "Saltar al contenido",
+    "densityCompact": "Filas compactas",
+    "densityCozy": "Filas cómodas"
   },
   "status": {
     "title": "Sistema",

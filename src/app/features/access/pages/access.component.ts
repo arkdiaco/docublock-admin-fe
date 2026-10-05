@@ -231,8 +231,8 @@ const errorKeyOf = (error: unknown): string => {
     }
 
     .ac__form {
-      width: 380px;
-      max-width: 100%;
+      width: 100%;
+      max-width: 380px;
     }
 
     .ac__title {
@@ -387,6 +387,21 @@ const errorKeyOf = (error: unknown): string => {
 
       .ac__brand {
         min-height: 240px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .ac__brand {
+        padding: 28px 20px;
+        min-height: 200px;
+      }
+
+      .ac__panel {
+        padding: 28px 20px;
+      }
+
+      .ac__claim {
+        font-size: 26px;
       }
     }
   `,

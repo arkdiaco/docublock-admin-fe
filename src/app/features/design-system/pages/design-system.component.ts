@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { DialogService } from '../../../core/ui/dialog.service';
+import { DensityService } from '../../../core/preferences/density.service';
 import { ORG_STATES, quotaToneOf } from '../../../shared/domain/org-state';
 import { PLATFORM_ROLES } from '../../../shared/domain/platform-role';
 import { AuditEventComponent } from '../../../shared/ui/audit-event.component';
@@ -340,6 +341,8 @@ const pctOf = (used: number, limit: number): string =>
         <dba-data-table
           [columns]="orgColumns"
           [label]="'nav.organizations' | translate"
+          [dense]="density.compact()"
+          minWidth="820px"
           [total]="312"
           [from]="1"
           [to]="10"
@@ -714,6 +717,7 @@ const pctOf = (used: number, limit: number): string =>
 export class DesignSystemComponent {
   private readonly dialogs = inject(DialogService);
   private readonly translate = inject(TranslateService);
+  protected readonly density = inject(DensityService);
 
   protected readonly ramp = RAMP;
   protected readonly states = ORG_STATES;

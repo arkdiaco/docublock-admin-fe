@@ -11,6 +11,7 @@ import { LogoComponent } from '../../shared/ui/logo.component';
 import { AuthStore } from '../auth/auth.store';
 import { LOGIN_ROUTE, SessionService } from '../auth/session.service';
 import { APP_ENV } from '../config/api.tokens';
+import { DensityService } from '../preferences/density.service';
 import { CONSOLE_ENTRIES, canSeeArea } from './console-nav';
 import { titleKeysOf } from './console-title.strategy';
 import { NavCounts } from './nav-counts.service';
@@ -22,6 +23,7 @@ import { SearchDialogComponent } from './search-dialog.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '(document:keydown)': 'onKey($event)' },
   template: `
+    <a class="skip" href="#dba-main">{{ 'shell.skip' | translate }}</a>
     <header class="bar">
       <a class="bar__brand" routerLink="/panel" [attr.aria-label]="'shell.brand' | translate">
         <dba-logo />
@@ -71,7 +73,7 @@ import { SearchDialogComponent } from './search-dialog.component';
       }
     </nav>
 
-    <main class="main">
+    <main id="dba-main" class="main" tabindex="-1">
       <router-outlet />
     </main>
 
@@ -85,6 +87,31 @@ import { SearchDialogComponent } from './search-dialog.component';
       flex-direction: column;
       min-height: 100vh;
       background: var(--dba-canvas);
+    }
+
+    .skip {
+      position: fixed;
+      top: -60px;
+      left: 12px;
+      z-index: 40;
+      padding: 10px 14px;
+      border-radius: var(--dba-radius-control);
+      background: var(--dba-violet-500);
+      font-size: var(--dba-text-label);
+      font-weight: 600;
+      color: var(--dba-surface);
+      text-decoration: none;
+      transition: top 0.15s;
+    }
+
+    .skip:focus {
+      top: 12px;
+      outline: none;
+      box-shadow: 0 0 0 3px var(--dba-focus-halo);
+    }
+
+    .main:focus {
+      outline: none;
     }
 
     .bar {
@@ -292,12 +319,37 @@ import { SearchDialogComponent } from './search-dialog.component';
 
     @media (max-width: 760px) {
       .bar {
-        gap: 14px;
-        padding: 0 16px;
+        flex-wrap: wrap;
+        height: auto;
+        gap: 10px;
+        padding: 10px 12px;
+      }
+
+      .bar__brand {
+        order: 1;
+      }
+
+      .bar__tools {
+        order: 2;
+        margin-left: auto;
+        gap: 8px;
       }
 
       .bar__nav {
+        order: 3;
+        flex-basis: 100%;
+        gap: 2px;
         overflow-x: auto;
+        scrollbar-width: none;
+      }
+
+      .bar__link {
+        flex: none;
+        padding: 6px 10px 8px;
+      }
+
+      .bar__tag {
+        display: none;
       }
 
       .crumbs,
@@ -316,6 +368,7 @@ export class ConsoleShellComponent {
   private readonly router = inject(Router);
   private readonly translate = inject(TranslateService);
   private readonly navCounts = inject(NavCounts);
+  protected readonly density = inject(DensityService);
 
   protected readonly accountMenu = viewChild<Menu>('account');
   protected readonly searchOpen = signal(false);
@@ -336,8 +389,14 @@ export class ConsoleShellComponent {
 
   private readonly logoutLabel = toSignal(this.translate.stream('shell.logout'), { initialValue: '' });
 
+  private readonly densityLabel = computed(() =>
+    this.translate.instant(this.density.compact() ? 'shell.densityCozy' : 'shell.densityCompact'),
+  );
+
   protected readonly accountItems = computed<MenuItem[]>(() => [
     { label: this.auth.displayName(), disabled: true },
+    { separator: true },
+    { label: this.densityLabel() as string, icon: 'pi pi-bars', command: () => this.density.toggle() },
     { separator: true },
     { label: this.logoutLabel() as string, icon: 'pi pi-sign-out', command: () => void this.session.logout() },
   ]);

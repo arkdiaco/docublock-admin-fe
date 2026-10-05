@@ -36,18 +36,22 @@ export const pageWindow = (page: number, pageCount: number): PageItem[] => {
   host: { '[style.--dba-cols]': 'cols()', '[style.--dba-row-h]': 'rowHeight()' },
   template: `
     <div class="tbl" [attr.aria-label]="label()">
-      <div class="tbl__head" role="row">
-        @for (col of columns(); track col.key) {
-          <span class="tbl__th" [class.tbl__th--end]="col.align === 'end'" [class.tbl__th--center]="col.align === 'center'">
-            @if (col.labelKey) {
-              {{ col.labelKey | translate }}
+      <div class="tbl__scroll">
+        <div class="tbl__grid" [style.min-width]="minWidth() || null">
+          <div class="tbl__head" role="row">
+            @for (col of columns(); track col.key) {
+              <span class="tbl__th" [class.tbl__th--end]="col.align === 'end'" [class.tbl__th--center]="col.align === 'center'">
+                @if (col.labelKey) {
+                  {{ col.labelKey | translate }}
+                }
+              </span>
             }
-          </span>
-        }
-      </div>
+          </div>
 
-      <div class="tbl__body">
-        <ng-content />
+          <div class="tbl__body">
+            <ng-content />
+          </div>
+        </div>
       </div>
 
       @if (total() !== null) {
@@ -104,6 +108,16 @@ export const pageWindow = (page: number, pageCount: number): PageItem[] => {
       border-radius: var(--dba-radius-panel);
       background: var(--dba-surface);
       overflow: clip;
+    }
+
+    .tbl__scroll {
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+
+    .tbl__grid {
+      display: flex;
+      flex-direction: column;
     }
 
     .tbl__head {
@@ -213,6 +227,7 @@ export const pageWindow = (page: number, pageCount: number): PageItem[] => {
 export class DataTableComponent {
   readonly columns = input.required<readonly DataColumn[]>();
   readonly dense = input(false);
+  readonly minWidth = input('');
   readonly label = input('');
   readonly total = input<number | null>(null);
   readonly from = input(0);
