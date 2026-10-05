@@ -2,35 +2,35 @@ import { definePreset } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
 
 const VIOLET = {
-  50: '#f6f4ff',
-  100: '#f1eefe',
-  200: '#e4ddf8',
-  300: '#d3c8fc',
-  400: '#9276fb',
-  500: '#7955fd',
-  600: '#6a49d6',
-  700: '#5b3ac4',
-  800: '#4a2ea3',
-  900: '#392480',
-  950: '#231551',
+  50: '#f5f3ff',
+  100: '#eae8ff',
+  200: '#dcd7fe',
+  300: '#c4bafe',
+  400: '#a48cfe',
+  500: '#7954fd',
+  600: '#6438f0',
+  700: '#5227d2',
+  800: '#4020a8',
+  900: '#2c2054',
+  950: '#16121f',
 };
 
 const NEUTRAL = {
   0: '#ffffff',
-  50: '#faf9fe',
-  100: '#f8f7fc',
-  200: '#ebe8f4',
-  300: '#d3c8fc',
-  400: '#9a94ad',
-  500: '#7d7791',
-  600: '#6f6a80',
-  700: '#453f57',
-  800: '#1c1830',
+  50: '#f6f5fa',
+  100: '#f1eff8',
+  200: '#e6e3f0',
+  300: '#d6d1e3',
+  400: '#8a8a99',
+  500: '#676776',
+  600: '#4e4e5a',
+  700: '#3f3a52',
+  800: '#2c2054',
   900: '#16121f',
-  950: '#0f0c18',
+  950: '#16121f',
 };
 
-const FOCUS_RING = '0 0 0 4px rgba(121, 85, 253, 0.15)';
+const FOCUS_RING = '0 0 0 3px #efeafc';
 
 export const DocublockPreset = definePreset(Aura, {
   primitive: {
@@ -38,8 +38,8 @@ export const DocublockPreset = definePreset(Aura, {
       none: '0',
       xs: '3px',
       sm: '4px',
-      md: '9px',
-      lg: '10px',
+      md: '6px',
+      lg: '8px',
       xl: '14px',
     },
   },

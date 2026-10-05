@@ -1,0 +1,210 @@
+:root {
+  --dba-font-display: 'Poppins', system-ui, -apple-system, sans-serif;
+  --dba-font-ui: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+  --dba-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --dba-violet-50: #f5f3ff;
+  --dba-violet-100: #eae8ff;
+  --dba-violet-200: #dcd7fe;
+  --dba-violet-300: #c4bafe;
+  --dba-violet-400: #a48cfe;
+  --dba-violet-500: #7954fd;
+  --dba-violet-600: #6438f0;
+  --dba-violet-700: #5227d2;
+  --dba-violet-800: #4020a8;
+  --dba-violet-900: #2c2054;
+  --dba-violet-950: #16121f;
+
+  --dba-ink: #16121f;
+  --dba-text: #3f3a52;
+  --dba-text-soft: #4e4e5a;
+  --dba-text-muted: #676776;
+  --dba-text-faint: #8a8a99;
+  --dba-text-on-dark: #cfc9e2;
+  --dba-text-on-dark-muted: #8d86a6;
+
+  --dba-canvas: #f6f5fa;
+  --dba-surface: #ffffff;
+  --dba-surface-chip: #f1eff8;
+  --dba-surface-head: #fafafc;
+  --dba-surface-hover: #fbfaff;
+  --dba-surface-selected: #f5f3ff;
+  --dba-surface-muted: #f4f4f6;
+  --dba-border-card: #e6e3f0;
+  --dba-border-control: #d6d1e3;
+  --dba-border-frame: #ddd9e8;
+  --dba-border-row: #f1eff8;
+  --dba-focus-halo: #efeafc;
+
+  --dba-state-active-bg: #e4f5ee;
+  --dba-state-active-border: #a7dcc6;
+  --dba-state-active-fg: #0a5c40;
+  --dba-state-active-dot: #0f8a5f;
+  --dba-state-trial-bg: #e8f0fd;
+  --dba-state-trial-border: #b5cdf5;
+  --dba-state-trial-fg: #1f4e9c;
+  --dba-state-trial-dot: #2f6fd6;
+  --dba-state-warning-bg: #fdf3e4;
+  --dba-state-warning-border: #f5d9a8;
+  --dba-state-warning-fg: #7a4708;
+  --dba-state-warning-dot: #b4690e;
+  --dba-state-suspended-bg: #fceae7;
+  --dba-state-suspended-border: #f1b5aa;
+  --dba-state-suspended-fg: #8a2415;
+  --dba-state-suspended-dot: #c4341f;
+  --dba-state-closed-bg: #f4f4f6;
+  --dba-state-closed-border: #d6d1e3;
+  --dba-state-closed-fg: #4e4e5a;
+  --dba-state-closed-dot: #8a8a99;
+
+  --dba-role-superadmin-bg: #16121f;
+  --dba-role-superadmin-border: #16121f;
+  --dba-role-superadmin-fg: #ffffff;
+  --dba-role-support-bg: #e8f0fd;
+  --dba-role-support-border: #b5cdf5;
+  --dba-role-support-fg: #1f4e9c;
+  --dba-role-org-bg: #ffffff;
+  --dba-role-org-border: #d6d1e3;
+  --dba-role-org-fg: #3f3a52;
+  --dba-role-readonly-bg: #f4f4f6;
+  --dba-role-readonly-border: #e6e3f0;
+  --dba-role-readonly-fg: #676776;
+
+  --dba-quota-ok: #7954fd;
+  --dba-quota-warn: #b4690e;
+  --dba-quota-over: #c4341f;
+
+  --dba-radius-key: 4px;
+  --dba-radius-env: 6px;
+  --dba-radius-avatar: 7px;
+  --dba-radius-control: 8px;
+  --dba-radius-panel: 14px;
+  --dba-radius-pill: 999px;
+
+  --dba-height-control: 40px;
+  --dba-height-field-access: 44px;
+  --dba-height-cta-access: 46px;
+  --dba-height-row: 48px;
+  --dba-height-row-dense: 40px;
+  --dba-height-bar: 60px;
+  --dba-height-table-head: 38px;
+  --dba-height-pill: 32px;
+  --dba-height-env: 30px;
+  --dba-height-search: 36px;
+
+  --dba-grid-width: 1168px;
+  --dba-grid-margin: 32px;
+  --dba-grid-gap: 12px;
+
+  --dba-text-kpi: 34px;
+  --dba-text-page: 28px;
+  --dba-text-access: 30px;
+  --dba-text-section: 17px;
+  --dba-text-panel: 15px;
+  --dba-text-body: 13.5px;
+  --dba-text-field: 14px;
+  --dba-text-cell: 13px;
+  --dba-text-label: 12.5px;
+  --dba-text-id: 12px;
+  --dba-text-small: 11.5px;
+  --dba-text-meta: 11px;
+  --dba-text-micro: 10.5px;
+  --dba-text-eyebrow: 10px;
+  --dba-text-th: 9.5px;
+
+  --dba-tracking-display: -0.03em;
+  --dba-tracking-page: -0.025em;
+  --dba-tracking-eyebrow: 0.16em;
+  --dba-tracking-th: 0.14em;
+  --dba-tracking-tag: 0.1em;
+
+  --db-font: var(--dba-font-ui);
+  --db-font-mono: var(--dba-font-mono);
+
+  --db-primary: var(--dba-violet-500);
+  --db-primary-ink: var(--dba-violet-600);
+  --db-primary-deep: var(--dba-violet-700);
+  --db-primary-soft: var(--dba-violet-400);
+  --db-primary-faint: var(--dba-violet-300);
+  --db-primary-pale: var(--dba-violet-200);
+  --db-primary-wash: var(--dba-violet-100);
+  --db-primary-pale-soft: var(--dba-violet-100);
+
+  --db-ink-strong: var(--dba-ink);
+  --db-ink: var(--dba-text);
+  --db-ink-deep: var(--dba-ink);
+  --db-ink-muted: var(--dba-text-soft);
+  --db-ink-soft: var(--dba-text-muted);
+  --db-ink-faint: var(--dba-text-muted);
+  --db-ink-note: var(--dba-text-soft);
+  --db-ink-note-soft: var(--dba-text-muted);
+  --db-ink-label: var(--dba-text-muted);
+  --db-ink-ghost: var(--dba-text-faint);
+  --db-ink-dim: var(--dba-text-faint);
+  --db-ink-eyebrow: var(--dba-text-muted);
+  --db-ink-org: var(--dba-ink);
+  --db-ink-btn: var(--dba-text);
+
+  --db-canvas: var(--dba-canvas);
+  --db-surface: var(--dba-surface);
+  --db-surface-sunken: var(--dba-canvas);
+  --db-surface-field: var(--dba-surface);
+  --db-surface-wash: var(--dba-surface-chip);
+  --db-surface-tint: var(--dba-surface-selected);
+  --db-surface-chip: var(--dba-surface-chip);
+  --db-surface-head: var(--dba-surface-head);
+  --db-surface-off: var(--dba-surface-muted);
+  --db-surface-tile: var(--dba-surface-chip);
+
+  --db-border: var(--dba-border-card);
+  --db-border-soft: var(--dba-border-row);
+  --db-border-band: var(--dba-border-card);
+  --db-border-card: var(--dba-border-card);
+  --db-border-subtle: var(--dba-border-card);
+  --db-border-field: var(--dba-border-control);
+  --db-border-row: var(--dba-border-row);
+  --db-border-chip: var(--dba-border-card);
+  --db-border-nav: var(--dba-border-card);
+
+  --db-success: var(--dba-state-active-dot);
+  --db-success-ink: var(--dba-state-active-fg);
+  --db-success-wash: var(--dba-state-active-bg);
+  --db-success-border: var(--dba-state-active-border);
+  --db-danger: var(--dba-state-suspended-dot);
+  --db-danger-ink: var(--dba-state-suspended-fg);
+  --db-danger-wash: var(--dba-state-suspended-bg);
+  --db-danger-border: var(--dba-state-suspended-border);
+  --db-warn: var(--dba-state-warning-dot);
+  --db-warn-ink: var(--dba-state-warning-fg);
+  --db-warn-wash: var(--dba-state-warning-bg);
+  --db-warn-edge: var(--dba-state-warning-border);
+
+  --db-radius-control: var(--dba-radius-control);
+  --db-radius-item: var(--dba-radius-control);
+  --db-radius-field: var(--dba-radius-control);
+  --db-radius-cta: var(--dba-radius-control);
+  --db-radius-card: var(--dba-radius-panel);
+  --db-radius-pill: var(--dba-radius-pill);
+
+  --db-shadow-card: none;
+  --db-shadow-raised: none;
+  --db-ring-focus: 0 0 0 3px var(--dba-focus-halo);
+
+  --db-text-display: var(--dba-text-kpi);
+  --db-text-nav: var(--dba-text-body);
+  --db-text-bar: var(--dba-text-cell);
+  --db-text-title: var(--dba-text-body);
+  --db-text-body: var(--dba-text-body);
+  --db-text-counter: var(--dba-text-label);
+  --db-text-small: var(--dba-text-small);
+  --db-text-eyebrow: var(--dba-text-eyebrow);
+  --db-text-micro: var(--dba-text-micro);
+  --db-text-nano: var(--dba-text-eyebrow);
+  --db-text-field: var(--dba-text-field);
+
+  --db-tracking-display: var(--dba-tracking-display);
+  --db-tracking-eyebrow: var(--dba-tracking-eyebrow);
+
+  --db-control-height: var(--dba-height-control);
+  --db-page-padding: var(--dba-grid-margin);
+}

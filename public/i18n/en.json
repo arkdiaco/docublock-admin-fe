@@ -79,5 +79,58 @@
   "panel": {
     "title": "Panel",
     "lead": "Nothing to show yet: each module arrives with its block."
+  },
+  "sys": {
+    "title": "Design system",
+    "lead": "Admin console · F0. Brand, color, typography and, as they land, the components.",
+    "ramp": "Docublock purple · primary",
+    "states": "Organization state",
+    "statesNote": "The dot changes shape with the state — circle, ring, square, dash — because support exports come out in black and white.",
+    "roles": "Role scope",
+    "forbidden": "Forbidden: purple on an organization state or a role. Green on «Active» when the invoice is overdue.",
+    "type": "Typography",
+    "typeNote": "Poppins opens the page and the big figures. Instrument Sans does the interface. JetBrains Mono is mandatory on identifiers, quotas, versions and any cell support may paste into a ticket.",
+    "sample": {
+      "page": "Organizations",
+      "kpi": "312",
+      "panel": "Contracted modules",
+      "body": "The organization exceeds 90 % of the contracted storage; the notice was sent to the administrator on September 28.",
+      "menu": "Organizations",
+      "id": "ORG-0412 · 48 / 60 users · 184.2 GB · v4.12.0",
+      "eyebrow": "Billing"
+    }
+  },
+  "org": {
+    "state": {
+      "active": "Active",
+      "trial": "Trial",
+      "warning": "With notice",
+      "suspended": "Suspended",
+      "closed": "Closed"
+    },
+    "stateDesc": {
+      "active": "Contract in force, invoice up to date, at least one active administrator.",
+      "trial": "Fourteen days without a card. Ring: not a customer yet.",
+      "warning": "Quota at 90 % or invoice overdue less than 15 days.",
+      "suspended": "Access cut; data kept for 90 days.",
+      "closed": "Closed on request. Read-only for support and legal."
+    }
+  },
+  "role": {
+    "superadmin": "SUPERADMIN",
+    "support": "SUPPORT",
+    "orgAdmin": "ORG ADMIN",
+    "readonly": "READ ONLY",
+    "desc": {
+      "superadmin": "Everything, in every tenant. Leaves a trace on every action.",
+      "support": "Reads any organization and acts on it with a record.",
+      "orgAdmin": "Manages users and modules of their own organization. Sees no others.",
+      "readonly": "Dashboards and reports. No primary buttons."
+    }
+  },
+  "env": {
+    "production": "PRODUCTION",
+    "canary": "CANARY",
+    "dev": "DEVELOPMENT"
   }
 }

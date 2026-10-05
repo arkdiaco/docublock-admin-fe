@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { TranslatePipe } from '@ngx-translate/core';
 import { catchError, finalize, map, of } from 'rxjs';
 import { AuthStore } from '../../../core/auth/auth.store';
-import { API_BASE_URL, APP_ENV } from '../../../core/config/api.tokens';
+import { API_BASE_URL, APP_ENV, envLabelKey } from '../../../core/config/api.tokens';
 import { SILENT_ERRORS, SKIP_AUTH } from '../../../core/http/http.interceptors';
 import { LoaderComponent } from '../../../shared/ui/loader.component';
 
@@ -23,7 +23,7 @@ type Check = 'checking' | 'ok' | 'fail';
 
       <dl class="status__grid">
         <dt>{{ 'status.env' | translate }}</dt>
-        <dd class="db-mono">{{ env.name }}</dd>
+        <dd class="db-mono">{{ envLabel | translate }}</dd>
 
         <dt>{{ 'status.api' | translate }}</dt>
         <dd>
@@ -154,6 +154,7 @@ export class StatusComponent {
   private readonly http = inject(HttpClient);
   protected readonly auth = inject(AuthStore);
   protected readonly env = inject(APP_ENV);
+  protected readonly envLabel = envLabelKey(this.env.name);
   protected readonly apiBase = inject(API_BASE_URL);
   protected readonly check = signal<Check>('checking');
   protected readonly detail = signal('');

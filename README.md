@@ -91,7 +91,8 @@ npm run verify     # lint + unidades + arquitectura + tests + build
 
 La URL del core en desarrollo está en `src/environments/environment.ts`; en Cloud Run la
 inyecta el contenedor al arrancar (`env.js` vía `CORE_API_URL`), por eso la misma imagen sirve
-para canary y producción. Pipeline en `cloudbuild.yaml` (`docublock-admin-fe-canary` /
+para canary y producción. El rótulo del entorno que ve el operador sale de `APP_ENVIRONMENT`
+(`canary` | `production`); si la variable no existe la consola se rotula como producción. Pipeline en `cloudbuild.yaml` (`docublock-admin-fe-canary` /
 `docublock-admin-fe`).
 
 ### Trampa conocida del lock

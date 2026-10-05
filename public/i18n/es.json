@@ -79,5 +79,58 @@
   "panel": {
     "title": "Panel",
     "lead": "Nada que mostrar todavía: cada módulo entra con su bloque."
+  },
+  "sys": {
+    "title": "Sistema de diseño",
+    "lead": "Consola de administración · F0. Marca, color, tipografía y, a medida que entren, los componentes.",
+    "ramp": "Morado docublock · primario",
+    "states": "Estado de organización",
+    "statesNote": "El punto cambia de forma con el estado — círculo, anillo, cuadrado, guion — porque los exportes a soporte salen en blanco y negro.",
+    "roles": "Alcance de rol",
+    "forbidden": "Prohibido: morado en un estado de organización o en un rol. Verde en «Activa» si la factura está vencida.",
+    "type": "Tipografía",
+    "typeNote": "Poppins abre la página y las cifras grandes. Instrument Sans hace la interfaz. JetBrains Mono es obligatoria en identificadores, cuotas, versiones y en cualquier celda que soporte copie en un ticket.",
+    "sample": {
+      "page": "Organizaciones",
+      "kpi": "312",
+      "panel": "Módulos contratados",
+      "body": "La organización supera el 90 % de almacenamiento contratado; el aviso se envió al administrador el 28 de septiembre.",
+      "menu": "Organizaciones",
+      "id": "ORG-0412 · 48 / 60 usuarios · 184,2 GB · v4.12.0",
+      "eyebrow": "Facturación"
+    }
+  },
+  "org": {
+    "state": {
+      "active": "Activa",
+      "trial": "Prueba",
+      "warning": "Con aviso",
+      "suspended": "Suspendida",
+      "closed": "De baja"
+    },
+    "stateDesc": {
+      "active": "Contrato vigente, factura al día, al menos un administrador activo.",
+      "trial": "Catorce días sin tarjeta. Anillo: aún no es un cliente.",
+      "warning": "Cuota al 90 % o factura vencida menos de 15 días.",
+      "suspended": "Acceso cortado; los datos se conservan 90 días.",
+      "closed": "Cerrada a petición. Solo lectura para soporte y legal."
+    }
+  },
+  "role": {
+    "superadmin": "SUPERADMIN",
+    "support": "SOPORTE",
+    "orgAdmin": "ADMIN ORG",
+    "readonly": "LECTURA",
+    "desc": {
+      "superadmin": "Todo, en todos los tenants. Deja rastro en cada acción.",
+      "support": "Lee cualquier organización y actúa sobre ella con registro.",
+      "orgAdmin": "Gestiona usuarios y módulos de su propia organización. No ve a las demás.",
+      "readonly": "Paneles e informes. Nada de botones primarios."
+    }
+  },
+  "env": {
+    "production": "PRODUCCIÓN",
+    "canary": "CANARY",
+    "dev": "DESARROLLO"
   }
 }

@@ -10,7 +10,8 @@
 #   Trigger producción  (rama main):    _SERVICE=docublock-admin-fe         _ENV=production
 #
 # En cada servicio de Cloud Run debe existir:
-#   CORE_API_URL   URL pública del core de ese ambiente, CON /api/core
+#   CORE_API_URL      URL pública del core de ese ambiente, CON /api/core
+#   APP_ENVIRONMENT   canary | production (rótulo del entorno en la consola; vacío = production)
 # ─────────────────────────────────────────────────────────────────────────────
 
 substitutions:
