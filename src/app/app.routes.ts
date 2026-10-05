@@ -1,11 +1,17 @@
 import type { Routes } from '@angular/router';
-import { authGuard, platformMatchGuard } from './core/auth/auth.guards';
+import { authGuard, guestGuard, platformMatchGuard } from './core/auth/auth.guards';
 import { ConsoleShellComponent } from './core/layout/console-shell.component';
 import { ROUTE_ACCESS } from './core/layout/console-nav';
 
 const placeholder = () => import('./features/placeholder/pages/placeholder.component').then((m) => m.PlaceholderComponent);
 
 export const routes: Routes = [
+  {
+    path: 'acceso',
+    canMatch: [guestGuard],
+    loadComponent: () => import('./features/access/pages/access.component').then((m) => m.AccessComponent),
+    data: { titleKey: 'access.title' },
+  },
   {
     path: '',
     component: ConsoleShellComponent,
@@ -72,5 +78,5 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'panel' },
     ],
   },
-  { path: '**', redirectTo: 'sistema' },
+  { path: '**', redirectTo: 'panel' },
 ];

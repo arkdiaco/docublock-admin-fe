@@ -54,7 +54,8 @@ export interface Me {
 
 export interface RequestOtpResult {
   sent: boolean;
-  channels?: { email?: string; phone?: string };
+  channel?: string;
+  reused?: boolean;
   expiresAt?: string;
   resendAfterSeconds?: number;
 }

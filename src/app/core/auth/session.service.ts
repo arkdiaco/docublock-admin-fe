@@ -2,7 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AuthApi } from './auth.api';
-import type { Me } from './auth.models';
+import type { Me, RequestOtpResult } from './auth.models';
 import { AuthStore } from './auth.store';
 
 export class NotPlatformStaffError extends Error {
@@ -24,12 +24,12 @@ export class SessionService {
 
   readonly leaving = this._leaving.asReadonly();
 
-  requestCode(identification: string, resend = false): Promise<void> {
-    return firstValueFrom(this.api.requestOtp({ identification, resend })).then(() => undefined);
+  requestCode(email: string, resend = false): Promise<RequestOtpResult> {
+    return firstValueFrom(this.api.requestOtp({ email, resend }));
   }
 
-  async loginWithCode(identification: string, code: string): Promise<void> {
-    const session = await firstValueFrom(this.api.login({ identification, code }));
+  async loginWithCode(email: string, code: string): Promise<void> {
+    const session = await firstValueFrom(this.api.login({ email, code }));
     this.store.setTokens({ accessToken: session.accessToken, refreshToken: session.refreshToken });
     const me = await this.loadProfile();
     if (!isPlatformStaff(me)) {
@@ -86,5 +86,4 @@ export class SessionService {
   }
 }
 
-export const isPlatformStaff = (me: Me): boolean =>
-  me.platformStaff === true || me.memberships.some((m) => m.roleCode === 0 && !m.suspended);
+export const isPlatformStaff = (me: Me): boolean => me.platformStaff === true;

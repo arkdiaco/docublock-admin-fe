@@ -50,7 +50,7 @@ const extractMessage = (error: HttpErrorResponse): string | null => {
   return Array.isArray(body.message) ? body.message.join(' · ') : body.message;
 };
 
-const NO_REFRESH = ['/auth/refresh', '/auth/logout'];
+const NO_REFRESH = ['/platform/auth/refresh', '/platform/auth/logout'];
 const LOGIN_ROUTE = '/acceso';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
@@ -77,7 +77,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           toLogin();
           return throwError(() => error);
         }
-        refreshInFlight ??= http.post<SessionResponse>('/auth/refresh', { refreshToken }).pipe(
+        refreshInFlight ??= http.post<SessionResponse>('/platform/auth/refresh', { refreshToken }).pipe(
           tap((session) =>
             store.setTokens({
               accessToken: session.accessToken,

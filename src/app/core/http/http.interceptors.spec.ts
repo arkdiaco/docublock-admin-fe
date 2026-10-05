@@ -78,7 +78,7 @@ describe('interceptores http', () => {
     store.setTokens({ accessToken: 'viejo', refreshToken: 'refresco' });
     http.get('/protegido').subscribe();
     httpMock.expectOne(`${BASE}/protegido`).flush({}, { status: 401, statusText: 'Unauthorized' });
-    const refresh = httpMock.expectOne(`${BASE}/auth/refresh`);
+    const refresh = httpMock.expectOne(`${BASE}/platform/auth/refresh`);
     expect(refresh.request.body).toEqual({ refreshToken: 'refresco' });
     refresh.flush({ accessToken: 'nuevo', refreshToken: 'refresco2' });
     const reintento = httpMock.expectOne(`${BASE}/protegido`);
@@ -93,7 +93,7 @@ describe('interceptores http', () => {
     const ir = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     http.get('/protegido').subscribe({ error: () => undefined });
     httpMock.expectOne(`${BASE}/protegido`).flush({}, { status: 401, statusText: 'Unauthorized' });
-    httpMock.expectOne(`${BASE}/auth/refresh`).flush({}, { status: 401, statusText: 'Unauthorized' });
+    httpMock.expectOne(`${BASE}/platform/auth/refresh`).flush({}, { status: 401, statusText: 'Unauthorized' });
     expect(store.isAuthenticated()).toBe(false);
     expect(ir).toHaveBeenCalledWith(['/acceso']);
   });

@@ -4,10 +4,6 @@ import type { Observable } from 'rxjs';
 import { SILENT_ERRORS, SKIP_AUTH } from '../http/http.interceptors';
 import type { IssuedSession, Me, RequestOtpResult } from './auth.models';
 
-const publicContext = (): { context: HttpContext } => ({
-  context: new HttpContext().set(SKIP_AUTH, true),
-});
-
 const silentPublicContext = (): { context: HttpContext } => ({
   context: new HttpContext().set(SKIP_AUTH, true).set(SILENT_ERRORS, true),
 });
@@ -16,19 +12,19 @@ const silentPublicContext = (): { context: HttpContext } => ({
 export class AuthApi {
   private readonly http = inject(HttpClient);
 
-  requestOtp(input: { identification: string; resend?: boolean }): Observable<RequestOtpResult> {
-    return this.http.post<RequestOtpResult>('/auth/request-otp', input, silentPublicContext());
+  requestOtp(input: { email: string; resend?: boolean }): Observable<RequestOtpResult> {
+    return this.http.post<RequestOtpResult>('/platform/auth/request-otp', input, silentPublicContext());
   }
 
-  login(input: { identification: string; code: string }): Observable<IssuedSession> {
-    return this.http.post<IssuedSession>('/auth/login', input, publicContext());
+  login(input: { email: string; code: string }): Observable<IssuedSession> {
+    return this.http.post<IssuedSession>('/platform/auth/login', input, silentPublicContext());
   }
 
   me(): Observable<Me> {
-    return this.http.get<Me>('/auth/me');
+    return this.http.get<Me>('/platform/auth/me');
   }
 
   logout(): Observable<{ loggedOut: boolean }> {
-    return this.http.post<{ loggedOut: boolean }>('/auth/logout', {});
+    return this.http.post<{ loggedOut: boolean }>('/platform/auth/logout', {});
   }
 }

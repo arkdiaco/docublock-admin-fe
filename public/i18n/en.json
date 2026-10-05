@@ -67,6 +67,33 @@
     "codeSent": "We sent the code to your registered channels",
     "sessionExpired": "Your session expired. Sign in again."
   },
+  "access": {
+    "title": "Access",
+    "step1": "Step 1 of 2",
+    "step2": "Step 2 of 2",
+    "identify": "Identify yourself",
+    "check": "Check your email",
+    "emailLabel": "Work email",
+    "emailPlaceholder": "you@docublock.co",
+    "codeLabel": "Access code",
+    "sentTo": "We sent a 6-digit code to {{channel}}.",
+    "sendCode": "Send code",
+    "enter": "Enter",
+    "changeEmail": "Change email",
+    "resend": "Resend code",
+    "resendIn": "Resend in {{seconds}} s",
+    "signed": {
+      "title": "Every session is signed.",
+      "lead": "Your IP, device and the code used are kept in the audit log. Nothing you do here is anonymous."
+    },
+    "err": {
+      "notFound": "We couldn't find platform staff with that email.",
+      "rateLimited": "Wait a moment before requesting another code.",
+      "invalidCode": "The code is invalid or has expired.",
+      "network": "Could not reach the server.",
+      "generic": "We couldn't continue. Try again."
+    }
+  },
   "shell": {
     "brand": "Docublock",
     "product": "Admin",
