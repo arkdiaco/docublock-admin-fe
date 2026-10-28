@@ -1,3 +1,5 @@
+import { canReadGroup, platformManage, platformRead, type PlatformGroup } from '../../shared/domain/platform-permissions';
+
 export type ConsoleArea = 'overview' | 'organizations' | 'users' | 'plans' | 'billing' | 'security' | 'audit' | 'system';
 
 export interface ConsoleEntry {
@@ -7,16 +9,23 @@ export interface ConsoleEntry {
   platform: readonly string[];
 }
 
-export const ROUTE_ACCESS: Record<ConsoleArea, readonly string[]> = {
-  overview: [],
-  organizations: ['platform:organizations'],
-  users: ['platform:users'],
-  plans: ['platform:plans'],
-  billing: ['platform:billing'],
-  security: ['platform:security'],
-  audit: ['platform:audit'],
-  system: [],
+export const AREA_GROUP: Record<ConsoleArea, PlatformGroup | null> = {
+  overview: null,
+  organizations: 'clients',
+  users: 'clients',
+  plans: 'commercial',
+  billing: 'commercial',
+  security: 'platform',
+  audit: 'platform',
+  system: null,
 };
+
+const accessOf = (group: PlatformGroup | null): readonly string[] =>
+  group ? [platformRead(group), platformManage(group)] : [];
+
+export const ROUTE_ACCESS = Object.fromEntries(
+  Object.entries(AREA_GROUP).map(([area, group]) => [area, accessOf(group)]),
+) as Record<ConsoleArea, readonly string[]>;
 
 export const CONSOLE_ENTRIES: readonly ConsoleEntry[] = [
   { key: 'overview', path: 'panel', labelKey: 'nav.overview', platform: ROUTE_ACCESS.overview },
@@ -30,6 +39,6 @@ export const CONSOLE_ENTRIES: readonly ConsoleEntry[] = [
 ];
 
 export const canSeeArea = (owned: readonly string[], area: ConsoleArea): boolean => {
-  const required = ROUTE_ACCESS[area];
-  return required.length === 0 || required.some((code) => owned.includes(code));
+  const group = AREA_GROUP[area];
+  return group === null || canReadGroup(owned, group);
 };

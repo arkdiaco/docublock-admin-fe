@@ -21,7 +21,7 @@ class CatalogoEspanol implements TranslateLoader {
 @Component({ template: '<p class="pagina">hola</p>' })
 class Pagina {}
 
-const TODOS = ['platform:organizations', 'platform:users', 'platform:plans', 'platform:billing', 'platform:security', 'platform:audit'];
+const TODOS = ['platform:clients', 'platform:commercial', 'platform:platform'];
 
 describe('ConsoleShellComponent', () => {
   beforeEach(async () => {
@@ -91,10 +91,10 @@ describe('ConsoleShellComponent', () => {
   });
 
   it('un permiso parcial recorta el menú a lo que se puede abrir', async () => {
-    entrar(['platform:billing']);
+    entrar(['platform:commercial']);
     const { host } = await montar();
     const etiquetas = [...host.querySelectorAll('.bar__link')].map((a) => a.textContent?.trim());
-    expect(etiquetas).toEqual(['Visión general', 'Facturación', 'Sistema']);
+    expect(etiquetas).toEqual(['Visión general', 'Planes', 'Facturación', 'Sistema']);
   });
 
   it('los conteos solo salen donde hay cola', async () => {

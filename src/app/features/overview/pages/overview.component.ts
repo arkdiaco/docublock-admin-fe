@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, LOCALE_ID, computed, inject } from 
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuthStore } from '../../../core/auth/auth.store';
+import { canSeeArea } from '../../../core/layout/console-nav';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
 import { KpiCardComponent } from '../../../shared/ui/kpi-card.component';
 
@@ -43,7 +44,9 @@ export const greetingKeyOf = (hour: number): string => {
         <section class="panel">
           <header class="panel__head">
             <span class="dba-panel">{{ 'overview.activity' | translate }}</span>
-            <a class="panel__link" routerLink="/auditoria">{{ 'nav.audit' | translate }}</a>
+            @if (canSeeAudit()) {
+              <a class="panel__link" routerLink="/auditoria">{{ 'nav.audit' | translate }}</a>
+            }
           </header>
           <dba-empty-state titleKey="overview.activityEmpty" leadKey="overview.activityLead" />
         </section>
@@ -125,5 +128,6 @@ export class OverviewComponent {
   protected readonly kpis = KPI_KEYS;
   protected readonly today = formatDate(new Date(), 'fullDate', this.locale);
   protected readonly greetingKey = greetingKeyOf(new Date().getHours());
+  protected readonly canSeeAudit = computed(() => canSeeArea(this.auth.platformPermissions(), 'audit'));
   protected readonly firstName = computed(() => (this.auth.user()?.names ?? '').trim().split(/\s+/)[0] ?? '');
 }

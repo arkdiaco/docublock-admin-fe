@@ -1,4 +1,5 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
+import { canManageGroup, canReadGroup, type PlatformGroup } from '../../shared/domain/platform-permissions';
 import { jwtDecode } from 'jwt-decode';
 import type { AuthUser, JwtPayload, StoredSession } from './auth.models';
 import { SessionStorage } from './session.storage';
@@ -64,6 +65,14 @@ export class AuthStore {
   hasAnyPlatformPermission(permissions: string[]): boolean {
     const owned = this._platformPermissions();
     return permissions.some((p) => owned.includes(p));
+  }
+
+  canRead(group: PlatformGroup): boolean {
+    return canReadGroup(this._platformPermissions(), group);
+  }
+
+  canManage(group: PlatformGroup): boolean {
+    return canManageGroup(this._platformPermissions(), group);
   }
 
   setTokens(session: StoredSession): void {

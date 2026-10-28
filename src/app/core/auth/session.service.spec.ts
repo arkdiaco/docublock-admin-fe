@@ -12,7 +12,7 @@ const yo = (platformStaff: boolean) => ({
   permissions: [],
   memberships: [],
   platformStaff,
-  platformPermissions: platformStaff ? ['platform:organizations', 'platform:audit'] : [],
+  platformPermissions: platformStaff ? ['platform:clients', 'platform:platform'] : [],
 });
 
 const respira = () => new Promise<void>((resolve) => setTimeout(resolve));
@@ -54,7 +54,7 @@ describe('SessionService', () => {
     await entrada;
     expect(store.accessToken()).toBe('acceso');
     expect(store.platformStaff()).toBe(true);
-    expect(store.platformPermissions()).toEqual(['platform:organizations', 'platform:audit']);
+    expect(store.platformPermissions()).toEqual(['platform:clients', 'platform:platform']);
     expect(store.displayName()).toBe('Ada Lovelace');
   });
 

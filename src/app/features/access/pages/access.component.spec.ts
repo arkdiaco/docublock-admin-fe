@@ -112,7 +112,7 @@ describe('AccessComponent', () => {
       permissions: [],
       memberships: [],
       platformStaff: true,
-      platformPermissions: ['platform:audit'],
+      platformPermissions: ['platform:platform'],
     });
     await fixture.whenStable();
     expect(ir).toHaveBeenCalledWith('/organizaciones');

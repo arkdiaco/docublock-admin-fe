@@ -58,6 +58,18 @@ describe('AuthStore', () => {
     expect(store.hasAnyPlatformPermission(['platform:orgs:manage'])).toBe(false);
   });
 
+  it('por grupo: support lee Comercial pero solo escribe en Clientes y Operación', () => {
+    store.setProfile({
+      user: usuario,
+      platformStaff: true,
+      platformPermissions: ['platform:clients', 'platform:clients:manage', 'platform:commercial'],
+    });
+    expect(store.canRead('commercial')).toBe(true);
+    expect(store.canManage('commercial')).toBe(false);
+    expect(store.canManage('clients')).toBe(true);
+    expect(store.canRead('platform')).toBe(false);
+  });
+
   it('calcula iniciales y nombre a mostrar', () => {
     store.setProfile({ user: usuario, platformStaff: true, platformPermissions: [] });
     expect(store.initials()).toBe('AL');

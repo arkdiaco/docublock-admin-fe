@@ -31,7 +31,7 @@ describe('OverviewComponent', () => {
     TestBed.inject(AuthStore).setProfile({
       user: { id: 'u1', names: 'Marta Lucía', surNames: 'Vidal', email: 'm@d.co', identification: '1', imageProfile: null },
       platformStaff: true,
-      platformPermissions: [],
+      platformPermissions: ['platform:platform'],
     });
     const fixture = TestBed.createComponent(OverviewComponent);
     fixture.detectChanges();
@@ -43,5 +43,16 @@ describe('OverviewComponent', () => {
     expect(host.querySelector('.panel__link')?.getAttribute('href')).toBe('/auditoria');
     expect(host.querySelector('.ov__date')?.textContent?.trim().length).toBeGreaterThan(8);
     expect(host.textContent).not.toMatch(/\b(overview|nav)\.[a-zA-Z]/);
+  });
+
+  it('sin Plataforma no ofrece el enlace a la auditoría', () => {
+    TestBed.inject(AuthStore).setProfile({
+      user: { id: 'u1', names: 'Ana', surNames: 'Ruiz', email: 'a@d.co', identification: '1', imageProfile: null },
+      platformStaff: true,
+      platformPermissions: ['platform:clients', 'platform:operations', 'platform:commercial', 'platform:catalogs'],
+    });
+    const fixture = TestBed.createComponent(OverviewComponent);
+    fixture.detectChanges();
+    expect((fixture.nativeElement as HTMLElement).querySelector('.panel__link')).toBeNull();
   });
 });
