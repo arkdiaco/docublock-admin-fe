@@ -72,7 +72,7 @@ const initialsOf = (name: string): string =>
     } @else if (detail(); as org) {
       <div class="od">
         <dba-record-header
-          [crumbs]="['nav.crumbRoot', 'nav.organizations', org.businessName]"
+          [crumbs]="['nav.crumbRoot', 'nav.group.clients', 'nav.organizations', org.businessName]"
           [initials]="initials()"
           [title]="org.businessName"
           [state]="stateFamily()"

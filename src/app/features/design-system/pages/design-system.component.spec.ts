@@ -1,3 +1,4 @@
+import { provideRouter } from '@angular/router';
 import { TestBed } from '@angular/core/testing';
 import { provideTranslateService, TranslateLoader, TranslateService, type TranslationObject } from '@ngx-translate/core';
 import { of, type Observable } from 'rxjs';
@@ -14,7 +15,7 @@ class CatalogoEspanol implements TranslateLoader {
 describe('DesignSystemComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      providers: [provideTranslateService({ loader: { provide: TranslateLoader, useClass: CatalogoEspanol }, fallbackLang: 'es' })],
+      providers: [provideRouter([]), provideTranslateService({ loader: { provide: TranslateLoader, useClass: CatalogoEspanol }, fallbackLang: 'es' })],
     }).compileComponents();
     TestBed.inject(TranslateService).use('es');
   });
@@ -63,6 +64,9 @@ describe('DesignSystemComponent', () => {
     expect(host.querySelectorAll('dba-audit-event').length).toBe(4);
     expect(host.querySelectorAll('.pill').length).toBe(5);
     expect(host.querySelectorAll('dba-env-pill').length).toBe(3);
+    expect(host.querySelectorAll('dba-nav-group').length).toBe(3);
+    expect(host.querySelector('.nav-demo .trigger--on .count')?.textContent?.trim()).toBe('9');
+    expect(host.querySelectorAll('.nav-demo__drawer .link--drawer').length).toBe(4);
 
     host.querySelectorAll<HTMLButtonElement>('[role="switch"]')[3].click();
     fixture.detectChanges();

@@ -12,6 +12,7 @@ import { ButtonComponent } from '../../../shared/ui/button.component';
 import { EnvPillComponent } from '../../../shared/ui/env-pill.component';
 import { FieldComponent } from '../../../shared/ui/field.component';
 import { FilterPillsComponent, type FilterPill } from '../../../shared/ui/filter-pills.component';
+import { NavGroupComponent, type NavGroupLink } from '../../../shared/ui/nav-group.component';
 import { IconComponent } from '../../../shared/ui/icon.component';
 import { KpiCardComponent } from '../../../shared/ui/kpi-card.component';
 import { ModuleToggleComponent } from '../../../shared/ui/module-toggle.component';
@@ -69,6 +70,18 @@ const MODULES: readonly ModuleSample[] = [
   { abbr: 'CI', name: 'Consentimiento informado', version: '1.2', users: 12, on: true },
   { abbr: 'BR', name: 'Bienes raíces', version: '1.0', users: 7, on: true },
   { abbr: 'IN', name: 'Integraciones v2', version: '2.0', users: 0, on: false },
+];
+
+const NAV_LINKS: readonly NavGroupLink[] = [
+  { key: 'organizations', labelKey: 'nav.organizations', path: '/clientes/organizaciones', count: 9 },
+  { key: 'users', labelKey: 'nav.users', path: '/clientes/usuarios' },
+  { key: 'signers', labelKey: 'nav.signers', path: '/clientes/firmantes' },
+  { key: 'legalEntities', labelKey: 'nav.legalEntities', path: '/clientes/juridicas' },
+];
+
+const NAV_LINKS_QUIET: readonly NavGroupLink[] = [
+  { key: 'plans', labelKey: 'nav.plans', path: '/comercial/planes' },
+  { key: 'billing', labelKey: 'nav.billing', path: '/comercial/facturacion' },
 ];
 
 const FILTERS: readonly FilterPill[] = [
@@ -133,6 +146,7 @@ const pctOf = (used: number, limit: number): string =>
 @Component({
   selector: 'dba-design-system',
   imports: [
+    NavGroupComponent,
     TranslatePipe,
     ButtonComponent,
     FieldComponent,
@@ -311,6 +325,18 @@ const pctOf = (used: number, limit: number): string =>
               }
             </div>
             <p class="dba-body">{{ 'sys.c.pillsNote' | translate }}</p>
+          </div>
+
+          <div class="card">
+            <h3 class="dba-eyebrow">{{ 'sys.c.navGroup' | translate }}</h3>
+            <div class="card__row nav-demo">
+              <dba-nav-group labelKey="nav.group.clients" [links]="navLinks" [active]="true" />
+              <dba-nav-group labelKey="nav.group.commercial" [links]="navLinksQuiet" />
+            </div>
+            <div class="nav-demo__drawer">
+              <dba-nav-group variant="drawer" labelKey="nav.group.clients" [links]="navLinks" [active]="true" />
+            </div>
+            <p class="dba-body">{{ 'sys.c.navGroupNote' | translate }}</p>
           </div>
         </div>
       </section>
@@ -539,6 +565,19 @@ const pctOf = (used: number, limit: number): string =>
       gap: 8px;
     }
 
+    .nav-demo {
+      height: 44px;
+      align-items: stretch;
+      border-bottom: 1px solid var(--dba-border-row);
+    }
+
+    .nav-demo__drawer {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      max-width: 288px;
+    }
+
     .card__row--wrap {
       flex-wrap: wrap;
       gap: 10px 14px;
@@ -726,6 +765,8 @@ export class DesignSystemComponent {
   protected readonly kpis = KPIS;
   protected readonly quotas = QUOTAS;
   protected readonly filters = FILTERS;
+  protected readonly navLinks = NAV_LINKS;
+  protected readonly navLinksQuiet = NAV_LINKS_QUIET;
   protected readonly orgColumns = ORG_COLUMNS;
   protected readonly recordCrumbs = ['nav.crumbRoot', 'nav.organizations', 'ORG-0412'];
 

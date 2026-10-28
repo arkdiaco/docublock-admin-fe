@@ -51,9 +51,32 @@
     "users": "Users",
     "plans": "Plans",
     "billing": "Billing",
-    "security": "Security",
     "audit": "Audit",
-    "system": "System"
+    "system": "System",
+    "group": {
+      "clients": "Clients",
+      "operations": "Operations",
+      "commercial": "Commercial",
+      "catalogs": "Catalogs",
+      "platform": "Platform"
+    },
+    "signers": "Signers",
+    "legalEntities": "Legal entities",
+    "documents": "Documents",
+    "support": "Support & SLA",
+    "integrations": "Integrations",
+    "tasks": "Tasks",
+    "subscriptions": "Subscriptions",
+    "marketplace": "Marketplace",
+    "promotions": "Promo codes",
+    "referrals": "Referrals",
+    "resellers": "Resellers",
+    "countries": "Countries & catalogs",
+    "policies": "Policies",
+    "communications": "Communications",
+    "staff": "Staff",
+    "settings": "Settings",
+    "health": "Health"
   },
   "auth": {
     "title": "Platform access",
@@ -188,7 +211,9 @@
       "filters": "Filters · pills with count",
       "fAll": "All",
       "pills": "Environment and inline state",
-      "pillsNote": "In tables the state has no background: text in its family and a shaped dot. The environment is always spelled out, in mono."
+      "pillsNote": "In tables the state has no background: text in its family and a shaped dot. The environment is always spelled out, in mono.",
+      "navGroup": "Grouped menu",
+      "navGroupNote": "Each menu group opens its submenu; on mobile it is listed under its heading. The group is marked when one of its sections is open and adds up its counts."
     },
     "pieces": "Table and record",
     "piecesNote": "The organizations table and the record header, with sample data. Mono header, 48 px rows, the selected row in soft purple with its identifier in purple 700; windowed pagination. «Impersonate» is not built: the record opens instead."

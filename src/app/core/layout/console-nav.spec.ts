@@ -1,43 +1,75 @@
-import { CONSOLE_ENTRIES, ROUTE_ACCESS, canSeeArea } from './console-nav';
+import { CONSOLE_GROUPS, LEGACY_REDIRECTS, canSeeSection, itemAccess, sectionPath, visibleGroups } from './console-nav';
 
-describe('entradas de la consola', () => {
-  it('son las ocho del diseño, en su orden, con rutas y llaves únicas', () => {
-    expect(CONSOLE_ENTRIES.map((e) => e.path)).toEqual([
-      'panel',
-      'organizaciones',
-      'usuarios',
-      'planes',
-      'facturacion',
-      'seguridad',
-      'auditoria',
-      'sistema',
+const SUPERADMIN = [
+  'platform:clients',
+  'platform:clients:manage',
+  'platform:operations',
+  'platform:operations:manage',
+  'platform:commercial',
+  'platform:commercial:manage',
+  'platform:catalogs',
+  'platform:catalogs:manage',
+  'platform:platform',
+  'platform:platform:manage',
+];
+const SUPPORT = [
+  'platform:clients',
+  'platform:clients:manage',
+  'platform:operations',
+  'platform:operations:manage',
+  'platform:commercial',
+  'platform:catalogs',
+  'platform:platform',
+];
+const READONLY = ['platform:clients', 'platform:operations', 'platform:commercial', 'platform:catalogs'];
+
+describe('menú de la consola', () => {
+  it('son los cinco grupos de la decisión 2, con sus secciones en orden', () => {
+    expect(CONSOLE_GROUPS.map((group) => [group.path, group.items.map((item) => item.path)])).toEqual([
+      ['clientes', ['organizaciones', 'usuarios', 'firmantes', 'juridicas']],
+      ['operacion', ['documentos', 'soporte', 'integraciones', 'tareas']],
+      ['comercial', ['planes', 'suscripciones', 'marketplace', 'promocionales', 'referidos', 'resellers', 'facturacion']],
+      ['catalogos', ['paises', 'politicas', 'comunicaciones']],
+      ['plataforma', ['personal', 'auditoria', 'configuracion', 'salud']],
     ]);
-    expect(new Set(CONSOLE_ENTRIES.map((e) => e.labelKey)).size).toBe(8);
+    const keys = CONSOLE_GROUPS.flatMap((group) => group.items.map((item) => item.labelKey));
+    expect(new Set(keys).size).toBe(keys.length);
   });
 
-  it('visión general y sistema son de cualquier personal; el resto exige su permiso de plataforma', () => {
-    expect(ROUTE_ACCESS.overview).toEqual([]);
-    expect(ROUTE_ACCESS.system).toEqual([]);
-    expect(canSeeArea([], 'overview')).toBe(true);
-    expect(canSeeArea([], 'organizations')).toBe(false);
-    expect(canSeeArea(['platform:clients'], 'organizations')).toBe(true);
-    expect(canSeeArea(['platform:commercial'], 'organizations')).toBe(false);
+  it('cada sección pide la lectura o el :manage de su grupo; Personal solo :manage', () => {
+    const [clients, , , , platform] = CONSOLE_GROUPS;
+    expect(itemAccess(clients, clients.items[0])).toEqual(['platform:clients', 'platform:clients:manage']);
+    expect(itemAccess(platform, platform.items[0])).toEqual(['platform:platform:manage']);
   });
 
-  it('cada área pide la lectura o el :manage de su grupo', () => {
-    expect(ROUTE_ACCESS.organizations).toEqual(['platform:clients', 'platform:clients:manage']);
-    expect(ROUTE_ACCESS.users).toEqual(ROUTE_ACCESS.organizations);
-    expect(ROUTE_ACCESS.plans).toEqual(['platform:commercial', 'platform:commercial:manage']);
-    expect(ROUTE_ACCESS.billing).toEqual(ROUTE_ACCESS.plans);
-    expect(ROUTE_ACCESS.security).toEqual(['platform:platform', 'platform:platform:manage']);
-    expect(ROUTE_ACCESS.audit).toEqual(ROUTE_ACCESS.security);
+  it('superadmin ve todo', () => {
+    expect(visibleGroups(SUPERADMIN).flatMap((group) => group.items).length).toBe(22);
   });
 
-  it('readonly, que no tiene Plataforma, no ve seguridad ni auditoría', () => {
-    const readonly = ['platform:clients', 'platform:operations', 'platform:commercial', 'platform:catalogs'];
-    expect(canSeeArea(readonly, 'organizations')).toBe(true);
-    expect(canSeeArea(readonly, 'billing')).toBe(true);
-    expect(canSeeArea(readonly, 'audit')).toBe(false);
-    expect(canSeeArea(readonly, 'security')).toBe(false);
+  it('support ve los cinco grupos, pero Plataforma sin Personal', () => {
+    const groups = visibleGroups(SUPPORT);
+    expect(groups.map((group) => group.key)).toEqual(['clients', 'operations', 'commercial', 'catalogs', 'platform']);
+    expect(groups.at(-1)?.items.map((item) => item.key)).toEqual(['audit', 'settings', 'health']);
+  });
+
+  it('readonly ve cuatro grupos y nunca Plataforma', () => {
+    expect(visibleGroups(READONLY).map((group) => group.key)).toEqual(['clients', 'operations', 'commercial', 'catalogs']);
+    expect(canSeeSection(READONLY, 'audit')).toBe(false);
+    expect(canSeeSection(READONLY, 'organizations')).toBe(true);
+  });
+
+  it('sin permisos no queda ningún grupo', () => {
+    expect(visibleGroups([])).toEqual([]);
+  });
+
+  it('las rutas de antes caen en su sección nueva', () => {
+    expect(sectionPath('organizations')).toBe('/clientes/organizaciones');
+    expect(sectionPath('audit')).toBe('/plataforma/auditoria');
+    const destinos = new Map(LEGACY_REDIRECTS);
+    expect(destinos.get('organizaciones')).toBe(sectionPath('organizations'));
+    expect(destinos.get('organizaciones/:id')).toBe('/clientes/organizaciones/:id');
+    expect(destinos.get('auditoria')).toBe(sectionPath('audit'));
+    expect(destinos.get('facturacion')).toBe(sectionPath('billing'));
+    expect(destinos.get('sistema')).toBe(sectionPath('health'));
   });
 });

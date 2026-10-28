@@ -51,9 +51,32 @@
     "users": "Usuarios",
     "plans": "Planes",
     "billing": "Facturación",
-    "security": "Seguridad",
     "audit": "Auditoría",
-    "system": "Sistema"
+    "system": "Sistema",
+    "group": {
+      "clients": "Clientes",
+      "operations": "Operación",
+      "commercial": "Comercial",
+      "catalogs": "Catálogos",
+      "platform": "Plataforma"
+    },
+    "signers": "Firmantes",
+    "legalEntities": "Entidades jurídicas",
+    "documents": "Documentos",
+    "support": "Soporte y SLA",
+    "integrations": "Integraciones",
+    "tasks": "Tareas",
+    "subscriptions": "Suscripciones",
+    "marketplace": "Marketplace",
+    "promotions": "Promocionales",
+    "referrals": "Referidos",
+    "resellers": "Resellers",
+    "countries": "Países y catálogos",
+    "policies": "Políticas",
+    "communications": "Comunicaciones",
+    "staff": "Personal",
+    "settings": "Configuración",
+    "health": "Salud"
   },
   "auth": {
     "title": "Acceso a la plataforma",
@@ -188,7 +211,9 @@
       "filters": "Filtros · píldoras con conteo",
       "fAll": "Todas",
       "pills": "Entorno y estado en fila",
-      "pillsNote": "En tablas el estado va sin fondo: texto de su familia y punto con forma. El entorno siempre escrito completo, en mono."
+      "pillsNote": "En tablas el estado va sin fondo: texto de su familia y punto con forma. El entorno siempre escrito completo, en mono.",
+      "navGroup": "Menú por grupos",
+      "navGroupNote": "Cada grupo del menú abre su submenú; en el móvil se lista con su encabezado. El grupo se marca cuando una de sus secciones está abierta y suma sus conteos."
     },
     "pieces": "Tabla y ficha",
     "piecesNote": "La tabla de organizaciones y la cabecera de la ficha, con datos de muestra. Cabecera en mono, filas de 48 px, fila elegida en morado tenue con el identificador en morado 700; paginación con ventana. «Entrar como» no se construye: se abre la ficha."

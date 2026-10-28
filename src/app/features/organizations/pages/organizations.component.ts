@@ -9,6 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { Router } from '@angular/router';
+import { sectionPath } from '../../../core/layout/console-nav';
 import { TranslatePipe } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import { DensityService } from '../../../core/preferences/density.service';
@@ -437,7 +438,7 @@ export class OrganizationsComponent {
   }
 
   protected open(row: RowView): void {
-    void this.router.navigate(['/organizaciones', row.id]);
+    void this.router.navigate([sectionPath('organizations'), row.id]);
   }
 
   protected exportCsv(): void {

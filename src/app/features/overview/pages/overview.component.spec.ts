@@ -40,7 +40,7 @@ describe('OverviewComponent', () => {
     expect(host.querySelectorAll('dba-kpi-card').length).toBe(4);
     expect([...host.querySelectorAll('.kpi__value')].every((v) => v.textContent?.trim() === '—')).toBe(true);
     expect(host.querySelectorAll('dba-empty-state').length).toBe(2);
-    expect(host.querySelector('.panel__link')?.getAttribute('href')).toBe('/auditoria');
+    expect(host.querySelector('.panel__link')?.getAttribute('href')).toBe('/plataforma/auditoria');
     expect(host.querySelector('.ov__date')?.textContent?.trim().length).toBeGreaterThan(8);
     expect(host.textContent).not.toMatch(/\b(overview|nav)\.[a-zA-Z]/);
   });

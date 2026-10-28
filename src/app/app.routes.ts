@@ -1,9 +1,56 @@
-import type { Routes } from '@angular/router';
+import { inject } from '@angular/core';
+import type { Route, Routes } from '@angular/router';
 import { authGuard, guestGuard, platformMatchGuard } from './core/auth/auth.guards';
+import { AuthStore } from './core/auth/auth.store';
+import { HOME_ROUTE } from './core/auth/session.service';
 import { ConsoleShellComponent } from './core/layout/console-shell.component';
-import { ROUTE_ACCESS } from './core/layout/console-nav';
+import {
+  CONSOLE_GROUPS,
+  LEGACY_REDIRECTS,
+  OVERVIEW_PATH,
+  canSeeItem,
+  groupAccess,
+  itemAccess,
+  type ConsoleGroup,
+  type ConsoleItem,
+  type ConsoleSection,
+} from './core/layout/console-nav';
 
 const placeholder = () => import('./features/placeholder/pages/placeholder.component').then((m) => m.PlaceholderComponent);
+
+const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
+  organizations: [
+    {
+      path: '',
+      loadComponent: () => import('./features/organizations/pages/organizations.component').then((m) => m.OrganizationsComponent),
+    },
+    {
+      path: ':id',
+      loadComponent: () => import('./features/organizations/pages/organization-detail.component').then((m) => m.OrganizationDetailComponent),
+    },
+  ],
+  health: [{ path: '', loadComponent: () => import('./features/status/pages/status.component').then((m) => m.StatusComponent) }],
+};
+
+const sectionRoute = (group: ConsoleGroup, item: ConsoleItem): Route => ({
+  path: item.path,
+  canMatch: [platformMatchGuard],
+  data: { titleKey: item.labelKey, platform: itemAccess(group, item) },
+  children: SECTION_PAGES[item.key] ?? [{ path: '', loadComponent: placeholder, data: { titleKey: item.labelKey } }],
+});
+
+const firstVisible = (group: ConsoleGroup) => () => {
+  const owned = inject(AuthStore).platformPermissions();
+  const item = group.items.find((candidate) => canSeeItem(owned, group, candidate));
+  return item ? `/${group.path}/${item.path}` : HOME_ROUTE;
+};
+
+const groupRoute = (group: ConsoleGroup): Route => ({
+  path: group.path,
+  canMatch: [authGuard, platformMatchGuard],
+  data: { titleKey: group.labelKey, platform: groupAccess(group.key) },
+  children: [{ path: '', pathMatch: 'full', redirectTo: firstVisible(group) }, ...group.items.map((item) => sectionRoute(group, item))],
+});
 
 export const routes: Routes = [
   {
@@ -17,76 +64,21 @@ export const routes: Routes = [
     component: ConsoleShellComponent,
     children: [
       {
-        path: 'panel',
+        path: OVERVIEW_PATH,
         canMatch: [authGuard],
         loadComponent: () => import('./features/overview/pages/overview.component').then((m) => m.OverviewComponent),
-        data: { titleKey: 'nav.overview', platform: ROUTE_ACCESS.overview },
+        data: { titleKey: 'nav.overview' },
       },
+      ...CONSOLE_GROUPS.map(groupRoute),
       {
-        path: 'organizaciones',
-        canMatch: [authGuard, platformMatchGuard],
-        data: { titleKey: 'nav.organizations', platform: ROUTE_ACCESS.organizations },
-        children: [
-          {
-            path: '',
-            loadComponent: () => import('./features/organizations/pages/organizations.component').then((m) => m.OrganizationsComponent),
-          },
-          {
-            path: ':id',
-            loadComponent: () => import('./features/organizations/pages/organization-detail.component').then((m) => m.OrganizationDetailComponent),
-            data: { titleKey: 'nav.organizations' },
-          },
-        ],
+        path: 'sistema/diseno',
+        canMatch: [authGuard],
+        loadComponent: () => import('./features/design-system/pages/design-system.component').then((m) => m.DesignSystemComponent),
+        data: { titleKey: 'sys.title' },
       },
-      {
-        path: 'usuarios',
-        canMatch: [authGuard, platformMatchGuard],
-        loadComponent: placeholder,
-        data: { titleKey: 'nav.users', platform: ROUTE_ACCESS.users },
-      },
-      {
-        path: 'planes',
-        canMatch: [authGuard, platformMatchGuard],
-        loadComponent: placeholder,
-        data: { titleKey: 'nav.plans', platform: ROUTE_ACCESS.plans },
-      },
-      {
-        path: 'facturacion',
-        canMatch: [authGuard, platformMatchGuard],
-        loadComponent: placeholder,
-        data: { titleKey: 'nav.billing', platform: ROUTE_ACCESS.billing },
-      },
-      {
-        path: 'seguridad',
-        canMatch: [authGuard, platformMatchGuard],
-        loadComponent: placeholder,
-        data: { titleKey: 'nav.security', platform: ROUTE_ACCESS.security },
-      },
-      {
-        path: 'auditoria',
-        canMatch: [authGuard, platformMatchGuard],
-        loadComponent: placeholder,
-        data: { titleKey: 'nav.audit', platform: ROUTE_ACCESS.audit },
-      },
-      {
-        path: 'sistema',
-        data: { titleKey: 'nav.system', platform: ROUTE_ACCESS.system },
-        children: [
-          {
-            path: '',
-            pathMatch: 'full',
-            loadComponent: () => import('./features/status/pages/status.component').then((m) => m.StatusComponent),
-          },
-          {
-            path: 'diseno',
-            loadComponent: () => import('./features/design-system/pages/design-system.component').then((m) => m.DesignSystemComponent),
-            data: { titleKey: 'sys.title' },
-          },
-        ],
-      },
-      { path: 'estado', redirectTo: 'sistema' },
-      { path: '', pathMatch: 'full', redirectTo: 'panel' },
+      ...LEGACY_REDIRECTS.map(([path, redirectTo]): Route => ({ path, pathMatch: 'full', redirectTo })),
+      { path: '', pathMatch: 'full', redirectTo: OVERVIEW_PATH },
     ],
   },
-  { path: '**', redirectTo: 'panel' },
+  { path: '**', redirectTo: OVERVIEW_PATH },
 ];

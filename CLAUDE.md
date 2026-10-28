@@ -22,6 +22,7 @@ abre `/sistema/diseno` en el navegador y las piezas de `src/app/shared/ui`:
 | Un diálogo | `db-dialog` / `db-modal-shell` vía `DialogService`; lo destructivo pide motivo y, si es grave, `challenge` | `/sistema/diseno` |
 | Un evento de bitácora | `dba-audit-event` | Auditoría (A05) |
 | Vacío / cargando | `dba-empty-state` / `db-loader`, `db-section-loader`, `db-busy-icon` | cualquiera |
+| Una sección nueva del menú | una entrada en `CONSOLE_GROUPS` de `core/layout/console-nav.ts`; el menú (`dba-nav-group`) y la ruta salen de ahí | cualquier grupo |
 | Textos | clases de `src/styles/_admin-typography.scss` (`dba-page`, `dba-section`, `dba-eyebrow`, `dba-meta`, `dba-mono`…) | cualquiera |
 
 Si falta una pieza, se crea en `shared/ui` con los tokens del sistema y se muestra en

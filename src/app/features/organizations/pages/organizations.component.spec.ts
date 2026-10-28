@@ -129,7 +129,7 @@ describe('OrganizationsComponent', () => {
     const ir = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     host.querySelector<HTMLButtonElement>('dba-data-table .dba-tr')!.click();
     fixture.detectChanges();
-    expect(ir).toHaveBeenCalledWith(['/organizaciones', 'org-1']);
+    expect(ir).toHaveBeenCalledWith(['/clientes/organizaciones', 'org-1']);
   });
 
   it('sin resultados muestra el estado vacío honesto', async () => {

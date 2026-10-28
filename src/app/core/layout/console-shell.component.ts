@@ -8,18 +8,19 @@ import { filter, map } from 'rxjs';
 import { EnvPillComponent } from '../../shared/ui/env-pill.component';
 import { IconComponent } from '../../shared/ui/icon.component';
 import { LogoComponent } from '../../shared/ui/logo.component';
+import { NavGroupComponent } from '../../shared/ui/nav-group.component';
 import { AuthStore } from '../auth/auth.store';
 import { LOGIN_ROUTE, SessionService } from '../auth/session.service';
 import { APP_ENV } from '../config/api.tokens';
 import { DensityService } from '../preferences/density.service';
-import { CONSOLE_ENTRIES, canSeeArea } from './console-nav';
+import { OVERVIEW_PATH, visibleGroups } from './console-nav';
 import { titleKeysOf } from './console-title.strategy';
 import { NavCounts } from './nav-counts.service';
 import { SearchDialogComponent } from './search-dialog.component';
 
 @Component({
   selector: 'dba-console-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe, LogoComponent, EnvPillComponent, IconComponent, Menu, SearchDialogComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe, LogoComponent, EnvPillComponent, IconComponent, Menu, SearchDialogComponent, NavGroupComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '(document:keydown)': 'onKey($event)' },
   template: `
@@ -41,19 +42,17 @@ import { SearchDialogComponent } from './search-dialog.component';
       </a>
 
       <nav class="bar__nav" [attr.aria-label]="'shell.menu' | translate">
-        @for (entry of entries(); track entry.key) {
-          <a
-            class="bar__link"
-            [routerLink]="'/' + entry.path"
-            routerLinkActive="bar__link--on"
-            #active="routerLinkActive"
-            [attr.aria-current]="active.isActive ? 'page' : null"
-          >
-            <span class="bar__label">{{ entry.labelKey | translate }}</span>
-            @if (counts()[entry.key]; as count) {
-              <code class="bar__count">{{ count }}</code>
-            }
-          </a>
+        <a
+          class="bar__link"
+          [routerLink]="overviewPath"
+          routerLinkActive="bar__link--on"
+          #active="routerLinkActive"
+          [attr.aria-current]="active.isActive ? 'page' : null"
+        >
+          <span class="bar__label">{{ 'nav.overview' | translate }}</span>
+        </a>
+        @for (group of groups(); track group.key) {
+          <dba-nav-group [labelKey]="group.labelKey" [links]="group.links" [active]="group.active" />
         }
       </nav>
 
@@ -99,20 +98,18 @@ import { SearchDialogComponent } from './search-dialog.component';
             <dba-logo />
             <span class="dba-tag">{{ 'shell.product' | translate }}</span>
           </div>
-          @for (entry of entries(); track entry.key) {
-            <a
-              class="drawer__link"
-              [routerLink]="'/' + entry.path"
-              routerLinkActive="drawer__link--on"
-              #drawerActive="routerLinkActive"
-              [attr.aria-current]="drawerActive.isActive ? 'page' : null"
-              (click)="menuOpen.set(false)"
-            >
-              <span class="drawer__label">{{ entry.labelKey | translate }}</span>
-              @if (counts()[entry.key]; as count) {
-                <code class="drawer__count">{{ count }}</code>
-              }
-            </a>
+          <a
+            class="drawer__link"
+            [routerLink]="overviewPath"
+            routerLinkActive="drawer__link--on"
+            #drawerActive="routerLinkActive"
+            [attr.aria-current]="drawerActive.isActive ? 'page' : null"
+            (click)="menuOpen.set(false)"
+          >
+            <span class="drawer__label">{{ 'nav.overview' | translate }}</span>
+          </a>
+          @for (group of groups(); track group.key) {
+            <dba-nav-group variant="drawer" [labelKey]="group.labelKey" [links]="group.links" [active]="group.active" (navigated)="menuOpen.set(false)" />
           }
         </nav>
       </div>
@@ -217,7 +214,7 @@ import { SearchDialogComponent } from './search-dialog.component';
       padding: 0 10px;
       font-size: var(--dba-text-body);
       font-weight: 500;
-      color: #5b5870;
+      color: var(--dba-text-muted);
       text-decoration: none;
       white-space: nowrap;
     }
@@ -515,9 +512,30 @@ export class ConsoleShellComponent {
   protected readonly menuOpen = signal(false);
   protected readonly counts = this.navCounts.counts;
 
-  protected readonly entries = computed(() => {
-    const owned = this.auth.platformPermissions();
-    return CONSOLE_ENTRIES.filter((entry) => canSeeArea(owned, entry.key));
+  protected readonly overviewPath = '/' + OVERVIEW_PATH;
+
+  private readonly url = toSignal(
+    this.router.events.pipe(
+      filter((event) => event instanceof NavigationEnd),
+      map(() => this.router.url),
+    ),
+    { initialValue: this.router.url },
+  );
+
+  protected readonly groups = computed(() => {
+    const counts = this.counts();
+    const url = this.url().split(/[?#]/)[0];
+    return visibleGroups(this.auth.platformPermissions()).map((group) => ({
+      key: group.key,
+      labelKey: group.labelKey,
+      active: url === `/${group.path}` || url.startsWith(`/${group.path}/`),
+      links: group.items.map((item) => ({
+        key: item.key,
+        labelKey: item.labelKey,
+        path: `/${group.path}/${item.path}`,
+        count: counts[item.key],
+      })),
+    }));
   });
 
   protected readonly crumbs = toSignal(

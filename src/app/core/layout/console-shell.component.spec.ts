@@ -30,15 +30,12 @@ describe('ConsoleShellComponent', () => {
       providers: [
         provideRouter([
           { path: 'panel', component: Pagina, data: { titleKey: 'nav.overview' } },
-          { path: 'organizaciones', component: Pagina, data: { titleKey: 'nav.organizations' } },
           {
-            path: 'sistema',
-            data: { titleKey: 'nav.system' },
-            children: [
-              { path: '', component: Pagina },
-              { path: 'diseno', component: Pagina, data: { titleKey: 'sys.title' } },
-            ],
+            path: 'clientes',
+            data: { titleKey: 'nav.group.clients' },
+            children: [{ path: 'organizaciones', component: Pagina, data: { titleKey: 'nav.organizations' } }],
           },
+          { path: 'sistema/diseno', component: Pagina, data: { titleKey: 'sys.title' } },
         ]),
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -50,7 +47,7 @@ describe('ConsoleShellComponent', () => {
     TestBed.inject(TranslateService).use('es');
   });
 
-  const montar = async (url = '/sistema') => {
+  const montar = async (url = '/panel') => {
     const router = TestBed.inject(Router);
     const fixture = TestBed.createComponent(ConsoleShellComponent);
     fixture.detectChanges();
@@ -69,71 +66,70 @@ describe('ConsoleShellComponent', () => {
     });
   };
 
-  it('sin sesión solo muestra las áreas libres y ofrece entrar', async () => {
+  const textos = (host: Element, selector: string) => [...host.querySelectorAll(selector)].map((el) => el.firstElementChild?.textContent?.trim() ?? el.textContent?.trim());
+
+  it('sin sesión solo muestra Visión general y ofrece entrar', async () => {
     const { host } = await montar();
-    const etiquetas = [...host.querySelectorAll('.bar__link')].map((a) => a.textContent?.trim());
-    expect(etiquetas).toEqual(['Visión general', 'Sistema']);
+    expect(textos(host, '.bar__link')).toEqual(['Visión general']);
+    expect(host.querySelectorAll('dba-nav-group').length).toBe(0);
     expect(host.querySelector('.bar__enter')?.getAttribute('href')).toBe('/acceso');
     expect(host.querySelector('.bar__avatar')).toBeNull();
     expect(host.querySelector('dba-env-pill')).not.toBeNull();
   });
 
-  it('con sesión y permisos muestra las ocho entradas, marca la activa y pone las iniciales', async () => {
+  it('con sesión muestra los grupos que puede abrir y marca el de la sección activa', async () => {
     entrar(TODOS);
-    const { host } = await montar('/organizaciones');
-    const enlaces = [...host.querySelectorAll<HTMLAnchorElement>('.bar__link')];
-    expect(enlaces.length).toBe(8);
-    expect(enlaces[1].classList.contains('bar__link--on')).toBe(true);
-    expect(enlaces[1].getAttribute('aria-current')).toBe('page');
-    expect(enlaces[0].classList.contains('bar__link--on')).toBe(false);
+    const { host } = await montar('/clientes/organizaciones');
+    expect(textos(host, '.bar .trigger')).toEqual(['Clientes', 'Comercial', 'Plataforma']);
+    const [clientes, comercial] = [...host.querySelectorAll('.bar .trigger')];
+    expect(clientes.classList.contains('trigger--on')).toBe(true);
+    expect(comercial.classList.contains('trigger--on')).toBe(false);
+    expect(host.querySelector('.bar__link')?.classList.contains('bar__link--on')).toBe(false);
     expect(host.querySelector('.bar__avatar')?.textContent?.trim()).toBe('MV');
-    expect(host.querySelector('.bar__enter')).toBeNull();
   });
 
-  it('un permiso parcial recorta el menú a lo que se puede abrir', async () => {
+  it('un permiso parcial deja solo su grupo', async () => {
     entrar(['platform:commercial']);
     const { host } = await montar();
-    const etiquetas = [...host.querySelectorAll('.bar__link')].map((a) => a.textContent?.trim());
-    expect(etiquetas).toEqual(['Visión general', 'Planes', 'Facturación', 'Sistema']);
+    expect(textos(host, '.bar .trigger')).toEqual(['Comercial']);
   });
 
-  it('los conteos solo salen donde hay cola', async () => {
+  it('el grupo suma los conteos de sus secciones y los quita cuando no hay cola', async () => {
     entrar(TODOS);
     const { fixture, host } = await montar();
-    expect(host.querySelectorAll('.bar__count').length).toBe(0);
+    expect(host.querySelectorAll('.bar .count').length).toBe(0);
     TestBed.inject(NavCounts).set('organizations', 312);
     fixture.detectChanges();
-    const chips = [...host.querySelectorAll('.bar__count')].map((c) => c.textContent?.trim());
-    expect(chips).toEqual(['312']);
+    expect([...host.querySelectorAll('.bar .trigger .count')].map((c) => c.textContent?.trim())).toEqual(['312']);
     TestBed.inject(NavCounts).set('organizations', 0);
     fixture.detectChanges();
-    expect(host.querySelectorAll('.bar__count').length).toBe(0);
+    expect(host.querySelectorAll('.bar .count').length).toBe(0);
   });
 
-  it('las migas siguen la ruta activa, con Admin delante y la hoja en tinta', async () => {
-    const { host, router, fixture } = await montar('/sistema/diseno');
-    const migas = [...host.querySelectorAll('.crumbs__item')].map((c) => c.textContent?.trim());
-    expect(migas).toEqual(['Admin', 'Sistema', 'Sistema de diseño']);
-    expect(host.querySelector('.crumbs__item--last')?.textContent?.trim()).toBe('Sistema de diseño');
-    await router.navigateByUrl('/sistema');
+  it('las migas llevan el grupo antes de la sección', async () => {
+    entrar(TODOS);
+    const { host, router, fixture } = await montar('/clientes/organizaciones');
+    expect([...host.querySelectorAll('.crumbs__item')].map((c) => c.textContent?.trim())).toEqual(['Admin', 'Clientes', 'Organizaciones']);
+    await router.navigateByUrl('/sistema/diseno');
     fixture.detectChanges();
-    expect([...host.querySelectorAll('.crumbs__item')].map((c) => c.textContent?.trim())).toEqual(['Admin', 'Sistema']);
+    expect([...host.querySelectorAll('.crumbs__item')].map((c) => c.textContent?.trim())).toEqual(['Admin', 'Sistema de diseño']);
+    expect(host.querySelector('.crumbs__item--last')?.textContent?.trim()).toBe('Sistema de diseño');
   });
 
-  it('la hamburguesa abre el cajón con las entradas permitidas y se cierra al elegir una o con Escape', async () => {
+  it('la hamburguesa abre el cajón por grupos, sin Personal para quien no tiene :manage, y se cierra al elegir o con Escape', async () => {
     entrar(TODOS);
     const { fixture, host } = await montar('/panel');
     expect(host.querySelector('.drawer')).toBeNull();
     host.querySelector<HTMLButtonElement>('.bar__burger')!.click();
     fixture.detectChanges();
-    const enlaces = [...host.querySelectorAll('.drawer__link')];
-    expect(enlaces.length).toBe(8);
-    expect(enlaces[0].textContent).toContain('Visión general');
-    expect(enlaces[0].getAttribute('href')).toBe('/panel');
+    expect(textos(host, '.drawer .heading')).toEqual(['Clientes', 'Comercial', 'Plataforma']);
+    const enlaces = [...host.querySelectorAll<HTMLAnchorElement>('.drawer .link--drawer')];
+    expect(enlaces.length).toBe(4 + 7 + 3);
+    expect(enlaces.map((a) => a.getAttribute('href'))).not.toContain('/plataforma/personal');
+    expect(enlaces[0].getAttribute('href')).toBe('/clientes/organizaciones');
+    expect(host.querySelector('.drawer__link')?.getAttribute('href')).toBe('/panel');
 
-    host.querySelector<HTMLButtonElement>('.bar__burger')!.click();
-    fixture.detectChanges();
-    enlaces[1].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    enlaces[0].dispatchEvent(new MouseEvent('click', { bubbles: true }));
     fixture.detectChanges();
     expect(host.querySelector('.drawer')).toBeNull();
 
