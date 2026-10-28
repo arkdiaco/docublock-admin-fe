@@ -10,9 +10,10 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "verify": "npm run lint && npm run check:units && npm run arch && npm run test -- --watch=false && npm run build",
+    "verify": "npm run lint && npm run check:units && npm run ui:check && npm run arch && npm run test -- --watch=false && npm run build",
     "arch": "depcruise src --config .dependency-cruiser.cjs",
-    "check:units": "node scripts/check-units.mjs"
+    "check:units": "node scripts/check-units.mjs",
+    "ui:check": "node scripts/ui-guard.mjs"
   },
   "dependencies": {
     "@angular/cdk": "^21.2.14",

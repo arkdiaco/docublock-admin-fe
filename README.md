@@ -32,7 +32,7 @@ Las mismas de `docublock-fe`, sin excepciones:
 - **Nunca un secreto ni un OTP en pantalla.** Las acciones destructivas o sensibles piden
   motivo y van con confirmación; todo lo que escribe el admin queda en la bitácora de plataforma.
 
-`npm run verify` encadena lint, unidades, arquitectura, tests y build. Es lo que corre Cloud Build.
+`npm run verify` encadena lint, unidades, guardia del sistema de diseño (`ui:check`), arquitectura, tests y build. Es lo que corre Cloud Build.
 
 ## Acceso
 
@@ -86,7 +86,7 @@ backend. Cada módulo entra con su bloque, tras el inventario de su backend.
 ```bash
 npm install
 npm start          # http://localhost:4208 contra http://localhost:3810/api/core
-npm run verify     # lint + unidades + arquitectura + tests + build
+npm run verify     # lint + unidades + ui:check + arquitectura + tests + build
 ```
 
 La URL del core en desarrollo está en `src/environments/environment.ts`; en Cloud Run la
