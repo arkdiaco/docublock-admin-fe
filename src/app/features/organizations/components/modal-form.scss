@@ -37,6 +37,12 @@
   border-top: 1px solid var(--dba-border-row);
 }
 
+.form__switch--bare {
+  align-items: center;
+  padding-top: 0;
+  border-top: 0;
+}
+
 .form__switchCopy {
   display: flex;
   flex-direction: column;

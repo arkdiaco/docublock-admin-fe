@@ -885,5 +885,109 @@
       "INVITACION_CORREO_FALLIDO": "La invitación quedó creada pero el correo no salió: reenvíala.",
       "generic": "No se pudo guardar. Inténtalo de nuevo."
     }
+  },
+  "val": {
+    "loading": "Cargando las validaciones…",
+    "errorTitle": "No pudimos cargar las validaciones",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "enabled": "Validaciones habilitadas",
+    "enabledLead": "Las que la organización puede pedir a sus firmantes al crear un proceso.",
+    "validation": {
+      "identityValid": "Validación contra documento",
+      "biometricValid": "Biometría avanzada",
+      "ani": "Consultar Registraduría",
+      "liveness": "Liveness"
+    },
+    "validationHint": {
+      "identityValid": "Compara la selfie con la foto del documento",
+      "biometricValid": "Selfie contra el registro biométrico",
+      "ani": "Confirma la identificación en la Registraduría",
+      "liveness": "Prueba de vida; no descuenta créditos"
+    },
+    "selfService": "Lo que configura la organización:",
+    "self": {
+      "blockComments": "Bloquear comentarios",
+      "documentPhotos": "Fotos del documento"
+    },
+    "yes": "sí",
+    "no": "no",
+    "enableTitle": "Habilitar {{name}}",
+    "disableTitle": "Deshabilitar {{name}}",
+    "enableMessage": "La organización podrá pedir {{name}} a sus firmantes desde ahora.",
+    "disableMessage": "Los procesos nuevos ya no podrán pedir {{name}}. Los que ya están en curso no cambian.",
+    "enable": "Habilitar",
+    "disable": "Deshabilitar",
+    "credits": "Créditos de validación",
+    "creditType": {
+      "identity": "Validación contra documento",
+      "biometric": "Biometría avanzada",
+      "ani": "Consultar Registraduría"
+    },
+    "unlimited": "Ilimitado",
+    "remaining": "disponibles",
+    "credit": {
+      "title": "Créditos de {{type}}",
+      "now": "Disponibles hoy: {{count}}",
+      "confirm": "Guardar créditos",
+      "unlimited": "Créditos ilimitados",
+      "mode": "Cómo ajustar",
+      "amount": "Créditos a sumar",
+      "remaining": "Dejar disponibles",
+      "modes": {
+        "recharge": "Recargar",
+        "set": "Fijar el saldo"
+      }
+    },
+    "pricing": {
+      "section": "Precio de las validaciones",
+      "open": "Editar precio",
+      "title": "Precio de las validaciones",
+      "confirm": "Guardar precio",
+      "mode": "Modalidad",
+      "modes": {
+        "package": "Paquete",
+        "per_validation": "Por validación"
+      },
+      "currency": "Moneda",
+      "packagePrice": "Precio del paquete",
+      "includes": "El paquete incluye",
+      "notes": "Notas",
+      "priceInvalid": "Usa un número con máximo dos decimales",
+      "notConfigured": "Todavía no tiene un precio propio; se muestra el de partida en {{currency}}."
+    },
+    "priced": {
+      "ani": "Consultar Registraduría",
+      "liveness": "Liveness",
+      "macherFacial": "Biometría avanzada"
+    },
+    "billing": "Cuenta de cobro del mes",
+    "log": "Movimientos de créditos",
+    "noLog": "Todavía no hay movimientos.",
+    "col": {
+      "date": "Fecha",
+      "type": "Validación",
+      "action": "Movimiento",
+      "amount": "Cantidad",
+      "balance": "Saldo"
+    },
+    "logAction": {
+      "recharge": "Recarga",
+      "adjust": "Ajuste",
+      "set_unlimited": "Ilimitado",
+      "consume": "Consumo"
+    },
+    "done": {
+      "enable": "{{name}} quedó habilitada.",
+      "disable": "{{name}} quedó deshabilitada.",
+      "credit": "Créditos de {{type}} actualizados.",
+      "pricing": "Precio guardado."
+    },
+    "error": {
+      "generic": "No pudimos guardar el cambio. Inténtalo de nuevo.",
+      "billing": "No pudimos generar la cuenta de cobro.",
+      "SETTINGS_SIN_CAMBIOS": "No hay cambios que guardar.",
+      "PAQUETE_VACIO": "El paquete debe incluir al menos una validación."
+    },
+    "adjustCredits": "Ajustar créditos"
   }
 }

@@ -885,5 +885,109 @@
       "INVITACION_CORREO_FALLIDO": "The invitation was created but the email failed: resend it.",
       "generic": "It couldn't be saved. Try again."
     }
+  },
+  "val": {
+    "loading": "Loading validations…",
+    "errorTitle": "We couldn't load the validations",
+    "errorLead": "Check the connection and try again.",
+    "enabled": "Enabled validations",
+    "enabledLead": "The ones the organization can request from its signers when creating a process.",
+    "validation": {
+      "identityValid": "Document check",
+      "biometricValid": "Advanced biometrics",
+      "ani": "Civil registry lookup",
+      "liveness": "Liveness"
+    },
+    "validationHint": {
+      "identityValid": "Compares the selfie with the document photo",
+      "biometricValid": "Selfie against the biometric record",
+      "ani": "Confirms the ID with the civil registry",
+      "liveness": "Liveness check; uses no credits"
+    },
+    "selfService": "Set by the organization:",
+    "self": {
+      "blockComments": "Block comments",
+      "documentPhotos": "Document photos"
+    },
+    "yes": "yes",
+    "no": "no",
+    "enableTitle": "Enable {{name}}",
+    "disableTitle": "Disable {{name}}",
+    "enableMessage": "The organization can request {{name}} from its signers from now on.",
+    "disableMessage": "New processes will no longer be able to request {{name}}. Processes in progress don't change.",
+    "enable": "Enable",
+    "disable": "Disable",
+    "credits": "Validation credits",
+    "creditType": {
+      "identity": "Document check",
+      "biometric": "Advanced biometrics",
+      "ani": "Civil registry lookup"
+    },
+    "unlimited": "Unlimited",
+    "remaining": "available",
+    "credit": {
+      "title": "{{type}} credits",
+      "now": "Available today: {{count}}",
+      "confirm": "Save credits",
+      "unlimited": "Unlimited credits",
+      "mode": "How to adjust",
+      "amount": "Credits to add",
+      "remaining": "Leave available",
+      "modes": {
+        "recharge": "Top up",
+        "set": "Set the balance"
+      }
+    },
+    "pricing": {
+      "section": "Validation pricing",
+      "open": "Edit pricing",
+      "title": "Validation pricing",
+      "confirm": "Save pricing",
+      "mode": "Mode",
+      "modes": {
+        "package": "Package",
+        "per_validation": "Per validation"
+      },
+      "currency": "Currency",
+      "packagePrice": "Package price",
+      "includes": "The package includes",
+      "notes": "Notes",
+      "priceInvalid": "Use a number with at most two decimals",
+      "notConfigured": "No custom pricing yet; showing the default in {{currency}}."
+    },
+    "priced": {
+      "ani": "Civil registry lookup",
+      "liveness": "Liveness",
+      "macherFacial": "Advanced biometrics"
+    },
+    "billing": "This month's bill",
+    "log": "Credit movements",
+    "noLog": "No movements yet.",
+    "col": {
+      "date": "Date",
+      "type": "Validation",
+      "action": "Movement",
+      "amount": "Amount",
+      "balance": "Balance"
+    },
+    "logAction": {
+      "recharge": "Top-up",
+      "adjust": "Adjustment",
+      "set_unlimited": "Unlimited",
+      "consume": "Usage"
+    },
+    "done": {
+      "enable": "{{name}} is now enabled.",
+      "disable": "{{name}} is now disabled.",
+      "credit": "{{type}} credits updated.",
+      "pricing": "Pricing saved."
+    },
+    "error": {
+      "generic": "We couldn't save the change. Try again.",
+      "billing": "We couldn't generate the bill.",
+      "SETTINGS_SIN_CAMBIOS": "There are no changes to save.",
+      "PAQUETE_VACIO": "The package must include at least one validation."
+    },
+    "adjustCredits": "Adjust credits"
   }
 }
