@@ -40,6 +40,8 @@ export interface ConsoleGroup {
 
 export const OVERVIEW_PATH = 'panel';
 
+export const MY_ACCESS_PATH = 'mi-acceso';
+
 export const CONSOLE_GROUPS: readonly ConsoleGroup[] = [
   {
     key: 'clients',

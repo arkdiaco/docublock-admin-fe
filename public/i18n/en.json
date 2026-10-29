@@ -360,5 +360,114 @@
   },
   "tbl": {
     "range": "{{from}}–{{to}} of {{total}}"
+  },
+  "staff": {
+    "count": "{{total}} people · active superadmins: {{superadmins}}",
+    "grant": "Grant access",
+    "loading": "Loading staff…",
+    "errorTitle": "We couldn't load the staff",
+    "errorLead": "Check your connection and try again.",
+    "emptyTitle": "Nobody in this filter",
+    "emptyLead": "Change the filter to see the rest of the staff.",
+    "filterAll": "All",
+    "you": "YOU",
+    "never": "Never",
+    "actionsFor": "Actions for {{name}}",
+    "col": {
+      "person": "Person",
+      "role": "Role",
+      "state": "Status",
+      "lastLogin": "Last sign-in",
+      "sessions": "Sessions"
+    },
+    "status": {
+      "ACTIVE": "Active",
+      "SUSPENDED": "Suspended"
+    },
+    "roleDesc": {
+      "superadmin": "Reads and manages everything, including staff and platform settings.",
+      "support": "Reads everything. Manages clients and operations.",
+      "readonly": "Reads clients, operations, commercial and catalogs. Changes nothing."
+    },
+    "action": {
+      "role": "Change role",
+      "suspend": "Suspend",
+      "reactivate": "Reactivate",
+      "remove": "Remove access"
+    },
+    "form": {
+      "grantTitle": "Grant console access",
+      "grantLead": "They sign in with their email and a code sent by email.",
+      "grantConfirm": "Grant access",
+      "roleTitle": "Change role",
+      "roleConfirm": "Save role",
+      "roleNote": "Changing the role closes all their open sessions.",
+      "email": "Email",
+      "emailInvalid": "Enter a valid email",
+      "names": "First names",
+      "surNames": "Last names",
+      "role": "Role"
+    },
+    "reasonLabel": "Reason · kept in the audit log",
+    "reasonPlaceholder": "Why this change is made",
+    "suspend": {
+      "title": "Suspend {{name}}?",
+      "message": "They won't be able to sign in and all their sessions will close. You can reactivate them later.",
+      "confirm": "Suspend"
+    },
+    "reactivate": {
+      "title": "Reactivate {{name}}?",
+      "message": "They can sign in again with their email and keep their previous role.",
+      "confirm": "Reactivate"
+    },
+    "remove": {
+      "title": "Remove access for {{name}}?",
+      "message": "They leave the staff list and all their sessions close. Their audit trail is kept. To give access back, grant it again with the same email.",
+      "confirm": "Remove access",
+      "verb": "remove access"
+    },
+    "done": {
+      "grant": "{{email}} can now sign in to the console",
+      "role": "{{name}}'s role updated",
+      "suspend": "{{name}} is suspended",
+      "reactivate": "{{name}} is active",
+      "remove": "{{name}} no longer has access"
+    },
+    "error": {
+      "STAFF_YA_EXISTE": "That email already has console access.",
+      "STAFF_NO_EXISTE": "That person no longer has access. Reload the list.",
+      "STAFF_PROPIO": "You can't change your own access. Ask another superadmin.",
+      "ULTIMO_SUPERADMIN": "This is the last active superadmin. Make someone else superadmin first.",
+      "MOTIVO_REQUERIDO": "Write the reason.",
+      "generic": "The change couldn't be saved. Try again."
+    }
+  },
+  "mine": {
+    "title": "My access",
+    "permissionsTitle": "What your role can do",
+    "col": {
+      "group": "Area",
+      "read": "Read",
+      "manage": "Manage",
+      "device": "Device",
+      "ip": "IP",
+      "started": "Started",
+      "used": "Last used"
+    },
+    "sessionsTitle": "Open sessions",
+    "sessionsLead": "Close the ones you don't recognise. This browser's session closes with «Sign out».",
+    "loading": "Loading your sessions…",
+    "errorTitle": "We couldn't load your sessions",
+    "errorLead": "Check your connection and try again.",
+    "unknownDevice": "Unidentified device",
+    "current": "THIS SESSION",
+    "revoke": "Close session",
+    "revokeTitle": "Close this session?",
+    "revokeMessage": "The session on {{device}} will close. Whoever uses it will have to sign in again.",
+    "revoked": "Session closed",
+    "error": {
+      "current": "This is the current session: close it with «Sign out».",
+      "generic": "The session couldn't be closed. Try again."
+    }
   }
 }

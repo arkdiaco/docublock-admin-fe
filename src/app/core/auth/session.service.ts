@@ -51,6 +51,7 @@ export class SessionService {
       },
       platformStaff: isPlatformStaff(me),
       platformPermissions: me.platformPermissions ?? [],
+      platformRole: me.platformRole ?? null,
     });
     return me;
   }

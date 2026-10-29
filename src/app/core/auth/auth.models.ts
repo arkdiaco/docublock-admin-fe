@@ -49,6 +49,7 @@ export interface Me {
   permissions: string[];
   memberships: MeMembership[];
   platformStaff?: boolean;
+  platformRole?: string;
   platformPermissions?: string[];
 }
 

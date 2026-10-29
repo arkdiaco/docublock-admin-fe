@@ -13,7 +13,7 @@ import { AuthStore } from '../auth/auth.store';
 import { LOGIN_ROUTE, SessionService } from '../auth/session.service';
 import { APP_ENV } from '../config/api.tokens';
 import { DensityService } from '../preferences/density.service';
-import { OVERVIEW_PATH, visibleGroups } from './console-nav';
+import { MY_ACCESS_PATH, OVERVIEW_PATH, visibleGroups } from './console-nav';
 import { titleKeysOf } from './console-title.strategy';
 import { NavCounts } from './nav-counts.service';
 import { SearchDialogComponent } from './search-dialog.component';
@@ -547,6 +547,7 @@ export class ConsoleShellComponent {
   );
 
   private readonly logoutLabel = toSignal(this.translate.stream('shell.logout'), { initialValue: '' });
+  private readonly myAccessLabel = toSignal(this.translate.stream('mine.title'), { initialValue: '' });
 
   private readonly densityLabel = computed(() =>
     this.translate.instant(this.density.compact() ? 'shell.densityCozy' : 'shell.densityCompact'),
@@ -555,6 +556,7 @@ export class ConsoleShellComponent {
   protected readonly accountItems = computed<MenuItem[]>(() => [
     { label: this.auth.displayName(), disabled: true },
     { separator: true },
+    { label: this.myAccessLabel() as string, icon: 'pi pi-user', command: () => void this.router.navigateByUrl('/' + MY_ACCESS_PATH) },
     { label: this.densityLabel() as string, icon: 'pi pi-bars', command: () => this.density.toggle() },
     { separator: true },
     { label: this.logoutLabel() as string, icon: 'pi pi-sign-out', command: () => void this.session.logout() },

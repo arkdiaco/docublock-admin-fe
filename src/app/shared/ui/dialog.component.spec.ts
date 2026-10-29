@@ -271,4 +271,31 @@ describe('DialogComponent', () => {
     confirmar.click();
     expect(fixture.componentInstance.result()?.answer).toBe('confirm');
   });
+
+  it('con motivo obligatorio no confirma hasta que se escribe algo', () => {
+    const host = montar();
+    fixture.componentInstance.request.set({
+      intent: 'danger',
+      title: 'staff.suspend.title',
+      confirmLabel: 'staff.suspend.confirm',
+      reason: { labelKey: 'staff.reasonLabel', placeholder: 'staff.reasonPlaceholder', limit: 500, quick: [], required: true },
+    });
+    fixture.detectChanges();
+
+    const confirmar = host.querySelectorAll<HTMLButtonElement>('.btn')[1];
+    const motivo = host.querySelector<HTMLTextAreaElement>('.body__text')!;
+    expect(confirmar.disabled).toBe(true);
+
+    motivo.value = '   ';
+    motivo.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(confirmar.disabled).toBe(true);
+
+    motivo.value = 'Salió de la empresa';
+    motivo.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(confirmar.disabled).toBe(false);
+    confirmar.click();
+    expect(fixture.componentInstance.result()).toEqual({ answer: 'confirm', reason: 'Salió de la empresa' });
+  });
 });

@@ -20,10 +20,12 @@ export class AuthStore {
   private readonly _user = signal<AuthUser | null>(null);
   private readonly _platformStaff = signal<boolean | null>(null);
   private readonly _platformPermissions = signal<string[]>([]);
+  private readonly _platformRole = signal<string | null>(null);
 
   readonly accessToken = this._accessToken.asReadonly();
   readonly user = this._user.asReadonly();
   readonly platformPermissions = this._platformPermissions.asReadonly();
+  readonly platformRole = this._platformRole.asReadonly();
 
   readonly isAuthenticated = computed(() => this._accessToken() !== null);
   readonly profileLoaded = computed(() => this._user() !== null);
@@ -85,10 +87,11 @@ export class AuthStore {
     return this._refreshToken();
   }
 
-  setProfile(input: { user: AuthUser; platformStaff: boolean; platformPermissions: string[] }): void {
+  setProfile(input: { user: AuthUser; platformStaff: boolean; platformPermissions: string[]; platformRole?: string | null }): void {
     this._user.set(input.user);
     this._platformStaff.set(input.platformStaff);
     this._platformPermissions.set(input.platformPermissions);
+    this._platformRole.set(input.platformRole ?? null);
   }
 
   clear(): void {
@@ -97,6 +100,7 @@ export class AuthStore {
     this._user.set(null);
     this._platformStaff.set(null);
     this._platformPermissions.set([]);
+    this._platformRole.set(null);
     this.storage.clear();
   }
 }

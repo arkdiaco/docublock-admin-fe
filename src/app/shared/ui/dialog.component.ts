@@ -34,6 +34,7 @@ export interface DialogReason {
   placeholder: string;
   limit: number;
   quick: string[];
+  required?: boolean;
 }
 
 export interface DialogRequest {
@@ -744,6 +745,7 @@ export class DialogComponent {
   });
 
   protected readonly confirmBlocked = computed(() => {
+    if (this.request().reason?.required && !this.reason().trim()) return true;
     const challenge = this.request().challenge;
     if (!challenge) return false;
     return this.typed().trim().toUpperCase() !== challenge.identifier.trim().toUpperCase();

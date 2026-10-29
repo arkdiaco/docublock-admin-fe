@@ -360,5 +360,114 @@
   },
   "tbl": {
     "range": "{{from}}–{{to}} de {{total}}"
+  },
+  "staff": {
+    "count": "{{total}} personas · superadmins activos: {{superadmins}}",
+    "grant": "Dar acceso",
+    "loading": "Cargando el personal…",
+    "errorTitle": "No pudimos cargar el personal",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "emptyTitle": "Nadie en este filtro",
+    "emptyLead": "Cambia el filtro para ver al resto del personal.",
+    "filterAll": "Todos",
+    "you": "TÚ",
+    "never": "Nunca",
+    "actionsFor": "Acciones para {{name}}",
+    "col": {
+      "person": "Persona",
+      "role": "Rol",
+      "state": "Estado",
+      "lastLogin": "Último ingreso",
+      "sessions": "Sesiones"
+    },
+    "status": {
+      "ACTIVE": "Activo",
+      "SUSPENDED": "Suspendido"
+    },
+    "roleDesc": {
+      "superadmin": "Lee y gestiona todo, incluido el personal y la configuración de la plataforma.",
+      "support": "Lee todo. Gestiona clientes y operación.",
+      "readonly": "Lee clientes, operación, comercial y catálogos. No cambia nada."
+    },
+    "action": {
+      "role": "Cambiar rol",
+      "suspend": "Suspender",
+      "reactivate": "Reactivar",
+      "remove": "Quitar acceso"
+    },
+    "form": {
+      "grantTitle": "Dar acceso a la consola",
+      "grantLead": "Entrará con su correo y un código que le llega por correo.",
+      "grantConfirm": "Dar acceso",
+      "roleTitle": "Cambiar rol",
+      "roleConfirm": "Guardar rol",
+      "roleNote": "Al cambiar el rol se cierran todas sus sesiones abiertas.",
+      "email": "Correo",
+      "emailInvalid": "Escribe un correo válido",
+      "names": "Nombres",
+      "surNames": "Apellidos",
+      "role": "Rol"
+    },
+    "reasonLabel": "Motivo · queda en la bitácora",
+    "reasonPlaceholder": "Por qué se hace este cambio",
+    "suspend": {
+      "title": "¿Suspender a {{name}}?",
+      "message": "No podrá entrar a la consola y se cerrarán todas sus sesiones. Puedes reactivarlo después.",
+      "confirm": "Suspender"
+    },
+    "reactivate": {
+      "title": "¿Reactivar a {{name}}?",
+      "message": "Podrá volver a entrar con su correo y conserva el rol que tenía.",
+      "confirm": "Reactivar"
+    },
+    "remove": {
+      "title": "¿Quitar el acceso a {{name}}?",
+      "message": "Sale de la lista del personal y se cierran todas sus sesiones. Su rastro en la bitácora se conserva. Para devolverle el acceso, vuelve a dárselo con el mismo correo.",
+      "confirm": "Quitar acceso",
+      "verb": "quitar el acceso"
+    },
+    "done": {
+      "grant": "{{email}} ya puede entrar a la consola",
+      "role": "Rol de {{name}} actualizado",
+      "suspend": "{{name}} quedó suspendido",
+      "reactivate": "{{name}} quedó activo",
+      "remove": "{{name}} ya no tiene acceso"
+    },
+    "error": {
+      "STAFF_YA_EXISTE": "Ese correo ya tiene acceso a la consola.",
+      "STAFF_NO_EXISTE": "Esa persona ya no tiene acceso. Recarga la lista.",
+      "STAFF_PROPIO": "No puedes cambiar tu propio acceso. Pídeselo a otro superadmin.",
+      "ULTIMO_SUPERADMIN": "Es el último superadmin activo. Da acceso de superadmin a otra persona antes.",
+      "MOTIVO_REQUERIDO": "Escribe el motivo.",
+      "generic": "No se pudo guardar el cambio. Inténtalo de nuevo."
+    }
+  },
+  "mine": {
+    "title": "Mi acceso",
+    "permissionsTitle": "Lo que puede hacer tu rol",
+    "col": {
+      "group": "Área",
+      "read": "Leer",
+      "manage": "Gestionar",
+      "device": "Dispositivo",
+      "ip": "IP",
+      "started": "Inicio",
+      "used": "Último uso"
+    },
+    "sessionsTitle": "Sesiones abiertas",
+    "sessionsLead": "Cierra las que no reconozcas. La de este navegador se cierra con «Cerrar sesión».",
+    "loading": "Cargando tus sesiones…",
+    "errorTitle": "No pudimos cargar tus sesiones",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "unknownDevice": "Dispositivo sin identificar",
+    "current": "ESTA SESIÓN",
+    "revoke": "Cerrar sesión",
+    "revokeTitle": "¿Cerrar esta sesión?",
+    "revokeMessage": "Se cerrará la sesión en {{device}}. Quien la use tendrá que entrar de nuevo.",
+    "revoked": "Sesión cerrada",
+    "error": {
+      "current": "Esta es la sesión actual: ciérrala desde «Cerrar sesión».",
+      "generic": "No se pudo cerrar la sesión. Inténtalo de nuevo."
+    }
   }
 }

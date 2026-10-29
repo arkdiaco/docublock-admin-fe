@@ -7,6 +7,7 @@ import { ConsoleShellComponent } from './core/layout/console-shell.component';
 import {
   CONSOLE_GROUPS,
   LEGACY_REDIRECTS,
+  MY_ACCESS_PATH,
   OVERVIEW_PATH,
   canSeeItem,
   groupAccess,
@@ -29,6 +30,7 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
       loadComponent: () => import('./features/organizations/pages/organization-detail.component').then((m) => m.OrganizationDetailComponent),
     },
   ],
+  staff: [{ path: '', loadComponent: () => import('./features/staff/pages/staff.component').then((m) => m.StaffComponent) }],
   health: [{ path: '', loadComponent: () => import('./features/status/pages/status.component').then((m) => m.StatusComponent) }],
 };
 
@@ -70,6 +72,12 @@ export const routes: Routes = [
         data: { titleKey: 'nav.overview' },
       },
       ...CONSOLE_GROUPS.map(groupRoute),
+      {
+        path: MY_ACCESS_PATH,
+        canMatch: [authGuard],
+        loadComponent: () => import('./features/my-access/pages/my-access.component').then((m) => m.MyAccessComponent),
+        data: { titleKey: 'mine.title' },
+      },
       {
         path: 'sistema/diseno',
         canMatch: [authGuard],
