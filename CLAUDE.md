@@ -15,7 +15,7 @@ abre `/sistema/diseno` en el navegador y las piezas de `src/app/shared/ui`:
 |---|---|---|
 | Una lista | `dba-data-table` + `db-pager` + `db-filter-pills`, filas `dba-tr`/`dba-td` de `src/styles/_admin-table.scss` | Organizaciones (A03) |
 | La cabecera de una ficha | `dba-record-header` + `db-underline-tabs` | Ficha de organización (A04) |
-| Un estado | `dba-org-state`, `dba-role-tag`, `dba-env-pill` | cualquiera |
+| Un estado | `dba-org-state`, `dba-role-tag`, `dba-env-pill`, `dba-org-flag` (reseller, prueba) | cualquiera |
 | Una métrica | `dba-kpi-card`, `db-stat-band`, `dba-quota-bar` | Visión general, ficha |
 | Un campo de formulario | `dba-field` sobre PrimeNG | Acceso (A01) |
 | Un botón | `button[dba-button]`; lo accionable va en morado primario, nunca en negro | cualquiera |

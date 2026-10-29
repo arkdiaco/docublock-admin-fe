@@ -1,9 +1,18 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
+import { SILENT_ERRORS } from '../../../core/http/http.interceptors';
 import { Injectable, inject } from '@angular/core';
 import { map, type Observable } from 'rxjs';
 import { exportedFileOf, type ExportedFile } from '../../../shared/http/exported-file';
 import { toParams } from '../../../shared/http/query-params';
-import type { PlatformOrgDetail, PlatformOrgPage, PlatformOrgQuery } from './organizations.models';
+import type {
+  CityOption,
+  PlatformOrgDetail,
+  PlatformOrgPage,
+  PlatformOrgQuery,
+  PlatformOrgUpdate,
+} from './organizations.models';
+
+const silent = (): HttpContext => new HttpContext().set(SILENT_ERRORS, true);
 
 @Injectable({ providedIn: 'root' })
 export class OrganizationsApi {
@@ -15,6 +24,16 @@ export class OrganizationsApi {
 
   detail(id: string): Observable<PlatformOrgDetail> {
     return this.http.get<PlatformOrgDetail>(`/platform/organizations/${id}`);
+  }
+
+  update(id: string, body: PlatformOrgUpdate): Observable<PlatformOrgDetail> {
+    return this.http.patch<PlatformOrgDetail>(`/platform/organizations/${id}`, body, { context: silent() });
+  }
+
+  cities(countryId: string, search: string): Observable<CityOption[]> {
+    return this.http.get<CityOption[]>(`/catalogs/countries/${countryId}/cities`, {
+      params: toParams({ search: search || undefined, limit: 30 }),
+    });
   }
 
   exportCsv(query: Omit<PlatformOrgQuery, 'page' | 'limit'>): Observable<ExportedFile> {

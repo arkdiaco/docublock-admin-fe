@@ -66,6 +66,7 @@ describe('DesignSystemComponent', () => {
     expect(host.querySelectorAll('dba-env-pill').length).toBe(3);
     expect(host.querySelectorAll('dba-nav-group').length).toBe(3);
     expect(host.querySelectorAll('dba-action-menu').length).toBe(1);
+    expect(host.querySelectorAll('dba-org-flag').length).toBe(2);
     expect(host.querySelector('.nav-demo .trigger--on .count')?.textContent?.trim()).toBe('9');
     expect(host.querySelectorAll('.nav-demo__drawer .link--drawer').length).toBe(4);
 

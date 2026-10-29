@@ -283,8 +283,6 @@
     "errorLead": "Try again.",
     "soonTitle": "This section is coming soon",
     "soonLead": "We're building it in a later phase.",
-    "reseller": "Reseller",
-    "test": "Test",
     "profile": "Profile",
     "modules": "Contracted modules",
     "planUsage": "Plan and usage",
@@ -302,7 +300,10 @@
       "source": "Source",
       "validity": "Validity",
       "documents": "Documents",
-      "members": "Members"
+      "members": "Members",
+      "city": "City",
+      "language": "Language",
+      "constitution": "Incorporated"
     },
     "module": {
       "pagares": "Promissory notes",
@@ -530,5 +531,47 @@
     "success": "Done",
     "error": "Error",
     "info": "Notice"
+  },
+  "orgFlag": {
+    "reseller": "RESELLER",
+    "test": "TEST"
+  },
+  "orgEdit": {
+    "open": "Edit",
+    "title": "Edit profile",
+    "save": "Save changes",
+    "saved": "Profile updated",
+    "f": {
+      "businessName": "Legal name",
+      "tributaryNumber": "Tax number",
+      "constitutionDate": "Incorporation date",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "webSite": "Website",
+      "city": "City",
+      "language": "Language",
+      "isTest": "Test organization",
+      "reason": "Reason · kept in the audit log"
+    },
+    "nitHint": "Validated against the country rule; it can't belong to another organization.",
+    "emailInvalid": "Enter a valid email",
+    "dateInvalid": "Use the YYYY-MM-DD format",
+    "cityPlaceholder": "Search a city",
+    "cityEmpty": "No city with that name",
+    "noCountry": "The organization has no country",
+    "isTestHint": "Shown as TEST in the list and the record so it isn't mistaken for a real customer.",
+    "reasonPlaceholder": "Optional: why this change is made",
+    "lang": {
+      "es": "Spanish",
+      "en": "English"
+    },
+    "error": {
+      "TRIBUTARY_NUMBER_INVALID": "That tax number doesn't match the country rule.",
+      "NIT_EN_USO": "Another organization already has that tax number.",
+      "CIUDAD_FUERA_DEL_PAIS": "The city isn't in the organization's country.",
+      "ORG_NO_EXISTE": "The organization no longer exists.",
+      "generic": "The profile couldn't be saved. Try again."
+    }
   }
 }

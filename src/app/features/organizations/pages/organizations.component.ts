@@ -21,6 +21,7 @@ import { DataTableComponent, type DataColumn } from '../../../shared/ui/data-tab
 import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
 import { FilterPillsComponent, type FilterPill } from '../../../shared/ui/filter-pills.component';
 import { IconComponent } from '../../../shared/ui/icon.component';
+import { OrgFlagComponent } from '../../../shared/ui/org-flag.component';
 import { OrgStateComponent } from '../../../shared/ui/org-state.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
 import { OrganizationsApi } from '../data/organizations.api';
@@ -77,6 +78,7 @@ const initialsOf = (name: string): string =>
     OrgStateComponent,
     EmptyStateComponent,
     SectionLoaderComponent,
+    OrgFlagComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -136,7 +138,12 @@ const initialsOf = (name: string): string =>
               <div class="dba-td org-cell">
                 <span class="org-cell__avatar" aria-hidden="true">{{ row.initials }}</span>
                 <span class="org-cell__text">
-                  <span class="org-cell__name">{{ row.businessName }}</span>
+                  <span class="org-cell__name">
+                    <span class="org-cell__label">{{ row.businessName }}</span>
+                    @if (row.isTest) {
+                      <dba-org-flag kind="test" />
+                    }
+                  </span>
                   <span class="org-cell__nit">{{ row.tributaryNumber }}</span>
                 </span>
               </div>
@@ -265,9 +272,17 @@ const initialsOf = (name: string): string =>
     }
 
     .org-cell__name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
       font-size: var(--dba-text-cell);
       font-weight: 500;
       color: var(--dba-ink);
+    }
+
+    .org-cell__label {
+      min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;

@@ -12,15 +12,21 @@ import {
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import { LatestRequest } from '../../../shared/http/latest-request';
+import { AuthStore } from '../../../core/auth/auth.store';
+import { NotificationService } from '../../../core/ui/notification.service';
+import { errorCodeOf } from '../../../shared/http/error-code';
 import { ButtonComponent } from '../../../shared/ui/button.component';
+import { IconComponent } from '../../../shared/ui/icon.component';
+import { OrgFlagComponent } from '../../../shared/ui/org-flag.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
 import { ModuleToggleComponent } from '../../../shared/ui/module-toggle.component';
 import { QuotaBarComponent } from '../../../shared/ui/quota-bar.component';
 import { RecordHeaderComponent } from '../../../shared/ui/record-header.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
 import { UnderlineTabsComponent, type UnderlineTab } from '../../../shared/ui/underline-tabs.component';
+import { OrgProfileFormComponent } from '../components/org-profile-form.component';
 import { OrganizationsApi } from '../data/organizations.api';
-import type { PlatformOrgDetail } from '../data/organizations.models';
+import type { PlatformOrgDetail, PlatformOrgUpdate } from '../data/organizations.models';
 import { orgStateView } from '../data/platform-org-state';
 
 const TAB_KEYS = [
@@ -41,6 +47,8 @@ const MODULES = [
   { code: 'bienes_raices', abbr: 'BR', labelKey: 'orgd.module.realEstate' },
 ] as const;
 
+const ORG_EDIT_ERRORS = ['TRIBUTARY_NUMBER_INVALID', 'NIT_EN_USO', 'CIUDAD_FUERA_DEL_PAIS', 'ORG_NO_EXISTE'];
+
 const initialsOf = (name: string): string =>
   name
     .split(/\s+/)
@@ -60,6 +68,9 @@ const initialsOf = (name: string): string =>
     EmptyStateComponent,
     SectionLoaderComponent,
     ButtonComponent,
+    IconComponent,
+    OrgFlagComponent,
+    OrgProfileFormComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -73,7 +84,6 @@ const initialsOf = (name: string): string =>
     } @else if (detail(); as org) {
       <div class="od">
         <dba-record-header
-          [crumbs]="['nav.crumbRoot', 'nav.group.clients', 'nav.organizations', org.businessName]"
           [initials]="initials()"
           [title]="org.businessName"
           [state]="stateFamily()"
@@ -82,10 +92,16 @@ const initialsOf = (name: string): string =>
         >
           <div actions class="od__flags">
             @if (org.isReseller) {
-              <span class="od__flag">{{ 'orgd.reseller' | translate }}</span>
+              <dba-org-flag kind="reseller" />
             }
             @if (org.isTest) {
-              <span class="od__flag od__flag--test">{{ 'orgd.test' | translate }}</span>
+              <dba-org-flag kind="test" />
+            }
+            @if (canEdit()) {
+              <button dba-button variant="secondary" (click)="editing.set(true)">
+                <db-icon name="pencil" [size]="15" />
+                {{ 'orgEdit.open' | translate }}
+              </button>
             }
           </div>
         </dba-record-header>
@@ -102,6 +118,8 @@ const initialsOf = (name: string): string =>
                   <dd class="dba-mono">{{ org.tributaryNumber }}</dd>
                   <dt>{{ 'orgd.f.country' | translate }}</dt>
                   <dd>{{ org.countryName || '—' }}</dd>
+                  <dt>{{ 'orgd.f.city' | translate }}</dt>
+                  <dd>{{ org.cityName || '—' }}</dd>
                   <dt>{{ 'orgd.f.email' | translate }}</dt>
                   <dd>{{ org.email || '—' }}</dd>
                   <dt>{{ 'orgd.f.phone' | translate }}</dt>
@@ -110,6 +128,10 @@ const initialsOf = (name: string): string =>
                   <dd>{{ org.address || '—' }}</dd>
                   <dt>{{ 'orgd.f.web' | translate }}</dt>
                   <dd>{{ org.webSite || '—' }}</dd>
+                  <dt>{{ 'orgd.f.language' | translate }}</dt>
+                  <dd>{{ org.language ? ('orgEdit.lang.' + org.language | translate) : '—' }}</dd>
+                  <dt>{{ 'orgd.f.constitution' | translate }}</dt>
+                  <dd class="dba-mono">{{ org.constitutionDate || '—' }}</dd>
                   <dt>{{ 'orgd.f.created' | translate }}</dt>
                   <dd class="dba-mono">{{ created() }}</dd>
                 </dl>
@@ -154,6 +176,10 @@ const initialsOf = (name: string): string =>
           </div>
         }
       </div>
+
+      @if (editing()) {
+        <dba-org-profile-form [org]="org" [busy]="saving()" (submitted)="save($event)" (dismissed)="editing.set(false)" />
+      }
     }
   `,
   styles: `
@@ -167,24 +193,6 @@ const initialsOf = (name: string): string =>
       display: flex;
       align-items: center;
       gap: 8px;
-    }
-
-    .od__flag {
-      display: inline-flex;
-      align-items: center;
-      height: var(--dba-height-tag);
-      padding: 0 10px;
-      border: 1px solid var(--dba-border-control);
-      border-radius: var(--dba-radius-pill);
-      font-size: var(--dba-text-small);
-      font-weight: 600;
-      color: var(--dba-text-soft);
-    }
-
-    .od__flag--test {
-      border-color: var(--dba-state-warning-border);
-      background: var(--dba-state-warning-bg);
-      color: var(--dba-state-warning-fg);
     }
 
     .od__cols {
@@ -312,6 +320,11 @@ export class OrganizationDetailComponent {
   });
 
   private readonly latest = new LatestRequest();
+  private readonly auth = inject(AuthStore);
+  private readonly notify = inject(NotificationService);
+  protected readonly editing = signal(false);
+  protected readonly saving = signal(false);
+  protected readonly canEdit = computed(() => this.auth.canManage('clients'));
 
   constructor() {
     effect(() => {
@@ -327,6 +340,21 @@ export class OrganizationDetailComponent {
 
   protected reload(): void {
     void this.load(this.id());
+  }
+
+  protected async save(changes: PlatformOrgUpdate): Promise<void> {
+    this.saving.set(true);
+    try {
+      this.detail.set(await firstValueFrom(this.api.update(this.id(), changes)));
+      this.editing.set(false);
+      this.notify.success(this.translate.instant('orgEdit.saved') as string);
+    } catch (error) {
+      const code = errorCodeOf(error);
+      const known = code && ORG_EDIT_ERRORS.includes(code);
+      this.notify.error(this.translate.instant(known ? `orgEdit.error.${code}` : 'orgEdit.error.generic') as string);
+    } finally {
+      this.saving.set(false);
+    }
   }
 
   private async load(id: string): Promise<void> {

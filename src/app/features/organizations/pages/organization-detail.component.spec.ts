@@ -6,6 +6,7 @@ import { provideTranslateService, TranslateLoader, TranslateService, type Transl
 import { MessageService } from 'primeng/api';
 import { of, type Observable } from 'rxjs';
 import es from '../../../../../public/i18n/es.json';
+import { AuthStore } from '../../../core/auth/auth.store';
 import { API_BASE_URL } from '../../../core/config/api.tokens';
 import { OrganizationDetailComponent } from './organization-detail.component';
 import type { PlatformOrgDetail } from '../data/organizations.models';
@@ -23,6 +24,10 @@ const detail = (over: Partial<PlatformOrgDetail> = {}): PlatformOrgDetail => ({
   type: 2,
   countryName: 'Colombia',
   email: 'hola@sierranorte.aero',
+  countryId: '65a0000000000000000000c0',
+  cityId: 'city-bog',
+  cityName: 'Bogotá',
+  language: 'es',
   state: 'active',
   isReseller: false,
   isTest: true,
@@ -72,7 +77,7 @@ describe('OrganizationDetailComponent', () => {
     expect(host.querySelector('.rec__meta')?.textContent).toContain('Corporativo');
     expect(host.querySelectorAll('db-underline-tabs .tab').length).toBe(9);
     expect(host.querySelector('.tab--on')?.textContent).toContain('Resumen');
-    expect(host.querySelector('.od__flag--test')?.textContent).toContain('Prueba');
+    expect(host.querySelector('dba-org-flag .flag--test')?.textContent).toContain('PRUEBA');
   });
 
   it('el Resumen trae perfil, módulos contratados y el plan con su consumo', async () => {
@@ -98,5 +103,71 @@ describe('OrganizationDetailComponent', () => {
     expect(host.querySelector('.od__muted')?.textContent).toContain('Sin suscripción');
     expect(host.querySelector('dba-quota-bar')).toBeNull();
     expect(host.querySelector('.rec__card .st--closed')).not.toBeNull();
+  });
+
+  const conPermisos = (permisos: string[]) =>
+    TestBed.inject(AuthStore).setProfile({
+      user: { id: 'u1', names: 'Marta', surNames: 'Vidal', email: 'marta@docublock.co', identification: '', imageProfile: null },
+      platformStaff: true,
+      platformPermissions: permisos,
+    });
+
+  it('sin platform:clients:manage no ofrece editar', async () => {
+    conPermisos(['platform:clients']);
+    const { host } = await montar();
+    expect([...host.querySelectorAll('button[dba-button]')].some((b) => b.textContent?.includes('Editar'))).toBe(false);
+    expect(host.querySelector('.od__dl')?.textContent).toContain('Bogotá');
+    expect(host.querySelector('.od__dl')?.textContent).toContain('Español');
+  });
+
+  it('editar manda solo lo que cambió y la ficha queda con la respuesta', async () => {
+    conPermisos(['platform:clients', 'platform:clients:manage']);
+    const { fixture, host } = await montar();
+    [...host.querySelectorAll<HTMLButtonElement>('button[dba-button]')].find((b) => b.textContent?.includes('Editar'))!.click();
+    fixture.detectChanges();
+    http.expectOne((r) => r.url.startsWith('/catalogs/countries/65a0000000000000000000c0/cities')).flush([
+      { id: 'city-bog', name: 'Bogotá' },
+      { id: 'city-med', name: 'Medellín' },
+    ]);
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const guardar = () => host.querySelector<HTMLButtonElement>('dba-org-profile-form .foot__go')!;
+    expect(guardar().disabled).toBe(true);
+    const nombre = host.querySelector<HTMLInputElement>('dba-org-profile-form .field__input')!;
+    nombre.value = 'Aeropuerto Sierra Norte S.A.S.';
+    nombre.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(guardar().disabled).toBe(false);
+    guardar().click();
+    const req = http.expectOne((r) => r.method === 'PATCH' && r.url === '/platform/organizations/org-1');
+    expect(req.request.body).toEqual({ businessName: 'Aeropuerto Sierra Norte S.A.S.' });
+    req.flush(detail({ businessName: 'Aeropuerto Sierra Norte S.A.S.' }));
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(host.querySelector('dba-org-profile-form')).toBeNull();
+    expect(host.querySelector('.rec__name')?.textContent?.trim()).toBe('Aeropuerto Sierra Norte S.A.S.');
+  });
+
+  it('un NIT de otra organización deja el formulario abierto con el aviso', async () => {
+    conPermisos(['platform:clients', 'platform:clients:manage']);
+    const { fixture, host } = await montar();
+    const avisos = vi.spyOn(TestBed.inject(MessageService), 'add');
+    [...host.querySelectorAll<HTMLButtonElement>('button[dba-button]')].find((b) => b.textContent?.includes('Editar'))!.click();
+    fixture.detectChanges();
+    http.expectOne((r) => r.url.includes('/cities')).flush([]);
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const nit = host.querySelectorAll<HTMLInputElement>('dba-org-profile-form .field__input')[1];
+    nit.value = '800987654';
+    nit.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    host.querySelector<HTMLButtonElement>('dba-org-profile-form .foot__go')!.click();
+    http
+      .expectOne((r) => r.method === 'PATCH')
+      .flush({ code: 'NIT_EN_USO', message: 'x' }, { status: 409, statusText: 'Conflict' });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(host.querySelector('dba-org-profile-form')).not.toBeNull();
+    expect(avisos.mock.calls.map(([m]) => m.detail)).toEqual(['Ya existe otra organización con ese número tributario.']);
   });
 });

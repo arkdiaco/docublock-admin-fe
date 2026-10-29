@@ -14,6 +14,7 @@ export interface PlatformOrgRow {
   members: number;
   warning: boolean;
   isReseller: boolean;
+  isTest?: boolean;
   createdAt?: string;
 }
 
@@ -48,6 +49,8 @@ export interface PlatformOrgDetail {
   countryId?: string;
   countryName?: string;
   cityId?: string;
+  cityName?: string;
+  language?: string;
   phone?: string;
   email?: string;
   address?: string;
@@ -70,4 +73,23 @@ export interface PlatformOrgDetail {
   documents: { used: number; limit: number | null };
   members: number;
   modules: string[];
+}
+
+export interface PlatformOrgUpdate {
+  businessName?: string;
+  tributaryNumber?: string;
+  cityId?: string;
+  phone?: string;
+  address?: string;
+  email?: string;
+  webSite?: string;
+  language?: string;
+  constitutionDate?: string;
+  isTest?: boolean;
+  reason?: string;
+}
+
+export interface CityOption {
+  id: string;
+  name: string;
 }

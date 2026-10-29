@@ -13,6 +13,7 @@ import { EnvPillComponent } from '../../../shared/ui/env-pill.component';
 import { FieldComponent } from '../../../shared/ui/field.component';
 import { FilterPillsComponent, type FilterPill } from '../../../shared/ui/filter-pills.component';
 import { ActionMenuComponent, type ActionMenuItem } from '../../../shared/ui/action-menu.component';
+import { OrgFlagComponent } from '../../../shared/ui/org-flag.component';
 import { NavGroupComponent, type NavGroupLink } from '../../../shared/ui/nav-group.component';
 import { IconComponent } from '../../../shared/ui/icon.component';
 import { KpiCardComponent } from '../../../shared/ui/kpi-card.component';
@@ -149,6 +150,7 @@ const pctOf = (used: number, limit: number): string =>
   imports: [
     NavGroupComponent,
     ActionMenuComponent,
+    OrgFlagComponent,
     TranslatePipe,
     ButtonComponent,
     FieldComponent,
@@ -320,6 +322,10 @@ const pctOf = (used: number, limit: number): string =>
               <dba-env-pill env="production" />
               <dba-env-pill env="canary" />
               <dba-env-pill env="dev" />
+            </div>
+            <div class="card__row card__row--wrap">
+              <dba-org-flag kind="reseller" />
+              <dba-org-flag kind="test" />
             </div>
             <div class="card__row card__row--wrap">
               @for (state of states; track state.key) {

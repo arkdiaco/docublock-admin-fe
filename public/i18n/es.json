@@ -283,8 +283,6 @@
     "errorLead": "Inténtalo de nuevo.",
     "soonTitle": "Esta sección llega pronto",
     "soonLead": "La estamos construyendo en una fase siguiente.",
-    "reseller": "Reseller",
-    "test": "Prueba",
     "profile": "Perfil",
     "modules": "Módulos contratados",
     "planUsage": "Plan y consumo",
@@ -302,7 +300,10 @@
       "source": "Origen",
       "validity": "Vigencia",
       "documents": "Documentos",
-      "members": "Miembros"
+      "members": "Miembros",
+      "city": "Ciudad",
+      "language": "Idioma",
+      "constitution": "Constitución"
     },
     "module": {
       "pagares": "Pagarés",
@@ -530,5 +531,47 @@
     "success": "Listo",
     "error": "Error",
     "info": "Aviso"
+  },
+  "orgFlag": {
+    "reseller": "RESELLER",
+    "test": "PRUEBA"
+  },
+  "orgEdit": {
+    "open": "Editar",
+    "title": "Editar perfil",
+    "save": "Guardar cambios",
+    "saved": "Perfil actualizado",
+    "f": {
+      "businessName": "Razón social",
+      "tributaryNumber": "Número tributario",
+      "constitutionDate": "Fecha de constitución",
+      "email": "Correo",
+      "phone": "Teléfono",
+      "address": "Dirección",
+      "webSite": "Sitio web",
+      "city": "Ciudad",
+      "language": "Idioma",
+      "isTest": "Organización de prueba",
+      "reason": "Motivo · queda en la bitácora"
+    },
+    "nitHint": "Se valida con la regla del país y no puede ser de otra organización.",
+    "emailInvalid": "Escribe un correo válido",
+    "dateInvalid": "Usa el formato AAAA-MM-DD",
+    "cityPlaceholder": "Busca una ciudad",
+    "cityEmpty": "Ninguna ciudad con ese nombre",
+    "noCountry": "La organización no tiene país",
+    "isTestHint": "Se marca como PRUEBA en la lista y en la ficha para distinguirla de los clientes reales.",
+    "reasonPlaceholder": "Opcional: por qué se hace este cambio",
+    "lang": {
+      "es": "Español",
+      "en": "Inglés"
+    },
+    "error": {
+      "TRIBUTARY_NUMBER_INVALID": "Ese número tributario no cumple la regla del país.",
+      "NIT_EN_USO": "Ya existe otra organización con ese número tributario.",
+      "CIUDAD_FUERA_DEL_PAIS": "La ciudad no pertenece al país de la organización.",
+      "ORG_NO_EXISTE": "La organización ya no existe.",
+      "generic": "No se pudo guardar el perfil. Inténtalo de nuevo."
+    }
   }
 }

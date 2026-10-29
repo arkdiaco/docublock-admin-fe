@@ -1,4 +1,5 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
+import { SILENT_ERRORS } from '../../../core/http/http.interceptors';
 import { Injectable, inject } from '@angular/core';
 import type { Observable } from 'rxjs';
 
@@ -21,6 +22,8 @@ export class MyAccessApi {
   }
 
   revoke(sid: string): Observable<{ revoked: boolean }> {
-    return this.http.delete<{ revoked: boolean }>(`/platform/auth/sessions/${sid}`);
+    return this.http.delete<{ revoked: boolean }>(`/platform/auth/sessions/${sid}`, {
+      context: new HttpContext().set(SILENT_ERRORS, true),
+    });
   }
 }
