@@ -6,7 +6,10 @@ import { provideTranslateService, TranslateLoader, TranslateService, type Transl
 import { MessageService } from 'primeng/api';
 import { of, type Observable } from 'rxjs';
 import es from '../../../../../public/i18n/es.json';
+import { By } from '@angular/platform-browser';
 import { AuthStore } from '../../../core/auth/auth.store';
+import { DialogService } from '../../../core/ui/dialog.service';
+import { ResellerPickerComponent } from '../components/reseller-picker.component';
 import { API_BASE_URL } from '../../../core/config/api.tokens';
 import { OrganizationDetailComponent } from './organization-detail.component';
 import type { PlatformOrgDetail } from '../data/organizations.models';
@@ -169,5 +172,70 @@ describe('OrganizationDetailComponent', () => {
     fixture.detectChanges();
     expect(host.querySelector('dba-org-profile-form')).not.toBeNull();
     expect(avisos.mock.calls.map(([m]) => m.detail)).toEqual(['Ya existe otra organización con ese número tributario.']);
+  });
+
+  const boton = (host: HTMLElement, texto: string) =>
+    [...host.querySelectorAll<HTMLButtonElement>('button[dba-button]')].find((b) => b.textContent?.trim() === texto);
+
+  it('suspender pide motivo y escribir el NIT, y la ficha pasa a suspendida con Reactivar', async () => {
+    conPermisos(['platform:clients', 'platform:clients:manage']);
+    const { fixture, host } = await montar();
+    const abrir = vi.spyOn(TestBed.inject(DialogService), 'open').mockResolvedValue({ answer: 'confirm', reason: 'Impago de 45 días' });
+    boton(host, 'Suspender')!.click();
+    await vi.waitFor(() => expect(abrir).toHaveBeenCalled());
+    const pedido = abrir.mock.calls[0][0];
+    expect(pedido.challenge?.identifier).toBe('900123456');
+    expect(pedido.reason?.required).toBe(true);
+    let req!: ReturnType<HttpTestingController['expectOne']>;
+    await vi.waitFor(() => {
+      req = http.expectOne((r) => r.method === 'POST' && r.url === '/platform/organizations/org-1/suspend');
+    });
+    expect(req.request.body).toEqual({ reason: 'Impago de 45 días' });
+    req.flush(detail({ state: 'suspended' }));
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(boton(host, 'Reactivar')).toBeDefined();
+    expect(boton(host, 'Suspender')).toBeUndefined();
+  });
+
+  it('activar un módulo manda la lista completa y lo deja encendido', async () => {
+    conPermisos(['platform:clients', 'platform:clients:manage']);
+    const { fixture, host } = await montar();
+    const switches = host.querySelectorAll<HTMLButtonElement>('[role="switch"]');
+    expect(switches[1].disabled).toBe(false);
+    switches[1].click();
+    const req = http.expectOne((r) => r.method === 'PATCH' && r.url === '/platform/organizations/org-1/modules');
+    expect(req.request.body).toEqual({ modules: ['pagares', 'bienes_raices', 'consentimiento_informado'] });
+    req.flush({});
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(host.querySelectorAll('[role="switch"]')[1].getAttribute('aria-checked')).toBe('true');
+  });
+
+  it('sin :manage los módulos quedan de solo lectura y no se ofrece cambiar reseller', async () => {
+    conPermisos(['platform:clients']);
+    const { host } = await montar();
+    expect(host.querySelector<HTMLButtonElement>('[role="switch"]')!.disabled).toBe(true);
+    expect(host.querySelector('.od__link')).toBeNull();
+    expect(boton(host, 'Suspender')).toBeUndefined();
+  });
+
+  it('asignar reseller guarda y recarga la ficha con su nombre', async () => {
+    conPermisos(['platform:clients', 'platform:commercial', 'platform:commercial:manage']);
+    const { fixture, host } = await montar();
+    expect(host.querySelector('.od__reseller')?.textContent).toContain('Sin reseller');
+    host.querySelector<HTMLButtonElement>('.od__link')!.click();
+    fixture.detectChanges();
+    http.expectOne((r) => r.url === '/platform/resellers').flush({ total: 1, items: [{ id: 'r1', businessName: 'Canal Andino', tributaryNumber: '901' }] });
+    await fixture.whenStable();
+    fixture.debugElement.query(By.directive(ResellerPickerComponent)).componentInstance.submitted.emit('r1');
+    const put = http.expectOne((r) => r.method === 'PUT' && r.url === '/platform/organizations/org-1/reseller');
+    expect(put.request.body).toEqual({ resellerId: 'r1' });
+    put.flush({});
+    await vi.waitFor(() => http.expectOne('/platform/organizations/org-1').flush(detail({ resellerId: 'r1', resellerName: 'Canal Andino' })));
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(host.querySelector('dba-reseller-picker')).toBeNull();
+    expect(host.querySelector('.od__reseller')?.textContent).toContain('Canal Andino');
   });
 });

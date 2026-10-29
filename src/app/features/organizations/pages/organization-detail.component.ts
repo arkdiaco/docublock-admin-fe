@@ -10,9 +10,10 @@ import {
   signal,
 } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, type Observable } from 'rxjs';
 import { LatestRequest } from '../../../shared/http/latest-request';
 import { AuthStore } from '../../../core/auth/auth.store';
+import { DialogService } from '../../../core/ui/dialog.service';
 import { NotificationService } from '../../../core/ui/notification.service';
 import { errorCodeOf } from '../../../shared/http/error-code';
 import { ButtonComponent } from '../../../shared/ui/button.component';
@@ -25,6 +26,7 @@ import { RecordHeaderComponent } from '../../../shared/ui/record-header.componen
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
 import { UnderlineTabsComponent, type UnderlineTab } from '../../../shared/ui/underline-tabs.component';
 import { OrgProfileFormComponent } from '../components/org-profile-form.component';
+import { ResellerPickerComponent } from '../components/reseller-picker.component';
 import { OrganizationsApi } from '../data/organizations.api';
 import type { PlatformOrgDetail, PlatformOrgUpdate } from '../data/organizations.models';
 import { orgStateView } from '../data/platform-org-state';
@@ -71,6 +73,7 @@ const initialsOf = (name: string): string =>
     IconComponent,
     OrgFlagComponent,
     OrgProfileFormComponent,
+    ResellerPickerComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -102,6 +105,15 @@ const initialsOf = (name: string): string =>
                 <db-icon name="pencil" [size]="15" />
                 {{ 'orgEdit.open' | translate }}
               </button>
+              @if (org.state === 'suspended') {
+                <button dba-button variant="secondary" [busy]="switching()" (click)="reactivate(org)">
+                  {{ 'orgState.reactivate' | translate }}
+                </button>
+              } @else {
+                <button dba-button variant="destructive" [busy]="switching()" (click)="suspend(org)">
+                  {{ 'orgState.suspend' | translate }}
+                </button>
+              }
             }
           </div>
         </dba-record-header>
@@ -134,6 +146,13 @@ const initialsOf = (name: string): string =>
                   <dd class="dba-mono">{{ org.constitutionDate || '—' }}</dd>
                   <dt>{{ 'orgd.f.created' | translate }}</dt>
                   <dd class="dba-mono">{{ created() }}</dd>
+                  <dt>{{ 'orgd.f.reseller' | translate }}</dt>
+                  <dd class="od__reseller">
+                    <span>{{ org.resellerName || ('orgReseller.none' | translate) }}</span>
+                    @if (canAssignReseller()) {
+                      <button type="button" class="od__link" (click)="pickingReseller.set(true)">{{ 'orgReseller.change' | translate }}</button>
+                    }
+                  </dd>
                 </dl>
               </section>
 
@@ -141,7 +160,13 @@ const initialsOf = (name: string): string =>
                 <h2 class="dba-panel">{{ 'orgd.modules' | translate }}</h2>
                 <div class="od__modules">
                   @for (mod of modules; track mod.code) {
-                    <dba-module-toggle [abbr]="mod.abbr" [name]="mod.labelKey | translate" [on]="has(org, mod.code)" disabled />
+                    <dba-module-toggle
+                      [abbr]="mod.abbr"
+                      [name]="mod.labelKey | translate"
+                      [on]="has(org, mod.code)"
+                      [disabled]="!canEdit() || savingModule()"
+                      (toggled)="toggleModule(org, mod.code, $event)"
+                    />
                   }
                 </div>
               </section>
@@ -177,6 +202,16 @@ const initialsOf = (name: string): string =>
         }
       </div>
 
+      @if (pickingReseller()) {
+        <dba-reseller-picker
+          [org]="org"
+          [noneLabel]="'orgReseller.none' | translate"
+          [busy]="saving()"
+          (submitted)="assignReseller($event)"
+          (dismissed)="pickingReseller.set(false)"
+        />
+      }
+
       @if (editing()) {
         <dba-org-profile-form [org]="org" [busy]="saving()" (submitted)="save($event)" (dismissed)="editing.set(false)" />
       }
@@ -193,6 +228,33 @@ const initialsOf = (name: string): string =>
       display: flex;
       align-items: center;
       gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .od__reseller {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .od__link {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      font: inherit;
+      font-weight: 600;
+      color: var(--dba-violet-600);
+      cursor: pointer;
+    }
+
+    .od__link:hover {
+      text-decoration: underline;
+    }
+
+    .od__link:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px var(--dba-focus-halo);
     }
 
     .od__cols {
@@ -325,6 +387,11 @@ export class OrganizationDetailComponent {
   protected readonly editing = signal(false);
   protected readonly saving = signal(false);
   protected readonly canEdit = computed(() => this.auth.canManage('clients'));
+  protected readonly canAssignReseller = computed(() => this.auth.canManage('commercial'));
+  protected readonly switching = signal(false);
+  protected readonly savingModule = signal(false);
+  protected readonly pickingReseller = signal(false);
+  private readonly dialogs = inject(DialogService);
 
   constructor() {
     effect(() => {
@@ -337,6 +404,76 @@ export class OrganizationDetailComponent {
     return org.modules.includes(code);
   }
 
+  protected async suspend(org: PlatformOrgDetail): Promise<void> {
+    const answer = await this.dialogs.open({
+      intent: 'danger',
+      icon: 'triangleAlert',
+      title: 'orgState.suspendTitle',
+      message: 'orgState.suspendMessage',
+      params: { name: org.businessName },
+      confirmLabel: 'orgState.suspend',
+      reason: { labelKey: 'orgState.reasonLabel', placeholder: 'orgState.reasonPlaceholder', limit: 500, quick: [], required: true },
+      challenge: { identifier: org.tributaryNumber, actionKey: 'orgState.suspendVerb' },
+    });
+    if (answer.answer !== 'confirm' || !answer.reason) return;
+    await this.applyState(this.api.suspend(org.id, answer.reason), 'orgState.suspended');
+  }
+
+  protected async reactivate(org: PlatformOrgDetail): Promise<void> {
+    const answer = await this.dialogs.open({
+      intent: 'primary',
+      icon: 'circleCheck',
+      title: 'orgState.reactivateTitle',
+      message: 'orgState.reactivateMessage',
+      params: { name: org.businessName },
+      confirmLabel: 'orgState.reactivate',
+      reason: { labelKey: 'orgState.reasonLabel', placeholder: 'orgState.reasonPlaceholder', limit: 500, quick: [], required: true },
+    });
+    if (answer.answer !== 'confirm' || !answer.reason) return;
+    await this.applyState(this.api.reactivate(org.id, answer.reason), 'orgState.reactivated');
+  }
+
+  protected async toggleModule(org: PlatformOrgDetail, code: string, on: boolean): Promise<void> {
+    const modules = on ? [...new Set([...org.modules, code])] : org.modules.filter((m) => m !== code);
+    this.savingModule.set(true);
+    try {
+      await firstValueFrom(this.api.setModules(org.id, modules));
+      this.detail.update((current) => (current ? { ...current, modules } : current));
+      this.notify.success(this.translate.instant(on ? 'orgModules.on' : 'orgModules.off') as string);
+    } catch {
+      this.notify.error(this.translate.instant('orgModules.error') as string);
+    } finally {
+      this.savingModule.set(false);
+    }
+  }
+
+  protected async assignReseller(resellerId: string | null): Promise<void> {
+    this.saving.set(true);
+    try {
+      await firstValueFrom(this.api.assignReseller(this.id(), resellerId));
+      this.detail.set(await firstValueFrom(this.api.detail(this.id())));
+      this.pickingReseller.set(false);
+      this.notify.success(this.translate.instant('orgReseller.saved') as string);
+    } catch (error) {
+      const code = errorCodeOf(error);
+      const known = code === 'NO_ES_RESELLER' || code === 'RESELLER_PROPIO';
+      this.notify.error(this.translate.instant(known ? `orgReseller.error.${code}` : 'orgReseller.error.generic') as string);
+    } finally {
+      this.saving.set(false);
+    }
+  }
+
+  private async applyState(request: Observable<PlatformOrgDetail>, doneKey: string): Promise<void> {
+    this.switching.set(true);
+    try {
+      this.detail.set(await firstValueFrom(request));
+      this.notify.success(this.translate.instant(doneKey) as string);
+    } catch {
+      this.notify.error(this.translate.instant('orgState.error') as string);
+    } finally {
+      this.switching.set(false);
+    }
+  }
 
   protected reload(): void {
     void this.load(this.id());

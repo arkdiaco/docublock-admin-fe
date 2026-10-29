@@ -303,7 +303,8 @@
       "members": "Miembros",
       "city": "Ciudad",
       "language": "Idioma",
-      "constitution": "Constitución"
+      "constitution": "Constitución",
+      "reseller": "Reseller"
     },
     "module": {
       "pagares": "Pagarés",
@@ -572,6 +573,40 @@
       "CIUDAD_FUERA_DEL_PAIS": "La ciudad no pertenece al país de la organización.",
       "ORG_NO_EXISTE": "La organización ya no existe.",
       "generic": "No se pudo guardar el perfil. Inténtalo de nuevo."
+    }
+  },
+  "orgState": {
+    "suspend": "Suspender",
+    "reactivate": "Reactivar",
+    "suspendVerb": "suspender",
+    "suspendTitle": "¿Suspender {{name}}?",
+    "suspendMessage": "Sus usuarios dejan de poder entrar a ella y quien ya esté dentro pierde el acceso en minutos. Los datos se conservan y puedes reactivarla.",
+    "reactivateTitle": "¿Reactivar {{name}}?",
+    "reactivateMessage": "Sus usuarios vuelven a poder entrar con sus roles de siempre.",
+    "reasonLabel": "Motivo · queda en la bitácora",
+    "reasonPlaceholder": "Por qué se hace este cambio",
+    "suspended": "Organización suspendida",
+    "reactivated": "Organización reactivada",
+    "error": "No se pudo cambiar el estado. Inténtalo de nuevo."
+  },
+  "orgModules": {
+    "on": "Módulo activado",
+    "off": "Módulo desactivado",
+    "error": "No se pudo cambiar el módulo. Inténtalo de nuevo."
+  },
+  "orgReseller": {
+    "title": "Asignar reseller",
+    "field": "Reseller",
+    "save": "Guardar",
+    "change": "Cambiar",
+    "none": "Sin reseller",
+    "empty": "Ningún reseller con ese nombre",
+    "note": "El reseller ve esta organización en su cartera y puede administrarla.",
+    "saved": "Reseller actualizado",
+    "error": {
+      "NO_ES_RESELLER": "Esa organización ya no es reseller.",
+      "RESELLER_PROPIO": "Una organización no puede ser su propio reseller.",
+      "generic": "No se pudo cambiar el reseller. Inténtalo de nuevo."
     }
   }
 }

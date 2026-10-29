@@ -303,7 +303,8 @@
       "members": "Members",
       "city": "City",
       "language": "Language",
-      "constitution": "Incorporated"
+      "constitution": "Incorporated",
+      "reseller": "Reseller"
     },
     "module": {
       "pagares": "Promissory notes",
@@ -572,6 +573,40 @@
       "CIUDAD_FUERA_DEL_PAIS": "The city isn't in the organization's country.",
       "ORG_NO_EXISTE": "The organization no longer exists.",
       "generic": "The profile couldn't be saved. Try again."
+    }
+  },
+  "orgState": {
+    "suspend": "Suspend",
+    "reactivate": "Reactivate",
+    "suspendVerb": "suspend",
+    "suspendTitle": "Suspend {{name}}?",
+    "suspendMessage": "Its users can no longer sign in to it and anyone already inside loses access within minutes. Data is kept and you can reactivate it.",
+    "reactivateTitle": "Reactivate {{name}}?",
+    "reactivateMessage": "Its users can sign in again with their usual roles.",
+    "reasonLabel": "Reason · kept in the audit log",
+    "reasonPlaceholder": "Why this change is made",
+    "suspended": "Organization suspended",
+    "reactivated": "Organization reactivated",
+    "error": "The status couldn't be changed. Try again."
+  },
+  "orgModules": {
+    "on": "Module enabled",
+    "off": "Module disabled",
+    "error": "The module couldn't be changed. Try again."
+  },
+  "orgReseller": {
+    "title": "Assign reseller",
+    "field": "Reseller",
+    "save": "Save",
+    "change": "Change",
+    "none": "No reseller",
+    "empty": "No reseller with that name",
+    "note": "The reseller sees this organization in its portfolio and can manage it.",
+    "saved": "Reseller updated",
+    "error": {
+      "NO_ES_RESELLER": "That organization is no longer a reseller.",
+      "RESELLER_PROPIO": "An organization can't be its own reseller.",
+      "generic": "The reseller couldn't be changed. Try again."
     }
   }
 }

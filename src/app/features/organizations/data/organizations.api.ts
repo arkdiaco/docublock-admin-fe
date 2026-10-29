@@ -10,6 +10,7 @@ import type {
   PlatformOrgPage,
   PlatformOrgQuery,
   PlatformOrgUpdate,
+  ResellerOption,
 } from './organizations.models';
 
 const silent = (): HttpContext => new HttpContext().set(SILENT_ERRORS, true);
@@ -28,6 +29,28 @@ export class OrganizationsApi {
 
   update(id: string, body: PlatformOrgUpdate): Observable<PlatformOrgDetail> {
     return this.http.patch<PlatformOrgDetail>(`/platform/organizations/${id}`, body, { context: silent() });
+  }
+
+  suspend(id: string, reason: string): Observable<PlatformOrgDetail> {
+    return this.http.post<PlatformOrgDetail>(`/platform/organizations/${id}/suspend`, { reason }, { context: silent() });
+  }
+
+  reactivate(id: string, reason: string): Observable<PlatformOrgDetail> {
+    return this.http.post<PlatformOrgDetail>(`/platform/organizations/${id}/reactivate`, { reason }, { context: silent() });
+  }
+
+  setModules(id: string, modules: string[]): Observable<unknown> {
+    return this.http.patch(`/platform/organizations/${id}/modules`, { modules }, { context: silent() });
+  }
+
+  assignReseller(id: string, resellerId: string | null): Observable<unknown> {
+    return this.http.put(`/platform/organizations/${id}/reseller`, { resellerId }, { context: silent() });
+  }
+
+  resellers(search: string): Observable<ResellerOption[]> {
+    return this.http
+      .get<{ items: ResellerOption[] }>('/platform/resellers', { params: toParams({ search: search || undefined, limit: 30 }) })
+      .pipe(map((page) => page.items));
   }
 
   cities(countryId: string, search: string): Observable<CityOption[]> {

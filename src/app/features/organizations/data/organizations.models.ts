@@ -61,6 +61,7 @@ export interface PlatformOrgDetail {
   suspendedAt?: string;
   isReseller: boolean;
   resellerId?: string;
+  resellerName?: string;
   isTest: boolean;
   createdAt?: string;
   plan?: {
@@ -92,4 +93,10 @@ export interface PlatformOrgUpdate {
 export interface CityOption {
   id: string;
   name: string;
+}
+
+export interface ResellerOption {
+  id: string;
+  businessName: string;
+  tributaryNumber: string;
 }
