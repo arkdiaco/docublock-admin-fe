@@ -715,5 +715,84 @@
       "futureDate": "Elige una fecha futura",
       "wholeNumber": "Escribe un número entero"
     }
+  },
+  "quota": {
+    "loading": "Cargando los cupos…",
+    "errorTitle": "No pudimos cargar los cupos",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "pool": "Plan global",
+    "branches": "Cupos por rama",
+    "noBranches": "La organización no tiene ramas creadas: todo el consumo sale del plan global.",
+    "history": "Movimientos",
+    "noHistory": "Todavía no hay movimientos de cupos.",
+    "noActor": "Plataforma o sistema",
+    "stat": {
+      "plan": "Documentos del plan",
+      "remaining": "Restantes",
+      "assigned": "Repartidos a ramas",
+      "free": "Sin repartir",
+      "noPlan": "Sin suscripción vigente"
+    },
+    "type": {
+      "region": "Región",
+      "subsidiary": "Sede",
+      "orgArea": "Área",
+      "subArea": "Subárea"
+    },
+    "col": {
+      "branch": "Rama",
+      "assigned": "Asignado",
+      "consumed": "Consumido",
+      "available": "Disponible",
+      "when": "Fecha",
+      "action": "Movimiento",
+      "detail": "Detalle",
+      "amount": "Cantidad",
+      "actor": "Quién"
+    },
+    "action": {
+      "assign": "Asignación",
+      "transfer": "Transferencia",
+      "return": "Devolución",
+      "redistribute": "Reparto",
+      "consume": "Consumo",
+      "plan_change": "Reinicio"
+    },
+    "assign": {
+      "open": "Asignar",
+      "title": "Asignar cupo · {{name}}",
+      "now": "Hoy: {{assigned}} asignados, {{consumed}} consumidos",
+      "quota": "Cupo",
+      "confirm": "Guardar cupo",
+      "bounds": "Entre {{min}} (consumido y repartido) y {{max}} (lo que permiten el padre y el plan).",
+      "boundsOpen": "Mínimo {{min}} (consumido y repartido); sin techo."
+    },
+    "transfer": {
+      "open": "Transferir",
+      "title": "Transferir desde {{name}}",
+      "available": "Se pueden mover {{count}} documentos",
+      "dest": "Destino",
+      "global": "Devolver al plan global",
+      "amount": "Cantidad",
+      "confirm": "Transferir"
+    },
+    "reset": {
+      "open": "Reiniciar consumo",
+      "title": "¿Reiniciar el consumo de las ramas de {{name}}?",
+      "message": "El consumido de todas las ramas vuelve a cero; los cupos asignados no cambian. Es lo que pasa al empezar un periodo sin arrastre.",
+      "confirm": "Reiniciar",
+      "verb": "reiniciar"
+    },
+    "done": {
+      "assign": "Cupo actualizado",
+      "transfer": "Transferencia hecha",
+      "reset": "Consumo reiniciado ({{count}} documentos)"
+    },
+    "error": {
+      "belowMin": "No puede bajar del mínimo",
+      "aboveMax": "Supera el máximo permitido",
+      "aboveAvailable": "Supera lo que se puede mover",
+      "generic": "No se pudo guardar. Inténtalo de nuevo."
+    }
   }
 }

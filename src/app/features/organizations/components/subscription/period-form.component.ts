@@ -3,7 +3,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { FieldComponent } from '../../../../shared/ui/field.component';
 import { ModalShellComponent } from '../../../../shared/ui/modal-shell.component';
 import type { PeriodBody } from '../../data/subscription.models';
-import { endOfDay, isFutureDay } from './subscription-dates';
+import { endOfDay, isFutureDay } from '../../data/form-values';
 
 @Component({
   selector: 'dba-period-form',
@@ -33,7 +33,7 @@ import { endOfDay, isFutureDay } from './subscription-dates';
       </div>
     </db-modal-shell>
   `,
-  styleUrl: './subscription-form.scss',
+  styleUrl: '../modal-form.scss',
 })
 export class PeriodFormComponent {
   readonly current = input.required<string>();

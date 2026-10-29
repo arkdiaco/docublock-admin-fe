@@ -6,7 +6,7 @@ import { ToggleSwitch } from 'primeng/toggleswitch';
 import { FieldComponent } from '../../../../shared/ui/field.component';
 import { ModalShellComponent } from '../../../../shared/ui/modal-shell.component';
 import type { AssignPlanBody, CatalogPlan } from '../../data/subscription.models';
-import { endOfDay, isFutureDay, wholeNumber } from './subscription-dates';
+import { endOfDay, isFutureDay, wholeNumber } from '../../data/form-values';
 
 type Validity = 'plan' | 'date' | 'none';
 
@@ -102,7 +102,7 @@ type Validity = 'plan' | 'date' | 'none';
       </div>
     </db-modal-shell>
   `,
-  styleUrl: './subscription-form.scss',
+  styleUrl: '../modal-form.scss',
 })
 export class AssignPlanFormComponent {
   readonly plans = input.required<readonly CatalogPlan[]>();

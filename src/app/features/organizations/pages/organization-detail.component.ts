@@ -27,6 +27,7 @@ import { SectionLoaderComponent } from '../../../shared/ui/section-loader.compon
 import { UnderlineTabsComponent, type UnderlineTab } from '../../../shared/ui/underline-tabs.component';
 import { OrgProfileFormComponent } from '../components/org-profile-form.component';
 import { ResellerPickerComponent } from '../components/reseller-picker.component';
+import { QuotasTabComponent } from '../components/quotas/quotas-tab.component';
 import { SubscriptionTabComponent } from '../components/subscription/subscription-tab.component';
 import { OrganizationsApi } from '../data/organizations.api';
 import type { PlatformOrgDetail, PlatformOrgUpdate } from '../data/organizations.models';
@@ -76,6 +77,7 @@ const initialsOf = (name: string): string =>
     OrgProfileFormComponent,
     ResellerPickerComponent,
     SubscriptionTabComponent,
+    QuotasTabComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -197,6 +199,8 @@ const initialsOf = (name: string): string =>
               </section>
             </div>
           </div>
+        } @else if (tab() === 'quotas') {
+          <dba-quotas-tab [org]="org" />
         } @else if (tab() === 'subscription') {
           <dba-subscription-tab [org]="org" (changed)="refresh()" />
         } @else {

@@ -104,7 +104,9 @@ const TEXT_KEYS: readonly TextKey[] = [
 
         <div class="form__pair">
           <div class="form__control">
-            <label class="form__label" for="org-edit-city">{{ 'orgEdit.f.city' | translate }}</label>
+            <label class="form__label" for="org-edit-city">{{
+              'orgEdit.f.city' | translate
+            }}</label>
             <p-select
               inputId="org-edit-city"
               [options]="cities()"
@@ -125,7 +127,9 @@ const TEXT_KEYS: readonly TextKey[] = [
             />
           </div>
           <div class="form__control">
-            <label class="form__label" for="org-edit-language">{{ 'orgEdit.f.language' | translate }}</label>
+            <label class="form__label" for="org-edit-language">{{
+              'orgEdit.f.language' | translate
+            }}</label>
             <p-select
               inputId="org-edit-language"
               [options]="languages"
@@ -143,9 +147,15 @@ const TEXT_KEYS: readonly TextKey[] = [
         </div>
 
         <div class="form__switch">
-          <p-toggleswitch inputId="org-edit-test" [ngModel]="isTest()" (ngModelChange)="isTest.set($event)" />
+          <p-toggleswitch
+            inputId="org-edit-test"
+            [ngModel]="isTest()"
+            (ngModelChange)="isTest.set($event)"
+          />
           <span class="form__switchCopy">
-            <label class="form__label" for="org-edit-test">{{ 'orgEdit.f.isTest' | translate }}</label>
+            <label class="form__label" for="org-edit-test">{{
+              'orgEdit.f.isTest' | translate
+            }}</label>
             <span class="dba-meta">{{ 'orgEdit.isTestHint' | translate }}</span>
           </span>
         </div>

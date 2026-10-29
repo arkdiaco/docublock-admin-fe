@@ -13,7 +13,7 @@ import { ToggleSwitch } from 'primeng/toggleswitch';
 import { FieldComponent } from '../../../../shared/ui/field.component';
 import { ModalShellComponent } from '../../../../shared/ui/modal-shell.component';
 import type { CounterBody, SubscriptionCounter } from '../../data/subscription.models';
-import { wholeNumber } from './subscription-dates';
+import { wholeNumber } from '../../data/form-values';
 
 @Component({
   selector: 'dba-counter-form',
@@ -66,7 +66,7 @@ import { wholeNumber } from './subscription-dates';
       </div>
     </db-modal-shell>
   `,
-  styleUrl: './subscription-form.scss',
+  styleUrl: '../modal-form.scss',
   styles: `
     .form__switch--top {
       align-items: center;

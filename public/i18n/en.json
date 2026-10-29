@@ -715,5 +715,84 @@
       "futureDate": "Pick a future date",
       "wholeNumber": "Enter a whole number"
     }
+  },
+  "quota": {
+    "loading": "Loading quotas…",
+    "errorTitle": "We couldn't load the quotas",
+    "errorLead": "Check your connection and try again.",
+    "pool": "Global plan",
+    "branches": "Quotas by branch",
+    "noBranches": "The organization has no branches: all usage comes from the global plan.",
+    "history": "Movements",
+    "noHistory": "No quota movements yet.",
+    "noActor": "Platform or system",
+    "stat": {
+      "plan": "Plan documents",
+      "remaining": "Remaining",
+      "assigned": "Given to branches",
+      "free": "Not distributed",
+      "noPlan": "No current subscription"
+    },
+    "type": {
+      "region": "Region",
+      "subsidiary": "Site",
+      "orgArea": "Area",
+      "subArea": "Sub-area"
+    },
+    "col": {
+      "branch": "Branch",
+      "assigned": "Assigned",
+      "consumed": "Used",
+      "available": "Available",
+      "when": "Date",
+      "action": "Movement",
+      "detail": "Detail",
+      "amount": "Amount",
+      "actor": "Who"
+    },
+    "action": {
+      "assign": "Assignment",
+      "transfer": "Transfer",
+      "return": "Return",
+      "redistribute": "Redistribution",
+      "consume": "Usage",
+      "plan_change": "Reset"
+    },
+    "assign": {
+      "open": "Assign",
+      "title": "Assign quota · {{name}}",
+      "now": "Now: {{assigned}} assigned, {{consumed}} used",
+      "quota": "Quota",
+      "confirm": "Save quota",
+      "bounds": "Between {{min}} (used and distributed) and {{max}} (what the parent and plan allow).",
+      "boundsOpen": "At least {{min}} (used and distributed); no ceiling."
+    },
+    "transfer": {
+      "open": "Transfer",
+      "title": "Transfer from {{name}}",
+      "available": "{{count}} documents can be moved",
+      "dest": "Destination",
+      "global": "Return to the global plan",
+      "amount": "Amount",
+      "confirm": "Transfer"
+    },
+    "reset": {
+      "open": "Reset usage",
+      "title": "Reset branch usage for {{name}}?",
+      "message": "Every branch's usage goes back to zero; assigned quotas don't change. It's what happens when a period starts without carry-over.",
+      "confirm": "Reset",
+      "verb": "reset"
+    },
+    "done": {
+      "assign": "Quota updated",
+      "transfer": "Transfer done",
+      "reset": "Usage reset ({{count}} documents)"
+    },
+    "error": {
+      "belowMin": "It can't go below the minimum",
+      "aboveMax": "It exceeds the allowed maximum",
+      "aboveAvailable": "It exceeds what can be moved",
+      "generic": "It couldn't be saved. Try again."
+    }
   }
 }
