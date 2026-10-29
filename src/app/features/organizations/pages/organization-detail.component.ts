@@ -28,6 +28,7 @@ import { UnderlineTabsComponent, type UnderlineTab } from '../../../shared/ui/un
 import { OrgProfileFormComponent } from '../components/org-profile-form.component';
 import { ResellerPickerComponent } from '../components/reseller-picker.component';
 import { MembersTabComponent } from '../components/members/members-tab.component';
+import { IntegrationsTabComponent } from '../components/integrations/integrations-tab.component';
 import { ValidationsTabComponent } from '../components/validations/validations-tab.component';
 import { QuotasTabComponent } from '../components/quotas/quotas-tab.component';
 import { SubscriptionTabComponent } from '../components/subscription/subscription-tab.component';
@@ -82,6 +83,7 @@ const initialsOf = (name: string): string =>
     QuotasTabComponent,
     MembersTabComponent,
     ValidationsTabComponent,
+    IntegrationsTabComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -211,6 +213,8 @@ const initialsOf = (name: string): string =>
           <dba-subscription-tab [org]="org" (changed)="refresh()" />
         } @else if (tab() === 'validations') {
           <dba-validations-tab [org]="org" />
+        } @else if (tab() === 'integrations') {
+          <dba-integrations-tab [org]="org" />
         } @else {
           <div class="od__panel">
             <dba-empty-state titleKey="orgd.soonTitle" leadKey="orgd.soonLead" />

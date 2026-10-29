@@ -989,5 +989,86 @@
       "PAQUETE_VACIO": "The package must include at least one validation."
     },
     "adjustCredits": "Adjust credits"
+  },
+  "integ": {
+    "loading": "Loading integrations…",
+    "errorTitle": "We couldn't load the integrations",
+    "errorLead": "Check the connection and try again.",
+    "on": "Active",
+    "off": "Inactive",
+    "apiKey": {
+      "title": "API key (v1 integration)",
+      "lead": "Used by v1 integrations. Rotating it stops the previous one immediately.",
+      "state": "Status",
+      "issued": "Issued",
+      "missing": "Not issued",
+      "preview": "Ends in",
+      "issuedAt": "Issued on",
+      "rotate": "Rotate API key",
+      "generate": "Generate API key"
+    },
+    "rotateTitle": "Rotate {{name}}'s API key",
+    "rotateMessage": "The current API key stops working immediately and every v1 integration of the organization will fail until it uses the new one. v2 keys and webhooks don't change.",
+    "rotateVerb": "rotate the API key",
+    "generateTitle": "Generate {{name}}'s API key",
+    "generateMessage": "The organization will be able to use the v1 integration with this key.",
+    "reveal": {
+      "title": "New API key",
+      "lead": "Copy it and hand it to the organization through a secure channel. It won't be shown again: afterwards you'll only see how it ends.",
+      "copy": "Copy",
+      "copied": "Copied",
+      "done": "I've saved it"
+    },
+    "classic": {
+      "title": "Classic webhook",
+      "lead": "The one the organization sets in its Settings for document events.",
+      "none": "The organization has no classic webhook set up.",
+      "url": "Main URL",
+      "state": "Delivery",
+      "secret": "Signing secret",
+      "secretYes": "Set",
+      "secretNo": "Not set",
+      "rotated": "rotated on {{date}}",
+      "extra": "Extra destinations"
+    },
+    "v2": "v2 integration",
+    "bridge": {
+      "no_api_key": "Without an API key there is no v2 integration: generate the API key first.",
+      "unavailable": "The integrations service didn't respond. The API key and classic webhook are still shown; try again later."
+    },
+    "keys": {
+      "title": "v2 integration keys ({{total}})",
+      "lead": "Created by the organization. Read-only here.",
+      "none": "The organization hasn't created v2 keys."
+    },
+    "endpoints": {
+      "title": "v2 webhooks ({{total}})",
+      "lead": "Destinations registered by the organization. Read-only here.",
+      "none": "The organization hasn't registered v2 webhooks."
+    },
+    "col": {
+      "name": "Name",
+      "prefix": "Prefix",
+      "scopes": "Scopes",
+      "state": "Status",
+      "expires": "Expires",
+      "used": "Last used",
+      "url": "URL",
+      "events": "Events",
+      "contract": "Contract"
+    },
+    "keyState": {
+      "active": "Active",
+      "rotating": "Rotating",
+      "revoked": "Revoked",
+      "expired": "Expired"
+    },
+    "contract": {
+      "legacy": "Classic",
+      "v2": "v2"
+    },
+    "error": {
+      "rotate": "We couldn't rotate the API key. Try again."
+    }
   }
 }

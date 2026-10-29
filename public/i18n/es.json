@@ -989,5 +989,86 @@
       "PAQUETE_VACIO": "El paquete debe incluir al menos una validación."
     },
     "adjustCredits": "Ajustar créditos"
+  },
+  "integ": {
+    "loading": "Cargando las integraciones…",
+    "errorTitle": "No pudimos cargar las integraciones",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "on": "Activo",
+    "off": "Inactivo",
+    "apiKey": {
+      "title": "API key (integración v1)",
+      "lead": "La usan las integraciones v1. Al rotarla, la anterior deja de funcionar en ese momento.",
+      "state": "Estado",
+      "issued": "Generada",
+      "missing": "Sin generar",
+      "preview": "Termina en",
+      "issuedAt": "Emitida",
+      "rotate": "Rotar API key",
+      "generate": "Generar API key"
+    },
+    "rotateTitle": "Rotar la API key de {{name}}",
+    "rotateMessage": "La API key actual deja de funcionar de inmediato y toda integración v1 de la organización fallará hasta que use la nueva. Las claves v2 y los webhooks no cambian.",
+    "rotateVerb": "rotar la API key",
+    "generateTitle": "Generar la API key de {{name}}",
+    "generateMessage": "La organización podrá usar la integración v1 con esta clave.",
+    "reveal": {
+      "title": "API key nueva",
+      "lead": "Cópiala y entrégala a la organización por un canal seguro. No volverá a mostrarse: después solo verás cómo termina.",
+      "copy": "Copiar",
+      "copied": "Copiada",
+      "done": "Ya la guardé"
+    },
+    "classic": {
+      "title": "Webhook clásico",
+      "lead": "El que configura la organización en su Configuración para los eventos de documentos.",
+      "none": "La organización no tiene un webhook clásico configurado.",
+      "url": "URL principal",
+      "state": "Envío",
+      "secret": "Secreto de firma",
+      "secretYes": "Configurado",
+      "secretNo": "Sin configurar",
+      "rotated": "rotado el {{date}}",
+      "extra": "Destinos adicionales"
+    },
+    "v2": "Integración v2",
+    "bridge": {
+      "no_api_key": "Sin API key no hay integración v2: genera la API key primero.",
+      "unavailable": "El servicio de integraciones no respondió. La API key y el webhook clásico se muestran igual; vuelve a intentarlo más tarde."
+    },
+    "keys": {
+      "title": "Claves de integración v2 ({{total}})",
+      "lead": "Las crea la organización. Aquí solo se consultan.",
+      "none": "La organización no ha creado claves v2."
+    },
+    "endpoints": {
+      "title": "Webhooks v2 ({{total}})",
+      "lead": "Destinos registrados por la organización. Aquí solo se consultan.",
+      "none": "La organización no ha registrado webhooks v2."
+    },
+    "col": {
+      "name": "Nombre",
+      "prefix": "Prefijo",
+      "scopes": "Permisos",
+      "state": "Estado",
+      "expires": "Vence",
+      "used": "Último uso",
+      "url": "URL",
+      "events": "Eventos",
+      "contract": "Contrato"
+    },
+    "keyState": {
+      "active": "Activa",
+      "rotating": "En rotación",
+      "revoked": "Revocada",
+      "expired": "Vencida"
+    },
+    "contract": {
+      "legacy": "Clásico",
+      "v2": "v2"
+    },
+    "error": {
+      "rotate": "No pudimos rotar la API key. Inténtalo de nuevo."
+    }
   }
 }

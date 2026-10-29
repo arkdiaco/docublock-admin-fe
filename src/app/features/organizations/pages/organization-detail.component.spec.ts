@@ -95,7 +95,7 @@ describe('OrganizationDetailComponent', () => {
 
   it('cambiar de pestaña muestra el placeholder honesto', async () => {
     const { fixture, host } = await montar();
-    host.querySelectorAll<HTMLButtonElement>('db-underline-tabs .tab')[4].click();
+    host.querySelectorAll<HTMLButtonElement>('db-underline-tabs .tab')[6].click();
     fixture.detectChanges();
     expect(host.querySelector('dba-empty-state')?.textContent).toContain('llega pronto');
     expect(host.querySelector('.od__cols')).toBeNull();
