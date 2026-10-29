@@ -20,7 +20,7 @@ let nextId = 0;
           [id]="id"
           [type]="type()"
           [name]="name()"
-          [placeholder]="placeholderText()"
+          [placeholder]="placeholder() | translate"
           [disabled]="disabled()"
           [attr.autocomplete]="autocomplete()"
           [attr.maxlength]="maxlength()"
@@ -195,7 +195,6 @@ export class FieldComponent {
   readonly disabled = input(false, { transform: booleanAttribute });
 
   protected readonly id = `dba-field-${++nextId}`;
-  protected readonly placeholderText = computed(() => this.placeholder());
   protected readonly describedBy = computed(() => (this.error() || this.hint() ? `${this.id}-note` : null));
 
   protected onInput(event: Event): void {

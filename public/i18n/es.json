@@ -608,5 +608,112 @@
       "RESELLER_PROPIO": "Una organización no puede ser su propio reseller.",
       "generic": "No se pudo cambiar el reseller. Inténtalo de nuevo."
     }
+  },
+  "sub": {
+    "loading": "Cargando la suscripción…",
+    "errorTitle": "No pudimos cargar la suscripción",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "current": "Suscripción vigente",
+    "none": "La organización no tiene una suscripción activa. Asigna un plan para que pueda firmar.",
+    "history": "Historial",
+    "noHistory": "Todavía no ha tenido suscripciones.",
+    "lapsed": "Venció por fecha",
+    "unlimited": "ilimitado",
+    "f": {
+      "plan": "Plan",
+      "source": "Origen",
+      "period": "Periodo"
+    },
+    "col": {
+      "plan": "Plan",
+      "source": "Origen",
+      "period": "Periodo",
+      "state": "Estado"
+    },
+    "state": {
+      "ACTIVE": "Activa",
+      "EXPIRED": "Expirada",
+      "CANCELLED": "Cancelada"
+    },
+    "resource": {
+      "DOCUMENTS": "Documentos",
+      "ID_BIOMETRIC": "Biometría avanzada",
+      "ID_ANI": "Consultar Registraduría",
+      "ID_IDENTITY": "Validación contra documento"
+    },
+    "reasonLabel": "Motivo · queda en la bitácora",
+    "reasonPlaceholder": "Por qué se hace este cambio",
+    "assign": {
+      "open": "Asignar plan",
+      "title": "Asignar plan",
+      "confirm": "Asignar",
+      "plan": "Plan",
+      "validity": "Vigencia",
+      "until": "Hasta",
+      "documents": "Documentos",
+      "planDocuments": "Vacío: los que trae el plan.",
+      "planUnlimited": "Vacío: el plan es ilimitado.",
+      "carry": "Arrastrar el saldo ({{count}} documentos)",
+      "carryOn": "Se suman al plan nuevo y las ramas conservan su consumo.",
+      "carryOff": "Empieza en cero: el saldo se pierde y las ramas se reinician.",
+      "planMonths": "La del plan ({{months}} meses)",
+      "planDefault": "La del plan (1 mes)",
+      "untilDate": "Hasta una fecha"
+    },
+    "period": {
+      "open": "Prorrogar",
+      "title": "Prorrogar o recortar",
+      "confirm": "Guardar fecha",
+      "until": "Nueva fecha fin",
+      "hint": "Cambia la fecha de la suscripción vigente sin crear otra. Para cortarla hoy, usa Expirar.",
+      "currentEnd": "Vence el {{date}}"
+    },
+    "noExpiry": {
+      "open": "Sin vencimiento",
+      "label": "Sin vencimiento",
+      "title": "¿Dejar la suscripción sin vencimiento?",
+      "message": "Seguirá vigente hasta que alguien la expire o asigne otro plan.",
+      "confirm": "Quitar vencimiento"
+    },
+    "counter": {
+      "open": "Fijar",
+      "title": "Fijar contador · {{resource}}",
+      "now": "Hoy: {{used}} usados de {{limit}}",
+      "confirm": "Guardar contador",
+      "unlimited": "Ilimitado",
+      "limit": "Límite",
+      "used": "Usado"
+    },
+    "expire": {
+      "open": "Expirar",
+      "title": "¿Expirar la suscripción de {{name}}?",
+      "message": "Deja de poder firmar hasta que se le asigne un plan. El saldo que quedaba se pierde.",
+      "confirm": "Expirar",
+      "verb": "expirar"
+    },
+    "mirror": {
+      "title": "Espejo legacy",
+      "lead": "Lo que ven el legacy y el bridge en organization.currentPlan. Se actualiza con cada cambio de aquí.",
+      "documents": "Documentos restantes",
+      "expiration": "Vencimiento"
+    },
+    "done": {
+      "assign": "Plan asignado",
+      "assignCarried": "Plan asignado con {{count}} documentos arrastrados",
+      "period": "Vigencia actualizada",
+      "noExpiry": "Suscripción sin vencimiento",
+      "counter": "Contador actualizado",
+      "expire": "Suscripción expirada"
+    },
+    "error": {
+      "PLAN_NO_ENCONTRADO": "Ese plan ya no existe o está retirado.",
+      "PLAN_NO_DISPONIBLE_EN_PAIS": "Ese plan no está disponible en el país de la organización.",
+      "VENCIMIENTO_PASADO": "La fecha tiene que ser futura.",
+      "SIN_SUSCRIPCION": "La organización ya no tiene una suscripción activa. Recarga.",
+      "CONTADOR_NO_EXISTE": "La suscripción no tiene ese contador.",
+      "generic": "No se pudo guardar. Inténtalo de nuevo.",
+      "futureDate": "Elige una fecha futura",
+      "wholeNumber": "Escribe un número entero"
+    }
   }
 }

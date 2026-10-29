@@ -27,6 +27,7 @@ import { SectionLoaderComponent } from '../../../shared/ui/section-loader.compon
 import { UnderlineTabsComponent, type UnderlineTab } from '../../../shared/ui/underline-tabs.component';
 import { OrgProfileFormComponent } from '../components/org-profile-form.component';
 import { ResellerPickerComponent } from '../components/reseller-picker.component';
+import { SubscriptionTabComponent } from '../components/subscription/subscription-tab.component';
 import { OrganizationsApi } from '../data/organizations.api';
 import type { PlatformOrgDetail, PlatformOrgUpdate } from '../data/organizations.models';
 import { orgStateView } from '../data/platform-org-state';
@@ -74,6 +75,7 @@ const initialsOf = (name: string): string =>
     OrgFlagComponent,
     OrgProfileFormComponent,
     ResellerPickerComponent,
+    SubscriptionTabComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -195,6 +197,8 @@ const initialsOf = (name: string): string =>
               </section>
             </div>
           </div>
+        } @else if (tab() === 'subscription') {
+          <dba-subscription-tab [org]="org" (changed)="refresh()" />
         } @else {
           <div class="od__panel">
             <dba-empty-state titleKey="orgd.soonTitle" leadKey="orgd.soonLead" />
@@ -472,6 +476,14 @@ export class OrganizationDetailComponent {
       this.notify.error(this.translate.instant('orgState.error') as string);
     } finally {
       this.switching.set(false);
+    }
+  }
+
+  protected async refresh(): Promise<void> {
+    try {
+      this.detail.set(await firstValueFrom(this.api.detail(this.id())));
+    } catch {
+      return;
     }
   }
 

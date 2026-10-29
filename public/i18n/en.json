@@ -608,5 +608,112 @@
       "RESELLER_PROPIO": "An organization can't be its own reseller.",
       "generic": "The reseller couldn't be changed. Try again."
     }
+  },
+  "sub": {
+    "loading": "Loading the subscription…",
+    "errorTitle": "We couldn't load the subscription",
+    "errorLead": "Check your connection and try again.",
+    "current": "Current subscription",
+    "none": "The organization has no active subscription. Assign a plan so it can sign.",
+    "history": "History",
+    "noHistory": "No subscriptions yet.",
+    "lapsed": "Lapsed by date",
+    "unlimited": "unlimited",
+    "f": {
+      "plan": "Plan",
+      "source": "Source",
+      "period": "Period"
+    },
+    "col": {
+      "plan": "Plan",
+      "source": "Source",
+      "period": "Period",
+      "state": "Status"
+    },
+    "state": {
+      "ACTIVE": "Active",
+      "EXPIRED": "Expired",
+      "CANCELLED": "Cancelled"
+    },
+    "resource": {
+      "DOCUMENTS": "Documents",
+      "ID_BIOMETRIC": "Advanced biometrics",
+      "ID_ANI": "Registry check",
+      "ID_IDENTITY": "Document check"
+    },
+    "reasonLabel": "Reason · kept in the audit log",
+    "reasonPlaceholder": "Why this change is made",
+    "assign": {
+      "open": "Assign plan",
+      "title": "Assign plan",
+      "confirm": "Assign",
+      "plan": "Plan",
+      "validity": "Validity",
+      "until": "Until",
+      "documents": "Documents",
+      "planDocuments": "Empty: the plan's amount.",
+      "planUnlimited": "Empty: the plan is unlimited.",
+      "carry": "Carry over the balance ({{count}} documents)",
+      "carryOn": "Added to the new plan; branches keep their usage.",
+      "carryOff": "Start from zero: the balance is lost and branches reset.",
+      "planMonths": "The plan's ({{months}} months)",
+      "planDefault": "The plan's (1 month)",
+      "untilDate": "Until a date"
+    },
+    "period": {
+      "open": "Extend",
+      "title": "Extend or shorten",
+      "confirm": "Save date",
+      "until": "New end date",
+      "hint": "Changes the current subscription's end date without creating another. To cut it today, use Expire.",
+      "currentEnd": "Ends on {{date}}"
+    },
+    "noExpiry": {
+      "open": "No expiry",
+      "label": "No expiry",
+      "title": "Remove the subscription's expiry?",
+      "message": "It stays active until someone expires it or assigns another plan.",
+      "confirm": "Remove expiry"
+    },
+    "counter": {
+      "open": "Set",
+      "title": "Set counter · {{resource}}",
+      "now": "Now: {{used}} used of {{limit}}",
+      "confirm": "Save counter",
+      "unlimited": "Unlimited",
+      "limit": "Limit",
+      "used": "Used"
+    },
+    "expire": {
+      "open": "Expire",
+      "title": "Expire {{name}}'s subscription?",
+      "message": "It can't sign until a plan is assigned. The remaining balance is lost.",
+      "confirm": "Expire",
+      "verb": "expire"
+    },
+    "mirror": {
+      "title": "Legacy mirror",
+      "lead": "What the legacy app and the bridge see in organization.currentPlan. Updated with every change here.",
+      "documents": "Documents left",
+      "expiration": "Expiry"
+    },
+    "done": {
+      "assign": "Plan assigned",
+      "assignCarried": "Plan assigned with {{count}} documents carried over",
+      "period": "Validity updated",
+      "noExpiry": "Subscription without expiry",
+      "counter": "Counter updated",
+      "expire": "Subscription expired"
+    },
+    "error": {
+      "PLAN_NO_ENCONTRADO": "That plan no longer exists or was retired.",
+      "PLAN_NO_DISPONIBLE_EN_PAIS": "That plan isn't available in the organization's country.",
+      "VENCIMIENTO_PASADO": "The date has to be in the future.",
+      "SIN_SUSCRIPCION": "The organization no longer has an active subscription. Reload.",
+      "CONTADOR_NO_EXISTE": "The subscription has no such counter.",
+      "generic": "It couldn't be saved. Try again.",
+      "futureDate": "Pick a future date",
+      "wholeNumber": "Enter a whole number"
+    }
   }
 }

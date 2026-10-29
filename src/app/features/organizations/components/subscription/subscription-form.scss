@@ -1,0 +1,50 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form__pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.form__control {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.form__label {
+  font-size: var(--dba-text-label);
+  font-weight: 600;
+  color: var(--dba-text);
+}
+
+:host ::ng-deep .form__select.p-select {
+  width: 100%;
+  height: var(--dba-height-control);
+}
+
+.form__switch {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--dba-border-row);
+}
+
+.form__switchCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+@media (max-width: 520px) {
+  .form__pair {
+    grid-template-columns: 1fr;
+  }
+}

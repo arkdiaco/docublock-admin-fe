@@ -14,7 +14,7 @@ class CatalogoEspanol implements TranslateLoader {
 @Component({
   imports: [FieldComponent],
   template: `
-    <dba-field label="sys.c.domainLabel" [(value)]="domain" badge="sys.c.dnsOk" badgeTone="ok" [error]="error()" hint="auth.codeSent" />
+    <dba-field label="sys.c.domainLabel" [(value)]="domain" badge="sys.c.dnsOk" badgeTone="ok" [error]="error()" hint="auth.codeSent" placeholder="sub.reasonPlaceholder" />
   `,
 })
 class Anfitrion {
@@ -46,6 +46,7 @@ describe('FieldComponent', () => {
     expect(input.value).toBe('sierranorte.aero');
     expect(host.querySelector('.field__badge--ok')?.textContent?.trim()).toBe('DNS OK');
     expect(host.querySelector('.field__note')?.textContent).toContain('código');
+    expect(input.placeholder).toBe('Por qué se hace este cambio');
     expect(host.textContent).not.toMatch(/\b(sys|auth)\.[a-z]/);
   });
 
