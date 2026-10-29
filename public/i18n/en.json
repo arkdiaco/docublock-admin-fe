@@ -469,5 +469,51 @@
       "current": "This is the current session: close it with «Sign out».",
       "generic": "The session couldn't be closed. Try again."
     }
+  },
+  "audit": {
+    "filter": "filter",
+    "filterPlaceholder": "actor:marta accion:staff",
+    "filterAria": "Filter the audit log",
+    "clear": "Clear the filter",
+    "hint": "Keys: actor:, accion:, org:, objeto:, id:, desde:YYYY-MM-DD, hasta:YYYY-MM-DD. Enter to apply; click an actor or object to add it.",
+    "export": "Export CSV",
+    "exportError": "The audit log couldn't be exported. Try again.",
+    "loading": "Loading the audit log…",
+    "errorTitle": "We couldn't load the audit log.",
+    "empty": "No events for this filter.",
+    "scope": {
+      "24h": "last 24 h · {{total}} events",
+      "7d": "last 7 days · {{total}} events",
+      "30d": "last 30 days · {{total}} events",
+      "all": "whole log · {{total}} events",
+      "custom": "custom range · {{total}} events"
+    },
+    "period": {
+      "24h": "24 h",
+      "7d": "7 days",
+      "30d": "30 days",
+      "all": "All"
+    },
+    "col": {
+      "when": "Time UTC",
+      "actor": "Actor",
+      "object": "Object",
+      "action": "Action",
+      "origin": "Origin"
+    },
+    "detail": {
+      "event": "Event",
+      "actor": "Actor",
+      "organization": "Organization",
+      "reason": "Reason",
+      "device": "Device",
+      "before": "Before",
+      "after": "After"
+    },
+    "problem": {
+      "unknownKey": "I don't understand «{{token}}»: use key:value.",
+      "unknownActor": "Nobody matching «{{value}}» appears in the log.",
+      "badValue": "«{{value}}» isn't valid for {{key}}:."
+    }
   }
 }

@@ -469,5 +469,51 @@
       "current": "Esta es la sesión actual: ciérrala desde «Cerrar sesión».",
       "generic": "No se pudo cerrar la sesión. Inténtalo de nuevo."
     }
+  },
+  "audit": {
+    "filter": "filtro",
+    "filterPlaceholder": "actor:marta accion:staff",
+    "filterAria": "Filtrar la bitácora",
+    "clear": "Quitar el filtro",
+    "hint": "Llaves: actor:, accion:, org:, objeto:, id:, desde:AAAA-MM-DD, hasta:AAAA-MM-DD. Enter para aplicar; clic en un actor u objeto lo agrega.",
+    "export": "Exportar CSV",
+    "exportError": "No se pudo exportar la bitácora. Inténtalo de nuevo.",
+    "loading": "Cargando la bitácora…",
+    "errorTitle": "No pudimos cargar la bitácora.",
+    "empty": "Sin eventos para este filtro.",
+    "scope": {
+      "24h": "últimas 24 h · {{total}} eventos",
+      "7d": "últimos 7 días · {{total}} eventos",
+      "30d": "últimos 30 días · {{total}} eventos",
+      "all": "todo el registro · {{total}} eventos",
+      "custom": "rango propio · {{total}} eventos"
+    },
+    "period": {
+      "24h": "24 h",
+      "7d": "7 días",
+      "30d": "30 días",
+      "all": "Todo"
+    },
+    "col": {
+      "when": "Hora UTC",
+      "actor": "Actor",
+      "object": "Objeto",
+      "action": "Acción",
+      "origin": "Origen"
+    },
+    "detail": {
+      "event": "Evento",
+      "actor": "Actor",
+      "organization": "Organización",
+      "reason": "Motivo",
+      "device": "Dispositivo",
+      "before": "Antes",
+      "after": "Después"
+    },
+    "problem": {
+      "unknownKey": "No entiendo «{{token}}»: usa llave:valor.",
+      "unknownActor": "Nadie con «{{value}}» aparece en la bitácora.",
+      "badValue": "«{{value}}» no sirve para {{key}}:."
+    }
   }
 }

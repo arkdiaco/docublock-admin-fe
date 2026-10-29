@@ -23,6 +23,18 @@
   --dba-text-on-dark: #cfc9e2;
   --dba-text-on-dark-muted: #8d86a6;
 
+  --dba-terminal-bg: var(--dba-violet-950);
+  --dba-terminal-head: var(--dba-text-on-dark-muted);
+  --dba-terminal-time: #a79fc0;
+  --dba-terminal-text: #dedaec;
+  --dba-terminal-strong: #ffffff;
+  --dba-terminal-link: var(--dba-violet-300);
+  --dba-terminal-line: rgba(255, 255, 255, 0.1);
+  --dba-terminal-line-soft: rgba(255, 255, 255, 0.05);
+  --dba-terminal-hover: rgba(255, 255, 255, 0.03);
+  --dba-terminal-selected: rgba(121, 84, 253, 0.14);
+  --dba-terminal-bad: #f1b5aa;
+
   --dba-canvas: #f6f5fa;
   --dba-surface: #ffffff;
   --dba-surface-chip: #f1eff8;
