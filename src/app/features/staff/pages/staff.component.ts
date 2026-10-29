@@ -6,17 +6,16 @@ import {
   computed,
   inject,
   signal,
-  viewChild,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import type { MenuItem } from 'primeng/api';
-import { Menu } from 'primeng/menu';
 import { firstValueFrom, type Observable } from 'rxjs';
 import { MY_ACCESS_PATH } from '../../../core/layout/console-nav';
 import { DensityService } from '../../../core/preferences/density.service';
 import { DialogService } from '../../../core/ui/dialog.service';
 import { NotificationService } from '../../../core/ui/notification.service';
+import { LatestRequest } from '../../../shared/http/latest-request';
+import { ActionMenuComponent, type ActionMenuItem } from '../../../shared/ui/action-menu.component';
 import { ButtonComponent } from '../../../shared/ui/button.component';
 import { DataTableComponent, type DataColumn } from '../../../shared/ui/data-table.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
@@ -55,7 +54,7 @@ const initialsOf = (member: StaffMember): string =>
   imports: [
     TranslatePipe,
     RouterLink,
-    Menu,
+    ActionMenuComponent,
     ButtonComponent,
     IconComponent,
     DataTableComponent,
@@ -142,7 +141,7 @@ const initialsOf = (member: StaffMember): string =>
                     type="button"
                     class="staff__more"
                     [attr.aria-label]="'staff.actionsFor' | translate: { name: row.names }"
-                    (click)="openActions($event, row)"
+                    (click)="acting.set(row); actions.toggle($event)"
                   >
                     <db-icon name="moreVertical" [size]="16" />
                   </button>
@@ -154,13 +153,7 @@ const initialsOf = (member: StaffMember): string =>
       }
     </section>
 
-    <p-menu
-      #actions
-      [model]="actionItems()"
-      [popup]="true"
-      appendTo="body"
-      styleClass="dba-account-menu"
-    />
+    <dba-action-menu #actions label="staff.actions" [items]="actionItems()" (picked)="onAction($event)" />
 
     @if (form(); as open) {
       <dba-staff-form
@@ -312,7 +305,6 @@ export class StaffComponent {
   private readonly locale = inject(LOCALE_ID);
   protected readonly density = inject(DensityService);
 
-  private readonly actionsMenu = viewChild<Menu>('actions');
 
   protected readonly columns = COLUMNS;
   protected readonly myAccessPath = '/' + MY_ACCESS_PATH;
@@ -322,7 +314,8 @@ export class StaffComponent {
   protected readonly members = signal<StaffMember[]>([]);
   protected readonly filter = signal<Filter>('all');
   protected readonly form = signal<{ member: StaffMember | null } | null>(null);
-  private readonly acting = signal<StaffMember | null>(null);
+  protected readonly acting = signal<StaffMember | null>(null);
+  private readonly latest = new LatestRequest();
 
   protected readonly superadmins = computed(
     () => this.members().filter((m) => m.role === 'superadmin' && m.status === 'ACTIVE').length,
@@ -356,36 +349,13 @@ export class StaffComponent {
       })),
   );
 
-  protected readonly actionItems = computed<MenuItem[]>(() => {
-    const member = this.acting();
-    if (!member) return [];
-    const t = (key: string) => this.translate.instant(key) as string;
-    const suspended = member.status === 'SUSPENDED';
-    return [
-      {
-        label: t('staff.action.role'),
-        icon: 'pi pi-id-card',
-        command: () => this.form.set({ member }),
-      },
-      suspended
-        ? {
-            label: t('staff.action.reactivate'),
-            icon: 'pi pi-play',
-            command: () => void this.reactivate(member),
-          }
-        : {
-            label: t('staff.action.suspend'),
-            icon: 'pi pi-pause',
-            command: () => void this.suspend(member),
-          },
-      { separator: true },
-      {
-        label: t('staff.action.remove'),
-        icon: 'pi pi-user-minus',
-        command: () => void this.remove(member),
-      },
-    ];
-  });
+  protected readonly actionItems = computed<ActionMenuItem[]>(() => [
+    { key: 'role', labelKey: 'staff.action.role' },
+    this.acting()?.status === 'SUSPENDED'
+      ? { key: 'reactivate', labelKey: 'staff.action.reactivate' }
+      : { key: 'suspend', labelKey: 'staff.action.suspend' },
+    { key: 'remove', labelKey: 'staff.action.remove', danger: true, separated: true },
+  ]);
 
   constructor() {
     void this.reload();
@@ -399,21 +369,26 @@ export class StaffComponent {
     this.form.set({ member: null });
   }
 
-  protected openActions(event: Event, member: StaffMember): void {
-    this.acting.set(member);
-    this.actionsMenu()?.toggle(event);
+  protected onAction(key: string): void {
+    const member = this.acting();
+    if (!member) return;
+    if (key === 'role') this.form.set({ member });
+    else if (key === 'suspend') void this.suspend(member);
+    else if (key === 'reactivate') void this.reactivate(member);
+    else if (key === 'remove') void this.remove(member);
   }
 
   protected async reload(): Promise<void> {
+    const current = this.latest.start();
     this.loading.set(this.members().length === 0);
     this.error.set(false);
     try {
       const { items } = await firstValueFrom(this.api.list());
-      this.members.set(items);
+      if (current()) this.members.set(items);
     } catch {
-      this.error.set(true);
+      if (current()) this.error.set(true);
     } finally {
-      this.loading.set(false);
+      if (current()) this.loading.set(false);
     }
   }
 

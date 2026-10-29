@@ -15,6 +15,7 @@ import { firstValueFrom } from 'rxjs';
 import { DensityService } from '../../../core/preferences/density.service';
 import { quotaToneOf } from '../../../shared/domain/org-state';
 import { ExportState } from '../../../shared/http/export-state';
+import { LatestRequest } from '../../../shared/http/latest-request';
 import { ButtonComponent } from '../../../shared/ui/button.component';
 import { DataTableComponent, type DataColumn } from '../../../shared/ui/data-table.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
@@ -380,6 +381,7 @@ export class OrganizationsComponent {
   private readonly locale = inject(LOCALE_ID);
   protected readonly density = inject(DensityService);
   protected readonly exporting = new ExportState();
+  private readonly latest = new LatestRequest();
 
   protected readonly columns = COLUMNS;
   protected readonly loading = signal(true);
@@ -448,6 +450,7 @@ export class OrganizationsComponent {
   }
 
   protected async reload(): Promise<void> {
+    const current = this.latest.start();
     this.loading.set(true);
     this.error.set(false);
     try {
@@ -459,14 +462,16 @@ export class OrganizationsComponent {
           state: this.state() || undefined,
         }),
       );
+      if (!current()) return;
       this.total.set(result.total);
       this.counts.set(result.counts);
       this.rows.set(result.items.map((row) => this.toView(row)));
     } catch {
+      if (!current()) return;
       this.error.set(true);
       this.rows.set([]);
     } finally {
-      this.loading.set(false);
+      if (current()) this.loading.set(false);
     }
   }
 

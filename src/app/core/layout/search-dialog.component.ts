@@ -49,7 +49,7 @@ import { IconComponent } from '../../shared/ui/icon.component';
       inset: 0;
       padding: 0;
       border: 0;
-      background: rgba(22, 18, 31, 0.42);
+      background: var(--dba-scrim);
       cursor: default;
     }
 

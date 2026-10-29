@@ -28,11 +28,11 @@ import { AppUpdate } from './app-update.service';
       max-width: calc(100vw - 32px);
       padding: 8px 8px 8px 16px;
       border-radius: 999px;
-      background: #fff;
+      background: var(--dba-surface);
       box-shadow: 0 6px 24px rgb(31 20 71 / 18%);
-      font-family: var(--db-font);
+      font-family: var(--dba-font-ui);
       font-size: 14px;
-      color: var(--db-ink);
+      color: var(--dba-ink);
     }
     .upd__text {
       min-width: 0;
@@ -53,14 +53,14 @@ import { AppUpdate } from './app-update.service';
       border: 0;
       border-radius: 999px;
       padding: 6px 14px;
-      background: var(--db-primary);
-      color: #fff;
+      background: var(--dba-violet-500);
+      color: var(--dba-on-primary);
       font: inherit;
       font-weight: 600;
       cursor: pointer;
     }
     .upd__cta:hover {
-      background: var(--db-primary-ink);
+      background: var(--dba-violet-600);
     }
   `,
 })

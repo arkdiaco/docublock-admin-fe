@@ -1,13 +1,25 @@
 import { TestBed } from '@angular/core/testing';
+import { provideTranslateService, TranslateLoader, TranslateService, type TranslationObject } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
+import { of, type Observable } from 'rxjs';
+import es from '../../../../public/i18n/es.json';
 import { NotificationService } from './notification.service';
+
+class CatalogoEspanol implements TranslateLoader {
+  getTranslation(): Observable<TranslationObject> {
+    return of(es as unknown as TranslationObject);
+  }
+}
 
 describe('NotificationService', () => {
   let notify: NotificationService;
   let messages: MessageService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [MessageService] });
+    TestBed.configureTestingModule({
+      providers: [MessageService, provideTranslateService({ loader: { provide: TranslateLoader, useClass: CatalogoEspanol }, fallbackLang: 'es' })],
+    });
+    TestBed.inject(TranslateService).use('es');
     notify = TestBed.inject(NotificationService);
     messages = TestBed.inject(MessageService);
   });
@@ -16,7 +28,7 @@ describe('NotificationService', () => {
     const spy = vi.spyOn(messages, 'add');
     notify.success('Guardado');
     expect(spy).toHaveBeenCalledWith(
-      expect.objectContaining({ severity: 'success', detail: 'Guardado' }),
+      expect.objectContaining({ severity: 'success', summary: 'Listo', detail: 'Guardado' }),
     );
   });
 

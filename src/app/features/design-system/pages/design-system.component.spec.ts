@@ -55,7 +55,7 @@ describe('DesignSystemComponent', () => {
     const variantes = Array.from(host.querySelectorAll('.cards [dba-button]')).map(
       (b) => b.className.match(/btn--(primary|secondary|destructive|dark)/)?.[1],
     );
-    expect(variantes).toEqual(['primary', 'secondary', 'dark', 'secondary', 'destructive', 'secondary']);
+    expect(variantes).toEqual(['primary', 'secondary', 'dark', 'secondary', 'destructive', 'secondary', 'secondary']);
     expect(host.querySelector<HTMLInputElement>('dba-field .field__input')?.value).toBe('sierranorte.aero');
     expect(host.querySelectorAll('dba-kpi-card').length).toBe(4);
     expect(host.querySelectorAll('dba-quota-bar').length).toBe(3);
@@ -65,6 +65,7 @@ describe('DesignSystemComponent', () => {
     expect(host.querySelectorAll('.pill').length).toBe(5);
     expect(host.querySelectorAll('dba-env-pill').length).toBe(3);
     expect(host.querySelectorAll('dba-nav-group').length).toBe(3);
+    expect(host.querySelectorAll('dba-action-menu').length).toBe(1);
     expect(host.querySelector('.nav-demo .trigger--on .count')?.textContent?.trim()).toBe('9');
     expect(host.querySelectorAll('.nav-demo__drawer .link--drawer').length).toBe(4);
 

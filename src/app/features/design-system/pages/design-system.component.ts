@@ -12,6 +12,7 @@ import { ButtonComponent } from '../../../shared/ui/button.component';
 import { EnvPillComponent } from '../../../shared/ui/env-pill.component';
 import { FieldComponent } from '../../../shared/ui/field.component';
 import { FilterPillsComponent, type FilterPill } from '../../../shared/ui/filter-pills.component';
+import { ActionMenuComponent, type ActionMenuItem } from '../../../shared/ui/action-menu.component';
 import { NavGroupComponent, type NavGroupLink } from '../../../shared/ui/nav-group.component';
 import { IconComponent } from '../../../shared/ui/icon.component';
 import { KpiCardComponent } from '../../../shared/ui/kpi-card.component';
@@ -147,6 +148,7 @@ const pctOf = (used: number, limit: number): string =>
   selector: 'dba-design-system',
   imports: [
     NavGroupComponent,
+    ActionMenuComponent,
     TranslatePipe,
     ButtonComponent,
     FieldComponent,
@@ -337,6 +339,18 @@ const pctOf = (used: number, limit: number): string =>
               <dba-nav-group variant="drawer" labelKey="nav.group.clients" [links]="navLinks" [active]="true" />
             </div>
             <p class="dba-body">{{ 'sys.c.navGroupNote' | translate }}</p>
+          </div>
+
+          <div class="card">
+            <h3 class="dba-eyebrow">{{ 'sys.c.actionMenu' | translate }}</h3>
+            <div class="card__row">
+              <button dba-button variant="secondary" (click)="actionDemo.toggle($event)">{{ 'sys.c.actions' | translate }}</button>
+              <dba-action-menu #actionDemo label="sys.c.actions" [items]="actionItems" (picked)="actionPicked.set($event)" />
+              @if (actionPicked()) {
+                <span class="dba-meta">{{ 'sys.c.actionPicked' | translate: { key: actionPicked() } }}</span>
+              }
+            </div>
+            <p class="dba-body">{{ 'sys.c.actionMenuNote' | translate }}</p>
           </div>
         </div>
       </section>
@@ -531,11 +545,19 @@ const pctOf = (used: number, limit: number): string =>
     }
 
     .sys__menu {
+      position: relative;
       font-size: var(--dba-text-body);
       font-weight: 600;
       color: var(--dba-ink);
-      border-bottom: 2px solid var(--dba-violet-500);
-      padding-bottom: 4px;
+      padding-bottom: 6px;
+    }
+
+    .sys__menu::after {
+      content: '';
+      position: absolute;
+      inset: auto 0 0;
+      height: 2px;
+      background: var(--dba-violet-500);
     }
 
     .cards {
@@ -766,6 +788,12 @@ export class DesignSystemComponent {
   protected readonly quotas = QUOTAS;
   protected readonly filters = FILTERS;
   protected readonly navLinks = NAV_LINKS;
+  protected readonly actionItems: readonly ActionMenuItem[] = [
+    { key: 'role', labelKey: 'staff.action.role' },
+    { key: 'suspend', labelKey: 'staff.action.suspend' },
+    { key: 'remove', labelKey: 'staff.action.remove', danger: true, separated: true },
+  ];
+  protected readonly actionPicked = signal('');
   protected readonly navLinksQuiet = NAV_LINKS_QUIET;
   protected readonly orgColumns = ORG_COLUMNS;
   protected readonly recordCrumbs = ['nav.crumbRoot', 'nav.organizations', 'ORG-0412'];

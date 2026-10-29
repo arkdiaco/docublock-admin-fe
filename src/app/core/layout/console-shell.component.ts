@@ -1,9 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import type { MenuItem } from 'primeng/api';
-import { Menu } from 'primeng/menu';
+import { TranslatePipe } from '@ngx-translate/core';
 import { filter, map } from 'rxjs';
 import { EnvPillComponent } from '../../shared/ui/env-pill.component';
 import { IconComponent } from '../../shared/ui/icon.component';
@@ -17,10 +15,11 @@ import { MY_ACCESS_PATH, OVERVIEW_PATH, visibleGroups } from './console-nav';
 import { titleKeysOf } from './console-title.strategy';
 import { NavCounts } from './nav-counts.service';
 import { SearchDialogComponent } from './search-dialog.component';
+import { ActionMenuComponent, type ActionMenuItem } from '../../shared/ui/action-menu.component';
 
 @Component({
   selector: 'dba-console-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe, LogoComponent, EnvPillComponent, IconComponent, Menu, SearchDialogComponent, NavGroupComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe, LogoComponent, EnvPillComponent, IconComponent, ActionMenuComponent, SearchDialogComponent, NavGroupComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '(document:keydown)': 'onKey($event)' },
   template: `
@@ -64,10 +63,10 @@ import { SearchDialogComponent } from './search-dialog.component';
         </button>
         <dba-env-pill [env]="env.name" />
         @if (auth.isAuthenticated()) {
-          <button type="button" class="bar__avatar" [attr.aria-label]="'shell.account' | translate" (click)="accountMenu()?.toggle($event)">
+          <button type="button" class="bar__avatar" [attr.aria-label]="'shell.account' | translate" (click)="account.toggle($event)">
             {{ auth.initials() || '·' }}
           </button>
-          <p-menu #account [model]="accountItems()" [popup]="true" appendTo="body" styleClass="dba-account-menu" />
+          <dba-action-menu #account label="shell.account" [heading]="auth.displayName()" [items]="accountItems()" (picked)="onAccount($event)" />
         } @else {
           <a class="bar__enter" [routerLink]="loginRoute">{{ 'shell.enter' | translate }}</a>
         }
@@ -87,7 +86,9 @@ import { SearchDialogComponent } from './search-dialog.component';
     </main>
 
     @if (searchOpen()) {
-      <dba-search-dialog (closed)="searchOpen.set(false)" />
+      @defer (prefetch on idle) {
+        <dba-search-dialog (closed)="searchOpen.set(false)" />
+      }
     }
 
     @if (menuOpen()) {
@@ -372,7 +373,7 @@ import { SearchDialogComponent } from './search-dialog.component';
       inset: 0;
       padding: 0;
       border: 0;
-      background: rgba(22, 18, 31, 0.42);
+      background: var(--dba-scrim);
       cursor: default;
     }
 
@@ -503,11 +504,9 @@ export class ConsoleShellComponent {
   protected readonly loginRoute = LOGIN_ROUTE;
   private readonly session = inject(SessionService);
   private readonly router = inject(Router);
-  private readonly translate = inject(TranslateService);
   private readonly navCounts = inject(NavCounts);
   protected readonly density = inject(DensityService);
 
-  protected readonly accountMenu = viewChild<Menu>('account');
   protected readonly searchOpen = signal(false);
   protected readonly menuOpen = signal(false);
   protected readonly counts = this.navCounts.counts;
@@ -546,21 +545,17 @@ export class ConsoleShellComponent {
     { initialValue: titleKeysOf(this.router.routerState.snapshot.root) },
   );
 
-  private readonly logoutLabel = toSignal(this.translate.stream('shell.logout'), { initialValue: '' });
-  private readonly myAccessLabel = toSignal(this.translate.stream('mine.title'), { initialValue: '' });
-
-  private readonly densityLabel = computed(() =>
-    this.translate.instant(this.density.compact() ? 'shell.densityCozy' : 'shell.densityCompact'),
-  );
-
-  protected readonly accountItems = computed<MenuItem[]>(() => [
-    { label: this.auth.displayName(), disabled: true },
-    { separator: true },
-    { label: this.myAccessLabel() as string, icon: 'pi pi-user', command: () => void this.router.navigateByUrl('/' + MY_ACCESS_PATH) },
-    { label: this.densityLabel() as string, icon: 'pi pi-bars', command: () => this.density.toggle() },
-    { separator: true },
-    { label: this.logoutLabel() as string, icon: 'pi pi-sign-out', command: () => void this.session.logout() },
+  protected readonly accountItems = computed<ActionMenuItem[]>(() => [
+    { key: 'mine', labelKey: 'mine.title', separated: true },
+    { key: 'density', labelKey: this.density.compact() ? 'shell.densityCozy' : 'shell.densityCompact' },
+    { key: 'logout', labelKey: 'shell.logout', separated: true },
   ]);
+
+  protected onAccount(key: string): void {
+    if (key === 'mine') void this.router.navigateByUrl('/' + MY_ACCESS_PATH);
+    else if (key === 'density') this.density.toggle();
+    else if (key === 'logout') void this.session.logout();
+  }
 
   protected openSearch(): void {
     this.searchOpen.set(true);

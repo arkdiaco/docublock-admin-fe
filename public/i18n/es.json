@@ -134,7 +134,6 @@
     "densityCozy": "Filas cómodas"
   },
   "status": {
-    "title": "Sistema",
     "lead": "Entorno, backend y sesión de esta consola.",
     "api": "API del core",
     "checking": "Comprobando…",
@@ -213,7 +212,10 @@
       "pills": "Entorno y estado en fila",
       "pillsNote": "En tablas el estado va sin fondo: texto de su familia y punto con forma. El entorno siempre escrito completo, en mono.",
       "navGroup": "Menú por grupos",
-      "navGroupNote": "Cada grupo del menú abre su submenú; en el móvil se lista con su encabezado. El grupo se marca cuando una de sus secciones está abierta y suma sus conteos."
+      "navGroupNote": "Cada grupo del menú abre su submenú; en el móvil se lista con su encabezado. El grupo se marca cuando una de sus secciones está abierta y suma sus conteos.",
+      "actionMenu": "Menú de acciones",
+      "actionMenuNote": "Sobre el popover del menú. Agrupa con separador; lo destructivo va en rojo y al final. Lo usan la cuenta y las filas de Personal.",
+      "actionPicked": "Elegiste: {{key}}"
     },
     "pieces": "Tabla y ficha",
     "piecesNote": "La tabla de organizaciones y la cabecera de la ficha, con datos de muestra. Cabecera en mono, filas de 48 px, fila elegida en morado tenue con el identificador en morado 700; paginación con ventana. «Entrar como» no se construye: se abre la ficha."
@@ -440,7 +442,8 @@
       "ULTIMO_SUPERADMIN": "Es el último superadmin activo. Da acceso de superadmin a otra persona antes.",
       "MOTIVO_REQUERIDO": "Escribe el motivo.",
       "generic": "No se pudo guardar el cambio. Inténtalo de nuevo."
-    }
+    },
+    "actions": "Acciones"
   },
   "mine": {
     "title": "Mi acceso",
@@ -515,5 +518,17 @@
       "unknownActor": "Nadie con «{{value}}» aparece en la bitácora.",
       "badValue": "«{{value}}» no sirve para {{key}}:."
     }
+  },
+  "http": {
+    "offline": "No se pudo conectar con el servidor.",
+    "server": "Ocurrió un error en el servidor. Inténtalo de nuevo.",
+    "forbidden": "Tu rol no tiene permiso para esta acción.",
+    "sessionExpired": "Tu sesión expiró. Inicia sesión de nuevo.",
+    "refreshUnavailable": "No pudimos renovar tu sesión: revisa la conexión e inténtalo de nuevo."
+  },
+  "toast": {
+    "success": "Listo",
+    "error": "Error",
+    "info": "Aviso"
   }
 }

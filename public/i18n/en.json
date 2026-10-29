@@ -134,7 +134,6 @@
     "densityCozy": "Comfortable rows"
   },
   "status": {
-    "title": "System",
     "lead": "Environment, backend and session of this console.",
     "api": "Core API",
     "checking": "Checking…",
@@ -213,7 +212,10 @@
       "pills": "Environment and inline state",
       "pillsNote": "In tables the state has no background: text in its family and a shaped dot. The environment is always spelled out, in mono.",
       "navGroup": "Grouped menu",
-      "navGroupNote": "Each menu group opens its submenu; on mobile it is listed under its heading. The group is marked when one of its sections is open and adds up its counts."
+      "navGroupNote": "Each menu group opens its submenu; on mobile it is listed under its heading. The group is marked when one of its sections is open and adds up its counts.",
+      "actionMenu": "Action menu",
+      "actionMenuNote": "Built on the menu popover. Groups with a separator; destructive goes in red and last. Used by the account and Staff rows.",
+      "actionPicked": "You picked: {{key}}"
     },
     "pieces": "Table and record",
     "piecesNote": "The organizations table and the record header, with sample data. Mono header, 48 px rows, the selected row in soft purple with its identifier in purple 700; windowed pagination. «Impersonate» is not built: the record opens instead."
@@ -440,7 +442,8 @@
       "ULTIMO_SUPERADMIN": "This is the last active superadmin. Make someone else superadmin first.",
       "MOTIVO_REQUERIDO": "Write the reason.",
       "generic": "The change couldn't be saved. Try again."
-    }
+    },
+    "actions": "Actions"
   },
   "mine": {
     "title": "My access",
@@ -515,5 +518,17 @@
       "unknownActor": "Nobody matching «{{value}}» appears in the log.",
       "badValue": "«{{value}}» isn't valid for {{key}}:."
     }
+  },
+  "http": {
+    "offline": "Couldn't reach the server.",
+    "server": "Something went wrong on the server. Try again.",
+    "forbidden": "Your role isn't allowed to do this.",
+    "sessionExpired": "Your session expired. Sign in again.",
+    "refreshUnavailable": "We couldn't renew your session: check your connection and try again."
+  },
+  "toast": {
+    "success": "Done",
+    "error": "Error",
+    "info": "Notice"
   }
 }

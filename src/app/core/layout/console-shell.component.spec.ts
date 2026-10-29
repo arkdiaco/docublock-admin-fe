@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { Component } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
+import { DeferBlockBehavior, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { provideTranslateService, TranslateLoader, TranslateService, type TranslationObject } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
@@ -27,6 +27,8 @@ describe('ConsoleShellComponent', () => {
   beforeEach(async () => {
     localStorage.clear();
     await TestBed.configureTestingModule({
+      imports: [ConsoleShellComponent],
+      deferBlockBehavior: DeferBlockBehavior.Playthrough,
       providers: [
         provideRouter([
           { path: 'panel', component: Pagina, data: { titleKey: 'nav.overview' } },
@@ -145,14 +147,18 @@ describe('ConsoleShellComponent', () => {
     const { fixture, host } = await montar();
     expect(host.querySelector('dba-search-dialog')).toBeNull();
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
-    fixture.detectChanges();
-    expect(host.querySelector('dba-search-dialog')).not.toBeNull();
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(host.querySelector('dba-search-dialog')).not.toBeNull();
+    });
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     fixture.detectChanges();
     expect(host.querySelector('dba-search-dialog')).toBeNull();
     host.querySelector<HTMLButtonElement>('.bar__search')!.click();
-    fixture.detectChanges();
-    expect(host.querySelector('dba-search-dialog')).not.toBeNull();
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(host.querySelector('dba-search-dialog')).not.toBeNull();
+    });
     expect(host.textContent).not.toMatch(/\b(nav|shell|env|sys)\.[a-zA-Z]/);
   });
 });

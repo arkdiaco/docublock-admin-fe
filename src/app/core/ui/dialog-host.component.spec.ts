@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { DeferBlockBehavior, TestBed } from '@angular/core/testing';
 import {
   provideTranslateService,
   TranslateLoader,
@@ -20,6 +20,7 @@ describe('DialogHostComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [DialogHostComponent],
+      deferBlockBehavior: DeferBlockBehavior.Playthrough,
       providers: [
         provideTranslateService({
           loader: { provide: TranslateLoader, useClass: CatalogoEspanol },
@@ -43,9 +44,10 @@ describe('DialogHostComponent', () => {
       message: '¿Seguro?',
       confirmLabel: 'Cerrar',
     });
-    fixture.detectChanges();
-
-    expect(host.querySelector('db-dialog')).not.toBeNull();
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(host.querySelector('db-dialog')).not.toBeNull();
+    });
     expect(host.textContent).toContain('Cerrar sesión');
 
     const botones = [...host.querySelectorAll<HTMLButtonElement>('button')];

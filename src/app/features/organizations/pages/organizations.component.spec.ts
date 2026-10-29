@@ -144,4 +144,17 @@ describe('OrganizationsComponent', () => {
     expect(host.querySelector('dba-empty-state')).not.toBeNull();
     expect(host.querySelector('dba-data-table')).toBeNull();
   });
+
+  it('si dos búsquedas se cruzan, gana la última aunque la primera responda después', async () => {
+    const { fixture, host } = await montar();
+    host.querySelectorAll<HTMLButtonElement>('.pill')[1].click();
+    host.querySelectorAll<HTMLButtonElement>('.pill')[0].click();
+    const [vieja, nueva] = http.match((r) => r.url === '/platform/organizations');
+    nueva.flush(page());
+    await fixture.whenStable();
+    vieja.flush(page({ total: 1, items: [page().items[0]] }));
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(host.querySelectorAll('dba-data-table .dba-tr').length).toBe(2);
+  });
 });

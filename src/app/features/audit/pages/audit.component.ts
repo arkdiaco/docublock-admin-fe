@@ -12,6 +12,7 @@ import { firstValueFrom } from 'rxjs';
 import { NotificationService } from '../../../core/ui/notification.service';
 import { deviceLabel } from '../../../shared/domain/device-label';
 import { ExportState } from '../../../shared/http/export-state';
+import { LatestRequest } from '../../../shared/http/latest-request';
 import { ButtonComponent } from '../../../shared/ui/button.component';
 import { FilterPillsComponent, type FilterPill } from '../../../shared/ui/filter-pills.component';
 import { IconComponent } from '../../../shared/ui/icon.component';
@@ -558,6 +559,7 @@ export class AuditComponent {
   private readonly translate = inject(TranslateService);
   private readonly notify = inject(NotificationService);
   protected readonly exporting = new ExportState();
+  private readonly latest = new LatestRequest();
 
   protected readonly periods: readonly FilterPill[] = [
     { key: '24h', labelKey: 'audit.period.24h' },
@@ -646,6 +648,7 @@ export class AuditComponent {
   }
 
   protected async reload(): Promise<void> {
+    const current = this.latest.start();
     this.loading.set(this.items().length === 0);
     this.error.set(false);
     this.open.set(null);
@@ -653,14 +656,16 @@ export class AuditComponent {
       const result = await firstValueFrom(
         this.api.list({ ...this.effectiveFilters(), page: this.page(), limit: LIMIT }),
       );
+      if (!current()) return;
       this.total.set(result.total);
       this.items.set(result.items);
     } catch {
+      if (!current()) return;
       this.error.set(true);
       this.items.set([]);
       this.total.set(0);
     } finally {
-      this.loading.set(false);
+      if (current()) this.loading.set(false);
     }
   }
 

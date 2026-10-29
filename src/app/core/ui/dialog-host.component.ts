@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { DialogComponent, type DialogResult } from '../../shared/ui/dialog.component';
+import { DialogComponent } from '../../shared/ui/dialog.component';
+import type { DialogResult } from '../../shared/ui/dialog.component';
 import { DialogService } from './dialog.service';
 
 @Component({
@@ -8,7 +9,9 @@ import { DialogService } from './dialog.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (dialogs.request(); as request) {
-      <db-dialog [request]="request" (closed)="close($event)" />
+      @defer (prefetch on idle) {
+        <db-dialog [request]="request" (closed)="close($event)" />
+      }
     }
   `,
 })

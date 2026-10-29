@@ -4,8 +4,9 @@ import {
   HttpErrorResponse,
   type HttpInterceptorFn,
 } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { Injector, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import {
   catchError,
   finalize,
@@ -50,74 +51,82 @@ const extractMessage = (error: HttpErrorResponse): string | null => {
   return Array.isArray(body.message) ? body.message.join(' · ') : body.message;
 };
 
-const NO_REFRESH = ['/platform/auth/refresh', '/platform/auth/logout'];
+const LOGOUT_PATH = '/platform/auth/logout';
+const NO_REFRESH = ['/platform/auth/refresh', LOGOUT_PATH];
 const LOGIN_ROUTE = '/acceso';
+
+const SESSION_GONE = new Set([400, 401, 403]);
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const store = inject(AuthStore);
   const router = inject(Router);
-  const notify = inject(NotificationService);
+  const injector = inject(Injector);
+  const notify = (): NotificationService => injector.get(NotificationService);
   const http = inject(HttpClient);
+  const t = (key: string): string => injector.get(TranslateService).instant(key) as string;
 
   const toLogin = (): void => {
     store.clear();
     void router.navigate([LOGIN_ROUTE]);
   };
 
+  const report = (error: HttpErrorResponse): Observable<never> => {
+    if (error.status === 401 && !req.context.get(SKIP_AUTH) && store.isAuthenticated() && !req.url.includes(LOGOUT_PATH)) {
+      notify().info(t('http.sessionExpired'));
+      toLogin();
+    } else if (req.context.get(SILENT_ERRORS)) {
+      return throwError(() => error);
+    } else if (error.status === 0) {
+      notify().error(t('http.offline'));
+    } else if (error.status >= 500) {
+      notify().error(t('http.server'));
+    } else if (error.status === 403) {
+      notify().error(extractMessage(error) ?? t('http.forbidden'));
+    } else if (error.status !== 401) {
+      const message = extractMessage(error);
+      if (message) notify().error(message);
+    }
+    return throwError(() => error);
+  };
+
+  const refreshed = (refreshToken: string): Observable<SessionResponse> =>
+    (refreshInFlight ??= http.post<SessionResponse>('/platform/auth/refresh', { refreshToken }).pipe(
+      tap((session) => store.setTokens({ accessToken: session.accessToken, refreshToken: session.refreshToken })),
+      finalize(() => {
+        refreshInFlight = null;
+      }),
+      shareReplay(1),
+    ));
+
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (
+      const canRefresh =
         error.status === 401 &&
         !req.context.get(SKIP_AUTH) &&
         store.isAuthenticated() &&
-        !NO_REFRESH.some((path) => req.url.includes(path))
-      ) {
-        const refreshToken = store.refreshTokenValue();
-        if (!refreshToken) {
-          toLogin();
-          return throwError(() => error);
-        }
-        refreshInFlight ??= http.post<SessionResponse>('/platform/auth/refresh', { refreshToken }).pipe(
-          tap((session) =>
-            store.setTokens({
-              accessToken: session.accessToken,
-              refreshToken: session.refreshToken,
-            }),
-          ),
-          finalize(() => {
-            refreshInFlight = null;
-          }),
-          shareReplay(1),
-        );
-        return refreshInFlight.pipe(
-          switchMap((session) =>
-            next(req.clone({ setHeaders: { Authorization: `Bearer ${session.accessToken}` } })),
-          ),
-          catchError((refreshError: unknown) => {
-            if (refreshError instanceof HttpErrorResponse && refreshError.status === 401) {
-              notify.info('Tu sesión expiró. Inicia sesión de nuevo.');
+        !NO_REFRESH.some((path) => req.url.includes(path));
+      if (!canRefresh) return report(error);
+      const refreshToken = store.refreshTokenValue();
+      if (!refreshToken) return report(error);
+      return refreshed(refreshToken).pipe(
+        catchError((refreshError: unknown) => {
+          const status = refreshError instanceof HttpErrorResponse ? refreshError.status : 0;
+          if (SESSION_GONE.has(status)) {
+            if (store.isAuthenticated()) {
+              notify().info(t('http.sessionExpired'));
               toLogin();
             }
-            return throwError(() => error);
-          }),
-        );
-      }
-      const silent = req.context.get(SILENT_ERRORS);
-      if (error.status === 401 && !req.context.get(SKIP_AUTH) && store.isAuthenticated()) {
-        toLogin();
-      } else if (silent) {
-        return throwError(() => error);
-      } else if (error.status === 0) {
-        notify.error('No se pudo conectar con el servidor');
-      } else if (error.status >= 500) {
-        notify.error('Ocurrió un error en el servidor. Inténtalo de nuevo.');
-      } else if (error.status === 403) {
-        notify.error(extractMessage(error) ?? 'No tienes permiso para esta acción');
-      } else if (error.status !== 401) {
-        const message = extractMessage(error);
-        if (message) notify.error(message);
-      }
-      return throwError(() => error);
+          } else {
+            notify().error(t('http.refreshUnavailable'));
+          }
+          return throwError(() => error);
+        }),
+        switchMap((session) =>
+          next(req.clone({ setHeaders: { Authorization: `Bearer ${session.accessToken}` } })).pipe(
+            catchError((retryError: HttpErrorResponse) => report(retryError)),
+          ),
+        ),
+      );
     }),
   );
 };

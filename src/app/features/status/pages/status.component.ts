@@ -1,144 +1,133 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { catchError, finalize, map, of } from 'rxjs';
+import { catchError, map, of } from 'rxjs';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { API_BASE_URL, APP_ENV } from '../../../core/config/api.tokens';
 import { envLabelKey } from '../../../shared/domain/environment';
 import { SILENT_ERRORS, SKIP_AUTH } from '../../../core/http/http.interceptors';
-import { LoaderComponent } from '../../../shared/ui/loader.component';
+import { ButtonComponent } from '../../../shared/ui/button.component';
+import { OrgStateComponent } from '../../../shared/ui/org-state.component';
 
 type Check = 'checking' | 'ok' | 'fail';
 
+const CHECK_STATE: Record<Check, string> = { checking: 'trial', ok: 'active', fail: 'suspended' };
+
 @Component({
   selector: 'dba-status',
-  imports: [TranslatePipe, LoaderComponent],
+  imports: [TranslatePipe, ButtonComponent, OrgStateComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="status">
       <header class="status__head">
-        <span class="dba-eyebrow">{{ 'nav.crumbRoot' | translate }}</span>
-        <h1 class="dba-page">{{ 'status.title' | translate }}</h1>
-        <p class="status__lead">{{ 'status.lead' | translate }}</p>
+        <h1 class="dba-page">{{ 'nav.health' | translate }}</h1>
+        <p class="dba-body status__lead">{{ 'status.lead' | translate }}</p>
       </header>
 
       <dl class="status__grid">
-        <dt>{{ 'status.env' | translate }}</dt>
-        <dd class="db-mono">{{ envLabel | translate }}</dd>
+        <dt class="dba-th">{{ 'status.env' | translate }}</dt>
+        <dd class="dba-mono">{{ envLabel | translate }}</dd>
 
-        <dt>{{ 'status.api' | translate }}</dt>
+        <dt class="dba-th">{{ 'status.api' | translate }}</dt>
         <dd>
-          <span class="db-mono">{{ apiBase }}</span>
-          <span class="status__pill" [class.status__pill--ok]="check() === 'ok'" [class.status__pill--fail]="check() === 'fail'">
-            @if (check() === 'checking') {
-              <db-loader size="14px" />
-            }
-            {{ checkKey() | translate }}
+          <span class="dba-mono status__value">{{ apiBase }}</span>
+          <span class="status__check">
+            <dba-org-state [state]="checkState()" [labelKey]="checkKey()" />
             @if (detail(); as text) {
-              <span class="status__detail db-mono">· {{ text }}</span>
+              <span class="dba-meta status__detail">· {{ text }}</span>
             }
           </span>
         </dd>
 
-        <dt>{{ 'status.session' | translate }}</dt>
+        <dt class="dba-th">{{ 'status.session' | translate }}</dt>
         <dd>{{ (auth.isAuthenticated() ? 'status.yes' : 'status.no') | translate }}</dd>
 
-        <dt>{{ 'status.staff' | translate }}</dt>
+        <dt class="dba-th">{{ 'status.staff' | translate }}</dt>
         <dd>{{ (auth.platformStaff() ? 'status.yes' : 'status.no') | translate }}</dd>
       </dl>
 
-      <button type="button" class="status__retry" [disabled]="check() === 'checking'" (click)="probe()">
-        {{ 'status.retry' | translate }}
-      </button>
+      <div>
+        <button dba-button variant="secondary" class="status__retry" [busy]="check() === 'checking'" (click)="probe()">
+          {{ 'status.retry' | translate }}
+        </button>
+      </div>
     </section>
   `,
   styles: `
     .status {
-      max-width: 720px;
-      font-family: var(--db-font);
-      color: var(--db-ink-strong);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .status__head {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
 
     .status__lead {
-      margin: 0 0 24px;
-      color: var(--db-ink-note-soft);
+      margin: 0;
+      color: var(--dba-text-muted);
     }
 
     .status__grid {
       display: grid;
-      grid-template-columns: 180px 1fr;
-      gap: 12px 16px;
-      margin: 0 0 24px;
+      grid-template-columns: 196px 1fr;
+      align-items: center;
+      gap: 0;
+      margin: 0;
+      border: 1px solid var(--dba-border-card);
+      border-radius: var(--dba-radius-panel);
+      background: var(--dba-surface);
     }
 
-    .status__grid dt {
-      color: var(--db-ink-label);
-      font-size: var(--db-text-counter);
+    .status__grid dt,
+    .status__grid dd {
+      min-height: var(--dba-height-row);
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      border-top: 1px solid var(--dba-border-row);
+    }
+
+    .status__grid dt:first-of-type,
+    .status__grid dd:first-of-type {
+      border-top: 0;
     }
 
     .status__grid dd {
-      display: flex;
       flex-wrap: wrap;
-      align-items: center;
       gap: 10px;
       margin: 0;
+      font-size: var(--dba-text-cell);
+      color: var(--dba-ink);
     }
 
-    .status__pill {
+    .status__value {
+      overflow-wrap: anywhere;
+    }
+
+    .status__check {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 3px 10px;
-      border-radius: var(--db-radius-pill);
-      background: var(--db-surface-chip);
-      font-size: var(--db-text-counter);
-      font-weight: 600;
-    }
-
-    .status__pill--ok {
-      background: var(--db-success-wash);
-      color: var(--db-success-ink);
-    }
-
-    .status__pill--fail {
-      background: var(--db-danger-wash);
-      color: var(--db-danger-ink);
-    }
-
-    .status__detail {
-      font-weight: 400;
-      color: var(--db-ink-note-soft);
-    }
-
-    .status__retry {
-      padding: 9px 16px;
-      border: 0;
-      border-radius: var(--db-radius-field);
-      background: var(--db-primary);
-      font-family: var(--db-font);
-      font-size: var(--db-text-body);
-      font-weight: 600;
-      color: var(--db-primary-contrast);
-      cursor: pointer;
-    }
-
-    .status__retry:disabled {
-      opacity: 0.6;
-      cursor: progress;
+      gap: 8px;
     }
 
     @media (max-width: 720px) {
-      .status {
-        padding: 24px 16px;
-      }
-
       .status__grid {
         grid-template-columns: 1fr;
-        gap: 4px 0;
+      }
+
+      .status__grid dt {
+        min-height: 0;
+        padding-top: 12px;
       }
 
       .status__grid dd {
-        margin-bottom: 12px;
+        min-height: 0;
+        padding-bottom: 12px;
+        border-top: 0;
       }
     }
   `,
@@ -152,6 +141,7 @@ export class StatusComponent {
   protected readonly check = signal<Check>('checking');
   protected readonly detail = signal('');
   protected readonly checkKey = computed(() => `status.${this.check()}`);
+  protected readonly checkState = computed(() => CHECK_STATE[this.check()]);
 
   constructor() {
     this.probe();
@@ -169,7 +159,6 @@ export class StatusComponent {
         catchError((error: { status?: number }) =>
           of({ ok: false, detail: error.status ? `HTTP ${error.status}` : '' }),
         ),
-        finalize(() => undefined),
       )
       .subscribe(({ ok, detail }) => {
         this.check.set(ok ? 'ok' : 'fail');

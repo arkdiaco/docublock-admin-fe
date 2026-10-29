@@ -46,13 +46,13 @@ describe('StatusComponent', () => {
 
   it('comprueba el backend al entrar, sin token, y lo reporta como que responde', async () => {
     const { fixture, host } = montar();
-    expect(host.querySelector('.status__pill')?.textContent).toContain('Comprobando');
+    expect(host.querySelector('.status__check')?.textContent).toContain('Comprobando');
     const req = http.expectOne('/health');
     expect(req.request.headers.has('Authorization')).toBe(false);
     req.flush({ status: 'ok' });
     await fixture.whenStable();
     fixture.detectChanges();
-    expect(host.querySelector('.status__pill--ok')?.textContent).toContain('Responde');
+    expect(host.querySelector('.status__check .st--active')?.textContent).toContain('Responde');
     expect(host.querySelector('.status__detail')?.textContent).toContain('ok');
     expect(host.textContent).not.toMatch(/\b(status|shell)\.[a-z]/);
   });
@@ -62,12 +62,12 @@ describe('StatusComponent', () => {
     http.expectOne('/health').flush({}, { status: 503, statusText: 'Unavailable' });
     await fixture.whenStable();
     fixture.detectChanges();
-    expect(host.querySelector('.status__pill--fail')?.textContent).toContain('No responde');
+    expect(host.querySelector('.status__check .st--suspended')?.textContent).toContain('No responde');
     expect(host.querySelector('.status__detail')?.textContent).toContain('HTTP 503');
     host.querySelector<HTMLButtonElement>('.status__retry')!.click();
     http.expectOne('/health').flush({ status: 'ok' });
     await fixture.whenStable();
     fixture.detectChanges();
-    expect(host.querySelector('.status__pill--ok')).not.toBeNull();
+    expect(host.querySelector('.status__check .st--active')).not.toBeNull();
   });
 });

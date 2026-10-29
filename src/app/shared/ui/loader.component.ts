@@ -125,7 +125,7 @@ export type LoaderVariant = 'mark' | 'page';
       justify-content: center;
       gap: 0;
       overflow: hidden;
-      background: rgba(255, 255, 255, 0.72);
+      background: var(--dba-veil);
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
     }
@@ -169,7 +169,7 @@ export type LoaderVariant = 'mark' | 'page';
       margin-top: 26px;
       overflow: hidden;
       border-radius: 2px;
-      background: #f0eef6;
+      background: var(--dba-surface-chip);
     }
 
     .ld__run {
@@ -194,7 +194,7 @@ export type LoaderVariant = 'mark' | 'page';
       inset: 0;
       font-size: 12.5px;
       text-align: center;
-      color: #6b6780;
+      color: var(--dba-text-muted);
       animation: ld-message 0.3s ease-out;
     }
 
@@ -210,14 +210,14 @@ export type LoaderVariant = 'mark' | 'page';
       font: 500 10px ui-monospace, Menlo, monospace;
       letter-spacing: 0.16em;
       text-transform: uppercase;
-      color: #6f6a80;
+      color: var(--dba-text-muted);
     }
 
     .ld__dot {
       width: 5px;
       height: 5px;
       border-radius: 50%;
-      background: #0e8a5f;
+      background: var(--dba-state-active-dot);
       animation: ld-dot 1.8s ease-in-out infinite;
     }
 

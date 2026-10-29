@@ -8,7 +8,7 @@ import {
   TranslateService,
   type TranslationObject,
 } from '@ngx-translate/core';
-import { MessageService, type MenuItem } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { of, type Observable } from 'rxjs';
 import es from '../../../../../public/i18n/es.json';
 import { DialogService } from '../../../core/ui/dialog.service';
@@ -94,17 +94,17 @@ describe('StaffComponent', () => {
     return { fixture, host: fixture.nativeElement as HTMLElement };
   };
 
-  const accionesDe = async (
-    fixture: Awaited<ReturnType<typeof montar>>['fixture'],
-    fila: number,
-  ) => {
+  const accionesDe = async (fixture: Awaited<ReturnType<typeof montar>>['fixture'], fila: number) => {
     const host = fixture.nativeElement as HTMLElement;
-    const filas = host.querySelectorAll<HTMLElement>('.dba-tr');
-    filas.item(fila).querySelector<HTMLButtonElement>('.staff__more')!.click();
+    host.querySelectorAll<HTMLElement>('.dba-tr').item(fila).querySelector<HTMLButtonElement>('.staff__more')!.click();
     fixture.detectChanges();
-    return (
-      fixture.componentInstance as unknown as { actionItems: () => MenuItem[] }
-    ).actionItems();
+    await fixture.whenStable();
+    const botones = () => [...document.querySelectorAll<HTMLButtonElement>('.p-popover button.item')];
+    await vi.waitFor(() => expect(botones().length).toBeGreaterThan(0));
+    return {
+      textos: botones().map((b) => b.textContent?.trim()),
+      elegir: (texto: string) => botones().find((b) => b.textContent?.trim() === texto)!.click(),
+    };
   };
 
   const recargar = async (fixture: Awaited<ReturnType<typeof montar>>['fixture']) => {
@@ -169,7 +169,7 @@ describe('StaffComponent', () => {
     const { fixture } = await montar();
     dialogs.open.mockResolvedValue({ answer: 'confirm', reason: 'Salió de la empresa' });
     const acciones = await accionesDe(fixture, 1);
-    acciones.find((a) => a.label === 'Suspender')!.command!({});
+    acciones.elegir('Suspender');
     await Promise.resolve();
     expect(dialogs.open.mock.calls[0][0].reason.required).toBe(true);
     await vi.waitFor(() =>
@@ -181,7 +181,7 @@ describe('StaffComponent', () => {
     const { fixture } = await montar();
     dialogs.open.mockResolvedValue({ answer: 'confirm', reason: 'Fin de contrato' });
     const acciones = await accionesDe(fixture, 1);
-    acciones.find((a) => a.label === 'Quitar acceso')!.command!({});
+    acciones.elegir('Quitar acceso');
     await vi.waitFor(() => expect(dialogs.open).toHaveBeenCalled());
     expect(dialogs.open.mock.calls[0][0].challenge.identifier).toBe('beto@docublock.co');
     let req!: ReturnType<HttpTestingController['expectOne']>;
@@ -201,12 +201,12 @@ describe('StaffComponent', () => {
     const { fixture } = await montar();
     dialogs.confirm.mockResolvedValue(true);
     const acciones = await accionesDe(fixture, 2);
-    expect(acciones.map((a) => a.label).filter(Boolean)).toEqual([
+    expect(acciones.textos).toEqual([
       'Cambiar rol',
       'Reactivar',
       'Quitar acceso',
     ]);
-    acciones.find((a) => a.label === 'Reactivar')!.command!({});
+    acciones.elegir('Reactivar');
     let req!: ReturnType<HttpTestingController['expectOne']>;
     await vi.waitFor(() => {
       req = http.expectOne((r) => r.method === 'PATCH' && r.url === '/platform/staff/caro');

@@ -1,8 +1,8 @@
 {
-  "barra-de-acento": 1,
+  "barra-de-acento": 0,
   "pildora-propia": 0,
-  "color-crudo": 9,
-  "token-heredado-en-pantalla": 22,
+  "color-crudo": 0,
+  "token-heredado-en-pantalla": 0,
   "ancho-centrado": 0,
   "control-fuera-de-primeng": 0,
   "spinner-ajeno": 0

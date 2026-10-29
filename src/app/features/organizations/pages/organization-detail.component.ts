@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
+import { LatestRequest } from '../../../shared/http/latest-request';
 import { ButtonComponent } from '../../../shared/ui/button.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
 import { ModuleToggleComponent } from '../../../shared/ui/module-toggle.component';
@@ -310,6 +311,8 @@ export class OrganizationDetailComponent {
     return `${docs.used} / ${docs.limit === null ? '∞' : docs.limit}`;
   });
 
+  private readonly latest = new LatestRequest();
+
   constructor() {
     effect(() => {
       const id = this.id();
@@ -327,15 +330,18 @@ export class OrganizationDetailComponent {
   }
 
   private async load(id: string): Promise<void> {
+    const current = this.latest.start();
     this.loading.set(true);
     this.error.set(false);
     try {
-      this.detail.set(await firstValueFrom(this.api.detail(id)));
+      const detail = await firstValueFrom(this.api.detail(id));
+      if (current()) this.detail.set(detail);
     } catch {
+      if (!current()) return;
       this.error.set(true);
       this.detail.set(null);
     } finally {
-      this.loading.set(false);
+      if (current()) this.loading.set(false);
     }
   }
 
