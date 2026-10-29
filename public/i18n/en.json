@@ -794,5 +794,96 @@
       "aboveAvailable": "It exceeds what can be moved",
       "generic": "It couldn't be saved. Try again."
     }
+  },
+  "members": {
+    "loading": "Loading members…",
+    "errorTitle": "We couldn't load the members",
+    "errorLead": "Check your connection and try again.",
+    "title": "Members ({{total}})",
+    "search": "Name, email or ID",
+    "none": "The organization has no members yet.",
+    "noMatch": "Nobody matches the search.",
+    "invitations": "Invitations",
+    "noInvitations": "No invitations.",
+    "actions": "Actions",
+    "actionsFor": "Actions for {{name}}",
+    "col": {
+      "person": "Person",
+      "identification": "ID",
+      "role": "Role",
+      "state": "Status",
+      "email": "Email",
+      "expires": "Expires"
+    },
+    "state": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "invitation": {
+      "PENDING": "Pending",
+      "ACCEPTED": "Accepted",
+      "REVOKED": "Revoked",
+      "EXPIRED": "Expired"
+    },
+    "f": {
+      "identification": "ID",
+      "email": "Email",
+      "role": "Role"
+    },
+    "action": {
+      "role": "Change role",
+      "deactivate": "Deactivate",
+      "activate": "Activate",
+      "remove": "Remove from organization"
+    },
+    "invite": {
+      "open": "Invite",
+      "title": "Invite to the organization",
+      "confirm": "Send invitation",
+      "hint": "They get an email with the link to sign in or create their account. Invited as Administrator by default."
+    },
+    "role": {
+      "title": "Change {{name}}'s role",
+      "confirm": "Save role"
+    },
+    "sync": {
+      "open": "Sync roles",
+      "title": "Sync system roles?",
+      "message": "Creates any missing system roles and adds any new or derived permissions their roles are missing. Removes nothing.",
+      "confirm": "Sync"
+    },
+    "resend": "Resend",
+    "revoke": "Revoke",
+    "resendTitle": "Resend the invitation?",
+    "resendMessage": "A new link is sent to {{email}} and the previous one stops working.",
+    "revokeTitle": "Revoke the invitation?",
+    "revokeMessage": "The link sent to {{email}} stops working.",
+    "deactivateTitle": "Deactivate {{name}}?",
+    "deactivateMessage": "They can't sign in to this organization until reactivated. Their data doesn't change.",
+    "activateTitle": "Activate {{name}}?",
+    "activateMessage": "They can sign in again with their role.",
+    "removeTitle": "Remove {{name}} from the organization?",
+    "removeMessage": "They lose access to this organization. Their account and other organizations don't change.",
+    "removeVerb": "remove them",
+    "done": {
+      "invite": "Invitation sent to {{email}}",
+      "role": "{{name}}'s role updated",
+      "sync": "Roles synced: {{created}} created, {{rolesWithDerived}} with new permissions",
+      "resend": "Invitation resent to {{email}}",
+      "revoke": "Invitation revoked",
+      "deactivate": "{{name}} is inactive",
+      "activate": "{{name}} is active",
+      "remove": "{{name}} is no longer a member"
+    },
+    "error": {
+      "ULTIMO_ADMIN": "This is the last active administrator: assign another first.",
+      "ROL_INVALIDO": "That role no longer exists.",
+      "ROL_RESERVADO": "That role can't be assigned.",
+      "MIEMBRO_YA_EXISTE": "That person is already a member.",
+      "INVITACION_PENDIENTE": "There's already a pending invitation for that ID.",
+      "INVITACION_NO_PENDIENTE": "The invitation is no longer pending.",
+      "INVITACION_CORREO_FALLIDO": "The invitation was created but the email failed: resend it.",
+      "generic": "It couldn't be saved. Try again."
+    }
   }
 }

@@ -794,5 +794,96 @@
       "aboveAvailable": "Supera lo que se puede mover",
       "generic": "No se pudo guardar. Inténtalo de nuevo."
     }
+  },
+  "members": {
+    "loading": "Cargando los miembros…",
+    "errorTitle": "No pudimos cargar los miembros",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "title": "Miembros ({{total}})",
+    "search": "Nombre, correo o identificación",
+    "none": "La organización todavía no tiene miembros.",
+    "noMatch": "Nadie coincide con la búsqueda.",
+    "invitations": "Invitaciones",
+    "noInvitations": "No hay invitaciones.",
+    "actions": "Acciones",
+    "actionsFor": "Acciones para {{name}}",
+    "col": {
+      "person": "Persona",
+      "identification": "Identificación",
+      "role": "Rol",
+      "state": "Estado",
+      "email": "Correo",
+      "expires": "Vence"
+    },
+    "state": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    },
+    "invitation": {
+      "PENDING": "Pendiente",
+      "ACCEPTED": "Aceptada",
+      "REVOKED": "Revocada",
+      "EXPIRED": "Vencida"
+    },
+    "f": {
+      "identification": "Identificación",
+      "email": "Correo",
+      "role": "Rol"
+    },
+    "action": {
+      "role": "Cambiar rol",
+      "deactivate": "Desactivar",
+      "activate": "Activar",
+      "remove": "Quitar de la organización"
+    },
+    "invite": {
+      "open": "Invitar",
+      "title": "Invitar a la organización",
+      "confirm": "Enviar invitación",
+      "hint": "Le llega un correo con el enlace para entrar o crear su cuenta. Por defecto se invita como Administrador."
+    },
+    "role": {
+      "title": "Cambiar el rol de {{name}}",
+      "confirm": "Guardar rol"
+    },
+    "sync": {
+      "open": "Sincronizar roles",
+      "title": "¿Sincronizar los roles de sistema?",
+      "message": "Crea los roles de sistema que falten y agrega los permisos nuevos o derivados que les falten a todos sus roles. No quita nada.",
+      "confirm": "Sincronizar"
+    },
+    "resend": "Reenviar",
+    "revoke": "Revocar",
+    "resendTitle": "¿Reenviar la invitación?",
+    "resendMessage": "Se manda un enlace nuevo a {{email}} y el anterior deja de servir.",
+    "revokeTitle": "¿Revocar la invitación?",
+    "revokeMessage": "El enlace enviado a {{email}} deja de servir.",
+    "deactivateTitle": "¿Desactivar a {{name}}?",
+    "deactivateMessage": "No podrá entrar a esta organización hasta que se active de nuevo. Sus datos no cambian.",
+    "activateTitle": "¿Activar a {{name}}?",
+    "activateMessage": "Vuelve a poder entrar con su rol.",
+    "removeTitle": "¿Quitar a {{name}} de la organización?",
+    "removeMessage": "Pierde el acceso a esta organización. Su cuenta y sus otras organizaciones no cambian.",
+    "removeVerb": "quitarlo",
+    "done": {
+      "invite": "Invitación enviada a {{email}}",
+      "role": "Rol de {{name}} actualizado",
+      "sync": "Roles sincronizados: {{created}} creados, {{rolesWithDerived}} con permisos nuevos",
+      "resend": "Invitación reenviada a {{email}}",
+      "revoke": "Invitación revocada",
+      "deactivate": "{{name}} quedó inactivo",
+      "activate": "{{name}} quedó activo",
+      "remove": "{{name}} ya no es miembro"
+    },
+    "error": {
+      "ULTIMO_ADMIN": "Es el último administrador activo: asigna otro antes.",
+      "ROL_INVALIDO": "Ese rol ya no existe.",
+      "ROL_RESERVADO": "Ese rol no se puede asignar.",
+      "MIEMBRO_YA_EXISTE": "Esa persona ya es miembro.",
+      "INVITACION_PENDIENTE": "Ya hay una invitación pendiente para esa identificación.",
+      "INVITACION_NO_PENDIENTE": "La invitación ya no está pendiente.",
+      "INVITACION_CORREO_FALLIDO": "La invitación quedó creada pero el correo no salió: reenvíala.",
+      "generic": "No se pudo guardar. Inténtalo de nuevo."
+    }
   }
 }
