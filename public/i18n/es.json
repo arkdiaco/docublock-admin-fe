@@ -703,7 +703,8 @@
       "period": "Vigencia actualizada",
       "noExpiry": "Suscripción sin vencimiento",
       "counter": "Contador actualizado",
-      "expire": "Suscripción expirada"
+      "expire": "Suscripción expirada",
+      "transfer": "{{count}} documentos transferidos."
     },
     "error": {
       "PLAN_NO_ENCONTRADO": "Ese plan ya no existe o está retirado.",
@@ -714,6 +715,30 @@
       "generic": "No se pudo guardar. Inténtalo de nuevo.",
       "futureDate": "Elige una fecha futura",
       "wholeNumber": "Escribe un número entero"
+    },
+    "transfer": {
+      "open": "Transferir documentos",
+      "title": "Transferir documentos",
+      "confirm": "Transferir",
+      "available": "Disponibles para transferir: {{count}}",
+      "target": "Organización destino",
+      "targetPlaceholder": "Busca por nombre o NIT",
+      "targetEmpty": "Ninguna organización coincide",
+      "targetHas": "Usa {{used}} de {{limit}} documentos",
+      "targetUnlimited": "Tiene documentos ilimitados: no admite transferencias",
+      "amount": "Documentos a transferir",
+      "tooMany": "Supera los disponibles",
+      "sourceAfter": "{{name}} queda con {{count}} disponibles",
+      "targetAfter": "{{name}} pasa de {{from}} a {{to}} documentos en su plan",
+      "error": {
+        "TRANSFERENCIA_MISMA_ORG": "El origen y el destino son la misma organización.",
+        "ORIGEN_SIN_PLAN": "Esta organización no tiene un plan vigente.",
+        "ORIGEN_ILIMITADO": "Esta organización tiene documentos ilimitados: no hay saldo que transferir.",
+        "DESTINO_SIN_PLAN": "El destino no tiene un plan vigente al que sumar.",
+        "DESTINO_ILIMITADO": "El destino ya tiene documentos ilimitados.",
+        "TRANSFERENCIA_NO_APLICADA": "No se pudo sumar al destino; los documentos volvieron al origen.",
+        "SIN_CUPO": "No alcanzan los documentos disponibles."
+      }
     }
   },
   "quota": {
@@ -1069,6 +1094,35 @@
     },
     "error": {
       "rotate": "No pudimos rotar la API key. Inténtalo de nuevo."
+    }
+  },
+  "orgCreate": {
+    "open": "Crear organización",
+    "title": "Crear organización",
+    "subtitle": "Nace sin plan; asígnalo después en Suscripción",
+    "save": "Crear e invitar",
+    "org": "Organización",
+    "person": "Tipo de persona",
+    "legal": "Persona jurídica",
+    "natural": "Persona natural",
+    "country": "País",
+    "countryFirst": "Elige primero el país",
+    "webPlaceholder": "https://",
+    "tributaryInvalid": "Solo letras, números, puntos y guiones",
+    "phoneInvalid": "Escribe un teléfono válido",
+    "webInvalid": "Empieza por http:// o https://",
+    "admin": "Primer administrador",
+    "adminLead": "Le llega una invitación. Cuando la acepta queda como creador y se configuran la API key, el directorio y la plantilla General.",
+    "done": "{{name}} quedó creada. La invitación salió a {{email}}.",
+    "doneNoInvite": "{{name}} quedó creada, pero la invitación no salió: reenvíala desde Miembros.",
+    "error": {
+      "generic": "No pudimos crear la organización. Inténtalo de nuevo.",
+      "NIT_EN_USO": "Ya existe una organización con ese número tributario.",
+      "TRIBUTARY_NUMBER_INVALID": "El número tributario no es válido para ese país.",
+      "CIUDAD_FUERA_DEL_PAIS": "La ciudad no pertenece al país elegido.",
+      "NO_ES_RESELLER": "La organización elegida ya no es reseller.",
+      "PAIS_NO_ENCONTRADO": "El país ya no existe en el catálogo.",
+      "CIUDAD_NO_ENCONTRADA": "La ciudad ya no existe en el catálogo."
     }
   }
 }

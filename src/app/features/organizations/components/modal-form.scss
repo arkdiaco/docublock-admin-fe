@@ -43,6 +43,30 @@
   border-top: 0;
 }
 
+.form__section {
+  margin: 6px 0 0;
+}
+
+.form__note {
+  margin: -8px 0 0;
+}
+
+.form__note--top {
+  margin: 0;
+  color: var(--dba-text);
+}
+
+.form__summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: var(--dba-radius-control);
+  background: var(--dba-surface-muted);
+  font-size: var(--dba-text-cell);
+  color: var(--dba-text);
+}
+
 .form__switchCopy {
   display: flex;
   flex-direction: column;

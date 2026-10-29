@@ -1,12 +1,15 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { provideRouter, Router } from '@angular/router';
 import { provideTranslateService, TranslateLoader, TranslateService, type TranslationObject } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { of, type Observable } from 'rxjs';
 import es from '../../../../../public/i18n/es.json';
 import { API_BASE_URL } from '../../../core/config/api.tokens';
+import { AuthStore } from '../../../core/auth/auth.store';
+import { OrgCreateFormComponent } from '../components/org-create-form.component';
 import { OrganizationsComponent } from './organizations.component';
 import type { PlatformOrgPage } from '../data/organizations.models';
 
@@ -156,5 +159,59 @@ describe('OrganizationsComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
     expect(host.querySelectorAll('dba-data-table .dba-tr').length).toBe(2);
+  });
+
+  const perfil = (permisos: string[]) =>
+    TestBed.inject(AuthStore).setProfile({
+      user: { id: 'x', names: 'Marta', surNames: 'Vidal', email: 'm@d.co', identification: '', imageProfile: null },
+      platformStaff: true,
+      platformPermissions: permisos,
+    });
+
+  it('sin clients:manage no se ofrece crear organización', async () => {
+    perfil(['platform:clients']);
+    const { host } = await montar();
+    expect([...host.querySelectorAll('button[dba-button]')].some((b) => b.textContent?.includes('Crear organización'))).toBe(
+      false,
+    );
+  });
+
+  it('crear manda el alta con el primer administrador y abre la ficha nueva', async () => {
+    perfil(['platform:clients', 'platform:clients:manage']);
+    const { fixture, host } = await montar();
+    const navegar = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    [...host.querySelectorAll<HTMLButtonElement>('button[dba-button]')]
+      .find((b) => b.textContent?.includes('Crear organización'))!
+      .click();
+    fixture.detectChanges();
+    http.expectOne('/catalogs/countries').flush([{ id: 'co', name: 'Colombia' }]);
+    http.expectOne((r) => r.url === '/platform/resellers').flush({ items: [] });
+    const form = fixture.debugElement.query(By.directive(OrgCreateFormComponent)).componentInstance as unknown as {
+      submitted: { emit: (v: unknown) => void };
+    };
+    const body = {
+      businessName: 'Nueva',
+      tributaryNumber: '901',
+      type: 1,
+      countryId: 'co',
+      cityId: 'bog',
+      phone: '3000000000',
+      address: 'Calle 1',
+      email: 'hola@nueva.co',
+      isTest: true,
+      admin: { identification: '1032', email: 'ana@nueva.co' },
+      reason: 'Cliente nuevo',
+    };
+    form.submitted.emit(body);
+    const req = http.expectOne((r) => r.method === 'POST' && r.url === '/platform/organizations');
+    expect(req.request.body).toEqual(body);
+    req.flush({
+      id: 'org-new',
+      businessName: 'Nueva',
+      invitation: { id: 'i1', email: 'ana@nueva.co', expiresAt: '2026-11-05T00:00:00.000Z' },
+      invitationError: null,
+    });
+    await vi.waitFor(() => expect(navegar).toHaveBeenCalled());
+    expect(navegar.mock.calls[0][0]).toEqual([expect.any(String), 'org-new']);
   });
 });

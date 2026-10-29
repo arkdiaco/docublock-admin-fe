@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { sectionPath } from '../../../core/layout/console-nav';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import { DensityService } from '../../../core/preferences/density.service';
 import { quotaToneOf } from '../../../shared/domain/org-state';
@@ -24,8 +24,12 @@ import { IconComponent } from '../../../shared/ui/icon.component';
 import { OrgFlagComponent } from '../../../shared/ui/org-flag.component';
 import { OrgStateComponent } from '../../../shared/ui/org-state.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
+import { AuthStore } from '../../../core/auth/auth.store';
+import { NotificationService } from '../../../core/ui/notification.service';
+import { errorCodeOf } from '../../../shared/http/error-code';
+import { OrgCreateFormComponent } from '../components/org-create-form.component';
 import { OrganizationsApi } from '../data/organizations.api';
-import type { PlatformOrgRow, PlatformOrgState, PlatformStateCounts } from '../data/organizations.models';
+import type { CreateOrganizationBody, PlatformOrgRow, PlatformOrgState, PlatformStateCounts } from '../data/organizations.models';
 import { orgStateView } from '../data/platform-org-state';
 
 const LIMIT = 20;
@@ -59,6 +63,15 @@ interface RowView extends PlatformOrgRow {
   validity: string;
 }
 
+const CREATE_ERRORS = [
+  'NIT_EN_USO',
+  'TRIBUTARY_NUMBER_INVALID',
+  'CIUDAD_FUERA_DEL_PAIS',
+  'NO_ES_RESELLER',
+  'PAIS_NO_ENCONTRADO',
+  'CIUDAD_NO_ENCONTRADA',
+];
+
 const initialsOf = (name: string): string =>
   name
     .split(/\s+/)
@@ -79,6 +92,7 @@ const initialsOf = (name: string): string =>
     EmptyStateComponent,
     SectionLoaderComponent,
     OrgFlagComponent,
+    OrgCreateFormComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -88,11 +102,23 @@ const initialsOf = (name: string): string =>
           <h1 class="dba-page">{{ 'nav.organizations' | translate }}</h1>
           <span class="dba-meta orgs__total">{{ 'orgs.count' | translate: { total: counts().total } }}</span>
         </div>
-        <button dba-button variant="secondary" [busy]="exporting.busy()" [disabled]="loading() || rows().length === 0" (click)="exportCsv()">
-          <db-icon name="download" [size]="15" />
-          {{ 'orgs.csv' | translate }}
-        </button>
+        <div class="orgs__actions">
+          <button dba-button variant="secondary" [busy]="exporting.busy()" [disabled]="loading() || rows().length === 0" (click)="exportCsv()">
+            <db-icon name="download" [size]="15" />
+            {{ 'orgs.csv' | translate }}
+          </button>
+          @if (canManage()) {
+            <button dba-button (click)="creating.set(true)">
+              <db-icon name="plus" [size]="15" />
+              {{ 'orgCreate.open' | translate }}
+            </button>
+          }
+        </div>
       </header>
+
+      @if (creating()) {
+        <dba-org-create-form [labels]="createLabels()" [busy]="saving()" (submitted)="create($event)" (dismissed)="creating.set(false)" />
+      }
 
       <div class="orgs__tools">
         <label class="orgs__search">
@@ -177,6 +203,13 @@ const initialsOf = (name: string): string =>
       display: flex;
       flex-direction: column;
       gap: 16px;
+    }
+
+    .orgs__actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     .orgs__head {
@@ -394,6 +427,9 @@ export class OrganizationsComponent {
   private readonly api = inject(OrganizationsApi);
   private readonly router = inject(Router);
   private readonly locale = inject(LOCALE_ID);
+  private readonly auth = inject(AuthStore);
+  private readonly notify = inject(NotificationService);
+  private readonly translate = inject(TranslateService);
   protected readonly density = inject(DensityService);
   protected readonly exporting = new ExportState();
   private readonly latest = new LatestRequest();
@@ -407,6 +443,14 @@ export class OrganizationsComponent {
   protected readonly page = signal(1);
   protected readonly state = signal<PlatformOrgState | ''>('');
   protected readonly searchDraft = signal('');
+  protected readonly creating = signal(false);
+  protected readonly saving = signal(false);
+  protected readonly canManage = computed(() => this.auth.canManage('clients'));
+  protected readonly createLabels = computed(() => ({
+    legal: this.t('orgCreate.legal'),
+    natural: this.t('orgCreate.natural'),
+    noReseller: this.t('orgReseller.none'),
+  }));
 
   private search = '';
   private timer: ReturnType<typeof setTimeout> | null = null;
@@ -456,6 +500,30 @@ export class OrganizationsComponent {
 
   protected open(row: RowView): void {
     void this.router.navigate([sectionPath('organizations'), row.id]);
+  }
+
+  protected async create(body: CreateOrganizationBody): Promise<void> {
+    this.saving.set(true);
+    try {
+      const created = await firstValueFrom(this.api.create(body));
+      this.creating.set(false);
+      if (created.invitation) {
+        this.notify.success(this.t('orgCreate.done', { name: created.businessName, email: created.invitation.email }));
+      } else {
+        this.notify.info(this.t('orgCreate.doneNoInvite', { name: created.businessName }));
+      }
+      void this.router.navigate([sectionPath('organizations'), created.id]);
+    } catch (error) {
+      const code = errorCodeOf(error);
+      const known = code !== null && CREATE_ERRORS.includes(code);
+      this.notify.error(this.t(known ? `orgCreate.error.${code}` : 'orgCreate.error.generic'));
+    } finally {
+      this.saving.set(false);
+    }
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params) as string;
   }
 
   protected exportCsv(): void {

@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -24,7 +25,8 @@ import { EmptyStateComponent } from '../../../../shared/ui/empty-state.component
 import { OrgStateComponent } from '../../../../shared/ui/org-state.component';
 import { QuotaBarComponent } from '../../../../shared/ui/quota-bar.component';
 import { SectionLoaderComponent } from '../../../../shared/ui/section-loader.component';
-import type { PlatformOrgDetail } from '../../data/organizations.models';
+import { OrganizationsApi } from '../../data/organizations.api';
+import type { PlatformOrgDetail, PlatformOrgRow } from '../../data/organizations.models';
 import { SubscriptionApi } from '../../data/subscription.api';
 import type {
   AssignPlanBody,
@@ -36,6 +38,10 @@ import type {
 import { AssignPlanFormComponent } from './assign-plan-form.component';
 import { CounterFormComponent } from './counter-form.component';
 import { PeriodFormComponent } from './period-form.component';
+import {
+  TransferDocumentsFormComponent,
+  type TransferDocumentsBody,
+} from './transfer-documents-form.component';
 
 const HISTORY_COLUMNS: readonly DataColumn[] = [
   { key: 'plan', labelKey: 'sub.col.plan', width: 'minmax(0, 1.4fr)' },
@@ -52,11 +58,22 @@ const KNOWN_ERRORS = [
   'CONTADOR_NO_EXISTE',
 ];
 
+const TRANSFER_ERRORS = [
+  'TRANSFERENCIA_MISMA_ORG',
+  'ORIGEN_SIN_PLAN',
+  'ORIGEN_ILIMITADO',
+  'DESTINO_SIN_PLAN',
+  'DESTINO_ILIMITADO',
+  'TRANSFERENCIA_NO_APLICADA',
+];
+
 type Open =
   | { kind: 'assign' }
+  | { kind: 'transfer' }
   | { kind: 'period' }
   | { kind: 'counter'; counter: SubscriptionCounter }
   | null;
+
 
 @Component({
   selector: 'dba-subscription-tab',
@@ -71,6 +88,7 @@ type Open =
     AssignPlanFormComponent,
     PeriodFormComponent,
     CounterFormComponent,
+    TransferDocumentsFormComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -100,6 +118,11 @@ type Open =
                   @if (data.current.periodEnd) {
                     <button dba-button variant="secondary" [busy]="working()" (click)="noExpiry()">
                       {{ 'sub.noExpiry.open' | translate }}
+                    </button>
+                  }
+                  @if (transferable() > 0) {
+                    <button dba-button variant="secondary" (click)="open.set({ kind: 'transfer' })">
+                      {{ 'sub.transfer.open' | translate }}
                     </button>
                   }
                   <button dba-button variant="destructive" [busy]="working()" (click)="expire()">
@@ -222,6 +245,17 @@ type Open =
             [labels]="assignLabels"
             [busy]="working()"
             (submitted)="assign($event)"
+            (dismissed)="open.set(null)"
+          />
+        }
+        @case ('transfer') {
+          <dba-transfer-documents-form
+            [orgId]="org().id"
+            [orgName]="org().businessName"
+            [available]="transferable()"
+            [texts]="transferTexts"
+            [busy]="working()"
+            (submitted)="transfer($event)"
             (dismissed)="open.set(null)"
           />
         }
@@ -367,6 +401,7 @@ export class SubscriptionTabComponent {
   private readonly orgId = computed(() => this.org().id);
 
   private readonly api = inject(SubscriptionApi);
+  private readonly organizations = inject(OrganizationsApi);
   private readonly auth = inject(AuthStore);
   private readonly dialogs = inject(DialogService);
   private readonly notify = inject(NotificationService);
@@ -391,6 +426,27 @@ export class SubscriptionTabComponent {
     const documents = this.view()?.current?.counters.find((c) => c.resource === 'DOCUMENTS');
     return documents?.remaining ?? 0;
   });
+
+  protected readonly transferable = computed(() => {
+    const documents = this.view()?.current?.counters.find((c) => c.resource === 'DOCUMENTS');
+    return documents && documents.limit !== null ? (documents.remaining ?? 0) : 0;
+  });
+
+  protected readonly transferTexts = {
+    targetHas: (row: PlatformOrgRow) =>
+      row.documents.limit === null
+        ? (this.translate.instant('sub.transfer.targetUnlimited') as string)
+        : (this.translate.instant('sub.transfer.targetHas', {
+            used: row.documents.used,
+            limit: row.documents.limit,
+          }) as string),
+    targetAfter: (row: PlatformOrgRow, amount: number) =>
+      this.translate.instant('sub.transfer.targetAfter', {
+        name: row.businessName,
+        from: row.documents.limit ?? 0,
+        to: (row.documents.limit ?? 0) + amount,
+      }) as string,
+  };
 
   protected readonly periodText = computed(() => {
     const end = this.view()?.current?.periodEnd;
@@ -500,6 +556,28 @@ export class SubscriptionTabComponent {
     });
     if (answer.answer !== 'confirm' || !answer.reason) return;
     if (await this.run(this.api.expire(org.id, answer.reason))) this.done('sub.done.expire');
+  }
+
+  protected async transfer(body: TransferDocumentsBody): Promise<void> {
+    this.working.set(true);
+    try {
+      const result = await firstValueFrom(this.organizations.transferDocuments(this.org().id, body));
+      this.open.set(null);
+      this.notify.success(
+        this.translate.instant('sub.done.transfer', { count: result.transferred }) as string,
+      );
+      this.changed.emit();
+      await this.reload();
+    } catch (error) {
+      const code =
+        error instanceof HttpErrorResponse && error.status === 402 ? 'SIN_CUPO' : errorCodeOf(error);
+      const known = code !== null && (code === 'SIN_CUPO' || TRANSFER_ERRORS.includes(code));
+      this.notify.error(
+        this.translate.instant(known ? `sub.transfer.error.${code}` : 'sub.error.generic') as string,
+      );
+    } finally {
+      this.working.set(false);
+    }
   }
 
   private done(key: string): void {

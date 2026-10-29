@@ -100,3 +100,44 @@ export interface ResellerOption {
   businessName: string;
   tributaryNumber: string;
 }
+
+export interface CountryOption {
+  id: string;
+  name: string;
+}
+
+export interface CreateOrganizationBody {
+  businessName: string;
+  tributaryNumber: string;
+  type: number;
+  countryId: string;
+  cityId: string;
+  phone: string;
+  address: string;
+  email: string;
+  webSite?: string;
+  language?: string;
+  resellerId?: string;
+  isTest: boolean;
+  admin: { identification: string; email: string };
+  reason: string;
+}
+
+export interface CreatedOrganization {
+  id: string;
+  businessName: string;
+  invitation: { id: string; email: string; expiresAt: string } | null;
+  invitationError: string | null;
+}
+
+export interface DocumentsBalance {
+  limit: number | null;
+  used: number;
+  remaining: number | null;
+}
+
+export interface DocumentTransferResult {
+  transferred: number;
+  source: DocumentsBalance;
+  target: DocumentsBalance;
+}

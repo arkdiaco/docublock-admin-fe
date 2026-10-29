@@ -6,6 +6,10 @@ import { exportedFileOf, type ExportedFile } from '../../../shared/http/exported
 import { toParams } from '../../../shared/http/query-params';
 import type {
   CityOption,
+  CountryOption,
+  CreatedOrganization,
+  CreateOrganizationBody,
+  DocumentTransferResult,
   PlatformOrgDetail,
   PlatformOrgPage,
   PlatformOrgQuery,
@@ -71,6 +75,23 @@ export class OrganizationsApi {
         params: toParams({ search: search || undefined, limit: 30 }),
       })
       .pipe(map((page) => page.items));
+  }
+
+  create(body: CreateOrganizationBody): Observable<CreatedOrganization> {
+    return this.http.post<CreatedOrganization>('/platform/organizations', body, { context: silent() });
+  }
+
+  transferDocuments(
+    id: string,
+    body: { targetOrganizationId: string; documents: number; reason: string },
+  ): Observable<DocumentTransferResult> {
+    return this.http.post<DocumentTransferResult>(`/platform/organizations/${id}/documents/transfer`, body, {
+      context: silent(),
+    });
+  }
+
+  countries(): Observable<CountryOption[]> {
+    return this.http.get<CountryOption[]>('/catalogs/countries');
   }
 
   cities(countryId: string, search: string): Observable<CityOption[]> {

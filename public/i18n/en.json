@@ -703,7 +703,8 @@
       "period": "Validity updated",
       "noExpiry": "Subscription without expiry",
       "counter": "Counter updated",
-      "expire": "Subscription expired"
+      "expire": "Subscription expired",
+      "transfer": "{{count}} documents transferred."
     },
     "error": {
       "PLAN_NO_ENCONTRADO": "That plan no longer exists or was retired.",
@@ -714,6 +715,30 @@
       "generic": "It couldn't be saved. Try again.",
       "futureDate": "Pick a future date",
       "wholeNumber": "Enter a whole number"
+    },
+    "transfer": {
+      "open": "Transfer documents",
+      "title": "Transfer documents",
+      "confirm": "Transfer",
+      "available": "Available to transfer: {{count}}",
+      "target": "Target organization",
+      "targetPlaceholder": "Search by name or tax number",
+      "targetEmpty": "No organization matches",
+      "targetHas": "Uses {{used}} of {{limit}} documents",
+      "targetUnlimited": "Has unlimited documents: transfers not allowed",
+      "amount": "Documents to transfer",
+      "tooMany": "More than available",
+      "sourceAfter": "{{name}} keeps {{count}} available",
+      "targetAfter": "{{name}} goes from {{from}} to {{to}} documents in its plan",
+      "error": {
+        "TRANSFERENCIA_MISMA_ORG": "Source and target are the same organization.",
+        "ORIGEN_SIN_PLAN": "This organization has no current plan.",
+        "ORIGEN_ILIMITADO": "This organization has unlimited documents: there's no balance to transfer.",
+        "DESTINO_SIN_PLAN": "The target has no current plan to add to.",
+        "DESTINO_ILIMITADO": "The target already has unlimited documents.",
+        "TRANSFERENCIA_NO_APLICADA": "We couldn't add to the target; the documents went back to the source.",
+        "SIN_CUPO": "Not enough documents available."
+      }
     }
   },
   "quota": {
@@ -1069,6 +1094,35 @@
     },
     "error": {
       "rotate": "We couldn't rotate the API key. Try again."
+    }
+  },
+  "orgCreate": {
+    "open": "Create organization",
+    "title": "Create organization",
+    "subtitle": "It starts without a plan; assign one later in Subscription",
+    "save": "Create and invite",
+    "org": "Organization",
+    "person": "Person type",
+    "legal": "Legal entity",
+    "natural": "Natural person",
+    "country": "Country",
+    "countryFirst": "Pick the country first",
+    "webPlaceholder": "https://",
+    "tributaryInvalid": "Only letters, numbers, dots and hyphens",
+    "phoneInvalid": "Enter a valid phone number",
+    "webInvalid": "Start with http:// or https://",
+    "admin": "First administrator",
+    "adminLead": "They get an invitation. Once they accept it they become the creator and the API key, directory and General template are set up.",
+    "done": "{{name}} was created. The invitation went to {{email}}.",
+    "doneNoInvite": "{{name}} was created, but the invitation wasn't sent: resend it from Members.",
+    "error": {
+      "generic": "We couldn't create the organization. Try again.",
+      "NIT_EN_USO": "An organization with that tax number already exists.",
+      "TRIBUTARY_NUMBER_INVALID": "The tax number isn't valid for that country.",
+      "CIUDAD_FUERA_DEL_PAIS": "The city doesn't belong to the chosen country.",
+      "NO_ES_RESELLER": "The chosen organization is no longer a reseller.",
+      "PAIS_NO_ENCONTRADO": "The country no longer exists in the catalog.",
+      "CIUDAD_NO_ENCONTRADA": "The city no longer exists in the catalog."
     }
   }
 }
