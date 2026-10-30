@@ -215,7 +215,9 @@
       "navGroupNote": "Cada grupo del menú abre su submenú; en el móvil se lista con su encabezado. El grupo se marca cuando una de sus secciones está abierta y suma sus conteos.",
       "actionMenu": "Menú de acciones",
       "actionMenuNote": "Sobre el popover del menú. Agrupa con separador; lo destructivo va en rojo y al final. Lo usan la cuenta y las filas de Personal.",
-      "actionPicked": "Elegiste: {{key}}"
+      "actionPicked": "Elegiste: {{key}}",
+      "usage": "Uso en una fila",
+      "usageNote": "Documentos usados contra el límite dentro de una tabla: tono de aviso desde el 90 % y de exceso al pasar el límite; ∞ cuando no hay tope."
     },
     "pieces": "Tabla y ficha",
     "piecesNote": "La tabla de organizaciones y la cabecera de la ficha, con datos de muestra. Cabecera en mono, filas de 48 px, fila elegida en morado tenue con el identificador en morado 700; paginación con ventana. «Entrar como» no se construye: se abre la ficha."
@@ -1411,6 +1413,70 @@
       "year": "año",
       "day": "día",
       "week": "semana"
+    }
+  },
+  "subs": {
+    "count": "{{total}} organizaciones",
+    "csv": "Exportar CSV",
+    "searchPlaceholder": "Busca por nombre o NIT",
+    "loading": "Cargando suscripciones…",
+    "errorTitle": "No pudimos cargar las suscripciones.",
+    "emptyTitle": "Nada en este filtro.",
+    "emptyLead": {
+      "expiring": "Ninguna suscripción vence en esa ventana.",
+      "expired": "No hay suscripciones vencidas.",
+      "none": "Todas las organizaciones tienen suscripción.",
+      "active": "Ninguna suscripción vigente con estos filtros.",
+      "all": "Ninguna organización coincide."
+    },
+    "col": {
+      "org": "Organización",
+      "plan": "Plan",
+      "source": "Origen",
+      "end": "Vence",
+      "documents": "Documentos",
+      "state": "Estado"
+    },
+    "state": {
+      "expiring": "Por vencer",
+      "expired": "Vencidas",
+      "none": "Sin suscripción",
+      "active": "Vigentes",
+      "all": "Todas"
+    },
+    "window": {
+      "7": "7 días",
+      "15": "15 días",
+      "30": "30 días"
+    },
+    "f": {
+      "plan": "Plan",
+      "source": "Origen",
+      "country": "País",
+      "anyPlan": "Todos los planes",
+      "anySource": "Todos los orígenes",
+      "anyCountry": "Todos los países",
+      "includeTest": "Incluir pruebas",
+      "includeAutoRenew": "Incluir las que renueva Stripe"
+    },
+    "source": {
+      "STRIPE": "Stripe",
+      "ALOHAPAY": "AlohaPay",
+      "MANUAL": "Manual",
+      "RESELLER": "Reseller",
+      "LEGACY": "Legacy"
+    },
+    "autoRenew": "Renueva sola",
+    "noExpiry": "Sin vencimiento",
+    "inDays": "en {{days}} días",
+    "today": "hoy",
+    "daysAgo": "hace {{days}} días",
+    "endedOn": "terminó el {{date}}",
+    "rowState": {
+      "expiring": "Por vencer",
+      "expired": "Vencida",
+      "none": "Sin suscripción",
+      "active": "Vigente"
     }
   }
 }

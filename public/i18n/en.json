@@ -215,7 +215,9 @@
       "navGroupNote": "Each menu group opens its submenu; on mobile it is listed under its heading. The group is marked when one of its sections is open and adds up its counts.",
       "actionMenu": "Action menu",
       "actionMenuNote": "Built on the menu popover. Groups with a separator; destructive goes in red and last. Used by the account and Staff rows.",
-      "actionPicked": "You picked: {{key}}"
+      "actionPicked": "You picked: {{key}}",
+      "usage": "Usage in a row",
+      "usageNote": "Documents used against the limit inside a table: warning tone from 90 % and over tone past the limit; ∞ when there is no cap."
     },
     "pieces": "Table and record",
     "piecesNote": "The organizations table and the record header, with sample data. Mono header, 48 px rows, the selected row in soft purple with its identifier in purple 700; windowed pagination. «Impersonate» is not built: the record opens instead."
@@ -1411,6 +1413,70 @@
       "year": "year",
       "day": "day",
       "week": "week"
+    }
+  },
+  "subs": {
+    "count": "{{total}} organizations",
+    "csv": "Export CSV",
+    "searchPlaceholder": "Search by name or tax ID",
+    "loading": "Loading subscriptions…",
+    "errorTitle": "We couldn't load the subscriptions.",
+    "emptyTitle": "Nothing in this filter.",
+    "emptyLead": {
+      "expiring": "No subscription ends in that window.",
+      "expired": "No expired subscriptions.",
+      "none": "Every organization has a subscription.",
+      "active": "No current subscription with these filters.",
+      "all": "No organization matches."
+    },
+    "col": {
+      "org": "Organization",
+      "plan": "Plan",
+      "source": "Source",
+      "end": "Ends",
+      "documents": "Documents",
+      "state": "State"
+    },
+    "state": {
+      "expiring": "Expiring",
+      "expired": "Expired",
+      "none": "No subscription",
+      "active": "Current",
+      "all": "All"
+    },
+    "window": {
+      "7": "7 days",
+      "15": "15 days",
+      "30": "30 days"
+    },
+    "f": {
+      "plan": "Plan",
+      "source": "Source",
+      "country": "Country",
+      "anyPlan": "All plans",
+      "anySource": "All sources",
+      "anyCountry": "All countries",
+      "includeTest": "Include test",
+      "includeAutoRenew": "Include Stripe auto-renewals"
+    },
+    "source": {
+      "STRIPE": "Stripe",
+      "ALOHAPAY": "AlohaPay",
+      "MANUAL": "Manual",
+      "RESELLER": "Reseller",
+      "LEGACY": "Legacy"
+    },
+    "autoRenew": "Renews itself",
+    "noExpiry": "No expiry",
+    "inDays": "in {{days}} days",
+    "today": "today",
+    "daysAgo": "{{days}} days ago",
+    "endedOn": "ended on {{date}}",
+    "rowState": {
+      "expiring": "Expiring",
+      "expired": "Expired",
+      "none": "No subscription",
+      "active": "Current"
     }
   }
 }

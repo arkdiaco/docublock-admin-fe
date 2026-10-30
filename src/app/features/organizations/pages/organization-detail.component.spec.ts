@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { provideTranslateService, TranslateLoader, TranslateService, type TranslationObject } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { of, type Observable } from 'rxjs';
@@ -284,6 +284,18 @@ describe('OrganizationDetailComponent', () => {
     [...tab.querySelectorAll<HTMLButtonElement>('button[dba-button]')].find((b) => b.textContent?.includes('Cargar más'))!.click();
     const mas = http.expectOne((r) => r.url === '/platform/audit' && r.params.get('page') === '2');
     mas.flush({ total: 21, items: [] });
+  });
+
+  it('con ?tab=subscription abre directo la pestaña Suscripción', async () => {
+    await TestBed.inject(Router).navigateByUrl('/?tab=subscription');
+    const fixture = TestBed.createComponent(OrganizationDetailComponent);
+    fixture.componentRef.setInput('id', 'org-1');
+    fixture.detectChanges();
+    http.expectOne('/platform/organizations/org-1').flush(detail());
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect((fixture.nativeElement as HTMLElement).querySelector('.tab--on')?.textContent).toContain('Suscripción');
+    http.expectOne('/platform/organizations/org-1/subscription').flush({ current: null, history: [], plans: [], mirror: null });
   });
 
   it('suspender pide motivo y escribir el NIT, y la ficha pasa a suspendida con Reactivar', async () => {

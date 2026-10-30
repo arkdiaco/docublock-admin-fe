@@ -13,7 +13,6 @@ import { sectionPath } from '../../../core/layout/console-nav';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import { DensityService } from '../../../core/preferences/density.service';
-import { quotaToneOf } from '../../../shared/domain/org-state';
 import { ExportState } from '../../../shared/http/export-state';
 import { LatestRequest } from '../../../shared/http/latest-request';
 import { ButtonComponent } from '../../../shared/ui/button.component';
@@ -23,6 +22,7 @@ import { FilterPillsComponent, type FilterPill } from '../../../shared/ui/filter
 import { IconComponent } from '../../../shared/ui/icon.component';
 import { OrgFlagComponent } from '../../../shared/ui/org-flag.component';
 import { OrgStateComponent } from '../../../shared/ui/org-state.component';
+import { UsageMeterComponent } from '../../../shared/ui/usage-meter.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { NotificationService } from '../../../core/ui/notification.service';
@@ -55,9 +55,6 @@ const EMPTY_COUNTS: PlatformStateCounts = {
 
 interface RowView extends PlatformOrgRow {
   initials: string;
-  docsText: string;
-  docsPct: string;
-  docsTone: string;
   stateFamily: string;
   stateLabel: string;
   validity: string;
@@ -93,6 +90,7 @@ const initialsOf = (name: string): string =>
     SectionLoaderComponent,
     OrgFlagComponent,
     OrgCreateFormComponent,
+    UsageMeterComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -180,10 +178,7 @@ const initialsOf = (name: string): string =>
                   <span class="orgs__validity">{{ row.validity }}</span>
                 }
               </span>
-              <span class="dba-td usage">
-                <code class="usage__value">{{ row.docsText }}</code>
-                <span class="usage__track"><span class="usage__fill" [class]="'usage__fill usage__fill--' + row.docsTone" [style.width]="row.docsPct"></span></span>
-              </span>
+              <dba-usage-meter class="dba-td" [used]="row.documents.used" [limit]="row.documents.limit" />
               <code class="dba-td dba-td--end orgs__members">{{ row.members }}</code>
               <span class="dba-td orgs__state">
                 <dba-org-state [state]="row.stateFamily" [labelKey]="row.stateLabel" variant="inline" />
@@ -352,41 +347,6 @@ const initialsOf = (name: string): string =>
       color: var(--dba-text-muted);
     }
 
-    .usage {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .usage__value {
-      flex: none;
-      width: 72px;
-      font-family: var(--dba-font-mono);
-      font-size: var(--dba-text-small);
-      color: var(--dba-text);
-      white-space: nowrap;
-    }
-
-    .usage__track {
-      flex: 1;
-      display: flex;
-      height: 5px;
-      border-radius: var(--dba-radius-bar);
-      background: var(--dba-border-row);
-      overflow: hidden;
-    }
-
-    .usage__fill {
-      background: var(--dba-quota-ok);
-    }
-
-    .usage__fill--warn {
-      background: var(--dba-quota-warn);
-    }
-
-    .usage__fill--over {
-      background: var(--dba-quota-over);
-    }
 
     .orgs__members {
       font-family: var(--dba-font-mono);
@@ -560,13 +520,9 @@ export class OrganizationsComponent {
 
   private toView(row: PlatformOrgRow): RowView {
     const view = orgStateView(row.state);
-    const limit = row.documents.limit;
     return {
       ...row,
       initials: initialsOf(row.businessName),
-      docsText: `${row.documents.used} / ${limit === null ? '∞' : limit}`,
-      docsPct: `${limit && limit > 0 ? Math.min(100, (row.documents.used / limit) * 100) : 0}%`,
-      docsTone: quotaToneOf(row.documents.used, limit),
       stateFamily: view.family,
       stateLabel: view.labelKey,
       validity: row.periodEnd ? formatDate(row.periodEnd, 'd/MM/y', this.locale) : '',

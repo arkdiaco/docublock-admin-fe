@@ -20,6 +20,7 @@ import { KpiCardComponent } from '../../../shared/ui/kpi-card.component';
 import { ModuleToggleComponent } from '../../../shared/ui/module-toggle.component';
 import { OrgStateComponent } from '../../../shared/ui/org-state.component';
 import { QuotaBarComponent } from '../../../shared/ui/quota-bar.component';
+import { UsageMeterComponent } from '../../../shared/ui/usage-meter.component';
 import { RoleTagComponent } from '../../../shared/ui/role-tag.component';
 
 const RAMP = [
@@ -156,6 +157,7 @@ const pctOf = (used: number, limit: number): string =>
     FieldComponent,
     KpiCardComponent,
     QuotaBarComponent,
+    UsageMeterComponent,
     ModuleToggleComponent,
     AuditEventComponent,
     FilterPillsComponent,
@@ -278,6 +280,15 @@ const pctOf = (used: number, limit: number): string =>
               }
             </div>
             <p class="dba-body">{{ 'sys.c.quotaNote' | translate }}</p>
+
+            <h3 class="dba-eyebrow card__eyebrow">{{ 'sys.c.usage' | translate }}</h3>
+            <div class="card__stack">
+              <dba-usage-meter [used]="42" [limit]="100" />
+              <dba-usage-meter [used]="190" [limit]="200" />
+              <dba-usage-meter [used]="210" [limit]="200" />
+              <dba-usage-meter [used]="7" [limit]="null" />
+            </div>
+            <p class="dba-body">{{ 'sys.c.usageNote' | translate }}</p>
           </div>
 
           <div class="card">

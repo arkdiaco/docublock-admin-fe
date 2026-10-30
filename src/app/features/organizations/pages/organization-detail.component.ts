@@ -9,6 +9,7 @@ import {
   input,
   signal,
 } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom, type Observable } from 'rxjs';
 import { LatestRequest } from '../../../shared/http/latest-request';
@@ -439,6 +440,8 @@ export class OrganizationDetailComponent {
       const id = this.id();
       if (id) void this.load(id);
     });
+    const wanted = inject(ActivatedRoute).snapshot.queryParamMap.get('tab');
+    if (wanted && this.tabs().some((tab) => tab.key === wanted)) this.tab.set(wanted);
   }
 
   protected has(org: PlatformOrgDetail, code: string): boolean {
