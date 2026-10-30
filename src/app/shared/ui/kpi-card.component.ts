@@ -23,6 +23,8 @@ export type KpiDeltaTone = 'plain' | 'good' | 'warn' | 'bad';
     }
 
     .kpi {
+      box-sizing: border-box;
+      height: 100%;
       padding: 18px 20px;
       border: 1px solid var(--dba-border-card);
       border-radius: var(--dba-radius-panel);

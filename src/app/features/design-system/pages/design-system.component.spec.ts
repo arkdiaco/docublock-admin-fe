@@ -50,7 +50,7 @@ describe('DesignSystemComponent', () => {
     expect(host.querySelector('.type__row .dba-id')).not.toBeNull();
   });
 
-  it('el cuadro de componentes trae acciones, campo, KPI, cuotas, tramos, texto largo, módulos, eventos, filtros y entornos', () => {
+  it('el cuadro de componentes trae acciones, campo, KPI, cuotas, tramos, texto largo, módulos, eventos, filas de acción, filtros y entornos', () => {
     const { fixture, host } = montar();
     const variantes = Array.from(host.querySelectorAll('.cards [dba-button]')).map(
       (b) => b.className.match(/btn--(primary|secondary|destructive|dark)/)?.[1],
@@ -75,6 +75,8 @@ describe('DesignSystemComponent', () => {
     expect(host.querySelector('.quota__fill--warn')).not.toBeNull();
     expect(host.querySelectorAll('[role="switch"][aria-checked="true"]').length).toBe(3);
     expect(host.querySelectorAll('dba-audit-event').length).toBe(4);
+    expect(host.querySelectorAll('dba-action-row').length).toBe(3);
+    expect(host.querySelector('dba-action-row .row__dot--bad')).not.toBeNull();
     expect(host.querySelectorAll('.pill').length).toBe(5);
     expect(host.querySelectorAll('dba-env-pill').length).toBe(3);
     expect(host.querySelectorAll('dba-nav-group').length).toBe(3);

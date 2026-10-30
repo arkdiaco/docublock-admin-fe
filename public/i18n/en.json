@@ -207,6 +207,12 @@
       "ev4": "opened the record of",
       "system": "System",
       "supportActor": "Support (D. Ortiz)",
+      "actionRow": "Action row",
+      "ar1": "document quota exhausted · 500 / 500",
+      "ar2": "the subscription ends in 2 days",
+      "ar3": "document quota at 94 % · 470 / 500",
+      "arCta": "Review",
+      "actionRowNote": "One concrete thing per row: the dot tells the severity and the whole row leads to where it gets solved.",
       "filters": "Filters · pills with count",
       "fAll": "All",
       "pills": "Environment and inline state",
@@ -356,15 +362,171 @@
     },
     "kpiOrgs": "Organizations",
     "kpiUsers": "Active users",
-    "kpiSigns": "Signatures this month",
+    "kpiRevenue": "Revenue this month",
     "kpiWarn": "With notice",
-    "noData": "no data yet",
+    "orgsDelta": "+{{n}} this month",
+    "usersDelta": "last 30 days",
+    "revenueDelta": "{{diff}} vs. {{month}}",
+    "revenueNoPrevious": "no revenue in {{month}}",
+    "revenueNone": "no approved transactions",
+    "revenueOthers": "and {{n}} more currency(ies)",
+    "warnDelta": "{{n}} out of quota",
+    "warnNone": "none out of quota",
+    "loading": "Loading the overview…",
+    "errorTitle": "We couldn’t load the overview",
+    "errorLead": "Check your connection and try again.",
     "actions": "Needs action",
     "actionsEmpty": "Nothing pending for now.",
-    "actionsLead": "Organizations with exhausted quota, unpaid invoices or trials about to end will show up here.",
+    "actionsLead": "Organizations with their quota exhausted or at 90 %, and subscriptions ending within 7 days, show up here.",
+    "action": {
+      "quotaExhausted": "document quota exhausted · {{used}} / {{limit}}",
+      "quotaWarning": "document quota at {{pct}} % · {{used}} / {{limit}}",
+      "expiring": "the subscription ends in {{n}} days",
+      "expiringTomorrow": "the subscription ends tomorrow",
+      "expiringToday": "the subscription ends today"
+    },
+    "cta": {
+      "review": "Review"
+    },
     "activity": "Activity",
     "activityEmpty": "No events recorded yet.",
-    "activityLead": "Platform audit arrives with its block."
+    "activityLead": "When someone on the staff makes a change, it shows up here.",
+    "someone": "Someone on the staff",
+    "someOrg": "an organization"
+  },
+  "act": {
+    "audit": {
+      "export": "exported the audit log"
+    },
+    "documents": {
+      "blockchain_register": "registered a document on blockchain",
+      "finalize": "finalized a document",
+      "regenerate_bulk": "regenerated documents in bulk",
+      "signer_retry_enable": "enabled a retry for a signer",
+      "signer_unblock": "unblocked a signer",
+      "version_detach": "detached a document version"
+    },
+    "invoices": {
+      "create": "created an invoice",
+      "create_from_transaction": "invoiced a transaction",
+      "send": "sent an invoice",
+      "update": "edited an invoice",
+      "void": "voided an invoice"
+    },
+    "marketplace": {
+      "addon_cancelled": "scheduled the cancellation of an add-on for {{org}}",
+      "addon_set": "changed an add-on for {{org}}",
+      "price_remove": "removed a special price from {{org}}",
+      "price_set": "set a special price for {{org}}",
+      "product_created": "created a marketplace product",
+      "product_reactivated": "reactivated a marketplace product",
+      "product_retired": "retired a marketplace product",
+      "product_texts": "edited the texts of a marketplace product",
+      "product_versioned": "published a version of a marketplace product",
+      "product_visibility": "changed the visibility of a marketplace product"
+    },
+    "members": {
+      "invitation_resend": "resent an invitation in {{org}}",
+      "invitation_revoke": "revoked an invitation in {{org}}",
+      "invite": "invited someone to {{org}}",
+      "remove": "removed someone from {{org}}",
+      "update": "changed someone’s role in {{org}}"
+    },
+    "organization": {
+      "api_key_rotated": "rotated the apiKey of {{org}}",
+      "created": "created the organization {{org}}",
+      "documents_transferred": "transferred documents of {{org}}",
+      "purge_failed": "requested a purge of {{org}} that failed",
+      "purge_previewed": "previewed what a purge of {{org}} would delete",
+      "purge_requested": "requested purging the test data of {{org}}",
+      "purged": "purged the test data of {{org}}",
+      "reactivate": "reactivated {{org}}",
+      "reseller_assigned": "assigned a reseller to {{org}}",
+      "reseller_unassigned": "removed the reseller of {{org}}",
+      "settings_set": "changed the settings of {{org}}",
+      "suspend": "suspended {{org}}",
+      "update": "edited the details of {{org}}"
+    },
+    "organizations": {
+      "export": "exported the organization list",
+      "modules_set": "changed the modules of {{org}}",
+      "reseller_assign": "changed the reseller of {{org}}"
+    },
+    "plan": {
+      "created": "created a plan",
+      "legacy_linked": "linked a plan to legacy",
+      "reactivated": "reactivated a plan",
+      "retired": "retired a plan",
+      "stripe_linked": "linked a plan to Stripe",
+      "versioned": "published a plan version",
+      "visibility_set": "changed the visibility of a plan"
+    },
+    "promotional_codes": {
+      "create": "created a promo code",
+      "update": "edited a promo code"
+    },
+    "quotas": {
+      "assign": "assigned quota in {{org}}",
+      "reset": "reset the usage of {{org}}",
+      "transfer": "moved quota between branches of {{org}}"
+    },
+    "real_estate_catalog": {
+      "item_add": "added an item to the real estate catalog",
+      "item_remove": "removed an item from the real estate catalog",
+      "item_update": "edited an item of the real estate catalog",
+      "replace": "replaced the real estate catalog"
+    },
+    "referrals": {
+      "create": "created a referral",
+      "update": "edited a referral"
+    },
+    "resellers": {
+      "flag_set": "changed the reseller flag of {{org}}"
+    },
+    "roles": {
+      "sync": "synced the system roles of {{org}}"
+    },
+    "session": {
+      "login": "signed in to the console",
+      "logout": "signed out of the console",
+      "revoke": "closed a staff session"
+    },
+    "sla_policies": {
+      "create": "created an SLA policy",
+      "deactivate": "deactivated an SLA policy",
+      "seed_default": "seeded the default SLA policies",
+      "update": "edited an SLA policy"
+    },
+    "staff": {
+      "grant": "gave someone console access",
+      "remove": "removed someone’s console access",
+      "update": "changed a staff member’s role"
+    },
+    "subscription": {
+      "assign": "assigned a plan to {{org}}",
+      "counter_set": "adjusted a counter of {{org}}",
+      "expire": "expired the subscription of {{org}}",
+      "period_set": "changed the validity of {{org}}"
+    },
+    "subscriptions": {
+      "export": "exported the subscription list"
+    },
+    "support_tickets": {
+      "assign": "assigned a ticket",
+      "priority_set": "changed a ticket’s priority",
+      "reply": "replied to a ticket",
+      "status_set": "changed a ticket’s status"
+    },
+    "transactions": {
+      "invoiced_set": "marked whether a transaction is invoiced",
+      "manual_create": "recorded a manual transaction",
+      "reconcile": "reconciled a transaction",
+      "status_set": "changed a transaction’s status"
+    },
+    "validation_credits": {
+      "pricing_update": "edited the validation credit pricing",
+      "update": "adjusted the validation credits of {{org}}"
+    }
   },
   "placeholder": {
     "title": "Nothing to show yet.",

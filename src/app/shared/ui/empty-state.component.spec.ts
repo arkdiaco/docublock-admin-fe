@@ -25,7 +25,7 @@ describe('EmptyStateComponent', () => {
     fixture.detectChanges();
     const host = fixture.nativeElement as HTMLElement;
     expect(host.querySelector('.empty__title')?.textContent).toContain('Nada pendiente');
-    expect(host.querySelector('.empty__lead')?.textContent).toContain('cuota agotada');
+    expect(host.querySelector('.empty__lead')?.textContent).toContain('cupo agotado');
 
     fixture.componentRef.setInput('leadKey', '');
     fixture.detectChanges();

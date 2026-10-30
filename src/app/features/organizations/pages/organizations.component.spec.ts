@@ -214,4 +214,21 @@ describe('OrganizationsComponent', () => {
     await vi.waitFor(() => expect(navegar).toHaveBeenCalled());
     expect(navegar.mock.calls[0][0]).toEqual([expect.any(String), 'org-new']);
   });
+  it('llegar con ?nueva=1 abre el alta y limpia la dirección', async () => {
+    perfil(['platform:clients', 'platform:clients:manage']);
+    await TestBed.inject(Router).navigateByUrl('/?nueva=1');
+    const navegar = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    const { fixture } = await montar();
+    http.expectOne('/catalogs/countries').flush([]);
+    expect(fixture.debugElement.query(By.directive(OrgCreateFormComponent))).not.toBeNull();
+    expect(navegar).toHaveBeenCalledWith([], expect.objectContaining({ queryParams: { nueva: null }, replaceUrl: true }));
+  });
+
+  it('con ?nueva=1 pero sin clients:manage no abre nada', async () => {
+    perfil(['platform:clients']);
+    await TestBed.inject(Router).navigateByUrl('/?nueva=1');
+    vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    const { fixture } = await montar();
+    expect(fixture.debugElement.query(By.directive(OrgCreateFormComponent))).toBeNull();
+  });
 });

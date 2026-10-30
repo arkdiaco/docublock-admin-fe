@@ -4,6 +4,8 @@ import { DialogService } from '../../../core/ui/dialog.service';
 import { DensityService } from '../../../core/preferences/density.service';
 import { ORG_STATES, quotaToneOf } from '../../../shared/domain/org-state';
 import { PLATFORM_ROLES } from '../../../shared/domain/platform-role';
+import { sectionPath } from '../../../core/layout/console-nav';
+import { ActionRowComponent } from '../../../shared/ui/action-row.component';
 import { AuditEventComponent } from '../../../shared/ui/audit-event.component';
 import { DataTableComponent, type DataColumn } from '../../../shared/ui/data-table.component';
 import { RecordHeaderComponent } from '../../../shared/ui/record-header.component';
@@ -165,6 +167,7 @@ const pctOf = (used: number, limit: number): string =>
     TextAreaComponent,
     ModuleToggleComponent,
     AuditEventComponent,
+    ActionRowComponent,
     FilterPillsComponent,
     OrgStateComponent,
     RoleTagComponent,
@@ -342,6 +345,14 @@ const pctOf = (used: number, limit: number): string =>
                 {{ 'sys.c.ev4' | translate }} <code class="dba-ref">ORG-0412</code>
               </dba-audit-event>
             </div>
+
+            <h3 class="dba-eyebrow card__eyebrow">{{ 'sys.c.actionRow' | translate }}</h3>
+            <div class="card__rows">
+              <dba-action-row tone="bad" reference="900123456" subject="Puerto de Valparaíso" [text]="'sys.c.ar1' | translate" [cta]="'sys.c.arCta' | translate" [link]="orgsPath" />
+              <dba-action-row tone="warn" reference="800456789" subject="Notaría 14 de Bogotá" [text]="'sys.c.ar2' | translate" [cta]="'sys.c.arCta' | translate" [link]="orgsPath" />
+              <dba-action-row tone="warn" reference="901234567" subject="Universidad del Litoral" [text]="'sys.c.ar3' | translate" [cta]="'sys.c.arCta' | translate" [link]="orgsPath" />
+            </div>
+            <p class="dba-body">{{ 'sys.c.actionRowNote' | translate }}</p>
 
             <h3 class="dba-eyebrow card__eyebrow">{{ 'sys.c.filters' | translate }}</h3>
             <db-filter-pills [pills]="filters" [active]="filter()" (activeChange)="filter.set($event)" />
@@ -672,6 +683,12 @@ const pctOf = (used: number, limit: number): string =>
       border-radius: var(--dba-radius-card);
     }
 
+    .card__rows {
+      overflow: hidden;
+      border: 1px solid var(--dba-border-card);
+      border-radius: var(--dba-radius-card);
+    }
+
     .challenge {
       flex: none;
     }
@@ -813,6 +830,7 @@ const pctOf = (used: number, limit: number): string =>
   `,
 })
 export class DesignSystemComponent {
+  protected readonly orgsPath = sectionPath('organizations');
   private readonly dialogs = inject(DialogService);
   private readonly translate = inject(TranslateService);
   protected readonly density = inject(DensityService);

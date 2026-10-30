@@ -207,6 +207,12 @@
       "ev4": "abrió la ficha de",
       "system": "Sistema",
       "supportActor": "Soporte (D. Ortiz)",
+      "actionRow": "Fila de acción",
+      "ar1": "cupo de documentos agotado · 500 / 500",
+      "ar2": "la suscripción vence en 2 días",
+      "ar3": "cupo de documentos al 94 % · 470 / 500",
+      "arCta": "Revisar",
+      "actionRowNote": "Una cosa concreta por fila: el punto dice la gravedad y la fila entera lleva a donde se resuelve.",
       "filters": "Filtros · píldoras con conteo",
       "fAll": "Todas",
       "pills": "Entorno y estado en fila",
@@ -356,15 +362,171 @@
     },
     "kpiOrgs": "Organizaciones",
     "kpiUsers": "Usuarios activos",
-    "kpiSigns": "Firmas del mes",
+    "kpiRevenue": "Ingresos del mes",
     "kpiWarn": "Con aviso",
-    "noData": "sin datos todavía",
+    "orgsDelta": "+{{n}} este mes",
+    "usersDelta": "últimos 30 días",
+    "revenueDelta": "{{diff}} vs. {{month}}",
+    "revenueNoPrevious": "sin ingresos en {{month}}",
+    "revenueNone": "sin transacciones aprobadas",
+    "revenueOthers": "y {{n}} moneda(s) más",
+    "warnDelta": "{{n}} sin cupo",
+    "warnNone": "ninguna sin cupo",
+    "loading": "Cargando la visión general…",
+    "errorTitle": "No pudimos cargar la visión general",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
     "actions": "Requiere acción",
     "actionsEmpty": "Nada pendiente por ahora.",
-    "actionsLead": "Aquí aparecerán las organizaciones con cuota agotada, impagos o pruebas a punto de vencer.",
+    "actionsLead": "Aquí aparecen las organizaciones con el cupo agotado o al 90 % y las suscripciones que vencen en 7 días.",
+    "action": {
+      "quotaExhausted": "cupo de documentos agotado · {{used}} / {{limit}}",
+      "quotaWarning": "cupo de documentos al {{pct}} % · {{used}} / {{limit}}",
+      "expiring": "la suscripción vence en {{n}} días",
+      "expiringTomorrow": "la suscripción vence mañana",
+      "expiringToday": "la suscripción vence hoy"
+    },
+    "cta": {
+      "review": "Revisar"
+    },
     "activity": "Actividad",
     "activityEmpty": "Sin eventos registrados todavía.",
-    "activityLead": "La auditoría de la plataforma llega con su bloque."
+    "activityLead": "Cuando alguien del personal haga un cambio, aparecerá aquí.",
+    "someone": "Alguien del personal",
+    "someOrg": "una organización"
+  },
+  "act": {
+    "audit": {
+      "export": "exportó la bitácora"
+    },
+    "documents": {
+      "blockchain_register": "registró un documento en blockchain",
+      "finalize": "finalizó un documento",
+      "regenerate_bulk": "regeneró documentos en lote",
+      "signer_retry_enable": "habilitó un reintento a un firmante",
+      "signer_unblock": "desbloqueó a un firmante",
+      "version_detach": "separó una versión de un documento"
+    },
+    "invoices": {
+      "create": "creó una factura",
+      "create_from_transaction": "facturó una transacción",
+      "send": "envió una factura",
+      "update": "editó una factura",
+      "void": "anuló una factura"
+    },
+    "marketplace": {
+      "addon_cancelled": "programó la cancelación de un add-on de {{org}}",
+      "addon_set": "cambió un add-on de {{org}}",
+      "price_remove": "quitó un precio especial de {{org}}",
+      "price_set": "fijó un precio especial a {{org}}",
+      "product_created": "creó un producto del marketplace",
+      "product_reactivated": "reactivó un producto del marketplace",
+      "product_retired": "retiró un producto del marketplace",
+      "product_texts": "editó los textos de un producto del marketplace",
+      "product_versioned": "publicó una versión de un producto del marketplace",
+      "product_visibility": "cambió la visibilidad de un producto del marketplace"
+    },
+    "members": {
+      "invitation_resend": "reenvió una invitación en {{org}}",
+      "invitation_revoke": "revocó una invitación en {{org}}",
+      "invite": "invitó a una persona a {{org}}",
+      "remove": "sacó a una persona de {{org}}",
+      "update": "cambió el rol de una persona en {{org}}"
+    },
+    "organization": {
+      "api_key_rotated": "rotó la apiKey de {{org}}",
+      "created": "creó la organización {{org}}",
+      "documents_transferred": "transfirió documentos de {{org}}",
+      "purge_failed": "pidió una purga de {{org}} que falló",
+      "purge_previewed": "revisó qué borraría la purga de {{org}}",
+      "purge_requested": "pidió purgar los datos de prueba de {{org}}",
+      "purged": "purgó los datos de prueba de {{org}}",
+      "reactivate": "reactivó {{org}}",
+      "reseller_assigned": "asignó un reseller a {{org}}",
+      "reseller_unassigned": "quitó el reseller de {{org}}",
+      "settings_set": "cambió la configuración de {{org}}",
+      "suspend": "suspendió {{org}}",
+      "update": "editó los datos de {{org}}"
+    },
+    "organizations": {
+      "export": "exportó la lista de organizaciones",
+      "modules_set": "cambió los módulos de {{org}}",
+      "reseller_assign": "cambió el reseller de {{org}}"
+    },
+    "plan": {
+      "created": "creó un plan",
+      "legacy_linked": "enlazó un plan con el legacy",
+      "reactivated": "reactivó un plan",
+      "retired": "retiró un plan",
+      "stripe_linked": "enlazó un plan con Stripe",
+      "versioned": "publicó una versión de un plan",
+      "visibility_set": "cambió la visibilidad de un plan"
+    },
+    "promotional_codes": {
+      "create": "creó un código promocional",
+      "update": "editó un código promocional"
+    },
+    "quotas": {
+      "assign": "asignó cupo en {{org}}",
+      "reset": "reinició el consumo de {{org}}",
+      "transfer": "movió cupo entre ramas de {{org}}"
+    },
+    "real_estate_catalog": {
+      "item_add": "agregó un elemento al catálogo inmobiliario",
+      "item_remove": "quitó un elemento del catálogo inmobiliario",
+      "item_update": "editó un elemento del catálogo inmobiliario",
+      "replace": "reemplazó el catálogo inmobiliario"
+    },
+    "referrals": {
+      "create": "creó un referido",
+      "update": "editó un referido"
+    },
+    "resellers": {
+      "flag_set": "cambió la marca de reseller de {{org}}"
+    },
+    "roles": {
+      "sync": "sincronizó los roles de sistema de {{org}}"
+    },
+    "session": {
+      "login": "entró a la consola",
+      "logout": "salió de la consola",
+      "revoke": "cerró una sesión del personal"
+    },
+    "sla_policies": {
+      "create": "creó una política de SLA",
+      "deactivate": "desactivó una política de SLA",
+      "seed_default": "sembró las políticas de SLA por defecto",
+      "update": "editó una política de SLA"
+    },
+    "staff": {
+      "grant": "dio acceso a la consola a una persona",
+      "remove": "quitó el acceso a la consola a una persona",
+      "update": "cambió el rol de una persona del personal"
+    },
+    "subscription": {
+      "assign": "asignó un plan a {{org}}",
+      "counter_set": "ajustó un contador de {{org}}",
+      "expire": "dio por vencida la suscripción de {{org}}",
+      "period_set": "cambió la vigencia de {{org}}"
+    },
+    "subscriptions": {
+      "export": "exportó la lista de suscripciones"
+    },
+    "support_tickets": {
+      "assign": "asignó un ticket",
+      "priority_set": "cambió la prioridad de un ticket",
+      "reply": "respondió un ticket",
+      "status_set": "cambió el estado de un ticket"
+    },
+    "transactions": {
+      "invoiced_set": "marcó si una transacción está facturada",
+      "manual_create": "registró una transacción manual",
+      "reconcile": "concilió una transacción",
+      "status_set": "cambió el estado de una transacción"
+    },
+    "validation_credits": {
+      "pricing_update": "editó el precio de los créditos de validación",
+      "update": "ajustó los créditos de validación de {{org}}"
+    }
   },
   "placeholder": {
     "title": "Nada que mostrar todavía.",

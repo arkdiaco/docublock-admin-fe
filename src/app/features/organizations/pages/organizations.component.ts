@@ -8,7 +8,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { sectionPath } from '../../../core/layout/console-nav';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
@@ -434,6 +434,11 @@ export class OrganizationsComponent {
     inject(DestroyRef).onDestroy(() => {
       if (this.timer) clearTimeout(this.timer);
     });
+    const route = inject(ActivatedRoute);
+    if (route.snapshot.queryParamMap.get('nueva') === '1') {
+      if (this.canManage()) this.creating.set(true);
+      void this.router.navigate([], { relativeTo: route, queryParams: { nueva: null }, queryParamsHandling: 'merge', replaceUrl: true });
+    }
     void this.reload();
   }
 
