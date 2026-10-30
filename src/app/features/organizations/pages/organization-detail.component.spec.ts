@@ -82,6 +82,7 @@ describe('OrganizationDetailComponent', () => {
     expect(host.querySelector('db-underline-tabs')?.textContent).not.toContain('Auditoría');
     expect(host.querySelector('db-underline-tabs')?.textContent).not.toContain('Documentos');
     expect(host.querySelector('db-underline-tabs')?.textContent).not.toContain('Marketplace');
+    expect(host.querySelector('db-underline-tabs')?.textContent).not.toContain('Soporte');
     expect(host.querySelector('.tab--on')?.textContent).toContain('Resumen');
     expect(host.querySelector('dba-org-flag .flag--test')?.textContent).toContain('PRUEBA');
   });
@@ -105,6 +106,16 @@ describe('OrganizationDetailComponent', () => {
     expect(host.querySelector('dba-empty-state')?.textContent).toContain('Documentos de la organización');
     expect(host.querySelector('a[dba-button]')?.getAttribute('href')).toBe('/operacion/documentos?organizacion=org-1');
     expect(host.querySelector('.od__cols')).toBeNull();
+  });
+
+  it('con lectura de operación, la pestaña Soporte lleva a la bandeja filtrada por la organización', async () => {
+    conPermisos(['platform:clients', 'platform:operations']);
+    const { fixture, host } = await montar();
+    const tab = [...host.querySelectorAll<HTMLButtonElement>('db-underline-tabs .tab')].find((t) => t.textContent?.includes('Soporte'))!;
+    tab.click();
+    fixture.detectChanges();
+    expect(host.querySelector('dba-empty-state')?.textContent).toContain('Tickets de soporte de la organización');
+    expect(host.querySelector('a[dba-button]')?.getAttribute('href')).toBe('/operacion/soporte?organizacion=org-1');
   });
 
   it('sin suscripción lo dice y no pinta el plan', async () => {

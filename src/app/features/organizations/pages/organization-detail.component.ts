@@ -50,6 +50,7 @@ const TAB_KEYS = [
   'validations',
   'marketplace',
   'documents',
+  'support',
   'audit',
 ] as const;
 
@@ -236,6 +237,14 @@ const initialsOf = (name: string): string =>
           <dba-org-marketplace-tab [org]="org" />
         } @else if (tab() === 'audit') {
           <dba-org-audit-tab [org]="org" />
+        } @else if (tab() === 'support') {
+          <div class="od__panel">
+            <dba-empty-state titleKey="support.orgTab.title" leadKey="support.orgTab.lead" />
+            <a dba-button variant="secondary" [routerLink]="supportPath" [queryParams]="{ organizacion: org.id }">
+              <db-icon name="support" [size]="15" />
+              {{ 'support.orgTab.open' | translate }}
+            </a>
+          </div>
         } @else {
           <div class="od__panel">
             <dba-empty-state titleKey="docs.orgTab.title" leadKey="docs.orgTab.lead" />
@@ -394,6 +403,7 @@ export class OrganizationDetailComponent {
 
   protected readonly modules = MODULES;
   protected readonly docsPath = sectionPath('documents');
+  protected readonly supportPath = sectionPath('support');
   protected readonly loading = signal(true);
   protected readonly error = signal(false);
   protected readonly detail = signal<PlatformOrgDetail | null>(null);
@@ -411,7 +421,7 @@ export class OrganizationDetailComponent {
     TAB_KEYS.filter(
       (key) =>
         (key !== 'audit' || this.auth.canRead('platform')) &&
-        (key !== 'documents' || this.auth.canRead('operations')) &&
+        ((key !== 'documents' && key !== 'support') || this.auth.canRead('operations')) &&
         (key !== 'marketplace' || this.auth.canRead('commercial')),
     ).map((key) => ({
       key,

@@ -158,21 +158,25 @@ describe('OverviewComponent', () => {
     expect(host.textContent).not.toMatch(/\b(overview|nav|act|orgCreate|common)\.[a-zA-Z]/);
   });
 
-  it('«Requiere acción» no pinta lo que aún no tiene pantalla y el contador lo respeta', async () => {
+  it('«Requiere acción» pinta cupos, tickets vencidos y suscripciones; el contador suma sus totales', async () => {
     perfil(ALL);
     const { host } = await montar(dashboard());
     const rows = [...host.querySelectorAll('dba-action-row')];
-    expect(rows.length).toBe(2);
-    expect(host.querySelector('.panel__count')?.textContent?.trim()).toBe('2');
+    expect(rows.length).toBe(3);
+    expect(host.querySelector('.panel__count')?.textContent?.trim()).toBe('4');
     expect(rows[0].textContent).toContain('Puerto de Valparaíso');
     expect(rows[0].textContent).toContain('cupo de documentos agotado · 500 / 500');
     expect(rows[0].querySelector('a')?.getAttribute('href')).toBe(
       '/clientes/organizaciones/o1?tab=quotas',
     );
-    expect(rows[1].textContent).toContain('la suscripción vence en 2 días');
-    expect(rows[1].querySelector('a')?.getAttribute('href')).toBe(
+    expect(rows[1].textContent).toContain('SOP-1');
+    expect(rows[1].textContent).toContain('ticket vencido sin atender');
+    expect(rows[1].querySelector('a')?.getAttribute('href')).toBe('/operacion/soporte/t?tab=sla');
+    expect(rows[2].textContent).toContain('la suscripción vence en 2 días');
+    expect(rows[2].querySelector('a')?.getAttribute('href')).toBe(
       '/clientes/organizaciones/o2?tab=subscription',
     );
+    expect(host.textContent).not.toMatch(/\b(overview|nav|common)\.[a-zA-Z]/);
   });
 
   it('la actividad se lee como frase; lo desconocido sale con su código y sin llave cruda', async () => {

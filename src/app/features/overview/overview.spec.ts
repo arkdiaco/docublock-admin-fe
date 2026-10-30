@@ -6,6 +6,7 @@ import { actionRowsOf, eventRef, revenueViewOf } from './data/dashboard-view';
 
 const org = (id: string) => ({ id, businessName: `Org ${id}`, tributaryNumber: `NIT-${id}` });
 const quota = (id: string, used: number, limit: number) => ({ organization: org(id), used, limit });
+const PATHS = { orgs: '/o', docs: '/d', support: '/s' };
 
 const leaf = (catalog: unknown, key: string): unknown =>
   key
@@ -46,20 +47,20 @@ describe('Visión general: filas de «Requiere acción»', () => {
     { kind: 'DOCUMENT_ISSUE', total: 2, items: [{ issue: 'UNREGISTERED_BLOCKCHAIN', count: 12 }] },
   ];
 
-  it('solo pinta los grupos que ya tienen pantalla; el contador suma sus totales', () => {
-    const view = actionRowsOf(groups, '/clientes/organizaciones', '/operacion/documentos');
-    expect(view.total).toBe(1 + 2 + 9 + 2);
+  it('pinta todos los grupos en el orden del core, hasta cinco filas; el contador suma sus totales', () => {
+    const view = actionRowsOf(groups, PATHS);
+    expect(view.total).toBe(1 + 4 + 2 + 9 + 2);
     expect(view.rows.map((r) => r.key)).toEqual([
       'QUOTA_EXHAUSTED:a',
+      'TICKET_OVERDUE:t',
       'SUBSCRIPTION_EXPIRING:b',
       'SUBSCRIPTION_EXPIRING:c',
       'QUOTA_WARNING:d',
-      'QUOTA_WARNING:e',
     ]);
   });
 
   it('cada fila lleva a la pestaña que resuelve: cupos o suscripción', () => {
-    const [exhausted, expiring, tomorrow, warning] = actionRowsOf(groups, '/o', '/d').rows;
+    const [exhausted, , expiring, tomorrow, warning] = actionRowsOf(groups, PATHS).rows;
     expect(exhausted).toMatchObject({
       tone: 'bad',
       reference: 'NIT-a',
@@ -86,8 +87,7 @@ describe('Visión general: filas de «Requiere acción»', () => {
   it('el porcentaje del aviso nunca redondea hacia arriba hasta el 100', () => {
     const [row] = actionRowsOf(
       [{ kind: 'QUOTA_WARNING', total: 1, items: [quota('z', 999, 1000)] }],
-      '/o',
-      '/d',
+      PATHS,
     ).rows;
     expect(row.textParams['pct']).toBe(99);
   });
@@ -101,8 +101,7 @@ describe('Visión general: filas de «Requiere acción»', () => {
           items: [{ organization: org('h'), daysLeft: 0, periodEnd: null }],
         },
       ],
-      '/o',
-      '/d',
+      PATHS,
     ).rows;
     expect(row.textKey).toBe('overview.action.expiringToday');
   });
@@ -119,8 +118,7 @@ describe('Visión general: filas de «Requiere acción»', () => {
           ],
         },
       ],
-      '/o',
-      '/d',
+      PATHS,
     ).rows;
     expect(rows).toEqual([
       expect.objectContaining({
@@ -138,6 +136,52 @@ describe('Visión general: filas de «Requiere acción»', () => {
         query: { vista: 'atascados' },
       }),
     ]);
+  });
+});
+
+describe('Visión general: tickets vencidos', () => {
+  it('cada ticket vencido lleva a su ficha en la pestaña SLA y nombra la organización si la hay', () => {
+    const rows = actionRowsOf(
+      [
+        {
+          kind: 'TICKET_OVERDUE',
+          total: 7,
+          items: [
+            {
+              ticket: { id: 't1', ticketNumber: 'TKT-2026-000001', subject: 'No llega la clave' },
+              organization: { id: 'o1', name: 'Org uno' },
+            },
+            {
+              ticket: { id: 't2', ticketNumber: 'TKT-2026-000002', subject: 'Sin organización' },
+              organization: null,
+            },
+          ],
+        },
+      ],
+      PATHS,
+    );
+    expect(rows.total).toBe(7);
+    expect(rows.rows).toEqual([
+      expect.objectContaining({
+        key: 'TICKET_OVERDUE:t1',
+        tone: 'bad',
+        reference: 'TKT-2026-000001',
+        subject: 'No llega la clave',
+        textKey: 'overview.action.ticketOverdue',
+        textParams: { org: 'Org uno' },
+        link: ['/s', 't1'],
+        query: { tab: 'sla' },
+      }),
+      expect.objectContaining({
+        key: 'TICKET_OVERDUE:t2',
+        textKey: 'overview.action.ticketOverdueNoOrg',
+        link: ['/s', 't2'],
+      }),
+    ]);
+    for (const key of ['ticketOverdue', 'ticketOverdueNoOrg']) {
+      expect(typeof leaf(es, `overview.action.${key}`)).toBe('string');
+      expect(typeof leaf(en, `overview.action.${key}`)).toBe('string');
+    }
   });
 });
 

@@ -282,7 +282,11 @@ export class OverviewComponent {
   protected readonly greetingKey = greetingKeyOf(new Date().getHours());
   protected readonly auditPath = sectionPath('audit');
   protected readonly orgsPath = sectionPath('organizations');
-  private readonly docsPath = sectionPath('documents');
+  private readonly actionPaths = {
+    orgs: this.orgsPath,
+    docs: sectionPath('documents'),
+    support: sectionPath('support'),
+  };
   protected readonly canSeeAudit = computed(() =>
     canSeeSection(this.auth.platformPermissions(), 'audit'),
   );
@@ -348,7 +352,7 @@ export class OverviewComponent {
   });
 
   protected readonly actions = computed(() =>
-    actionRowsOf(this.data()?.actions ?? [], this.orgsPath, this.docsPath),
+    actionRowsOf(this.data()?.actions ?? [], this.actionPaths),
   );
 
   protected readonly events = computed<EventView[] | null>(() => {

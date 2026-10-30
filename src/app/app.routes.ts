@@ -46,6 +46,22 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
         import('./features/documents/pages/document-detail.component').then((m) => m.DocumentDetailComponent),
     },
   ],
+  support: [
+    {
+      path: '',
+      loadComponent: () => import('./features/support/pages/tickets.component').then((m) => m.TicketsComponent),
+    },
+    {
+      path: 'politicas',
+      loadComponent: () =>
+        import('./features/support/pages/sla-policies.component').then((m) => m.SlaPoliciesComponent),
+    },
+    {
+      path: ':id',
+      loadComponent: () =>
+        import('./features/support/pages/ticket-detail.component').then((m) => m.TicketDetailComponent),
+    },
+  ],
   plans: [
     {
       path: '',

@@ -334,7 +334,8 @@
       "validations": "Validaciones",
       "marketplace": "Marketplace",
       "documents": "Documentos",
-      "audit": "Auditoría"
+      "audit": "Auditoría",
+      "support": "Soporte"
     }
   },
   "role": {
@@ -377,7 +378,7 @@
     "errorLead": "Revisa la conexión e inténtalo de nuevo.",
     "actions": "Requiere acción",
     "actionsEmpty": "Nada pendiente por ahora.",
-    "actionsLead": "Aquí aparecen las organizaciones con el cupo agotado o al 90 %, las suscripciones que vencen en 7 días y los documentos con incidencias.",
+    "actionsLead": "Aquí aparecen las organizaciones con el cupo agotado o al 90 %, los tickets de soporte que pasaron su plazo, las suscripciones que vencen en 7 días y los documentos con incidencias.",
     "action": {
       "quotaExhausted": "cupo de documentos agotado · {{used}} / {{limit}}",
       "quotaWarning": "cupo de documentos al {{pct}} % · {{used}} / {{limit}}",
@@ -385,7 +386,9 @@
       "expiringTomorrow": "la suscripción vence mañana",
       "expiringToday": "la suscripción vence hoy",
       "docUnregistered": "{{n}} firmado(s) sin registro en blockchain",
-      "docStuck": "{{n}} con todas las firmas y sin completar"
+      "docStuck": "{{n}} con todas las firmas y sin completar",
+      "ticketOverdue": "ticket vencido sin atender · {{org}}",
+      "ticketOverdueNoOrg": "ticket vencido sin atender"
     },
     "cta": {
       "review": "Revisar"
@@ -2329,5 +2332,283 @@
     "any": "Todas las organizaciones",
     "filter": "Nombre o NIT",
     "empty": "Sin coincidencias"
+  },
+  "support": {
+    "section": {
+      "tickets": "Tickets",
+      "policies": "Políticas de SLA"
+    },
+    "count": "{{total}} tickets",
+    "viewsLabel": "Vistas de la bandeja",
+    "view": {
+      "todos": "Todos",
+      "abiertos": "Abiertos",
+      "sin-asignar": "Sin asignar",
+      "vencidos": "Vencidos",
+      "incumplidos": "SLA incumplido"
+    },
+    "breachedNote": "{{first}} en primera respuesta · {{resolution}} en resolución",
+    "averages": "Promedio de primera respuesta: {{first}} · Promedio de resolución: {{resolution}}",
+    "dur": {
+      "d": "{{n}} d",
+      "h": "{{n}} h",
+      "min": "{{n}} min"
+    },
+    "searchPlaceholder": "Buscar por número, asunto o solicitante",
+    "f": {
+      "status": "Estado",
+      "priority": "Prioridad",
+      "category": "Categoría",
+      "channel": "Canal",
+      "agent": "Agente",
+      "anyStatus": "Todos los estados",
+      "anyPriority": "Todas las prioridades",
+      "anyCategory": "Todas las categorías",
+      "anyChannel": "Todos los canales",
+      "anyAgent": "Todos los agentes"
+    },
+    "status": {
+      "open": "Abierto",
+      "pending": "Pendiente",
+      "in_progress": "En curso",
+      "waiting_customer": "Esperando al cliente",
+      "resolved": "Resuelto",
+      "closed": "Cerrado"
+    },
+    "priority": {
+      "critical": "Crítica",
+      "high": "Alta",
+      "normal": "Normal",
+      "low": "Baja"
+    },
+    "category": {
+      "signature": "Firma",
+      "identity_validation": "Validación de identidad",
+      "documents": "Documentos",
+      "billing": "Facturación",
+      "account": "Cuenta",
+      "technical": "Técnico",
+      "other": "Otro"
+    },
+    "channel": {
+      "platform": "Plataforma",
+      "signature_flow": "Flujo de firma",
+      "admin": "Consola"
+    },
+    "sla": {
+      "breached": "Incumplido",
+      "overdue": "Vencido",
+      "onTime": "A tiempo",
+      "met": "Cumplido"
+    },
+    "goal": {
+      "met": "Cumplida",
+      "breached": "Incumplida",
+      "overdue": "Vencida",
+      "pending": "En plazo"
+    },
+    "author": {
+      "agent": "Soporte",
+      "user": "Usuario",
+      "signer": "Firmante",
+      "system": "Sistema"
+    },
+    "audit": {
+      "created": "Creó el ticket",
+      "first_response": "Dio la primera respuesta",
+      "message_added": "Agregó un mensaje",
+      "status_change": "Cambió el estado",
+      "priority_change": "Cambió la prioridad",
+      "assignment": "Asignó el ticket",
+      "reopened": "Reabrió el ticket",
+      "resolved": "Resolvió el ticket",
+      "closed": "Cerró el ticket"
+    },
+    "col": {
+      "number": "Número",
+      "subject": "Asunto",
+      "org": "Organización",
+      "priority": "Prioridad",
+      "status": "Estado",
+      "agent": "Agente",
+      "sla": "SLA",
+      "created": "Creado"
+    },
+    "unassigned": "Sin asignar",
+    "loading": "Cargando tickets",
+    "errorTitle": "No pudimos cargar los tickets",
+    "errorLead": "Revisa tu conexión e inténtalo de nuevo.",
+    "emptyTitle": "No hay tickets en esta vista",
+    "emptyLead": {
+      "todos": "Cuando un cliente o un firmante escriba a soporte, su ticket aparecerá aquí.",
+      "abiertos": "No hay tickets abiertos con estos filtros.",
+      "sin-asignar": "Todos los tickets abiertos tienen agente.",
+      "vencidos": "Ningún ticket abierto pasó su plazo.",
+      "incumplidos": "Ningún ticket incumplió su SLA."
+    },
+    "d": {
+      "loading": "Cargando el ticket",
+      "notFoundTitle": "Este ticket no existe",
+      "notFoundLead": "Puede que el enlace esté mal o que el ticket se haya eliminado.",
+      "errorTitle": "No pudimos cargar el ticket",
+      "refreshError": "No pudimos actualizar el ticket. Recarga la página.",
+      "manage": "Gestión del ticket",
+      "agentsError": "No pudimos cargar la lista de agentes.",
+      "tab": {
+        "conversation": "Conversación",
+        "sla": "SLA",
+        "history": "Historial",
+        "data": "Datos"
+      },
+      "requester": "Solicitante",
+      "context": "Contexto",
+      "f": {
+        "name": "Nombre",
+        "email": "Correo",
+        "phone": "Teléfono",
+        "createdBy": "Creado por",
+        "org": "Organización",
+        "number": "Número",
+        "document": "Documento",
+        "signer": "Firmante",
+        "tags": "Etiquetas",
+        "created": "Creado",
+        "updated": "Actualizado"
+      }
+    },
+    "thread": {
+      "empty": "Este ticket todavía no tiene mensajes",
+      "internal": "Nota interna",
+      "replyLabel": "Respuesta al cliente",
+      "noteLabel": "Nota interna",
+      "replyPlaceholder": "Escribe la respuesta que recibirá el cliente",
+      "notePlaceholder": "Escribe una nota que solo verá el equipo de soporte",
+      "replyHint": "El cliente recibirá esta respuesta por correo.",
+      "noteHint": "El cliente no verá esta nota.",
+      "send": "Enviar respuesta",
+      "saveNote": "Guardar nota",
+      "closedHint": "El ticket está resuelto o cerrado: la respuesta llega al cliente pero no lo reabre."
+    },
+    "slaTab": {
+      "policy": "Política aplicada",
+      "defaultPolicy": "Matriz por defecto",
+      "firstResponse": "Primera respuesta",
+      "resolution": "Resolución",
+      "target": "Plazo",
+      "due": "Vence",
+      "done": {
+        "firstResponse": "Respondido",
+        "resolution": "Resuelto"
+      },
+      "note": "El cumplimiento se marca cuando ocurre cada evento: un plazo vencido sin respuesta aparece como vencido hasta que se responde o se resuelve."
+    },
+    "history": {
+      "empty": "Este ticket no tiene historial",
+      "count": "{{n}} eventos"
+    },
+    "act": {
+      "status": {
+        "title": "Cambiar el estado",
+        "message": "El ticket pasará de «{{from}}» a «{{to}}». El cliente recibirá un aviso.",
+        "confirm": "Cambiar estado",
+        "done": "Estado actualizado"
+      },
+      "priority": {
+        "title": "Cambiar la prioridad",
+        "message": "La prioridad pasará de «{{from}}» a «{{to}}» y los plazos del SLA se recalcularán.",
+        "confirm": "Cambiar prioridad",
+        "done": "Prioridad actualizada"
+      },
+      "assign": {
+        "title": "Asignar el ticket",
+        "message": "El ticket quedará a cargo de {{name}}.",
+        "confirm": "Asignar",
+        "done": "Ticket asignado"
+      },
+      "reply": {
+        "done": "Respuesta enviada",
+        "noteDone": "Nota guardada"
+      }
+    },
+    "pol": {
+      "count": "{{total}} políticas",
+      "lead": "Cada política fija los plazos de primera respuesta y resolución por prioridad. Un ticket usa la política de su plan; si no hay, la predeterminada.",
+      "loading": "Cargando políticas",
+      "errorTitle": "No pudimos cargar las políticas",
+      "emptyTitle": "Todavía no hay políticas de SLA",
+      "emptyLead": "Mientras no exista ninguna, los tickets usan la matriz por defecto.",
+      "noDefault": "No hay política predeterminada: los tickets sin política de plan usan la matriz por defecto.",
+      "note": "Los cambios aplican a los tickets nuevos y a los que cambien de prioridad; los plazos de los tickets existentes no se recalculan.",
+      "create": "Nueva política",
+      "seed": "Crear predeterminada",
+      "edit": "Editar política",
+      "deactivate": "Desactivar",
+      "reactivate": "Reactivar",
+      "default": "Predeterminada",
+      "active": "Activa",
+      "inactive": "Inactiva",
+      "plan": "Plan",
+      "anyPlan": "Cualquier plan",
+      "created": "Política creada",
+      "saved": "Política guardada",
+      "seeded": "Política predeterminada creada",
+      "deactivated": "Política desactivada",
+      "reactivated": "Política reactivada",
+      "seedConfirm": {
+        "title": "Crear la política predeterminada",
+        "message": "Se creará una política predeterminada con la matriz por defecto. Después podrás editar sus plazos."
+      },
+      "deactivateConfirm": {
+        "title": "Desactivar la política",
+        "message": "«{{name}}» dejará de aplicarse a los tickets nuevos. Podrás reactivarla después."
+      },
+      "reactivateConfirm": {
+        "title": "Reactivar la política",
+        "message": "«{{name}}» volverá a aplicarse a los tickets nuevos de su plan."
+      },
+      "form": {
+        "createTitle": "Nueva política de SLA",
+        "editTitle": "Editar política de SLA",
+        "create": "Crear política",
+        "save": "Guardar cambios",
+        "name": "Nombre",
+        "namePlaceholder": "Ej.: Soporte prioritario",
+        "nameShort": "Usa al menos 2 caracteres",
+        "plan": "Plan",
+        "noPlan": "Sin plan (cualquier plan)",
+        "planHint": "Los tickets de las organizaciones con este plan usarán esta política.",
+        "planLocked": "Para elegir un plan necesitas permiso de lectura comercial.",
+        "isDefault": "Predeterminada",
+        "defaultHint": "Se usa cuando el plan de la organización no tiene política propia. Solo puede haber una.",
+        "defaultLocked": "Para quitarla, marca otra política como predeterminada.",
+        "active": "Activa",
+        "activeHint": "Una política inactiva no se aplica a tickets nuevos.",
+        "matrix": "Plazos por prioridad",
+        "matrixHint": "En minutos. La resolución no puede ser menor que la primera respuesta.",
+        "cell": {
+          "firstResponseMinutes": "Primera respuesta",
+          "resolutionMinutes": "Resolución"
+        },
+        "minutes": "Minutos",
+        "required": "Obligatorio",
+        "rangeError": "Entre 1 y 525 600 minutos",
+        "orderError": "Menor que la primera respuesta"
+      }
+    },
+    "error": {
+      "TICKET_NO_ENCONTRADO": "Este ticket ya no existe.",
+      "ASIGNADO_NO_ES_AGENTE": "Esa persona no es agente activo de la plataforma.",
+      "ADJUNTO_NO_DISPONIBLE": "No pudimos abrir el adjunto.",
+      "DEFAULT_REQUERIDA": "Siempre debe haber una política predeterminada: marca otra antes de cambiar esta.",
+      "DEFAULT_EXISTE": "Ya existe una política predeterminada.",
+      "POLITICA_NO_ENCONTRADA": "Esta política ya no existe.",
+      "PLAN_NO_ENCONTRADO": "El plan elegido no existe.",
+      "generic": "No pudimos completar la acción. Inténtalo de nuevo."
+    },
+    "orgTab": {
+      "title": "Tickets de soporte de la organización",
+      "lead": "Los tickets se atienden en Soporte y SLA. Abre la bandeja filtrada por esta organización.",
+      "open": "Ver sus tickets"
+    }
   }
 }

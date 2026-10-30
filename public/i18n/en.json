@@ -334,7 +334,8 @@
       "validations": "Validations",
       "marketplace": "Marketplace",
       "documents": "Documents",
-      "audit": "Audit"
+      "audit": "Audit",
+      "support": "Support"
     }
   },
   "role": {
@@ -377,7 +378,7 @@
     "errorLead": "Check your connection and try again.",
     "actions": "Needs action",
     "actionsEmpty": "Nothing pending for now.",
-    "actionsLead": "Organizations with their quota used up or at 90 %, subscriptions expiring within 7 days and documents with issues show up here.",
+    "actionsLead": "Organizations with their quota used up or at 90 %, support tickets past their target, subscriptions expiring within 7 days and documents with issues show up here.",
     "action": {
       "quotaExhausted": "document quota exhausted · {{used}} / {{limit}}",
       "quotaWarning": "document quota at {{pct}} % · {{used}} / {{limit}}",
@@ -385,7 +386,9 @@
       "expiringTomorrow": "the subscription ends tomorrow",
       "expiringToday": "the subscription ends today",
       "docUnregistered": "{{n}} signed without a blockchain record",
-      "docStuck": "{{n}} with every signature but not completed"
+      "docStuck": "{{n}} with every signature but not completed",
+      "ticketOverdue": "overdue ticket waiting for support · {{org}}",
+      "ticketOverdueNoOrg": "overdue ticket waiting for support"
     },
     "cta": {
       "review": "Review"
@@ -2329,5 +2332,283 @@
     "any": "All organizations",
     "filter": "Name or tax ID",
     "empty": "No matches"
+  },
+  "support": {
+    "section": {
+      "tickets": "Tickets",
+      "policies": "SLA policies"
+    },
+    "count": "{{total}} tickets",
+    "viewsLabel": "Inbox views",
+    "view": {
+      "todos": "All",
+      "abiertos": "Open",
+      "sin-asignar": "Unassigned",
+      "vencidos": "Overdue",
+      "incumplidos": "SLA breached"
+    },
+    "breachedNote": "{{first}} on first response · {{resolution}} on resolution",
+    "averages": "Average first response: {{first}} · Average resolution: {{resolution}}",
+    "dur": {
+      "d": "{{n}} d",
+      "h": "{{n}} h",
+      "min": "{{n}} min"
+    },
+    "searchPlaceholder": "Search by number, subject or requester",
+    "f": {
+      "status": "Status",
+      "priority": "Priority",
+      "category": "Category",
+      "channel": "Channel",
+      "agent": "Agent",
+      "anyStatus": "All statuses",
+      "anyPriority": "All priorities",
+      "anyCategory": "All categories",
+      "anyChannel": "All channels",
+      "anyAgent": "All agents"
+    },
+    "status": {
+      "open": "Open",
+      "pending": "Pending",
+      "in_progress": "In progress",
+      "waiting_customer": "Waiting on customer",
+      "resolved": "Resolved",
+      "closed": "Closed"
+    },
+    "priority": {
+      "critical": "Critical",
+      "high": "High",
+      "normal": "Normal",
+      "low": "Low"
+    },
+    "category": {
+      "signature": "Signature",
+      "identity_validation": "Identity validation",
+      "documents": "Documents",
+      "billing": "Billing",
+      "account": "Account",
+      "technical": "Technical",
+      "other": "Other"
+    },
+    "channel": {
+      "platform": "Platform",
+      "signature_flow": "Signing flow",
+      "admin": "Console"
+    },
+    "sla": {
+      "breached": "Breached",
+      "overdue": "Overdue",
+      "onTime": "On time",
+      "met": "Met"
+    },
+    "goal": {
+      "met": "Met",
+      "breached": "Breached",
+      "overdue": "Overdue",
+      "pending": "Within target"
+    },
+    "author": {
+      "agent": "Support",
+      "user": "User",
+      "signer": "Signer",
+      "system": "System"
+    },
+    "audit": {
+      "created": "Created the ticket",
+      "first_response": "Sent the first response",
+      "message_added": "Added a message",
+      "status_change": "Changed the status",
+      "priority_change": "Changed the priority",
+      "assignment": "Assigned the ticket",
+      "reopened": "Reopened the ticket",
+      "resolved": "Resolved the ticket",
+      "closed": "Closed the ticket"
+    },
+    "col": {
+      "number": "Number",
+      "subject": "Subject",
+      "org": "Organization",
+      "priority": "Priority",
+      "status": "Status",
+      "agent": "Agent",
+      "sla": "SLA",
+      "created": "Created"
+    },
+    "unassigned": "Unassigned",
+    "loading": "Loading tickets",
+    "errorTitle": "We couldn't load the tickets",
+    "errorLead": "Check your connection and try again.",
+    "emptyTitle": "No tickets in this view",
+    "emptyLead": {
+      "todos": "When a customer or a signer contacts support, their ticket will show up here.",
+      "abiertos": "No open tickets match these filters.",
+      "sin-asignar": "Every open ticket has an agent.",
+      "vencidos": "No open ticket is past its target.",
+      "incumplidos": "No ticket breached its SLA."
+    },
+    "d": {
+      "loading": "Loading the ticket",
+      "notFoundTitle": "This ticket doesn't exist",
+      "notFoundLead": "The link may be wrong or the ticket may have been removed.",
+      "errorTitle": "We couldn't load the ticket",
+      "refreshError": "We couldn't refresh the ticket. Reload the page.",
+      "manage": "Ticket management",
+      "agentsError": "We couldn't load the agent list.",
+      "tab": {
+        "conversation": "Conversation",
+        "sla": "SLA",
+        "history": "History",
+        "data": "Details"
+      },
+      "requester": "Requester",
+      "context": "Context",
+      "f": {
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "createdBy": "Created by",
+        "org": "Organization",
+        "number": "Number",
+        "document": "Document",
+        "signer": "Signer",
+        "tags": "Tags",
+        "created": "Created",
+        "updated": "Updated"
+      }
+    },
+    "thread": {
+      "empty": "This ticket has no messages yet",
+      "internal": "Internal note",
+      "replyLabel": "Reply to the customer",
+      "noteLabel": "Internal note",
+      "replyPlaceholder": "Write the reply the customer will receive",
+      "notePlaceholder": "Write a note only the support team will see",
+      "replyHint": "The customer will receive this reply by email.",
+      "noteHint": "The customer won't see this note.",
+      "send": "Send reply",
+      "saveNote": "Save note",
+      "closedHint": "The ticket is resolved or closed: the reply reaches the customer but doesn't reopen it."
+    },
+    "slaTab": {
+      "policy": "Applied policy",
+      "defaultPolicy": "Default matrix",
+      "firstResponse": "First response",
+      "resolution": "Resolution",
+      "target": "Target",
+      "due": "Due",
+      "done": {
+        "firstResponse": "Responded",
+        "resolution": "Resolved"
+      },
+      "note": "Compliance is marked when each event happens: a target passed without a response shows as overdue until it is answered or resolved."
+    },
+    "history": {
+      "empty": "This ticket has no history",
+      "count": "{{n}} events"
+    },
+    "act": {
+      "status": {
+        "title": "Change the status",
+        "message": "The ticket will go from “{{from}}” to “{{to}}”. The customer will be notified.",
+        "confirm": "Change status",
+        "done": "Status updated"
+      },
+      "priority": {
+        "title": "Change the priority",
+        "message": "The priority will go from “{{from}}” to “{{to}}” and the SLA targets will be recalculated.",
+        "confirm": "Change priority",
+        "done": "Priority updated"
+      },
+      "assign": {
+        "title": "Assign the ticket",
+        "message": "{{name}} will be in charge of the ticket.",
+        "confirm": "Assign",
+        "done": "Ticket assigned"
+      },
+      "reply": {
+        "done": "Reply sent",
+        "noteDone": "Note saved"
+      }
+    },
+    "pol": {
+      "count": "{{total}} policies",
+      "lead": "Each policy sets the first response and resolution targets per priority. A ticket uses its plan's policy; if there is none, the default one.",
+      "loading": "Loading policies",
+      "errorTitle": "We couldn't load the policies",
+      "emptyTitle": "There are no SLA policies yet",
+      "emptyLead": "While there are none, tickets use the default matrix.",
+      "noDefault": "There is no default policy: tickets without a plan policy use the default matrix.",
+      "note": "Changes apply to new tickets and to tickets whose priority changes; targets of existing tickets are not recalculated.",
+      "create": "New policy",
+      "seed": "Create default",
+      "edit": "Edit policy",
+      "deactivate": "Deactivate",
+      "reactivate": "Reactivate",
+      "default": "Default",
+      "active": "Active",
+      "inactive": "Inactive",
+      "plan": "Plan",
+      "anyPlan": "Any plan",
+      "created": "Policy created",
+      "saved": "Policy saved",
+      "seeded": "Default policy created",
+      "deactivated": "Policy deactivated",
+      "reactivated": "Policy reactivated",
+      "seedConfirm": {
+        "title": "Create the default policy",
+        "message": "A default policy will be created with the default matrix. You can edit its targets afterwards."
+      },
+      "deactivateConfirm": {
+        "title": "Deactivate the policy",
+        "message": "“{{name}}” will no longer apply to new tickets. You can reactivate it later."
+      },
+      "reactivateConfirm": {
+        "title": "Reactivate the policy",
+        "message": "“{{name}}” will apply again to new tickets of its plan."
+      },
+      "form": {
+        "createTitle": "New SLA policy",
+        "editTitle": "Edit SLA policy",
+        "create": "Create policy",
+        "save": "Save changes",
+        "name": "Name",
+        "namePlaceholder": "E.g. Priority support",
+        "nameShort": "Use at least 2 characters",
+        "plan": "Plan",
+        "noPlan": "No plan (any plan)",
+        "planHint": "Tickets from organizations on this plan will use this policy.",
+        "planLocked": "Choosing a plan requires commercial read access.",
+        "isDefault": "Default",
+        "defaultHint": "Used when the organization's plan has no policy of its own. There can only be one.",
+        "defaultLocked": "To remove it, mark another policy as default.",
+        "active": "Active",
+        "activeHint": "An inactive policy doesn't apply to new tickets.",
+        "matrix": "Targets per priority",
+        "matrixHint": "In minutes. Resolution can't be shorter than the first response.",
+        "cell": {
+          "firstResponseMinutes": "First response",
+          "resolutionMinutes": "Resolution"
+        },
+        "minutes": "Minutes",
+        "required": "Required",
+        "rangeError": "Between 1 and 525,600 minutes",
+        "orderError": "Shorter than the first response"
+      }
+    },
+    "error": {
+      "TICKET_NO_ENCONTRADO": "This ticket no longer exists.",
+      "ASIGNADO_NO_ES_AGENTE": "That person isn't an active platform agent.",
+      "ADJUNTO_NO_DISPONIBLE": "We couldn't open the attachment.",
+      "DEFAULT_REQUERIDA": "There must always be a default policy: mark another one before changing this one.",
+      "DEFAULT_EXISTE": "A default policy already exists.",
+      "POLITICA_NO_ENCONTRADA": "This policy no longer exists.",
+      "PLAN_NO_ENCONTRADO": "The chosen plan doesn't exist.",
+      "generic": "We couldn't complete the action. Try again."
+    },
+    "orgTab": {
+      "title": "The organization's support tickets",
+      "lead": "Tickets are handled in Support & SLA. Open the inbox filtered by this organization.",
+      "open": "View its tickets"
+    }
   }
 }

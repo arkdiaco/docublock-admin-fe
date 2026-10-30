@@ -4,6 +4,7 @@ import type { DashboardActionGroup, DashboardActionKind, MonthRevenue } from './
 
 export const SHOWN_KINDS: readonly DashboardActionKind[] = [
   'QUOTA_EXHAUSTED',
+  'TICKET_OVERDUE',
   'SUBSCRIPTION_EXPIRING',
   'QUOTA_WARNING',
   'DOCUMENT_ISSUE',
@@ -36,7 +37,13 @@ const ISSUE_ROWS = {
   STUCK_COMPLETED: { tone: 'bad', textKey: 'overview.action.docStuck', view: 'atascados' },
 } as const;
 
-const rowsOf = (group: DashboardActionGroup, orgsPath: string, docsPath: string): ActionRowView[] => {
+export interface ActionPaths {
+  orgs: string;
+  docs: string;
+  support: string;
+}
+
+const rowsOf = (group: DashboardActionGroup, paths: ActionPaths): ActionRowView[] => {
   switch (group.kind) {
     case 'QUOTA_EXHAUSTED':
     case 'QUOTA_WARNING':
@@ -51,7 +58,7 @@ const rowsOf = (group: DashboardActionGroup, orgsPath: string, docsPath: string)
             : 'overview.action.quotaWarning',
         textParams: { used: item.used, limit: item.limit, pct: percent(item.used, item.limit) },
         ctaKey: 'overview.cta.review',
-        link: [orgsPath, item.organization.id],
+        link: [paths.orgs, item.organization.id],
         query: { tab: 'quotas' },
       }));
     case 'SUBSCRIPTION_EXPIRING':
@@ -63,7 +70,7 @@ const rowsOf = (group: DashboardActionGroup, orgsPath: string, docsPath: string)
         textKey: expiringKey(item.daysLeft),
         textParams: { n: item.daysLeft },
         ctaKey: 'overview.cta.review',
-        link: [orgsPath, item.organization.id],
+        link: [paths.orgs, item.organization.id],
         query: { tab: 'subscription' },
       }));
     case 'DOCUMENT_ISSUE':
@@ -76,8 +83,22 @@ const rowsOf = (group: DashboardActionGroup, orgsPath: string, docsPath: string)
         textKey: ISSUE_ROWS[item.issue].textKey,
         textParams: { n: item.count },
         ctaKey: 'overview.cta.review',
-        link: [docsPath],
+        link: [paths.docs],
         query: { vista: ISSUE_ROWS[item.issue].view },
+      }));
+    case 'TICKET_OVERDUE':
+      return group.items.map((item) => ({
+        key: `${group.kind}:${item.ticket.id}`,
+        tone: 'bad',
+        reference: item.ticket.ticketNumber,
+        subject: item.ticket.subject,
+        textKey: item.organization?.name
+          ? 'overview.action.ticketOverdue'
+          : 'overview.action.ticketOverdueNoOrg',
+        textParams: { org: item.organization?.name ?? '' },
+        ctaKey: 'overview.cta.review',
+        link: [paths.support, item.ticket.id],
+        query: { tab: 'sla' },
       }));
     default:
       return [];
@@ -86,13 +107,12 @@ const rowsOf = (group: DashboardActionGroup, orgsPath: string, docsPath: string)
 
 export const actionRowsOf = (
   groups: readonly DashboardActionGroup[],
-  orgsPath: string,
-  docsPath: string,
+  paths: ActionPaths,
 ): { total: number; rows: ActionRowView[] } => {
   const shown = groups.filter((group) => SHOWN_KINDS.includes(group.kind));
   return {
     total: shown.reduce((sum, group) => sum + group.total, 0),
-    rows: shown.flatMap((group) => rowsOf(group, orgsPath, docsPath)).slice(0, ACTION_LIMIT),
+    rows: shown.flatMap((group) => rowsOf(group, paths)).slice(0, ACTION_LIMIT),
   };
 };
 
