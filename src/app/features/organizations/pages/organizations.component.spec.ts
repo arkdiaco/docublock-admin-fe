@@ -177,7 +177,7 @@ describe('OrganizationsComponent', () => {
   });
 
   it('crear manda el alta con el primer administrador y abre la ficha nueva', async () => {
-    perfil(['platform:clients', 'platform:clients:manage']);
+    perfil(['platform:clients', 'platform:clients:manage', 'platform:commercial', 'platform:commercial:manage']);
     const { fixture, host } = await montar();
     const navegar = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     [...host.querySelectorAll<HTMLButtonElement>('button[dba-button]')]

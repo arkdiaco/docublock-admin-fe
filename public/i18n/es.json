@@ -739,7 +739,8 @@
         "TRANSFERENCIA_NO_APLICADA": "No se pudo sumar al destino; los documentos volvieron al origen.",
         "SIN_CUPO": "No alcanzan los documentos disponibles."
       }
-    }
+    },
+    "more": "Más acciones"
   },
   "quota": {
     "loading": "Cargando los cupos…",
@@ -1222,5 +1223,15 @@
       "PURGA_SOLO_PRUEBAS": "Solo se purgan organizaciones marcadas como de prueba.",
       "generic": "No se pudo lanzar la purga. Inténtalo de nuevo."
     }
+  },
+  "orgAudit": {
+    "title": "Actividad en la consola",
+    "count": "{{shown}} de {{total}} eventos",
+    "openAll": "Ver en Auditoría",
+    "loading": "Cargando la actividad…",
+    "errorTitle": "No pudimos cargar la actividad.",
+    "emptyTitle": "Sin actividad registrada.",
+    "emptyLead": "Lo que el personal haga sobre esta organización desde la consola aparecerá aquí.",
+    "more": "Cargar más"
   }
 }

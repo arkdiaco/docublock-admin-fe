@@ -9,6 +9,7 @@ import {
 } from '@ngx-translate/core';
 import { of, type Observable } from 'rxjs';
 import es from '../../../../../public/i18n/es.json';
+import { AuthStore } from '../../../core/auth/auth.store';
 import { OrgCreateFormComponent } from './org-create-form.component';
 
 class CatalogoEspanol implements TranslateLoader {
@@ -45,7 +46,12 @@ describe('OrgCreateFormComponent', () => {
 
   afterEach(() => http.verify());
 
-  const montar = () => {
+  const montar = (permisos = ['platform:clients:manage', 'platform:commercial', 'platform:commercial:manage']) => {
+    TestBed.inject(AuthStore).setProfile({
+      user: { id: 'u1', names: 'Marta', surNames: 'Vidal', email: 'm@d.co', identification: '', imageProfile: null },
+      platformStaff: true,
+      platformPermissions: permisos,
+    });
     const fixture = TestBed.createComponent(OrgCreateFormComponent);
     fixture.componentRef.setInput('labels', {
       legal: 'Jurídica',
@@ -54,9 +60,18 @@ describe('OrgCreateFormComponent', () => {
     });
     fixture.detectChanges();
     http.expectOne('/catalogs/countries').flush([{ id: 'co', name: 'Colombia' }]);
-    http.expectOne((r) => r.url === '/platform/resellers').flush({ items: [] });
+    if (permisos.includes('platform:commercial:manage')) {
+      http.expectOne((r) => r.url === '/platform/resellers').flush({ items: [] });
+    }
     return { fixture, form: fixture.componentInstance as unknown as Form };
   };
+
+  it('sin permiso comercial no ofrece reseller ni pide la lista', () => {
+    const { fixture } = montar(['platform:clients', 'platform:clients:manage']);
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('#org-create-reseller')).toBeNull();
+    expect(host.textContent).not.toContain('Reseller');
+  });
 
   const llenar = (form: Form) => {
     form['businessName'].set(' Nueva ');

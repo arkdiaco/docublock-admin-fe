@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import {
   provideTranslateService,
   TranslateLoader,
@@ -166,5 +166,24 @@ describe('AuditComponent', () => {
     req.flush(new Blob(['x'], { type: 'text/csv' }), {
       headers: { 'content-disposition': 'attachment; filename="bitacora.csv"' },
     });
+  });
+
+  it('si llega con ?filtro= desde la ficha, aplica ese filtro sobre todo el registro', async () => {
+    await TestBed.inject(Router).navigateByUrl('/?filtro=org:65a0000000000000000000aa');
+    const fixture = TestBed.createComponent(AuditComponent);
+    fixture.detectChanges();
+    http.expectOne('/platform/audit/facets').flush({ actions: [], admins: [] });
+    let req!: ReturnType<HttpTestingController['expectOne']>;
+    await vi.waitFor(() => {
+      req = http.expectOne((r) => r.url === '/platform/audit');
+    });
+    expect(req.request.params.get('organizationId')).toBe('65a0000000000000000000aa');
+    expect(req.request.params.get('from')).toBeNull();
+    req.flush(PAGINA);
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector<HTMLInputElement>('.query__input')?.value).toBe('org:65a0000000000000000000aa');
+    expect(host.textContent).toContain('todo el registro');
   });
 });

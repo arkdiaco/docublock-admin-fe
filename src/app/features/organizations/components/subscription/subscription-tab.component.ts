@@ -19,6 +19,7 @@ import { DialogService } from '../../../../core/ui/dialog.service';
 import { NotificationService } from '../../../../core/ui/notification.service';
 import { errorCodeOf } from '../../../../shared/http/error-code';
 import { LatestRequest } from '../../../../shared/http/latest-request';
+import { ActionMenuComponent, type ActionMenuItem } from '../../../../shared/ui/action-menu.component';
 import { ButtonComponent } from '../../../../shared/ui/button.component';
 import { DataTableComponent, type DataColumn } from '../../../../shared/ui/data-table.component';
 import { EmptyStateComponent } from '../../../../shared/ui/empty-state.component';
@@ -89,6 +90,7 @@ type Open =
     PeriodFormComponent,
     CounterFormComponent,
     TransferDocumentsFormComponent,
+    ActionMenuComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -112,22 +114,10 @@ type Open =
                   {{ 'sub.assign.open' | translate }}
                 </button>
                 @if (data.current) {
-                  <button dba-button variant="secondary" (click)="open.set({ kind: 'period' })">
-                    {{ 'sub.period.open' | translate }}
+                  <button dba-button variant="secondary" [busy]="working()" (click)="moreMenu.toggle($event)">
+                    {{ 'sub.more' | translate }}
                   </button>
-                  @if (data.current.periodEnd) {
-                    <button dba-button variant="secondary" [busy]="working()" (click)="noExpiry()">
-                      {{ 'sub.noExpiry.open' | translate }}
-                    </button>
-                  }
-                  @if (transferable() > 0) {
-                    <button dba-button variant="secondary" (click)="open.set({ kind: 'transfer' })">
-                      {{ 'sub.transfer.open' | translate }}
-                    </button>
-                  }
-                  <button dba-button variant="destructive" [busy]="working()" (click)="expire()">
-                    {{ 'sub.expire.open' | translate }}
-                  </button>
+                  <dba-action-menu #moreMenu label="sub.more" [items]="moreItems()" (picked)="pickMore($event)" />
                 }
               </div>
             }
@@ -431,6 +421,23 @@ export class SubscriptionTabComponent {
     const documents = this.view()?.current?.counters.find((c) => c.resource === 'DOCUMENTS');
     return documents && documents.limit !== null ? (documents.remaining ?? 0) : 0;
   });
+
+  protected readonly moreItems = computed<ActionMenuItem[]>(() => {
+    const current = this.view()?.current;
+    if (!current) return [];
+    return [
+      { key: 'period', labelKey: 'sub.period.open' },
+      ...(current.periodEnd ? [{ key: 'noExpiry', labelKey: 'sub.noExpiry.open' }] : []),
+      ...(this.transferable() > 0 ? [{ key: 'transfer', labelKey: 'sub.transfer.open' }] : []),
+      { key: 'expire', labelKey: 'sub.expire.open', danger: true, separated: true },
+    ];
+  });
+
+  protected pickMore(key: string): void {
+    if (key === 'period' || key === 'transfer') this.open.set({ kind: key });
+    else if (key === 'noExpiry') void this.noExpiry();
+    else if (key === 'expire') void this.expire();
+  }
 
   protected readonly transferTexts = {
     targetHas: (row: PlatformOrgRow) =>

@@ -7,6 +7,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import { NotificationService } from '../../../core/ui/notification.service';
@@ -18,6 +19,7 @@ import { FilterPillsComponent, type FilterPill } from '../../../shared/ui/filter
 import { IconComponent } from '../../../shared/ui/icon.component';
 import { PagerComponent } from '../../../shared/ui/pager.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
+import { AUDIT_FILTER_PARAM } from '../../../shared/domain/audit-link';
 import { AuditApi } from '../data/audit.api';
 import {
   actorHandle,
@@ -595,7 +597,14 @@ export class AuditComponent {
   protected readonly rows = computed<RowView[]>(() => this.items().map((row) => this.toView(row)));
 
   constructor() {
-    void this.reload();
+    const initial = inject(ActivatedRoute).snapshot.queryParamMap.get(AUDIT_FILTER_PARAM);
+    if (!initial) {
+      void this.reload();
+      return;
+    }
+    this.draft.set(initial);
+    this.period.set('all');
+    void this.apply();
   }
 
   protected onDraft(event: Event): void {

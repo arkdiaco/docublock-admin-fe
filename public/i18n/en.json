@@ -739,7 +739,8 @@
         "TRANSFERENCIA_NO_APLICADA": "We couldn't add to the target; the documents went back to the source.",
         "SIN_CUPO": "Not enough documents available."
       }
-    }
+    },
+    "more": "More actions"
   },
   "quota": {
     "loading": "Loading quotas…",
@@ -1222,5 +1223,15 @@
       "PURGA_SOLO_PRUEBAS": "Only organizations flagged as test can be purged.",
       "generic": "The purge couldn't be launched. Try again."
     }
+  },
+  "orgAudit": {
+    "title": "Console activity",
+    "count": "{{shown}} of {{total}} events",
+    "openAll": "Open in Audit",
+    "loading": "Loading activity…",
+    "errorTitle": "We couldn't load the activity.",
+    "emptyTitle": "No activity recorded.",
+    "emptyLead": "What staff do on this organization from the console will show up here.",
+    "more": "Load more"
   }
 }

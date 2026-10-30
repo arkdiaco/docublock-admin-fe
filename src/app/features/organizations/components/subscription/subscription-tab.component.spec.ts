@@ -128,6 +128,32 @@ describe('SubscriptionTabComponent', () => {
       (b) => b.textContent?.trim() === texto,
     );
 
+  const delMenu = async (fixture: { detectChanges: () => void }, host: HTMLElement, texto: string) => {
+    boton(host, 'Más acciones')!.click();
+    fixture.detectChanges();
+    let item: HTMLButtonElement | undefined;
+    await vi.waitFor(() => {
+      item = [...document.querySelectorAll<HTMLButtonElement>('.item')].find((b) => b.textContent?.trim() === texto);
+      expect(item).toBeDefined();
+    });
+    item!.click();
+  };
+
+  it('las acciones secundarias van en el menú y Expirar queda al final, marcada', async () => {
+    const { fixture, host } = await montar();
+    expect(boton(host, 'Asignar plan')).toBeDefined();
+    expect(boton(host, 'Expirar')).toBeUndefined();
+    boton(host, 'Más acciones')!.click();
+    fixture.detectChanges();
+    let items: HTMLButtonElement[] = [];
+    await vi.waitFor(() => {
+      items = [...document.querySelectorAll<HTMLButtonElement>('.item')];
+      expect(items.length).toBeGreaterThan(0);
+    });
+    expect(items.map((b) => b.textContent?.trim()).at(-1)).toBe('Expirar');
+    expect(items.at(-1)!.classList.contains('item--danger')).toBe(true);
+  });
+
   it('pinta el plan vigente, los contadores con nombres públicos, el historial y el espejo legacy', async () => {
     const { host } = await montar();
     expect(host.textContent).toContain('Corporativo');
@@ -186,11 +212,11 @@ describe('SubscriptionTabComponent', () => {
   });
 
   it('expirar exige motivo y escribir el NIT', async () => {
-    const { host } = await montar();
+    const { fixture, host } = await montar();
     const abrir = vi
       .spyOn(TestBed.inject(DialogService), 'open')
       .mockResolvedValue({ answer: 'confirm', reason: 'Fin de contrato' });
-    boton(host, 'Expirar')!.click();
+    await delMenu(fixture, host, 'Expirar');
     await vi.waitFor(() => expect(abrir).toHaveBeenCalled());
     expect(abrir.mock.calls[0][0].challenge?.identifier).toBe('900123456');
     let req!: ReturnType<HttpTestingController['expectOne']>;
@@ -202,12 +228,12 @@ describe('SubscriptionTabComponent', () => {
   });
 
   it('sin vencimiento pide motivo y manda noExpiry', async () => {
-    const { host } = await montar();
+    const { fixture, host } = await montar();
     vi.spyOn(TestBed.inject(DialogService), 'open').mockResolvedValue({
       answer: 'confirm',
       reason: 'Convenio',
     });
-    boton(host, 'Sin vencimiento')!.click();
+    await delMenu(fixture, host, 'Sin vencimiento');
     let req!: ReturnType<HttpTestingController['expectOne']>;
     await vi.waitFor(() => {
       req = http.expectOne((r) => r.method === 'POST' && r.url.endsWith('/subscription/period'));

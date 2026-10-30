@@ -33,6 +33,7 @@ import { ValidationsTabComponent } from '../components/validations/validations-t
 import { QuotasTabComponent } from '../components/quotas/quotas-tab.component';
 import { SubscriptionTabComponent } from '../components/subscription/subscription-tab.component';
 import { OrgPurgeComponent } from '../components/purge/org-purge.component';
+import { OrgAuditTabComponent } from '../components/audit/org-audit-tab.component';
 import { OrganizationsApi } from '../data/organizations.api';
 import type { PlatformOrgDetail, PlatformOrgUpdate } from '../data/organizations.models';
 import { orgStateView } from '../data/platform-org-state';
@@ -86,6 +87,7 @@ const initialsOf = (name: string): string =>
     ValidationsTabComponent,
     IntegrationsTabComponent,
     OrgPurgeComponent,
+    OrgAuditTabComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -223,6 +225,8 @@ const initialsOf = (name: string): string =>
           <dba-validations-tab [org]="org" />
         } @else if (tab() === 'integrations') {
           <dba-integrations-tab [org]="org" />
+        } @else if (tab() === 'audit') {
+          <dba-org-audit-tab [org]="org" />
         } @else {
           <div class="od__panel">
             <dba-empty-state titleKey="orgd.soonTitle" leadKey="orgd.soonLead" />
@@ -390,7 +394,10 @@ export class OrganizationDetailComponent {
   );
 
   protected readonly tabs = computed<UnderlineTab[]>(() =>
-    TAB_KEYS.map((key) => ({ key, label: this.translate.instant('orgd.tab.' + key) as string })),
+    TAB_KEYS.filter((key) => key !== 'audit' || this.auth.canRead('platform')).map((key) => ({
+      key,
+      label: this.translate.instant('orgd.tab.' + key) as string,
+    })),
   );
 
   protected readonly meta = computed(() => {

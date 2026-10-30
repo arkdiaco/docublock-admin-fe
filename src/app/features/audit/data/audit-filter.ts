@@ -1,3 +1,4 @@
+import { emailHandle } from '../../../shared/domain/audit-link';
 import type { AuditActor, AuditFilters } from './audit.models';
 
 export type AuditFilterProblem =
@@ -26,7 +27,7 @@ const KEYS: Record<string, keyof AuditFilters | 'actor'> = {
   hasta: 'to',
 };
 
-const localPart = (email?: string): string => (email ?? '').split('@')[0];
+const localPart = emailHandle;
 
 export const actorHandle = (actor: AuditActor): string => localPart(actor.email) || actor.id;
 

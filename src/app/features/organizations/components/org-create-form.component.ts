@@ -16,6 +16,7 @@ import { firstValueFrom } from 'rxjs';
 import { LatestRequest } from '../../../shared/http/latest-request';
 import { FieldComponent } from '../../../shared/ui/field.component';
 import { ModalShellComponent } from '../../../shared/ui/modal-shell.component';
+import { AuthStore } from '../../../core/auth/auth.store';
 import { OrganizationsApi } from '../data/organizations.api';
 import type {
   CityOption,
@@ -138,25 +139,27 @@ const NONE = '';
           [error]="webError()"
           [(value)]="webSite"
         />
-        <div class="form__control">
-          <label class="form__label" for="org-create-reseller">{{
-            'orgReseller.field' | translate
-          }}</label>
-          <p-select
-            inputId="org-create-reseller"
-            [options]="resellerOptions()"
-            optionLabel="label"
-            optionValue="id"
-            [filter]="true"
-            [resetFilterOnHide]="false"
-            [emptyFilterMessage]="'orgReseller.empty' | translate"
-            [ngModel]="resellerId()"
-            (ngModelChange)="resellerId.set($event)"
-            (onFilter)="searchResellers($event)"
-            appendTo="body"
-            styleClass="form__select"
-          />
-        </div>
+        @if (canPickReseller) {
+          <div class="form__control">
+            <label class="form__label" for="org-create-reseller">{{
+              'orgReseller.field' | translate
+            }}</label>
+            <p-select
+              inputId="org-create-reseller"
+              [options]="resellerOptions()"
+              optionLabel="label"
+              optionValue="id"
+              [filter]="true"
+              [resetFilterOnHide]="false"
+              [emptyFilterMessage]="'orgReseller.empty' | translate"
+              [ngModel]="resellerId()"
+              (ngModelChange)="resellerId.set($event)"
+              (onFilter)="searchResellers($event)"
+              appendTo="body"
+              styleClass="form__select"
+            />
+          </div>
+        }
         <div class="form__switch">
           <p-toggleswitch
             inputId="org-create-test"
@@ -201,6 +204,7 @@ const NONE = '';
 })
 export class OrgCreateFormComponent implements OnInit {
   private readonly api = inject(OrganizationsApi);
+  protected readonly canPickReseller = inject(AuthStore).canManage('commercial');
   private readonly citySearch = new LatestRequest();
   private readonly resellerSearch = new LatestRequest();
 
@@ -272,7 +276,7 @@ export class OrgCreateFormComponent implements OnInit {
 
   ngOnInit(): void {
     void this.loadCountries();
-    void this.loadResellers('');
+    if (this.canPickReseller) void this.loadResellers('');
   }
 
   protected emailError(value: string): string {
@@ -307,7 +311,7 @@ export class OrgCreateFormComponent implements OnInit {
       address: this.address().trim(),
       email: this.email().trim(),
       ...(webSite && { webSite }),
-      ...(this.resellerId() && { resellerId: this.resellerId() }),
+      ...(this.canPickReseller && this.resellerId() && { resellerId: this.resellerId() }),
       isTest: this.isTest(),
       admin: { identification: this.adminIdentification().trim(), email: this.adminEmail().trim() },
       reason: this.reason().trim(),

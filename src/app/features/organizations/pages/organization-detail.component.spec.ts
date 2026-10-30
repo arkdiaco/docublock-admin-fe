@@ -72,13 +72,14 @@ describe('OrganizationDetailComponent', () => {
     return { fixture, host: fixture.nativeElement as HTMLElement };
   };
 
-  it('pinta la cabecera con nombre, estado y meta, y las nueve pestañas con Resumen activa', async () => {
+  it('pinta la cabecera con nombre, estado y meta, y ocho pestañas con Resumen activa (sin Auditoría si no lee plataforma)', async () => {
     const { host } = await montar();
     expect(host.querySelector('.rec__name')?.textContent?.trim()).toBe('Aeropuerto Sierra Norte');
     expect(host.querySelector('.rec__card .st--active')?.textContent).toContain('Activa');
     expect(host.querySelector('.rec__meta')?.textContent).toContain('900123456');
     expect(host.querySelector('.rec__meta')?.textContent).toContain('Corporativo');
-    expect(host.querySelectorAll('db-underline-tabs .tab').length).toBe(9);
+    expect(host.querySelectorAll('db-underline-tabs .tab').length).toBe(8);
+    expect(host.querySelector('db-underline-tabs')?.textContent).not.toContain('Auditoría');
     expect(host.querySelector('.tab--on')?.textContent).toContain('Resumen');
     expect(host.querySelector('dba-org-flag .flag--test')?.textContent).toContain('PRUEBA');
   });
@@ -236,6 +237,53 @@ describe('OrganizationDetailComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
     expect(host.querySelector('dba-org-purge dba-empty-state')?.textContent).toContain('Solo se purgan organizaciones marcadas como de prueba.');
+  });
+
+  it('con lectura de plataforma la pestaña Auditoría muestra la actividad de la organización y enlaza a la bitácora filtrada', async () => {
+    conPermisos(['platform:clients', 'platform:platform']);
+    const { fixture, host } = await montar();
+    const tabs = [...host.querySelectorAll<HTMLButtonElement>('db-underline-tabs .tab')];
+    expect(tabs.length).toBe(9);
+    tabs.find((t) => t.textContent?.includes('Auditoría'))!.click();
+    fixture.detectChanges();
+    const req = http.expectOne((r) => r.url === '/platform/audit');
+    expect(req.request.params.get('organizationId')).toBe('org-1');
+    expect(req.request.params.get('page')).toBe('1');
+    req.flush({
+      total: 21,
+      items: [
+        {
+          id: 'e1',
+          action: 'organization.suspend',
+          admin: { id: 'a1', name: 'Marta Vidal', email: 'marta@docublock.co' },
+          target: { type: 'organization', id: 'org-1' },
+          reason: 'Impago',
+          createdAt: '2026-10-29T15:00:00.000Z',
+        },
+        {
+          id: 'e2',
+          action: 'organization.update',
+          admin: { id: 'a2', email: 'lucia.paredes@docublock.co' },
+          target: { type: 'organization', id: 'org-1' },
+          createdAt: '2026-10-28T15:00:00.000Z',
+        },
+      ],
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const tab = host.querySelector('dba-org-audit-tab')!;
+    const eventos = [...tab.querySelectorAll('dba-audit-event')].map((e) => e.textContent?.replace(/\s+/g, ' ').trim());
+    expect(eventos[0]).toContain('Marta Vidal');
+    expect(eventos[0]).toContain('organization.suspend');
+    expect(eventos[0]).toContain('«Impago»');
+    expect(eventos[1]).toContain('lucia.paredes');
+    expect(tab.textContent).toContain('2 de 21 eventos');
+    expect(tab.querySelector('a')?.getAttribute('href')).toBe('/plataforma/auditoria?filtro=org:org-1');
+    expect(tab.textContent).not.toMatch(/orgAudit\./);
+
+    [...tab.querySelectorAll<HTMLButtonElement>('button[dba-button]')].find((b) => b.textContent?.includes('Cargar más'))!.click();
+    const mas = http.expectOne((r) => r.url === '/platform/audit' && r.params.get('page') === '2');
+    mas.flush({ total: 21, items: [] });
   });
 
   it('suspender pide motivo y escribir el NIT, y la ficha pasa a suspendida con Reactivar', async () => {
