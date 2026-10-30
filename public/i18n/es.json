@@ -229,7 +229,9 @@
       "textArea": "Texto largo",
       "textAreaLabel": "Resumen",
       "textAreaHint": "Se muestra en la tienda.",
-      "textAreaNote": "Área de texto con contador cuando hay límite; mismo borde y foco que el campo de una línea."
+      "textAreaNote": "Área de texto con contador cuando hay límite; mismo borde y foco que el campo de una línea.",
+      "orgPicker": "Selector de organización · búsqueda en el servidor",
+      "orgPickerNote": "Busca por nombre o NIT contra la plataforma y muestra 8 resultados. «Todas» limpia el filtro."
     },
     "pieces": "Tabla y ficha",
     "piecesNote": "La tabla de organizaciones y la cabecera de la ficha, con datos de muestra. Cabecera en mono, filas de 48 px, fila elegida en morado tenue con el identificador en morado 700; paginación con ventana. «Entrar como» no se construye: se abre la ficha."
@@ -295,8 +297,6 @@
     "loading": "Cargando la organización…",
     "errorTitle": "No se pudo cargar",
     "errorLead": "Inténtalo de nuevo.",
-    "soonTitle": "Esta sección llega pronto",
-    "soonLead": "La estamos construyendo en una fase siguiente.",
     "profile": "Perfil",
     "modules": "Módulos contratados",
     "planUsage": "Plan y consumo",
@@ -377,13 +377,15 @@
     "errorLead": "Revisa la conexión e inténtalo de nuevo.",
     "actions": "Requiere acción",
     "actionsEmpty": "Nada pendiente por ahora.",
-    "actionsLead": "Aquí aparecen las organizaciones con el cupo agotado o al 90 % y las suscripciones que vencen en 7 días.",
+    "actionsLead": "Aquí aparecen las organizaciones con el cupo agotado o al 90 %, las suscripciones que vencen en 7 días y los documentos con incidencias.",
     "action": {
       "quotaExhausted": "cupo de documentos agotado · {{used}} / {{limit}}",
       "quotaWarning": "cupo de documentos al {{pct}} % · {{used}} / {{limit}}",
       "expiring": "la suscripción vence en {{n}} días",
       "expiringTomorrow": "la suscripción vence mañana",
-      "expiringToday": "la suscripción vence hoy"
+      "expiringToday": "la suscripción vence hoy",
+      "docUnregistered": "{{n}} firmado(s) sin registro en blockchain",
+      "docStuck": "{{n}} con todas las firmas y sin completar"
     },
     "cta": {
       "review": "Revisar"
@@ -404,7 +406,10 @@
       "regenerate_bulk": "regeneró documentos en lote",
       "signer_retry_enable": "habilitó un reintento a un firmante",
       "signer_unblock": "desbloqueó a un firmante",
-      "version_detach": "separó una versión de un documento"
+      "version_detach": "separó una versión de un documento",
+      "cancel": "anuló un documento",
+      "regenerate": "regeneró el PDF de un documento",
+      "signer_resend": "reenvió la invitación a un firmante"
     },
     "invoices": {
       "create": "creó una factura",
@@ -1935,5 +1940,394 @@
       "PRODUCTO_DATOS_INVALIDOS": "El precio o los tramos no son válidos.",
       "generic": "No se pudo completar. Inténtalo de nuevo."
     }
+  },
+  "docs": {
+    "count": "{{total}} documentos",
+    "searchPlaceholder": "Buscar por nombre o código",
+    "regenerateBulk": "Regenerar en lote",
+    "view": {
+      "todos": "Todos",
+      "blockchain": "Sin registro blockchain",
+      "atascados": "Atascados"
+    },
+    "viewLead": {
+      "blockchain": "Firmados que no quedaron anclados en blockchain. Se registran desde su ficha.",
+      "atascados": "Todos sus firmantes firmaron, pero el documento no quedó completado. Se finalizan desde su ficha."
+    },
+    "issueCap": "Se muestran los {{shown}} más recientes de {{total}}.",
+    "f": {
+      "anyProgress": "Cualquier progreso",
+      "anyState": "Cualquier estado",
+      "anyChain": "Blockchain: todos",
+      "progress": "Progreso de firma",
+      "state": "Estado del documento",
+      "chain": "Registro blockchain"
+    },
+    "progress": {
+      "0": "Rechazado",
+      "1": "Pendiente",
+      "2": "En progreso",
+      "3": "Completado"
+    },
+    "state": {
+      "0": "Normal",
+      "1": "Archivado",
+      "4": "Anulado",
+      "5": "Vencido"
+    },
+    "chainF": {
+      "registered": "Registrados",
+      "pending": "Pendientes"
+    },
+    "chain": {
+      "registered": "Registrado",
+      "pending": "Pendiente"
+    },
+    "col": {
+      "doc": "Documento",
+      "org": "Organización",
+      "owner": "Responsable",
+      "signers": "Firmas",
+      "status": "Estado",
+      "chain": "Blockchain",
+      "created": "Creado"
+    },
+    "status": {
+      "cancelled": "Anulado",
+      "lapsed": "Vencido",
+      "archived": "Archivado",
+      "signed": "Completado",
+      "partial": "En progreso",
+      "rejected": "Rechazado",
+      "pending": "Pendiente"
+    },
+    "loading": "Cargando documentos…",
+    "errorTitle": "No pudimos cargar los documentos",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "emptyTitle": "Sin documentos",
+    "emptyLead": "Ningún documento coincide con estos filtros.",
+    "emptyIssue": {
+      "blockchain": "Todos los documentos firmados están anclados en blockchain.",
+      "atascados": "No hay documentos con todas las firmas sin completar."
+    },
+    "d": {
+      "loading": "Cargando el documento…",
+      "notFoundTitle": "Documento no encontrado",
+      "notFoundLead": "Puede que el enlace esté mal o que el documento ya no exista.",
+      "errorTitle": "No pudimos cargar el documento",
+      "tab": {
+        "summary": "Resumen",
+        "signers": "Firmantes",
+        "versions": "Versiones",
+        "trace": "Trazabilidad"
+      },
+      "general": "Datos generales",
+      "f": {
+        "code": "Código",
+        "org": "Organización",
+        "owner": "Responsable",
+        "created": "Creado",
+        "updated": "Última actualización",
+        "signers": "Firmas",
+        "versions": "Versiones",
+        "status": "Estado"
+      },
+      "chainTitle": "Blockchain",
+      "chainNone": "No aplica: el documento no está firmado.",
+      "chainPending": "Firmado y sin registro en blockchain.",
+      "ledger": "Red",
+      "block": "Bloque",
+      "commitment": "Compromiso",
+      "anchoredAt": "Anclado",
+      "openChain": "Ver en el explorador",
+      "certTitle": "Certificado",
+      "certSha": "Huella SHA-256",
+      "certIssued": "Emitido",
+      "certNone": "Sin certificado emitido.",
+      "signedOf": "{{signed}} de {{total}}",
+      "menu": "Acciones del documento"
+    },
+    "signer": {
+      "col": {
+        "order": "Turno",
+        "name": "Firmante",
+        "signed": "Firma",
+        "attempts": "Intentos",
+        "state": "Estado"
+      },
+      "signedOn": "Firmó {{date}}",
+      "unsigned": "Sin firmar",
+      "blocked": "Bloqueado",
+      "enabled": "Habilitado",
+      "inTurn": "En turno",
+      "evidence": "Evidencias",
+      "noEvidence": "Sin evidencias registradas.",
+      "menu": "Acciones del firmante",
+      "empty": "El documento no tiene firmantes.",
+      "unblock": "Desbloquear",
+      "resend": "Reenviar invitación",
+      "retry": {
+        "liveness": "Nuevo intento de prueba de vida",
+        "faceCompare": "Nuevo intento de comparación facial",
+        "faceMatch": "Nuevo intento de coincidencia facial",
+        "documentCheck": "Nuevo intento de revisión del documento"
+      }
+    },
+    "evidence": {
+      "liveness": "Prueba de vida",
+      "faceCompare": "Comparación facial",
+      "faceMatch": "Coincidencia facial",
+      "documentCheck": "Documento de identidad",
+      "selfie": "Selfie",
+      "documentFront": "Documento, frente",
+      "documentBack": "Documento, reverso",
+      "photoFront": "Foto, frente",
+      "photoBack": "Foto, reverso",
+      "signature": "Firma manuscrita",
+      "state": {
+        "passed": "Aprobada",
+        "failed": "No aprobada",
+        "waiting": "En curso"
+      },
+      "captured": "Capturada",
+      "unreadable": "ilegible"
+    },
+    "version": {
+      "col": {
+        "index": "Versión",
+        "created": "Fecha",
+        "state": "Estado",
+        "expires": "Vence la firma",
+        "checksum": "Checksum"
+      },
+      "current": "Actual",
+      "view": "Ver PDF",
+      "detach": "Separar",
+      "progress": {
+        "0": "Rechazada",
+        "1": "Pendiente de firma",
+        "2": "En progreso",
+        "3": "Finalizada"
+      },
+      "empty": "El documento no tiene versiones."
+    },
+    "traceUi": {
+      "empty": "Sin eventos registrados.",
+      "system": "Sistema",
+      "reason": "Razón: {{reason}}",
+      "count": "{{total}} eventos",
+      "errorTitle": "No pudimos cargar la trazabilidad"
+    },
+    "trace": {
+      "document_created": "Documento creado",
+      "notification_sent": "Invitación enviada",
+      "notification_resent": "Invitación reenviada",
+      "endorsement_link_generated": "Enlace de firma generado",
+      "endorsement_link_revoked": "Enlace de firma revocado",
+      "document_rejected": "Documento rechazado",
+      "document_archived": "Documento archivado",
+      "document_unarchived": "Documento desarchivado",
+      "document_cancelled": "Documento anulado",
+      "document_shared": "Documento compartido",
+      "document_version_added": "Versión agregada",
+      "document_version_commented": "Comentario en una versión",
+      "document_pdf_regenerated": "PDF regenerado",
+      "document_regenerated": "Documento regenerado",
+      "admin_document_finalized": "Finalizado por administración",
+      "admin_version_detached": "Versión separada por administración",
+      "admin_signer_unblocked": "Firmante desbloqueado por administración",
+      "admin_validation_retry_enabled": "Reintento de validación habilitado",
+      "signer_validation_retry_enabled": "Validación habilitada de nuevo",
+      "admin_blockchain_register_requested": "Registro en blockchain solicitado",
+      "admin_document_regenerated": "Regenerado por administración",
+      "document_resumed": "Documento reanudado",
+      "document_metadata_updated": "Datos del documento actualizados",
+      "document_owner_changed": "Responsable reasignado",
+      "document_lapsed": "Documento vencido",
+      "document_reactivated": "Documento reactivado",
+      "signing_session_started": "Sesión de firma iniciada",
+      "signing_handoff_created": "Firma pasada a otro dispositivo",
+      "signing_handoff_claimed": "Firma retomada en otro dispositivo",
+      "identity_verified": "Identidad verificada",
+      "identity_failed": "Verificación de identidad fallida",
+      "identity_blocked": "Firmante bloqueado por identidad",
+      "identity_registry_checked": "Consulta al padrón de identidad",
+      "identity_correction_requested": "Corrección de identidad solicitada",
+      "otp_sent": "Clave dinámica enviada",
+      "otp_failed": "Clave dinámica fallida",
+      "otp_verified": "Clave dinámica verificada",
+      "evidence_uploaded": "Evidencia cargada",
+      "evidence_provider_session_issued": "Sesión de validación emitida",
+      "evidence_liveness_checked": "Prueba de vida realizada",
+      "evidence_face_compared": "Rostro comparado",
+      "evidence_face_matched": "Rostro coincidente",
+      "evidence_fallback_to_document": "Validación con el documento de identidad",
+      "evidence_document_checked": "Documento de identidad revisado",
+      "evidence_completed": "Evidencia completa",
+      "attachment_uploaded": "Adjunto entregado",
+      "attachment_removed": "Adjunto retirado",
+      "attachment_rejected": "Adjunto pedido de nuevo",
+      "signer_form_completed": "Formulario del firmante diligenciado",
+      "approval_requested": "Aprobación solicitada",
+      "approval_decided": "Aprobación decidida",
+      "signer_unblocked": "Firmante desbloqueado",
+      "notification_reminder": "Recordatorio enviado",
+      "document_signed": "Firma registrada",
+      "document_signed_pending_approval": "Firmado, a la espera de aprobación",
+      "signature_auto_completed": "Firma automática aplicada",
+      "signature_block_propagated": "Firma propagada al block",
+      "signature_block_propagation_failed": "No se pudo propagar la firma al block",
+      "signature_flow_propagated": "Firma aplicada junto con otro documento del proceso",
+      "signature_flow_propagation_failed": "No se pudo aplicar la firma del proceso a este documento",
+      "flow_completed": "Proceso completado",
+      "one_touch_activated": "One Touch activado",
+      "one_touch_revoked": "One Touch revocado",
+      "blockchain_verified": "Registro en blockchain verificado",
+      "document_all_signed": "Firmado por todos",
+      "signature_sheet_generated": "Hoja de firmas generada",
+      "signature_attachments_merged": "Adjuntos anexados al documento final",
+      "document_registered": "Documento registrado",
+      "blockchain_queued": "Registro en blockchain encolado",
+      "blockchain_queue_failed": "Registro en blockchain pendiente: se reintenta automáticamente",
+      "blockchain_failed": "Registro en blockchain pendiente: se reintenta automáticamente",
+      "blockchain_unavailable": "Registro en blockchain pendiente",
+      "blockchain_retry_requested": "Reintento de registro en blockchain solicitado",
+      "document_close_requested": "Cierre solicitado por la organización",
+      "notification_completion": "Aviso de finalización enviado",
+      "document_close_failed": "No se pudo cerrar el documento",
+      "blockchain_registered": "Registrado en blockchain",
+      "plan_document_consumed": "Documento descontado del plan",
+      "plan_document_not_consumed": "Documento no descontado del plan",
+      "certificate_generated": "Certificado generado",
+      "certificate_failed": "No se pudo generar el certificado",
+      "report_validation_generated": "Informe de validación generado",
+      "report_validation_failed": "No se pudo generar el informe de validación",
+      "document_viewed": "Documento visto",
+      "endorsement_skipped": "Punto de aval que no aplica a este documento",
+      "endorsement_requested": "Aval solicitado",
+      "endorsement_granted": "Aval registrado",
+      "endorsement_completed": "Aval completo",
+      "endorsement_returned": "Documento devuelto en el aval",
+      "endorsement_reminded": "Recordatorio de aval enviado",
+      "endorsement_escalated": "Aval escalado por plazo vencido",
+      "endorsement_closed": "Aval cerrado sin decisión",
+      "document_bundle_downloaded": "Expediente descargado",
+      "document_viewed_post_signature": "Documento visto tras la firma",
+      "consent_accepted": "Consentimiento aceptado"
+    },
+    "act": {
+      "reasonLabel": "Razón (queda en la trazabilidad)",
+      "reasonPlaceholder": "Explica por qué",
+      "finalize": {
+        "label": "Finalizar",
+        "title": "Finalizar documento",
+        "message": "Se genera la hoja de firmas, se crea la versión firmada y se registra en blockchain.",
+        "done": "Documento finalizado"
+      },
+      "cancel": {
+        "label": "Anular",
+        "title": "Anular documento",
+        "message": "Los firmantes pendientes no podrán firmarlo y se avisa por correo a firmantes y responsable.",
+        "done": "Documento anulado"
+      },
+      "regenerate": {
+        "label": "Regenerar PDF",
+        "title": "Regenerar PDF",
+        "messageSigned": "Se rehace el PDF con la hoja de firmas, se vuelve a registrar en blockchain y se crea una versión nueva.",
+        "messagePending": "Se vuelve a generar el PDF desde la plantilla y se crea una versión nueva.",
+        "done": "PDF regenerado"
+      },
+      "register": {
+        "label": "Registrar en blockchain",
+        "title": "Registrar en blockchain",
+        "message": "Se envía el documento al registro. No se puede deshacer.",
+        "done": "Documento registrado en blockchain",
+        "queued": "El registro quedó en cola; se reintenta automáticamente"
+      },
+      "unblock": {
+        "title": "Desbloquear firmante",
+        "message": "Solo se quita el bloqueo de {{name}}: no se habilitan intentos ni se tocan las validaciones.",
+        "done": "Firmante desbloqueado"
+      },
+      "retry": {
+        "title": "Habilitar reintento",
+        "message": "La validación anterior de {{name}} queda como intento fallido y puede repetirla.",
+        "done": "Reintento habilitado ({{granted}} de {{max}})"
+      },
+      "resend": {
+        "title": "Reenviar invitación",
+        "message": "Se envía un enlace nuevo a {{name}}; el anterior deja de servir.",
+        "confirm": "Reenviar",
+        "done": "Invitación reenviada",
+        "notSent": "Se generó el enlace, pero no se pudo enviar el correo"
+      },
+      "detach": {
+        "title": "Separar versión {{index}}",
+        "message": "La versión no se borra: el documento pasa a apuntar a la versión anterior más reciente.",
+        "done": "Versión separada"
+      },
+      "pdfError": "No se pudo abrir el PDF"
+    },
+    "error": {
+      "YA_FINALIZADO": "El documento ya está finalizado.",
+      "DOCUMENTO_CANCELADO": "El documento está anulado.",
+      "FINALIZAR_REQUIERE_FIRMAS": "Faltan firmas: solo se finaliza cuando todos los firmantes firmaron.",
+      "VERSION_NO_ENCONTRADA": "La versión no pertenece al documento.",
+      "UNICA_VERSION": "No se puede separar la única versión del documento.",
+      "CONFLICTO_VERSION": "El documento cambió mientras se separaba la versión. Recarga e inténtalo de nuevo.",
+      "DOCUMENTO_NO_FIRMADO": "El documento debe estar firmado antes de registrarse.",
+      "DOCUMENTO_NO_ENCONTRADO": "El documento ya no existe.",
+      "FIRMANTE_NO_ENCONTRADO": "El firmante no está en el documento.",
+      "DOCUMENTO_NO_ACTIVO": "Solo se regeneran documentos activos.",
+      "FIRMAS_EN_CURSO": "Tiene firmas en curso: regenerarlo invalidaría las firmas ya puestas.",
+      "DOCUMENTO_SIN_CONTENIDO": "El documento no viene de una plantilla con contenido; no se puede regenerar.",
+      "DOCUMENTO_NO_PENDIENTE": "El documento ya no está pendiente de firma.",
+      "FIRMANTE_YA_FIRMO": "Ese firmante ya firmó.",
+      "FUERA_DE_TURNO": "Ese firmante no está en el turno actual.",
+      "AVAL_PENDIENTE": "El documento espera un aval antes de este turno.",
+      "FIRMANTE_INVALIDO": "El firmante no pertenece al documento.",
+      "TRANSICION_INVALIDA": "El documento no se puede anular en su estado actual.",
+      "generic": "No se pudo completar la acción. Inténtalo de nuevo."
+    },
+    "bulk": {
+      "lead": "Solo documentos firmados. Se rehace el PDF con la hoja de firmas y se vuelve a registrar en blockchain. No se avisa a los firmantes ni se descuenta del plan.",
+      "search": "Buscar firmados por nombre o código",
+      "searchHint": "Escribe al menos 2 caracteres.",
+      "add": "Agregar al lote",
+      "added": "En el lote",
+      "batch": "Lote",
+      "batchCount": "{{n}} de {{max}}",
+      "clear": "Vaciar",
+      "remove": "Quitar del lote",
+      "run": "Regenerar {{n}}",
+      "confirm": "Regenerar",
+      "confirmTitle": "Regenerar {{n}} documento(s)",
+      "confirmMessage": "Cada documento queda con una versión nueva y se vuelve a registrar en blockchain.",
+      "result": "Resultado",
+      "st": {
+        "ok": "Regenerado",
+        "skipped": "Omitido",
+        "error": "Con error"
+      },
+      "summary": "{{ok}} regenerado(s), {{failed}} con error, {{skipped}} omitido(s)",
+      "emptyBatch": "Agrega documentos desde la búsqueda.",
+      "noResults": "Sin documentos firmados que coincidan.",
+      "full": "El lote llegó al tope de {{max}} documentos.",
+      "failed": "No se pudo regenerar el lote",
+      "back": "Volver a Documentos",
+      "noAccessTitle": "Sin permiso para regenerar",
+      "noAccessLead": "La regeneración en lote necesita gestionar operaciones."
+    },
+    "orgTab": {
+      "title": "Documentos de la organización",
+      "lead": "La lista global de Documentos ya llega filtrada por esta organización.",
+      "open": "Ver documentos"
+    }
+  },
+  "orgPicker": {
+    "label": "Organización",
+    "any": "Todas las organizaciones",
+    "filter": "Nombre o NIT",
+    "empty": "Sin coincidencias"
   }
 }

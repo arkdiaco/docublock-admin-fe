@@ -9,11 +9,12 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom, type Observable } from 'rxjs';
 import { LatestRequest } from '../../../shared/http/latest-request';
 import { AuthStore } from '../../../core/auth/auth.store';
+import { sectionPath } from '../../../core/layout/console-nav';
 import { DialogService } from '../../../core/ui/dialog.service';
 import { NotificationService } from '../../../core/ui/notification.service';
 import { errorCodeOf } from '../../../shared/http/error-code';
@@ -74,6 +75,7 @@ const initialsOf = (name: string): string =>
   selector: 'dba-organization-detail',
   imports: [
     TranslatePipe,
+    RouterLink,
     RecordHeaderComponent,
     UnderlineTabsComponent,
     QuotaBarComponent,
@@ -236,7 +238,11 @@ const initialsOf = (name: string): string =>
           <dba-org-audit-tab [org]="org" />
         } @else {
           <div class="od__panel">
-            <dba-empty-state titleKey="orgd.soonTitle" leadKey="orgd.soonLead" />
+            <dba-empty-state titleKey="docs.orgTab.title" leadKey="docs.orgTab.lead" />
+            <a dba-button variant="secondary" [routerLink]="docsPath" [queryParams]="{ organizacion: org.id }">
+              <db-icon name="documents" [size]="15" />
+              {{ 'docs.orgTab.open' | translate }}
+            </a>
           </div>
         }
       </div>
@@ -387,6 +393,7 @@ export class OrganizationDetailComponent {
   private readonly translate = inject(TranslateService);
 
   protected readonly modules = MODULES;
+  protected readonly docsPath = sectionPath('documents');
   protected readonly loading = signal(true);
   protected readonly error = signal(false);
   protected readonly detail = signal<PlatformOrgDetail | null>(null);
@@ -404,6 +411,7 @@ export class OrganizationDetailComponent {
     TAB_KEYS.filter(
       (key) =>
         (key !== 'audit' || this.auth.canRead('platform')) &&
+        (key !== 'documents' || this.auth.canRead('operations')) &&
         (key !== 'marketplace' || this.auth.canRead('commercial')),
     ).map((key) => ({
       key,

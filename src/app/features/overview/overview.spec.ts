@@ -47,8 +47,8 @@ describe('Visión general: filas de «Requiere acción»', () => {
   ];
 
   it('solo pinta los grupos que ya tienen pantalla; el contador suma sus totales', () => {
-    const view = actionRowsOf(groups, '/clientes/organizaciones');
-    expect(view.total).toBe(1 + 2 + 9);
+    const view = actionRowsOf(groups, '/clientes/organizaciones', '/operacion/documentos');
+    expect(view.total).toBe(1 + 2 + 9 + 2);
     expect(view.rows.map((r) => r.key)).toEqual([
       'QUOTA_EXHAUSTED:a',
       'SUBSCRIPTION_EXPIRING:b',
@@ -59,7 +59,7 @@ describe('Visión general: filas de «Requiere acción»', () => {
   });
 
   it('cada fila lleva a la pestaña que resuelve: cupos o suscripción', () => {
-    const [exhausted, expiring, tomorrow, warning] = actionRowsOf(groups, '/o').rows;
+    const [exhausted, expiring, tomorrow, warning] = actionRowsOf(groups, '/o', '/d').rows;
     expect(exhausted).toMatchObject({
       tone: 'bad',
       reference: 'NIT-a',
@@ -87,6 +87,7 @@ describe('Visión general: filas de «Requiere acción»', () => {
     const [row] = actionRowsOf(
       [{ kind: 'QUOTA_WARNING', total: 1, items: [quota('z', 999, 1000)] }],
       '/o',
+      '/d',
     ).rows;
     expect(row.textParams['pct']).toBe(99);
   });
@@ -101,8 +102,42 @@ describe('Visión general: filas de «Requiere acción»', () => {
         },
       ],
       '/o',
+      '/d',
     ).rows;
     expect(row.textKey).toBe('overview.action.expiringToday');
+  });
+
+  it('las incidencias de documentos llevan a la pestaña de Documentos que las resuelve', () => {
+    const rows = actionRowsOf(
+      [
+        {
+          kind: 'DOCUMENT_ISSUE',
+          total: 2,
+          items: [
+            { issue: 'UNREGISTERED_BLOCKCHAIN', count: 12 },
+            { issue: 'STUCK_COMPLETED', count: 3 },
+          ],
+        },
+      ],
+      '/o',
+      '/d',
+    ).rows;
+    expect(rows).toEqual([
+      expect.objectContaining({
+        tone: 'warn',
+        subjectKey: 'nav.documents',
+        textKey: 'overview.action.docUnregistered',
+        textParams: { n: 12 },
+        link: ['/d'],
+        query: { vista: 'blockchain' },
+      }),
+      expect.objectContaining({
+        tone: 'bad',
+        textKey: 'overview.action.docStuck',
+        textParams: { n: 3 },
+        query: { vista: 'atascados' },
+      }),
+    ]);
   });
 });
 

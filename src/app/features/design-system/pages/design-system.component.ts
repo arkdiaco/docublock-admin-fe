@@ -6,6 +6,7 @@ import { ORG_STATES, quotaToneOf } from '../../../shared/domain/org-state';
 import { PLATFORM_ROLES } from '../../../shared/domain/platform-role';
 import { sectionPath } from '../../../core/layout/console-nav';
 import { ActionRowComponent } from '../../../shared/ui/action-row.component';
+import { OrgPickerComponent } from '../../../shared/ui/org-picker.component';
 import { AuditEventComponent } from '../../../shared/ui/audit-event.component';
 import { DataTableComponent, type DataColumn } from '../../../shared/ui/data-table.component';
 import { RecordHeaderComponent } from '../../../shared/ui/record-header.component';
@@ -168,6 +169,7 @@ const pctOf = (used: number, limit: number): string =>
     ModuleToggleComponent,
     AuditEventComponent,
     ActionRowComponent,
+    OrgPickerComponent,
     FilterPillsComponent,
     OrgStateComponent,
     RoleTagComponent,
@@ -353,6 +355,10 @@ const pctOf = (used: number, limit: number): string =>
               <dba-action-row tone="warn" reference="901234567" subject="Universidad del Litoral" [text]="'sys.c.ar3' | translate" [cta]="'sys.c.arCta' | translate" [link]="orgsPath" />
             </div>
             <p class="dba-body">{{ 'sys.c.actionRowNote' | translate }}</p>
+
+            <h3 class="dba-eyebrow card__eyebrow">{{ 'sys.c.orgPicker' | translate }}</h3>
+            <dba-org-picker [value]="pickedOrg()" (picked)="pickedOrg.set($event)" />
+            <p class="dba-body">{{ 'sys.c.orgPickerNote' | translate }}</p>
 
             <h3 class="dba-eyebrow card__eyebrow">{{ 'sys.c.filters' | translate }}</h3>
             <db-filter-pills [pills]="filters" [active]="filter()" (activeChange)="filter.set($event)" />
@@ -861,6 +867,7 @@ export class DesignSystemComponent {
   ]);
   protected readonly sampleText = signal('');
   protected readonly filter = signal('all');
+  protected readonly pickedOrg = signal<string | null>(null);
   protected readonly challengeResult = signal('');
   protected readonly selected = signal('ORG-0412');
   protected readonly page = signal(1);

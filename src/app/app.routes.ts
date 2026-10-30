@@ -30,6 +30,22 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
       loadComponent: () => import('./features/organizations/pages/organization-detail.component').then((m) => m.OrganizationDetailComponent),
     },
   ],
+  documents: [
+    {
+      path: '',
+      loadComponent: () => import('./features/documents/pages/documents.component').then((m) => m.DocumentsComponent),
+    },
+    {
+      path: 'regenerar',
+      loadComponent: () =>
+        import('./features/documents/pages/document-regenerate.component').then((m) => m.DocumentRegenerateComponent),
+    },
+    {
+      path: ':id',
+      loadComponent: () =>
+        import('./features/documents/pages/document-detail.component').then((m) => m.DocumentDetailComponent),
+    },
+  ],
   plans: [
     {
       path: '',

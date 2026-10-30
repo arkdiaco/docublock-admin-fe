@@ -229,7 +229,9 @@
       "textArea": "Long text",
       "textAreaLabel": "Summary",
       "textAreaHint": "Shown in the store.",
-      "textAreaNote": "Text area with a counter when there's a limit; same border and focus as the single-line field."
+      "textAreaNote": "Text area with a counter when there's a limit; same border and focus as the single-line field.",
+      "orgPicker": "Organization picker · server search",
+      "orgPickerNote": "Searches the platform by name or tax ID and shows 8 results. «All» clears the filter."
     },
     "pieces": "Table and record",
     "piecesNote": "The organizations table and the record header, with sample data. Mono header, 48 px rows, the selected row in soft purple with its identifier in purple 700; windowed pagination. «Impersonate» is not built: the record opens instead."
@@ -295,8 +297,6 @@
     "loading": "Loading organization…",
     "errorTitle": "Couldn't load",
     "errorLead": "Try again.",
-    "soonTitle": "This section is coming soon",
-    "soonLead": "We're building it in a later phase.",
     "profile": "Profile",
     "modules": "Contracted modules",
     "planUsage": "Plan and usage",
@@ -377,13 +377,15 @@
     "errorLead": "Check your connection and try again.",
     "actions": "Needs action",
     "actionsEmpty": "Nothing pending for now.",
-    "actionsLead": "Organizations with their quota exhausted or at 90 %, and subscriptions ending within 7 days, show up here.",
+    "actionsLead": "Organizations with their quota used up or at 90 %, subscriptions expiring within 7 days and documents with issues show up here.",
     "action": {
       "quotaExhausted": "document quota exhausted · {{used}} / {{limit}}",
       "quotaWarning": "document quota at {{pct}} % · {{used}} / {{limit}}",
       "expiring": "the subscription ends in {{n}} days",
       "expiringTomorrow": "the subscription ends tomorrow",
-      "expiringToday": "the subscription ends today"
+      "expiringToday": "the subscription ends today",
+      "docUnregistered": "{{n}} signed without a blockchain record",
+      "docStuck": "{{n}} with every signature but not completed"
     },
     "cta": {
       "review": "Review"
@@ -404,7 +406,10 @@
       "regenerate_bulk": "regenerated documents in bulk",
       "signer_retry_enable": "enabled a retry for a signer",
       "signer_unblock": "unblocked a signer",
-      "version_detach": "detached a document version"
+      "version_detach": "detached a document version",
+      "cancel": "cancelled a document",
+      "regenerate": "regenerated a document's PDF",
+      "signer_resend": "resent the invitation to a signer"
     },
     "invoices": {
       "create": "created an invoice",
@@ -1935,5 +1940,394 @@
       "PRODUCTO_DATOS_INVALIDOS": "The price or tiers aren't valid.",
       "generic": "Couldn't complete that. Try again."
     }
+  },
+  "docs": {
+    "count": "{{total}} documents",
+    "searchPlaceholder": "Search by name or code",
+    "regenerateBulk": "Bulk regenerate",
+    "view": {
+      "todos": "All",
+      "blockchain": "Not on blockchain",
+      "atascados": "Stuck"
+    },
+    "viewLead": {
+      "blockchain": "Signed documents that were not anchored on blockchain. Register them from their record.",
+      "atascados": "Every signer signed, but the document was not completed. Finalize them from their record."
+    },
+    "issueCap": "Showing the {{shown}} most recent of {{total}}.",
+    "f": {
+      "anyProgress": "Any progress",
+      "anyState": "Any state",
+      "anyChain": "Blockchain: all",
+      "progress": "Signature progress",
+      "state": "Document state",
+      "chain": "Blockchain record"
+    },
+    "progress": {
+      "0": "Rejected",
+      "1": "Pending",
+      "2": "In progress",
+      "3": "Completed"
+    },
+    "state": {
+      "0": "Normal",
+      "1": "Archived",
+      "4": "Cancelled",
+      "5": "Lapsed"
+    },
+    "chainF": {
+      "registered": "Registered",
+      "pending": "Pending"
+    },
+    "chain": {
+      "registered": "Registered",
+      "pending": "Pending"
+    },
+    "col": {
+      "doc": "Document",
+      "org": "Organization",
+      "owner": "Owner",
+      "signers": "Signatures",
+      "status": "Status",
+      "chain": "Blockchain",
+      "created": "Created"
+    },
+    "status": {
+      "cancelled": "Cancelled",
+      "lapsed": "Lapsed",
+      "archived": "Archived",
+      "signed": "Completed",
+      "partial": "In progress",
+      "rejected": "Rejected",
+      "pending": "Pending"
+    },
+    "loading": "Loading documents…",
+    "errorTitle": "We couldn't load the documents",
+    "errorLead": "Check your connection and try again.",
+    "emptyTitle": "No documents",
+    "emptyLead": "No document matches these filters.",
+    "emptyIssue": {
+      "blockchain": "Every signed document is anchored on blockchain.",
+      "atascados": "No documents with every signature but not completed."
+    },
+    "d": {
+      "loading": "Loading the document…",
+      "notFoundTitle": "Document not found",
+      "notFoundLead": "The link may be wrong or the document no longer exists.",
+      "errorTitle": "We couldn't load the document",
+      "tab": {
+        "summary": "Summary",
+        "signers": "Signers",
+        "versions": "Versions",
+        "trace": "Traceability"
+      },
+      "general": "General",
+      "f": {
+        "code": "Code",
+        "org": "Organization",
+        "owner": "Owner",
+        "created": "Created",
+        "updated": "Last updated",
+        "signers": "Signatures",
+        "versions": "Versions",
+        "status": "Status"
+      },
+      "chainTitle": "Blockchain",
+      "chainNone": "Not applicable: the document is not signed.",
+      "chainPending": "Signed and not registered on blockchain.",
+      "ledger": "Network",
+      "block": "Block",
+      "commitment": "Commitment",
+      "anchoredAt": "Anchored",
+      "openChain": "Open in explorer",
+      "certTitle": "Certificate",
+      "certSha": "SHA-256 fingerprint",
+      "certIssued": "Issued",
+      "certNone": "No certificate issued.",
+      "signedOf": "{{signed}} of {{total}}",
+      "menu": "Document actions"
+    },
+    "signer": {
+      "col": {
+        "order": "Turn",
+        "name": "Signer",
+        "signed": "Signature",
+        "attempts": "Attempts",
+        "state": "State"
+      },
+      "signedOn": "Signed {{date}}",
+      "unsigned": "Not signed",
+      "blocked": "Blocked",
+      "enabled": "Enabled",
+      "inTurn": "In turn",
+      "evidence": "Evidence",
+      "noEvidence": "No evidence recorded.",
+      "menu": "Signer actions",
+      "empty": "The document has no signers.",
+      "unblock": "Unblock",
+      "resend": "Resend invitation",
+      "retry": {
+        "liveness": "New liveness attempt",
+        "faceCompare": "New face comparison attempt",
+        "faceMatch": "New face match attempt",
+        "documentCheck": "New ID document check attempt"
+      }
+    },
+    "evidence": {
+      "liveness": "Liveness",
+      "faceCompare": "Face comparison",
+      "faceMatch": "Face match",
+      "documentCheck": "ID document",
+      "selfie": "Selfie",
+      "documentFront": "ID, front",
+      "documentBack": "ID, back",
+      "photoFront": "Photo, front",
+      "photoBack": "Photo, back",
+      "signature": "Handwritten signature",
+      "state": {
+        "passed": "Passed",
+        "failed": "Failed",
+        "waiting": "In progress"
+      },
+      "captured": "Captured",
+      "unreadable": "unreadable"
+    },
+    "version": {
+      "col": {
+        "index": "Version",
+        "created": "Date",
+        "state": "State",
+        "expires": "Signing deadline",
+        "checksum": "Checksum"
+      },
+      "current": "Current",
+      "view": "View PDF",
+      "detach": "Detach",
+      "progress": {
+        "0": "Rejected",
+        "1": "Pending signature",
+        "2": "In progress",
+        "3": "Finished"
+      },
+      "empty": "The document has no versions."
+    },
+    "traceUi": {
+      "empty": "No events recorded.",
+      "system": "System",
+      "reason": "Reason: {{reason}}",
+      "count": "{{total}} events",
+      "errorTitle": "We couldn't load the traceability"
+    },
+    "trace": {
+      "document_created": "Document created",
+      "notification_sent": "Invitation sent",
+      "notification_resent": "Invitation resent",
+      "endorsement_link_generated": "Signing link generated",
+      "endorsement_link_revoked": "Signing link revoked",
+      "document_rejected": "Document rejected",
+      "document_archived": "Document archived",
+      "document_unarchived": "Document unarchived",
+      "document_cancelled": "Document cancelled",
+      "document_shared": "Document shared",
+      "document_version_added": "Version added",
+      "document_version_commented": "Version commented",
+      "document_pdf_regenerated": "PDF regenerated",
+      "document_regenerated": "Document regenerated",
+      "admin_document_finalized": "Finalized by admin",
+      "admin_version_detached": "Version detached by admin",
+      "admin_signer_unblocked": "Signer unblocked by admin",
+      "admin_validation_retry_enabled": "Validation retry enabled",
+      "signer_validation_retry_enabled": "Validation re-enabled",
+      "admin_blockchain_register_requested": "Blockchain register requested",
+      "admin_document_regenerated": "Regenerated by admin",
+      "document_resumed": "Document resumed",
+      "document_metadata_updated": "Document data updated",
+      "document_owner_changed": "Owner reassigned",
+      "document_lapsed": "Document lapsed",
+      "document_reactivated": "Document reactivated",
+      "signing_session_started": "Signing session started",
+      "signing_handoff_created": "Signing handed off to another device",
+      "signing_handoff_claimed": "Signing resumed on another device",
+      "identity_verified": "Identity verified",
+      "identity_failed": "Identity check failed",
+      "identity_blocked": "Signer blocked by identity",
+      "identity_registry_checked": "Identity registry check",
+      "identity_correction_requested": "Identity correction requested",
+      "otp_sent": "One-time code sent",
+      "otp_failed": "One-time code failed",
+      "otp_verified": "One-time code verified",
+      "evidence_uploaded": "Evidence uploaded",
+      "evidence_provider_session_issued": "Validation session issued",
+      "evidence_liveness_checked": "Liveness checked",
+      "evidence_face_compared": "Face compared",
+      "evidence_face_matched": "Face matched",
+      "evidence_fallback_to_document": "Validated against the ID document",
+      "evidence_document_checked": "ID document checked",
+      "evidence_completed": "Evidence complete",
+      "attachment_uploaded": "Attachment delivered",
+      "attachment_removed": "Attachment removed",
+      "attachment_rejected": "Attachment requested again",
+      "signer_form_completed": "Signer form completed",
+      "approval_requested": "Approval requested",
+      "approval_decided": "Approval decided",
+      "signer_unblocked": "Signer unblocked",
+      "notification_reminder": "Reminder sent",
+      "document_signed": "Signature recorded",
+      "document_signed_pending_approval": "Signed, awaiting approval",
+      "signature_auto_completed": "Automatic signature applied",
+      "signature_block_propagated": "Signature propagated to the block",
+      "signature_block_propagation_failed": "The signature could not be propagated to the block",
+      "signature_flow_propagated": "Signature applied together with another document of the process",
+      "signature_flow_propagation_failed": "The process signature could not be applied to this document",
+      "flow_completed": "Process completed",
+      "one_touch_activated": "One Touch enabled",
+      "one_touch_revoked": "One Touch revoked",
+      "blockchain_verified": "Blockchain record verified",
+      "document_all_signed": "Signed by everyone",
+      "signature_sheet_generated": "Signature sheet generated",
+      "signature_attachments_merged": "Attachments appended to the final document",
+      "document_registered": "Document registered",
+      "blockchain_queued": "Blockchain registration queued",
+      "blockchain_queue_failed": "Blockchain registration pending: it is retried automatically",
+      "blockchain_failed": "Blockchain registration pending: it is retried automatically",
+      "blockchain_unavailable": "Blockchain registration pending",
+      "blockchain_retry_requested": "Blockchain registration retry requested",
+      "document_close_requested": "Close requested by the organization",
+      "notification_completion": "Completion notice sent",
+      "document_close_failed": "The document could not be closed",
+      "blockchain_registered": "Registered on blockchain",
+      "plan_document_consumed": "Document counted against the plan",
+      "plan_document_not_consumed": "Document not counted against the plan",
+      "certificate_generated": "Certificate generated",
+      "certificate_failed": "Certificate could not be generated",
+      "report_validation_generated": "Validation report generated",
+      "report_validation_failed": "Validation report could not be generated",
+      "document_viewed": "Document viewed",
+      "endorsement_skipped": "Endorsement point that does not apply to this document",
+      "endorsement_requested": "Endorsement requested",
+      "endorsement_granted": "Endorsement recorded",
+      "endorsement_completed": "Endorsement complete",
+      "endorsement_returned": "Document returned at endorsement",
+      "endorsement_reminded": "Endorsement reminder sent",
+      "endorsement_escalated": "Endorsement escalated after its deadline",
+      "endorsement_closed": "Endorsement closed without a decision",
+      "document_bundle_downloaded": "Case file downloaded",
+      "document_viewed_post_signature": "Document viewed after signing",
+      "consent_accepted": "Consent accepted"
+    },
+    "act": {
+      "reasonLabel": "Reason (kept in the traceability)",
+      "reasonPlaceholder": "Explain why",
+      "finalize": {
+        "label": "Finalize",
+        "title": "Finalize document",
+        "message": "The signature sheet is generated, the signed version is created and it is registered on blockchain.",
+        "done": "Document finalized"
+      },
+      "cancel": {
+        "label": "Cancel",
+        "title": "Cancel document",
+        "message": "Pending signers won't be able to sign and signers and owner are notified by email.",
+        "done": "Document cancelled"
+      },
+      "regenerate": {
+        "label": "Regenerate PDF",
+        "title": "Regenerate PDF",
+        "messageSigned": "The PDF is rebuilt with the signature sheet, registered on blockchain again and a new version is created.",
+        "messagePending": "The PDF is generated again from the template and a new version is created.",
+        "done": "PDF regenerated"
+      },
+      "register": {
+        "label": "Register on blockchain",
+        "title": "Register on blockchain",
+        "message": "The document is sent for registration. This can't be undone.",
+        "done": "Document registered on blockchain",
+        "queued": "The registration was queued; it retries automatically"
+      },
+      "unblock": {
+        "title": "Unblock signer",
+        "message": "Only the block on {{name}} is lifted: no attempts are enabled and validations stay as they are.",
+        "done": "Signer unblocked"
+      },
+      "retry": {
+        "title": "Enable retry",
+        "message": "The previous validation of {{name}} is kept as a failed attempt and can be repeated.",
+        "done": "Retry enabled ({{granted}} of {{max}})"
+      },
+      "resend": {
+        "title": "Resend invitation",
+        "message": "A new link is sent to {{name}}; the previous one stops working.",
+        "confirm": "Resend",
+        "done": "Invitation resent",
+        "notSent": "The link was issued, but the email could not be sent"
+      },
+      "detach": {
+        "title": "Detach version {{index}}",
+        "message": "The version is not deleted: the document points to the most recent previous version.",
+        "done": "Version detached"
+      },
+      "pdfError": "The PDF could not be opened"
+    },
+    "error": {
+      "YA_FINALIZADO": "The document is already finalized.",
+      "DOCUMENTO_CANCELADO": "The document is cancelled.",
+      "FINALIZAR_REQUIERE_FIRMAS": "Signatures are missing: it is only finalized once every signer has signed.",
+      "VERSION_NO_ENCONTRADA": "The version does not belong to the document.",
+      "UNICA_VERSION": "The only version of the document can't be detached.",
+      "CONFLICTO_VERSION": "The document changed while the version was being detached. Reload and try again.",
+      "DOCUMENTO_NO_FIRMADO": "The document must be signed before it is registered.",
+      "DOCUMENTO_NO_ENCONTRADO": "The document no longer exists.",
+      "FIRMANTE_NO_ENCONTRADO": "The signer is not in the document.",
+      "DOCUMENTO_NO_ACTIVO": "Only active documents can be regenerated.",
+      "FIRMAS_EN_CURSO": "Signatures are in progress: regenerating would invalidate the ones already made.",
+      "DOCUMENTO_SIN_CONTENIDO": "The document doesn't come from a template with content; it can't be regenerated.",
+      "DOCUMENTO_NO_PENDIENTE": "The document is no longer pending signature.",
+      "FIRMANTE_YA_FIRMO": "That signer already signed.",
+      "FUERA_DE_TURNO": "That signer is not in the current turn.",
+      "AVAL_PENDIENTE": "The document is waiting for an endorsement before this turn.",
+      "FIRMANTE_INVALIDO": "The signer does not belong to the document.",
+      "TRANSICION_INVALIDA": "The document can't be cancelled in its current state.",
+      "generic": "The action couldn't be completed. Try again."
+    },
+    "bulk": {
+      "lead": "Signed documents only. The PDF is rebuilt with the signature sheet and registered on blockchain again. Signers are not notified and nothing is counted against the plan.",
+      "search": "Search signed documents by name or code",
+      "searchHint": "Type at least 2 characters.",
+      "add": "Add to batch",
+      "added": "In batch",
+      "batch": "Batch",
+      "batchCount": "{{n}} of {{max}}",
+      "clear": "Clear",
+      "remove": "Remove from batch",
+      "run": "Regenerate {{n}}",
+      "confirm": "Regenerate",
+      "confirmTitle": "Regenerate {{n}} document(s)",
+      "confirmMessage": "Each document gets a new version and is registered on blockchain again.",
+      "result": "Result",
+      "st": {
+        "ok": "Regenerated",
+        "skipped": "Skipped",
+        "error": "Failed"
+      },
+      "summary": "{{ok}} regenerated, {{failed}} failed, {{skipped}} skipped",
+      "emptyBatch": "Add documents from the search.",
+      "noResults": "No signed documents match.",
+      "full": "The batch reached the limit of {{max}} documents.",
+      "failed": "The batch could not be regenerated",
+      "back": "Back to Documents",
+      "noAccessTitle": "No permission to regenerate",
+      "noAccessLead": "Bulk regeneration requires managing operations."
+    },
+    "orgTab": {
+      "title": "Organization documents",
+      "lead": "The global Documents list opens filtered by this organization.",
+      "open": "View documents"
+    }
+  },
+  "orgPicker": {
+    "label": "Organization",
+    "any": "All organizations",
+    "filter": "Name or tax ID",
+    "empty": "No matches"
   }
 }

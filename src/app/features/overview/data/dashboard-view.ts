@@ -6,6 +6,7 @@ export const SHOWN_KINDS: readonly DashboardActionKind[] = [
   'QUOTA_EXHAUSTED',
   'SUBSCRIPTION_EXPIRING',
   'QUOTA_WARNING',
+  'DOCUMENT_ISSUE',
 ];
 export const ACTION_LIMIT = 5;
 
@@ -14,6 +15,7 @@ export interface ActionRowView {
   tone: ActionRowTone;
   reference: string;
   subject: string;
+  subjectKey?: string;
   textKey: string;
   textParams: Record<string, string | number>;
   ctaKey: string;
@@ -29,7 +31,12 @@ const expiringKey = (days: number): string => {
   return 'overview.action.expiring';
 };
 
-const rowsOf = (group: DashboardActionGroup, orgsPath: string): ActionRowView[] => {
+const ISSUE_ROWS = {
+  UNREGISTERED_BLOCKCHAIN: { tone: 'warn', textKey: 'overview.action.docUnregistered', view: 'blockchain' },
+  STUCK_COMPLETED: { tone: 'bad', textKey: 'overview.action.docStuck', view: 'atascados' },
+} as const;
+
+const rowsOf = (group: DashboardActionGroup, orgsPath: string, docsPath: string): ActionRowView[] => {
   switch (group.kind) {
     case 'QUOTA_EXHAUSTED':
     case 'QUOTA_WARNING':
@@ -59,6 +66,19 @@ const rowsOf = (group: DashboardActionGroup, orgsPath: string): ActionRowView[] 
         link: [orgsPath, item.organization.id],
         query: { tab: 'subscription' },
       }));
+    case 'DOCUMENT_ISSUE':
+      return group.items.map((item) => ({
+        key: `${group.kind}:${item.issue}`,
+        tone: ISSUE_ROWS[item.issue].tone,
+        reference: '',
+        subject: '',
+        subjectKey: 'nav.documents',
+        textKey: ISSUE_ROWS[item.issue].textKey,
+        textParams: { n: item.count },
+        ctaKey: 'overview.cta.review',
+        link: [docsPath],
+        query: { vista: ISSUE_ROWS[item.issue].view },
+      }));
     default:
       return [];
   }
@@ -67,11 +87,12 @@ const rowsOf = (group: DashboardActionGroup, orgsPath: string): ActionRowView[] 
 export const actionRowsOf = (
   groups: readonly DashboardActionGroup[],
   orgsPath: string,
+  docsPath: string,
 ): { total: number; rows: ActionRowView[] } => {
   const shown = groups.filter((group) => SHOWN_KINDS.includes(group.kind));
   return {
     total: shown.reduce((sum, group) => sum + group.total, 0),
-    rows: shown.flatMap((group) => rowsOf(group, orgsPath)).slice(0, ACTION_LIMIT),
+    rows: shown.flatMap((group) => rowsOf(group, orgsPath, docsPath)).slice(0, ACTION_LIMIT),
   };
 };
 

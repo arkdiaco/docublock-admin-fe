@@ -1,8 +1,11 @@
 export const ACTIVITY_ACTIONS = [
   'audit.export',
   'documents.blockchain_register',
+  'documents.cancel',
   'documents.finalize',
+  'documents.regenerate',
   'documents.regenerate_bulk',
+  'documents.signer_resend',
   'documents.signer_retry_enable',
   'documents.signer_unblock',
   'documents.version_detach',

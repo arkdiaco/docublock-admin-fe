@@ -118,7 +118,7 @@ interface EventView {
                   <dba-action-row
                     [tone]="row.tone"
                     [reference]="row.reference"
-                    [subject]="row.subject"
+                    [subject]="row.subjectKey ? (row.subjectKey | translate) : row.subject"
                     [text]="row.textKey | translate: row.textParams"
                     [cta]="row.ctaKey | translate"
                     [link]="row.link"
@@ -282,6 +282,7 @@ export class OverviewComponent {
   protected readonly greetingKey = greetingKeyOf(new Date().getHours());
   protected readonly auditPath = sectionPath('audit');
   protected readonly orgsPath = sectionPath('organizations');
+  private readonly docsPath = sectionPath('documents');
   protected readonly canSeeAudit = computed(() =>
     canSeeSection(this.auth.platformPermissions(), 'audit'),
   );
@@ -347,7 +348,7 @@ export class OverviewComponent {
   });
 
   protected readonly actions = computed(() =>
-    actionRowsOf(this.data()?.actions ?? [], this.orgsPath),
+    actionRowsOf(this.data()?.actions ?? [], this.orgsPath, this.docsPath),
   );
 
   protected readonly events = computed<EventView[] | null>(() => {

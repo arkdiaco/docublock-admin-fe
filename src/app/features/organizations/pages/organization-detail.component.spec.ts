@@ -72,14 +72,15 @@ describe('OrganizationDetailComponent', () => {
     return { fixture, host: fixture.nativeElement as HTMLElement };
   };
 
-  it('pinta la cabecera con nombre, estado y meta, y siete pestañas con Resumen activa (sin Auditoría ni Marketplace si no lee plataforma ni comercial)', async () => {
+  it('pinta la cabecera con nombre, estado y meta, y seis pestañas con Resumen activa (sin Auditoría, Marketplace ni Documentos si no lee plataforma, comercial ni operación)', async () => {
     const { host } = await montar();
     expect(host.querySelector('.rec__name')?.textContent?.trim()).toBe('Aeropuerto Sierra Norte');
     expect(host.querySelector('.rec__card .st--active')?.textContent).toContain('Activa');
     expect(host.querySelector('.rec__meta')?.textContent).toContain('900123456');
     expect(host.querySelector('.rec__meta')?.textContent).toContain('Corporativo');
-    expect(host.querySelectorAll('db-underline-tabs .tab').length).toBe(7);
+    expect(host.querySelectorAll('db-underline-tabs .tab').length).toBe(6);
     expect(host.querySelector('db-underline-tabs')?.textContent).not.toContain('Auditoría');
+    expect(host.querySelector('db-underline-tabs')?.textContent).not.toContain('Documentos');
     expect(host.querySelector('db-underline-tabs')?.textContent).not.toContain('Marketplace');
     expect(host.querySelector('.tab--on')?.textContent).toContain('Resumen');
     expect(host.querySelector('dba-org-flag .flag--test')?.textContent).toContain('PRUEBA');
@@ -95,11 +96,14 @@ describe('OrganizationDetailComponent', () => {
     expect(host.textContent).not.toMatch(/\b(orgd|org|nav|common)\.[a-zA-Z]/);
   });
 
-  it('cambiar de pestaña muestra el placeholder honesto', async () => {
+  it('con lectura de operación, la pestaña Documentos lleva a la lista global filtrada por la organización', async () => {
+    conPermisos(['platform:clients', 'platform:operations']);
     const { fixture, host } = await montar();
-    host.querySelectorAll<HTMLButtonElement>('db-underline-tabs .tab')[6].click();
+    const tab = [...host.querySelectorAll<HTMLButtonElement>('db-underline-tabs .tab')].find((t) => t.textContent?.includes('Documentos'))!;
+    tab.click();
     fixture.detectChanges();
-    expect(host.querySelector('dba-empty-state')?.textContent).toContain('llega pronto');
+    expect(host.querySelector('dba-empty-state')?.textContent).toContain('Documentos de la organización');
+    expect(host.querySelector('a[dba-button]')?.getAttribute('href')).toBe('/operacion/documentos?organizacion=org-1');
     expect(host.querySelector('.od__cols')).toBeNull();
   });
 
@@ -258,7 +262,7 @@ describe('OrganizationDetailComponent', () => {
     conPermisos(['platform:clients', 'platform:platform']);
     const { fixture, host } = await montar();
     const tabs = [...host.querySelectorAll<HTMLButtonElement>('db-underline-tabs .tab')];
-    expect(tabs.length).toBe(8);
+    expect(tabs.length).toBe(7);
     tabs.find((t) => t.textContent?.includes('Auditoría'))!.click();
     fixture.detectChanges();
     const req = http.expectOne((r) => r.url === '/platform/audit');
