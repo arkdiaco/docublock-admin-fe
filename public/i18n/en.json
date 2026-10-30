@@ -1196,6 +1196,31 @@
       "document_traceability": "Document traceability",
       "consumption_entries": "Consumption entries",
       "consumption_counters": "Plan counters"
+    },
+    "continue": "Continue to purge",
+    "confirm": "Purge now",
+    "confirmLead": "You are about to purge {{total}} records from {{name}}. This can't be undone.",
+    "f": {
+      "nit": "Organization tax ID",
+      "phrase": "Confirmation phrase",
+      "reason": "Reason"
+    },
+    "reasonPlaceholder": "Why this organization is being purged",
+    "phraseHint": "Type exactly «{{phrase}}».",
+    "nitMismatch": "Doesn't match the organization's tax ID.",
+    "phraseMismatch": "Doesn't match the requested phrase.",
+    "running": "Purging in batches… you can close this: the purge keeps running in the background.",
+    "failedTitle": "The purge didn't finish.",
+    "failedLead": "What was already deleted doesn't come back. Review the preview and launch it again to finish.",
+    "doneLead": "The purge finished. This is what was deleted or adjusted; the organization, its configuration and its plan are still there.",
+    "doneBand": "Purged records",
+    "done": "Purge finished: {{total}} records.",
+    "startError": {
+      "CONFIRMACION_INVALIDA": "The tax ID or the phrase don't match.",
+      "PURGA_VISTA_VENCIDA": "The data changed since the preview. Review it again before purging.",
+      "PURGA_EN_CURSO": "A purge is already running for this organization.",
+      "PURGA_SOLO_PRUEBAS": "Only organizations flagged as test can be purged.",
+      "generic": "The purge couldn't be launched. Try again."
     }
   }
 }

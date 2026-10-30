@@ -32,7 +32,7 @@ import { IntegrationsTabComponent } from '../components/integrations/integration
 import { ValidationsTabComponent } from '../components/validations/validations-tab.component';
 import { QuotasTabComponent } from '../components/quotas/quotas-tab.component';
 import { SubscriptionTabComponent } from '../components/subscription/subscription-tab.component';
-import { OrgPurgePreviewComponent } from '../components/purge/org-purge-preview.component';
+import { OrgPurgeComponent } from '../components/purge/org-purge.component';
 import { OrganizationsApi } from '../data/organizations.api';
 import type { PlatformOrgDetail, PlatformOrgUpdate } from '../data/organizations.models';
 import { orgStateView } from '../data/platform-org-state';
@@ -85,7 +85,7 @@ const initialsOf = (name: string): string =>
     MembersTabComponent,
     ValidationsTabComponent,
     IntegrationsTabComponent,
-    OrgPurgePreviewComponent,
+    OrgPurgeComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -241,7 +241,7 @@ const initialsOf = (name: string): string =>
       }
 
       @if (purging()) {
-        <dba-org-purge-preview [org]="org" (dismissed)="purging.set(false)" />
+        <dba-org-purge [org]="org" (purged)="refresh()" (dismissed)="purging.set(false)" />
       }
 
       @if (editing()) {

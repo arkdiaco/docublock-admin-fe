@@ -1196,6 +1196,31 @@
       "document_traceability": "Trazabilidad de documentos",
       "consumption_entries": "Asientos de consumo",
       "consumption_counters": "Contadores del plan"
+    },
+    "continue": "Continuar a purgar",
+    "confirm": "Purgar ahora",
+    "confirmLead": "Vas a purgar {{total}} registros de {{name}}. No se puede deshacer.",
+    "f": {
+      "nit": "NIT de la organización",
+      "phrase": "Frase de confirmación",
+      "reason": "Motivo"
+    },
+    "reasonPlaceholder": "Por qué se purga esta organización",
+    "phraseHint": "Escribe exactamente «{{phrase}}».",
+    "nitMismatch": "No coincide con el NIT de la organización.",
+    "phraseMismatch": "No coincide con la frase pedida.",
+    "running": "Purgando por lotes… puedes cerrar: la purga sigue en segundo plano.",
+    "failedTitle": "La purga no terminó.",
+    "failedLead": "Lo ya borrado no vuelve. Revisa la vista previa y lánzala otra vez para terminar.",
+    "doneLead": "La purga terminó. Esto es lo que se borró o se ajustó; la organización, su configuración y su plan siguen ahí.",
+    "doneBand": "Registros purgados",
+    "done": "Purga terminada: {{total}} registros.",
+    "startError": {
+      "CONFIRMACION_INVALIDA": "El NIT o la frase no coinciden.",
+      "PURGA_VISTA_VENCIDA": "Los datos cambiaron desde la vista previa. Revísala de nuevo antes de purgar.",
+      "PURGA_EN_CURSO": "Ya hay una purga en curso para esta organización.",
+      "PURGA_SOLO_PRUEBAS": "Solo se purgan organizaciones marcadas como de prueba.",
+      "generic": "No se pudo lanzar la purga. Inténtalo de nuevo."
     }
   }
 }

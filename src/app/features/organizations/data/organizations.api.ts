@@ -11,6 +11,8 @@ import type {
   CreateOrganizationBody,
   DocumentTransferResult,
   OrganizationPurgePreview,
+  PurgeBody,
+  PurgeJob,
   PlatformOrgDetail,
   PlatformOrgPage,
   PlatformOrgQuery,
@@ -93,6 +95,16 @@ export class OrganizationsApi {
 
   purgePreview(id: string): Observable<OrganizationPurgePreview> {
     return this.http.get<OrganizationPurgePreview>(`/platform/organizations/${id}/purge/preview`, {
+      context: silent(),
+    });
+  }
+
+  purge(id: string, body: PurgeBody): Observable<PurgeJob> {
+    return this.http.post<PurgeJob>(`/platform/organizations/${id}/purge`, body, { context: silent() });
+  }
+
+  purgeJob(id: string, jobId: string): Observable<PurgeJob> {
+    return this.http.get<PurgeJob>(`/platform/organizations/${id}/purge/jobs/${jobId}`, {
       context: silent(),
     });
   }

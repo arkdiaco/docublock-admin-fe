@@ -167,3 +167,22 @@ export interface OrganizationPurgePreview {
   kept: string[];
   previewToken: string;
 }
+
+export interface PurgeTargetCount extends PurgePreviewTarget {
+  group: PurgeGroup;
+}
+
+export interface PurgeBody {
+  previewToken: string;
+  tributaryNumber: string;
+  phrase: string;
+  reason: string;
+}
+
+export interface PurgeJob {
+  id: string;
+  organizationId: string;
+  state: 'running' | 'done' | 'failed';
+  report: PurgeTargetCount[];
+  error?: string;
+}
