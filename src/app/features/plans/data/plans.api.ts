@@ -6,9 +6,11 @@ import { toParams } from '../../../shared/http/query-params';
 import type {
   CountryOption,
   CreatePlanBody,
+  LegacyPlanChoice,
   PlanDetail,
   PlanQuery,
   PlanRow,
+  StripeLinkBody,
   VersionedPlan,
   VersionPlanBody,
 } from './plans.models';
@@ -63,6 +65,24 @@ export class PlansApi {
     return this.http.post<PlanDetail>(
       `/platform/plans/${encodeURIComponent(code)}/reactivate`,
       { reason },
+      { context: silent() },
+    );
+  }
+
+  linkStripe(code: string, body: StripeLinkBody): Observable<PlanDetail> {
+    return this.http.put<PlanDetail>(`/platform/plans/${encodeURIComponent(code)}/stripe`, body, {
+      context: silent(),
+    });
+  }
+
+  legacyPlans(): Observable<LegacyPlanChoice[]> {
+    return this.http.get<LegacyPlanChoice[]>('/platform/plans/legacy');
+  }
+
+  linkLegacy(code: string, legacyPlanId: string | null, reason: string): Observable<PlanDetail> {
+    return this.http.put<PlanDetail>(
+      `/platform/plans/${encodeURIComponent(code)}/legacy`,
+      { legacyPlanId, reason },
       { context: silent() },
     );
   }

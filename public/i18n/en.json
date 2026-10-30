@@ -1278,7 +1278,7 @@
     "stripePending": "Stripe pending",
     "stripe": {
       "ready": "Ready",
-      "pending": "Pending (C2)",
+      "pending": "Pending",
       "na": "Not applicable"
     },
     "limit": {
@@ -1343,16 +1343,19 @@
       "validityInvalid": "Between 1 and 60 months.",
       "visibleHint": "Shows on docublock-fe's plans page.",
       "reasonPlaceholder": "Why this change is made",
-      "stripeWarning": "The price changes: the new version has no Stripe price ids and its checkout stays closed until they are linked (phase C2)."
+      "stripeWarning": "The price changes: the new version has no Stripe price ids and its checkout stays closed until they are linked in the Stripe card."
     },
     "done": {
       "created": "Plan {{code}} created.",
       "versioned": "New version created.",
-      "stripePending": "The price changed: Stripe price ids still need linking.",
+      "stripePending": "The price changed: link the new price ids in the Stripe card.",
       "shown": "The plan is back in the catalog.",
       "hidden": "The plan no longer shows in the catalog.",
       "retired": "Plan retired.",
-      "reactivated": "Plan reactivated."
+      "reactivated": "Plan reactivated.",
+      "stripeLinked": "Stripe prices verified and linked.",
+      "stripeUnlinked": "Stripe prices unlinked.",
+      "legacyLinked": "Legacy plan updated."
     },
     "error": {
       "PLAN_CODIGO_EN_USO": "A plan with that code already exists, even if retired.",
@@ -1364,8 +1367,50 @@
       "PLAN_EN_CAMBIO": "The plan changed while you were saving. Reload and try again.",
       "PLAN_DEMO_PROTEGIDO": "The Demo plan can't be retired or hidden.",
       "PLAN_ACTIVO": "The plan is already active.",
-      "generic": "It couldn't be saved. Try again."
+      "generic": "It couldn't be saved. Try again.",
+      "PLAN_SIN_STRIPE": "This plan isn't charged through Stripe.",
+      "PLAN_LEGACY_NO_EXISTE": "That legacy plan doesn't exist.",
+      "STRIPE_PRECIO_NO_EXISTE": "Stripe doesn't know the {{slot}}.",
+      "STRIPE_PRECIO_INACTIVO": "The {{slot}} is archived in Stripe.",
+      "STRIPE_INTERVALO_DISTINTO": "The {{slot}} doesn't charge every {{expected}}: in Stripe it charges every {{actual}}.",
+      "STRIPE_MONEDA_DISTINTA": "The {{slot}} charges in {{actual}} and the plan in {{expected}}.",
+      "STRIPE_MONTO_DISTINTO": "The {{slot}} doesn't match: the plan says {{expected}} and Stripe charges {{actual}}.",
+      "STRIPE_PRECIO_EN_USO": "That price is already linked to plan {{plan}}.",
+      "STRIPE_PAR_INCOMPLETO": "Monthly and annual go together.",
+      "STRIPE_NO_DISPONIBLE": "Stripe couldn't be reached. Try again in a few minutes."
     },
-    "packagePrice": "{{price}} · {{months}} months"
+    "packagePrice": "{{price}} · {{months}} months",
+    "stripeLink": {
+      "open": "Link prices",
+      "title": "Stripe prices",
+      "confirm": "Verify and save",
+      "state": "State",
+      "monthly": "Monthly price",
+      "annual": "Annual price",
+      "placeholder": "price_…",
+      "lead": "Paste the Stripe price ids. They are checked in Stripe before saving: they must charge {{monthly}} every month and {{annual}} every year, in the plan's currency.",
+      "hint": "Leave both empty to unlink: the plan can no longer be bought online.",
+      "pair": "Monthly and annual go together.",
+      "invalid": "A price id starts with price_.",
+      "na": "This plan isn't charged through Stripe: it's a package (AlohaPay), free or negotiated."
+    },
+    "legacyLink": {
+      "open": "Change",
+      "card": "Legacy plan",
+      "title": "Legacy plan",
+      "confirm": "Save",
+      "field": "Legacy plan",
+      "none": "Not linked",
+      "lead": "The legacy plan is what the legacy app and the bridge see in organization.currentPlan.",
+      "cardHint": "What the legacy app and the bridge see in organization.currentPlan.",
+      "shared": "Also used by: {{codes}}.",
+      "mirror": "{{total}} organizations on this plan will pick it up at their next subscription change; they aren't re-mirrored now."
+    },
+    "interval": {
+      "month": "month",
+      "year": "year",
+      "day": "day",
+      "week": "week"
+    }
   }
 }

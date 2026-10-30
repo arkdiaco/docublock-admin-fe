@@ -24,7 +24,10 @@ import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
 import { OrgStateComponent } from '../../../shared/ui/org-state.component';
 import { RecordHeaderComponent } from '../../../shared/ui/record-header.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
+import { HttpErrorResponse } from '@angular/common/http';
+import { LegacyLinkFormComponent } from '../components/legacy-link-form.component';
 import { PlanFormComponent } from '../components/plan-form.component';
+import { StripeLinkFormComponent } from '../components/stripe-link-form.component';
 import { LIMIT_LABEL, limitText, money, versionTerms } from '../data/plan-format';
 import { priceLabel } from '../data/plan-labels';
 import { PlansApi } from '../data/plans.api';
@@ -32,6 +35,7 @@ import {
   LIMIT_KEYS,
   type PlanDetail,
   type PlanVersion,
+  type StripeLinkBody,
   type VersionPlanBody,
 } from '../data/plans.models';
 
@@ -43,6 +47,16 @@ const ACTION_ERRORS = [
   'PAIS_NO_EXISTE',
   'PLAN_DEMO_PROTEGIDO',
   'PLAN_ACTIVO',
+  'PLAN_SIN_STRIPE',
+  'PLAN_LEGACY_NO_EXISTE',
+  'STRIPE_PRECIO_NO_EXISTE',
+  'STRIPE_PRECIO_INACTIVO',
+  'STRIPE_INTERVALO_DISTINTO',
+  'STRIPE_MONEDA_DISTINTA',
+  'STRIPE_MONTO_DISTINTO',
+  'STRIPE_PRECIO_EN_USO',
+  'STRIPE_PAR_INCOMPLETO',
+  'STRIPE_NO_DISPONIBLE',
 ];
 
 const VERSION_COLUMNS: readonly DataColumn[] = [
@@ -75,6 +89,8 @@ const reasonField = {
     EmptyStateComponent,
     SectionLoaderComponent,
     PlanFormComponent,
+    StripeLinkFormComponent,
+    LegacyLinkFormComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -145,10 +161,6 @@ const reasonField = {
               <dd>{{ data.countryName || ('plans.allCountries' | translate) }}</dd>
               <dt>{{ 'plans.f.visible' | translate }}</dt>
               <dd>{{ (data.visible ? 'plans.visibleYes' : 'plans.visibleNo') | translate }}</dd>
-              <dt>{{ 'plans.col.stripe' | translate }}</dt>
-              <dd [class.pd__warn]="data.stripeReady === false">
-                {{ stripeKey(data.stripeReady) | translate }}
-              </dd>
             </dl>
           </section>
 
@@ -165,6 +177,46 @@ const reasonField = {
               {{ data.features.length ? data.features.join(' · ') : '—' }}
             </p>
             <p class="dba-meta">{{ 'plans.featuresHint' | translate }}</p>
+          </section>
+
+          <section class="pd__card">
+            <header class="pd__head">
+              <h2 class="dba-panel">{{ 'plans.col.stripe' | translate }}</h2>
+              @if (canLink() && data.stripeReady !== null) {
+                <button dba-button variant="secondary" (click)="linkingStripe.set(true)">
+                  {{ 'plans.stripeLink.open' | translate }}
+                </button>
+              }
+            </header>
+            <dl class="pd__dl">
+              <dt>{{ 'plans.stripeLink.state' | translate }}</dt>
+              <dd [class.pd__warn]="data.stripeReady === false">
+                {{ stripeKey(data.stripeReady) | translate }}
+              </dd>
+              @if (data.stripeReady !== null) {
+                <dt>{{ 'plans.stripeLink.monthly' | translate }}</dt>
+                <dd class="dba-mono">{{ currentStripe().monthly || '—' }}</dd>
+                <dt>{{ 'plans.stripeLink.annual' | translate }}</dt>
+                <dd class="dba-mono">{{ currentStripe().annual || '—' }}</dd>
+              } @else {
+                <dd class="pd__full dba-meta">{{ 'plans.stripeLink.na' | translate }}</dd>
+              }
+            </dl>
+          </section>
+
+          <section class="pd__card">
+            <header class="pd__head">
+              <h2 class="dba-panel">{{ 'plans.legacyLink.card' | translate }}</h2>
+              @if (canLink()) {
+                <button dba-button variant="secondary" (click)="linkingLegacy.set(true)">
+                  {{ 'plans.legacyLink.open' | translate }}
+                </button>
+              }
+            </header>
+            <p class="pd__legacy">
+              {{ data.legacyPlan?.name || ('plans.legacyLink.none' | translate) }}
+            </p>
+            <p class="dba-meta">{{ 'plans.legacyLink.cardHint' | translate }}</p>
           </section>
         </div>
 
@@ -206,6 +258,26 @@ const reasonField = {
           [busy]="working()"
           (versioned)="version($event)"
           (dismissed)="versioning.set(false)"
+        />
+      }
+
+      @if (linkingStripe()) {
+        <dba-stripe-link-form
+          [plan]="data"
+          [monthlyAmount]="monthly()"
+          [annualAmount]="annual()"
+          [busy]="working()"
+          (submitted)="linkStripe($event)"
+          (dismissed)="linkingStripe.set(false)"
+        />
+      }
+
+      @if (linkingLegacy()) {
+        <dba-legacy-link-form
+          [plan]="data"
+          [busy]="working()"
+          (submitted)="linkLegacy($event)"
+          (dismissed)="linkingLegacy.set(false)"
         />
       }
     }
@@ -276,6 +348,24 @@ const reasonField = {
       color: var(--dba-state-suspended-fg);
     }
 
+    .pd__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pd__full {
+      grid-column: 1 / -1;
+    }
+
+    .pd__legacy {
+      font-size: var(--dba-text-cell);
+      font-weight: 500;
+      color: var(--dba-ink);
+    }
+
     .pd__panel {
       display: flex;
       flex-direction: column;
@@ -323,6 +413,15 @@ export class PlanDetailComponent {
   protected readonly versioning = signal(false);
   protected readonly working = signal(false);
   protected readonly canManage = computed(() => this.auth.canManage('commercial'));
+  protected readonly linkingStripe = signal(false);
+  protected readonly linkingLegacy = signal(false);
+  protected readonly canLink = computed(() => this.canManage() && this.plan()?.state === 'ACTIVE');
+
+  protected readonly currentStripe = computed(() => {
+    const plan = this.plan();
+    const version = plan?.history.find((v) => v.version === plan.version);
+    return { monthly: version?.stripe.monthly ?? null, annual: version?.stripe.annual ?? null };
+  });
 
   protected readonly meta = computed(() => {
     const plan = this.plan();
@@ -337,6 +436,11 @@ export class PlanDetailComponent {
   protected readonly price = computed(() => {
     const plan = this.plan();
     return plan ? priceLabel(plan, this.translate, this.locale) : '';
+  });
+
+  protected readonly monthly = computed(() => {
+    const plan = this.plan();
+    return plan ? money(plan.priceMonthly, plan.currency, this.locale) : '';
   });
 
   protected readonly annual = computed(() => {
@@ -404,6 +508,29 @@ export class PlanDetailComponent {
     }
   }
 
+  protected async linkStripe(body: StripeLinkBody): Promise<void> {
+    const plan = this.plan();
+    if (!plan) return;
+    const done = await this.run(
+      this.api.linkStripe(plan.code, body),
+      body.monthly ? 'plans.done.stripeLinked' : 'plans.done.stripeUnlinked',
+    );
+    if (done) this.linkingStripe.set(false);
+  }
+
+  protected async linkLegacy(choice: {
+    legacyPlanId: string | null;
+    reason: string;
+  }): Promise<void> {
+    const plan = this.plan();
+    if (!plan) return;
+    const done = await this.run(
+      this.api.linkLegacy(plan.code, choice.legacyPlanId, choice.reason),
+      'plans.done.legacyLinked',
+    );
+    if (done) this.linkingLegacy.set(false);
+  }
+
   private async toggleVisible(plan: PlanDetail, visible: boolean): Promise<void> {
     const answer = await this.dialogs.open({
       intent: 'primary',
@@ -465,12 +592,39 @@ export class PlanDetailComponent {
       this.notify.error(
         this.translate.instant(
           code && ACTION_ERRORS.includes(code) ? `plans.error.${code}` : 'plans.error.generic',
+          this.errorParams(failure),
         ) as string,
       );
       return null;
     } finally {
       this.working.set(false);
     }
+  }
+
+  private errorParams(failure: unknown): Record<string, string> {
+    const body =
+      failure instanceof HttpErrorResponse
+        ? (failure.error as Record<string, unknown> | null)
+        : null;
+    if (!body) return {};
+    const plan = this.plan();
+    const code = body['code'];
+    const show = (value: unknown): string => {
+      if (code === 'STRIPE_MONTO_DISTINTO' && typeof value === 'number' && plan) {
+        return money(value, plan.currency, this.locale);
+      }
+      if (code === 'STRIPE_INTERVALO_DISTINTO') {
+        return value ? (this.translate.instant(`plans.interval.${String(value)}`) as string) : '—';
+      }
+      return String(value ?? '—');
+    };
+    const slot = body['slot'] === 'annual' ? 'plans.stripeLink.annual' : 'plans.stripeLink.monthly';
+    return {
+      slot: (this.translate.instant(slot) as string).toLowerCase(),
+      expected: show(body['expected']),
+      actual: show(body['actual']),
+      plan: String(body['plan'] ?? ''),
+    };
   }
 
   private async load(code: string): Promise<void> {

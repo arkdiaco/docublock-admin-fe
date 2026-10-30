@@ -14,7 +14,9 @@ import es from '../../../../public/i18n/es.json';
 import { AuthStore } from '../../core/auth/auth.store';
 import { API_BASE_URL } from '../../core/config/api.tokens';
 import { DialogService } from '../../core/ui/dialog.service';
+import { LegacyLinkFormComponent } from './components/legacy-link-form.component';
 import { PlanFormComponent } from './components/plan-form.component';
+import { StripeLinkFormComponent } from './components/stripe-link-form.component';
 import type { PlanDetail, PlanRow } from './data/plans.models';
 import { PlanDetailComponent } from './pages/plan-detail.component';
 import { PlansComponent } from './pages/plans.component';
@@ -54,6 +56,7 @@ const row = (over: Partial<PlanRow> = {}): PlanRow => ({
 const detail = (over: Partial<PlanDetail> = {}): PlanDetail => ({
   ...row(),
   features: ['documents', 'dynamic-key'],
+  legacyPlan: { id: 'L1', name: 'Corporativo' },
   history: [
     {
       id: 'v2',
@@ -317,9 +320,148 @@ describe('Comercial › Planes', () => {
       expect(host.querySelector('dba-plan-form')).toBeNull();
       expect(espia.mock.calls.map(([m]) => m.detail)).toEqual([
         'Versión nueva creada.',
-        'El precio cambió: falta enlazar los price ids de Stripe.',
+        'El precio cambió: enlaza los price ids nuevos en la tarjeta Stripe.',
       ]);
       expect(host.querySelector('.rec__meta')?.textContent).toContain('v3');
+    });
+  });
+
+  describe('Stripe y plan legacy en la ficha', () => {
+    const montar = async (body: PlanDetail) => {
+      const fixture = TestBed.createComponent(PlanDetailComponent);
+      fixture.componentRef.setInput('code', body.code);
+      fixture.detectChanges();
+      http.expectOne(`/platform/plans/${body.code}`).flush(body);
+      await fixture.whenStable();
+      fixture.detectChanges();
+      return { fixture, host: fixture.nativeElement as HTMLElement };
+    };
+    const tarjeta = (host: HTMLElement, titulo: string) =>
+      [...host.querySelectorAll<HTMLElement>('.pd__card')].find(
+        (c) => c.querySelector('h2')?.textContent?.trim() === titulo,
+      )!;
+
+    it('muestra los ids vigentes y el plan legacy; un paquete dice que no aplica y no ofrece enlazar', async () => {
+      perfil(['platform:commercial', 'platform:commercial:manage']);
+      const { host } = await montar(detail());
+      expect(tarjeta(host, 'Stripe').textContent).toContain('price_m');
+      expect(tarjeta(host, 'Plan legacy').textContent).toContain('Corporativo');
+      expect(boton(host, 'Enlazar precios')).toBeDefined();
+
+      const paquete = await montar(
+        detail({
+          code: 'PAYG_5',
+          kind: 'PACKAGE',
+          family: 'PAYG',
+          stripeReady: null,
+          legacyPlan: null,
+        }),
+      );
+      expect(tarjeta(paquete.host, 'Stripe').textContent).toContain('No aplica');
+      expect(boton(paquete.host, 'Enlazar precios')).toBeUndefined();
+      expect(tarjeta(paquete.host, 'Plan legacy').textContent).toContain('Sin vínculo');
+    });
+
+    it('un monto distinto en Stripe deja el modal abierto con «el plan dice → Stripe cobra»', async () => {
+      perfil(['platform:commercial', 'platform:commercial:manage']);
+      const { fixture, host } = await montar(detail());
+      const espia = avisos();
+      boton(host, 'Enlazar precios')!.click();
+      fixture.detectChanges();
+      const form = fixture.debugElement.query(
+        (d) => d.componentInstance instanceof StripeLinkFormComponent,
+      ).componentInstance as StripeLinkFormComponent;
+      form.submitted.emit({ monthly: 'price_viejo', annual: 'price_a2', reason: 'Enlace' });
+      const req = http.expectOne(
+        (r) => r.method === 'PUT' && r.url === '/platform/plans/CORE_10/stripe',
+      );
+      expect(req.request.body).toEqual({
+        monthly: 'price_viejo',
+        annual: 'price_a2',
+        reason: 'Enlace',
+      });
+      req.flush(
+        {
+          code: 'STRIPE_MONTO_DISTINTO',
+          slot: 'monthly',
+          expected: 64999,
+          actual: 59999,
+          message: 'x',
+        },
+        { status: 422, statusText: 'Unprocessable Entity' },
+      );
+      await fixture.whenStable();
+      fixture.detectChanges();
+      expect(host.querySelector('dba-stripe-link-form')).not.toBeNull();
+      const [mensaje] = espia.mock.calls.map(([m]) => m.detail as string);
+      expect(mensaje).toMatch(
+        /^El precio mensual no coincide: el plan dice .*64[.,]999.* y Stripe cobra .*59[.,]999/,
+      );
+    });
+
+    it('el modal de Stripe exige el par completo y con formato price_', () => {
+      perfil(['platform:commercial', 'platform:commercial:manage']);
+      const fixture = TestBed.createComponent(StripeLinkFormComponent);
+      fixture.componentRef.setInput('plan', detail());
+      fixture.detectChanges();
+      const host = fixture.nativeElement as HTMLElement;
+      const inputs = [...host.querySelectorAll<HTMLInputElement>('.field__input')];
+      const escribir = (i: number, v: string) => {
+        inputs[i].value = v;
+        inputs[i].dispatchEvent(new Event('input'));
+        fixture.detectChanges();
+      };
+      const go = host.querySelector<HTMLButtonElement>('.foot__go')!;
+      expect(inputs[0].value).toBe('price_m');
+      escribir(2, 'Cambio');
+      escribir(0, 'precio_malo');
+      expect(host.textContent).toContain('Un price id empieza por price_.');
+      expect(go.disabled).toBe(true);
+      escribir(0, '');
+      expect(host.textContent).toContain('El mensual y el anual van juntos.');
+      escribir(1, '');
+      expect(go.disabled).toBe(false);
+    });
+
+    it('cambiar el plan legacy lista las opciones y avisa cuántas organizaciones lo tomarán después', async () => {
+      perfil(['platform:commercial', 'platform:commercial:manage']);
+      const { fixture, host } = await montar(detail());
+      boton(host, 'Cambiar')!.click();
+      fixture.detectChanges();
+      http.expectOne('/platform/plans/legacy').flush([
+        {
+          id: 'L1',
+          name: 'Corporativo',
+          costMonthly: null,
+          documentsMonthly: null,
+          plansLinked: ['CORE_10'],
+        },
+        {
+          id: 'L2',
+          name: 'Prepago',
+          costMonthly: null,
+          documentsMonthly: null,
+          plansLinked: ['CORE_17'],
+        },
+      ]);
+      await fixture.whenStable();
+      fixture.detectChanges();
+      expect(host.querySelector('dba-legacy-link-form')?.textContent).toContain(
+        '11 organizaciones',
+      );
+      const form = fixture.debugElement.query(
+        (d) => d.componentInstance instanceof LegacyLinkFormComponent,
+      ).componentInstance as LegacyLinkFormComponent;
+      form.submitted.emit({ legacyPlanId: 'L2', reason: 'Alinear' });
+      const req = http.expectOne(
+        (r) => r.method === 'PUT' && r.url === '/platform/plans/CORE_10/legacy',
+      );
+      expect(req.request.body).toEqual({ legacyPlanId: 'L2', reason: 'Alinear' });
+      req.flush(detail({ legacyPlan: { id: 'L2', name: 'Prepago' } }));
+      await fixture.whenStable();
+      fixture.detectChanges();
+      expect(host.querySelector('dba-legacy-link-form')).toBeNull();
+      expect(tarjeta(host, 'Plan legacy').textContent).toContain('Prepago');
     });
   });
 

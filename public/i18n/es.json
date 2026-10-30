@@ -1278,7 +1278,7 @@
     "stripePending": "Stripe pendiente",
     "stripe": {
       "ready": "Listo",
-      "pending": "Pendiente (C2)",
+      "pending": "Pendiente",
       "na": "No aplica"
     },
     "limit": {
@@ -1343,16 +1343,19 @@
       "validityInvalid": "Entre 1 y 60 meses.",
       "visibleHint": "Aparece en la página de planes de docublock-fe.",
       "reasonPlaceholder": "Por qué se hace este cambio",
-      "stripeWarning": "Cambia el precio: la versión nueva queda sin price ids de Stripe y su checkout se cierra hasta enlazarlos (fase C2)."
+      "stripeWarning": "Cambia el precio: la versión nueva queda sin price ids de Stripe y su checkout se cierra hasta enlazarlos en la tarjeta Stripe."
     },
     "done": {
       "created": "Plan {{code}} creado.",
       "versioned": "Versión nueva creada.",
-      "stripePending": "El precio cambió: falta enlazar los price ids de Stripe.",
+      "stripePending": "El precio cambió: enlaza los price ids nuevos en la tarjeta Stripe.",
       "shown": "El plan vuelve al catálogo.",
       "hidden": "El plan ya no aparece en el catálogo.",
       "retired": "Plan retirado.",
-      "reactivated": "Plan reactivado."
+      "reactivated": "Plan reactivado.",
+      "stripeLinked": "Precios de Stripe verificados y enlazados.",
+      "stripeUnlinked": "Precios de Stripe desenlazados.",
+      "legacyLinked": "Plan legacy actualizado."
     },
     "error": {
       "PLAN_CODIGO_EN_USO": "Ya existe un plan con ese código, aunque esté retirado.",
@@ -1364,8 +1367,50 @@
       "PLAN_EN_CAMBIO": "El plan cambió mientras guardabas. Recarga e inténtalo otra vez.",
       "PLAN_DEMO_PROTEGIDO": "El plan Demo no se retira ni se oculta.",
       "PLAN_ACTIVO": "El plan ya está activo.",
-      "generic": "No se pudo guardar. Inténtalo de nuevo."
+      "generic": "No se pudo guardar. Inténtalo de nuevo.",
+      "PLAN_SIN_STRIPE": "Este plan no se cobra por Stripe.",
+      "PLAN_LEGACY_NO_EXISTE": "Ese plan legacy no existe.",
+      "STRIPE_PRECIO_NO_EXISTE": "Stripe no conoce el {{slot}}.",
+      "STRIPE_PRECIO_INACTIVO": "El {{slot}} está archivado en Stripe.",
+      "STRIPE_INTERVALO_DISTINTO": "El {{slot}} no cobra cada {{expected}}: en Stripe cobra cada {{actual}}.",
+      "STRIPE_MONEDA_DISTINTA": "El {{slot}} cobra en {{actual}} y el plan en {{expected}}.",
+      "STRIPE_MONTO_DISTINTO": "El {{slot}} no coincide: el plan dice {{expected}} y Stripe cobra {{actual}}.",
+      "STRIPE_PRECIO_EN_USO": "Ese precio ya está enlazado al plan {{plan}}.",
+      "STRIPE_PAR_INCOMPLETO": "El mensual y el anual van juntos.",
+      "STRIPE_NO_DISPONIBLE": "No se pudo consultar Stripe. Inténtalo en unos minutos."
     },
-    "packagePrice": "{{price}} · {{months}} meses"
+    "packagePrice": "{{price}} · {{months}} meses",
+    "stripeLink": {
+      "open": "Enlazar precios",
+      "title": "Precios de Stripe",
+      "confirm": "Verificar y guardar",
+      "state": "Estado",
+      "monthly": "Precio mensual",
+      "annual": "Precio anual",
+      "placeholder": "price_…",
+      "lead": "Pega los price ids de Stripe. Se verifican en Stripe antes de guardar: tienen que cobrar {{monthly}} cada mes y {{annual}} cada año, en la moneda del plan.",
+      "hint": "Deja los dos vacíos para desenlazar: el plan deja de poder comprarse en línea.",
+      "pair": "El mensual y el anual van juntos.",
+      "invalid": "Un price id empieza por price_.",
+      "na": "Este plan no se cobra por Stripe: es un paquete (AlohaPay), gratis o a convenir."
+    },
+    "legacyLink": {
+      "open": "Cambiar",
+      "card": "Plan legacy",
+      "title": "Plan legacy",
+      "confirm": "Guardar",
+      "field": "Plan legacy",
+      "none": "Sin vínculo",
+      "lead": "El plan legacy es el que ven el legacy y el bridge en organization.currentPlan.",
+      "cardHint": "Lo que ven el legacy y el bridge en organization.currentPlan.",
+      "shared": "También lo usan: {{codes}}.",
+      "mirror": "{{total}} organizaciones con este plan lo tomarán en su próximo cambio de suscripción; no se re-espejan ahora."
+    },
+    "interval": {
+      "month": "mes",
+      "year": "año",
+      "day": "día",
+      "week": "semana"
+    }
   }
 }

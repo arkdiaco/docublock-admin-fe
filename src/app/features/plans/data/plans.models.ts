@@ -56,6 +56,7 @@ export interface PlanVersion {
 
 export interface PlanDetail extends PlanRow {
   features: string[];
+  legacyPlan: { id: string; name: string } | null;
   history: PlanVersion[];
 }
 
@@ -98,4 +99,18 @@ export type VersionPlanBody = Partial<Omit<PlanTerms, 'limits'>> & {
 export interface CountryOption {
   id: string;
   name: string;
+}
+
+export interface LegacyPlanChoice {
+  id: string;
+  name: string;
+  costMonthly: number | null;
+  documentsMonthly: number | null;
+  plansLinked: string[];
+}
+
+export interface StripeLinkBody {
+  monthly: string | null;
+  annual: string | null;
+  reason: string;
 }
