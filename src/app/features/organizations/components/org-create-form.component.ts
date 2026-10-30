@@ -200,7 +200,7 @@ const NONE = '';
       </div>
     </db-modal-shell>
   `,
-  styleUrl: './modal-form.scss',
+  styleUrl: '../../../shared/ui/modal-form.scss',
 })
 export class OrgCreateFormComponent implements OnInit {
   private readonly api = inject(OrganizationsApi);

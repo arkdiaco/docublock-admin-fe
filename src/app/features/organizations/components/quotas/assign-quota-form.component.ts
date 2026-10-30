@@ -49,7 +49,7 @@ import { wholeNumber } from '../../data/form-values';
       </div>
     </db-modal-shell>
   `,
-  styleUrl: '../modal-form.scss',
+  styleUrl: '../../../../shared/ui/modal-form.scss',
 })
 export class AssignQuotaFormComponent implements OnInit {
   readonly row = input.required<QuotaRow>();

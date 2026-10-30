@@ -91,7 +91,7 @@ export interface TransferDocumentsBody {
       </div>
     </db-modal-shell>
   `,
-  styleUrl: '../modal-form.scss',
+  styleUrl: '../../../../shared/ui/modal-form.scss',
 })
 export class TransferDocumentsFormComponent implements OnInit {
   private readonly api = inject(OrganizationsApi);

@@ -53,7 +53,7 @@ import type { OrgMember, OrgRole } from '../../data/members.models';
       </div>
     </db-modal-shell>
   `,
-  styleUrl: '../modal-form.scss',
+  styleUrl: '../../../../shared/ui/modal-form.scss',
 })
 export class MemberRoleFormComponent implements OnInit {
   readonly member = input.required<OrgMember>();

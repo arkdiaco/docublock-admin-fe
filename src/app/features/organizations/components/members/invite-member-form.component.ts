@@ -71,7 +71,7 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       </div>
     </db-modal-shell>
   `,
-  styleUrl: '../modal-form.scss',
+  styleUrl: '../../../../shared/ui/modal-form.scss',
 })
 export class InviteMemberFormComponent implements OnInit {
   readonly roles = input.required<OrgRole[]>();

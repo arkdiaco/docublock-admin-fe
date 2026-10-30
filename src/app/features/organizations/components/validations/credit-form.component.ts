@@ -83,7 +83,7 @@ type Mode = 'recharge' | 'set';
       </div>
     </db-modal-shell>
   `,
-  styleUrl: '../modal-form.scss',
+  styleUrl: '../../../../shared/ui/modal-form.scss',
 })
 export class CreditFormComponent implements OnInit {
   readonly type = input.required<CreditType>();

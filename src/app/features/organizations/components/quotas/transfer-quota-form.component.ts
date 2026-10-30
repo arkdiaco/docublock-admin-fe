@@ -59,7 +59,7 @@ const GLOBAL = 'organization';
       </div>
     </db-modal-shell>
   `,
-  styleUrl: '../modal-form.scss',
+  styleUrl: '../../../../shared/ui/modal-form.scss',
 })
 export class TransferQuotaFormComponent {
   readonly row = input.required<QuotaRow>();

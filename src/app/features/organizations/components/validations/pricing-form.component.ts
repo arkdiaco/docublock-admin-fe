@@ -107,7 +107,7 @@ const price = (text: string): number | null =>
       </div>
     </db-modal-shell>
   `,
-  styleUrl: '../modal-form.scss',
+  styleUrl: '../../../../shared/ui/modal-form.scss',
 })
 export class PricingFormComponent implements OnInit {
   readonly pricing = input.required<ValidationPricing>();

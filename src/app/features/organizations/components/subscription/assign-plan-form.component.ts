@@ -102,7 +102,7 @@ type Validity = 'plan' | 'date' | 'none';
       </div>
     </db-modal-shell>
   `,
-  styleUrl: '../modal-form.scss',
+  styleUrl: '../../../../shared/ui/modal-form.scss',
 })
 export class AssignPlanFormComponent {
   readonly plans = input.required<readonly CatalogPlan[]>();

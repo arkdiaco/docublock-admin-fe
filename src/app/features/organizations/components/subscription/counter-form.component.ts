@@ -66,7 +66,7 @@ import { wholeNumber } from '../../data/form-values';
       </div>
     </db-modal-shell>
   `,
-  styleUrl: '../modal-form.scss',
+  styleUrl: '../../../../shared/ui/modal-form.scss',
   styles: `
     .form__switch--top {
       align-items: center;

@@ -33,7 +33,7 @@ import { endOfDay, isFutureDay } from '../../data/form-values';
       </div>
     </db-modal-shell>
   `,
-  styleUrl: '../modal-form.scss',
+  styleUrl: '../../../../shared/ui/modal-form.scss',
 })
 export class PeriodFormComponent {
   readonly current = input.required<string>();
