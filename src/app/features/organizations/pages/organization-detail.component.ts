@@ -32,6 +32,7 @@ import { IntegrationsTabComponent } from '../components/integrations/integration
 import { ValidationsTabComponent } from '../components/validations/validations-tab.component';
 import { QuotasTabComponent } from '../components/quotas/quotas-tab.component';
 import { SubscriptionTabComponent } from '../components/subscription/subscription-tab.component';
+import { OrgPurgePreviewComponent } from '../components/purge/org-purge-preview.component';
 import { OrganizationsApi } from '../data/organizations.api';
 import type { PlatformOrgDetail, PlatformOrgUpdate } from '../data/organizations.models';
 import { orgStateView } from '../data/platform-org-state';
@@ -84,6 +85,7 @@ const initialsOf = (name: string): string =>
     MembersTabComponent,
     ValidationsTabComponent,
     IntegrationsTabComponent,
+    OrgPurgePreviewComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -124,6 +126,12 @@ const initialsOf = (name: string): string =>
                   {{ 'orgState.suspend' | translate }}
                 </button>
               }
+            }
+            @if (org.isTest && canPurge()) {
+              <button dba-button variant="destructive" (click)="purging.set(true)">
+                <db-icon name="trash" [size]="15" />
+                {{ 'purge.open' | translate }}
+              </button>
             }
           </div>
         </dba-record-header>
@@ -230,6 +238,10 @@ const initialsOf = (name: string): string =>
           (submitted)="assignReseller($event)"
           (dismissed)="pickingReseller.set(false)"
         />
+      }
+
+      @if (purging()) {
+        <dba-org-purge-preview [org]="org" (dismissed)="purging.set(false)" />
       }
 
       @if (editing()) {
@@ -411,6 +423,8 @@ export class OrganizationDetailComponent {
   protected readonly switching = signal(false);
   protected readonly savingModule = signal(false);
   protected readonly pickingReseller = signal(false);
+  protected readonly canPurge = computed(() => this.auth.canManage('platform'));
+  protected readonly purging = signal(false);
   private readonly dialogs = inject(DialogService);
 
   constructor() {

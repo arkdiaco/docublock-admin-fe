@@ -1124,5 +1124,78 @@
       "PAIS_NO_ENCONTRADO": "The country no longer exists in the catalog.",
       "CIUDAD_NO_ENCONTRADA": "The city no longer exists in the catalog."
     }
+  },
+  "purge": {
+    "open": "Purge test data",
+    "title": "Purge test data",
+    "loading": "Counting what the purge would delete…",
+    "lead": "This is what the purge would delete in this test organization. Nothing has been deleted yet: the organization, its configuration and its plan are kept.",
+    "band": "Affected records",
+    "total": "Total",
+    "nothing": "Nothing to purge in this group.",
+    "errorTitle": "We couldn't prepare the preview.",
+    "error": {
+      "PURGA_SOLO_PRUEBAS": "Only organizations flagged as test can be purged.",
+      "ORG_NO_EXISTE": "The organization no longer exists.",
+      "generic": "Try again in a few seconds."
+    },
+    "group": {
+      "operation": "Operation",
+      "consumption": "Consumption",
+      "membership": "Memberships"
+    },
+    "groupHint": {
+      "operation": "Deleted.",
+      "consumption": "Entries are deleted and plan counters go back to zero.",
+      "membership": "The organization is removed from each person; the person and their other organizations stay."
+    },
+    "keptTitle": "Kept untouched",
+    "kept": {
+      "organization": "The organization and its profile",
+      "configuration": "Configuration, roles and structure",
+      "plan": "The plan and its validity",
+      "payments": "Payments, invoices and subscriptions",
+      "audit": "Logs and audit trail",
+      "signatureEvidence": "Signature evidence",
+      "chain": "On-chain records",
+      "files": "Stored files",
+      "bridge": "Bridge v2 keys and webhooks",
+      "otherServices": "CLM, Risk and ID data"
+    },
+    "c": {
+      "documents": "Documents",
+      "versions": "Document versions",
+      "signing_sessions": "Signing sessions",
+      "signing_handoffs": "Signing handoffs",
+      "signer_links": "Signer links",
+      "signing_one_touch_activations": "One Touch activations",
+      "signing_otps": "Signing codes",
+      "document_closing_tasks": "Document closings",
+      "massive_jobs": "Bulk sends",
+      "document_counters": "Document sequences",
+      "blocks": "Blocks",
+      "flows": "Flows",
+      "template_flows": "Template flows",
+      "flow-processes": "Flow processes",
+      "templates": "Templates",
+      "template_web_tokens": "Template web links",
+      "directories": "Directories",
+      "titles": "Titles",
+      "properties": "Properties",
+      "request-real-state": "Rental requests",
+      "property-forms": "Property forms",
+      "notifications": "Notifications",
+      "notification_dispatches": "Notification sends",
+      "notification_preferences": "Notification preferences",
+      "push_subscriptions": "Push subscriptions",
+      "org_invitations": "Invitations",
+      "auto_sign_otps": "Auto-sign codes",
+      "users": "Member users",
+      "signers": "Linked signers",
+      "support_tickets": "Support cases",
+      "document_traceability": "Document traceability",
+      "consumption_entries": "Consumption entries",
+      "consumption_counters": "Plan counters"
+    }
   }
 }

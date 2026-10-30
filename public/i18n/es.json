@@ -1124,5 +1124,78 @@
       "PAIS_NO_ENCONTRADO": "El país ya no existe en el catálogo.",
       "CIUDAD_NO_ENCONTRADA": "La ciudad ya no existe en el catálogo."
     }
+  },
+  "purge": {
+    "open": "Purgar datos de prueba",
+    "title": "Purgar datos de prueba",
+    "loading": "Contando lo que borraría la purga…",
+    "lead": "Esto es lo que borraría la purga en esta organización de prueba. Todavía no se ha borrado nada: la organización, su configuración y su plan se conservan.",
+    "band": "Registros afectados",
+    "total": "Total",
+    "nothing": "Nada que purgar en este grupo.",
+    "errorTitle": "No pudimos preparar la vista previa.",
+    "error": {
+      "PURGA_SOLO_PRUEBAS": "Solo se purgan organizaciones marcadas como de prueba.",
+      "ORG_NO_EXISTE": "La organización ya no existe.",
+      "generic": "Inténtalo de nuevo en unos segundos."
+    },
+    "group": {
+      "operation": "Operación",
+      "consumption": "Consumo",
+      "membership": "Membresías"
+    },
+    "groupHint": {
+      "operation": "Se borran.",
+      "consumption": "Los asientos se borran y los contadores del plan vuelven a cero.",
+      "membership": "Se retira la organización de cada persona; la persona y sus otras organizaciones quedan."
+    },
+    "keptTitle": "Queda intacto",
+    "kept": {
+      "organization": "La organización y su ficha",
+      "configuration": "Configuración, roles y estructura",
+      "plan": "El plan y su vigencia",
+      "payments": "Pagos, facturas y suscripciones",
+      "audit": "Bitácoras y auditoría",
+      "signatureEvidence": "Evidencia de firma",
+      "chain": "Registros en cadena",
+      "files": "Archivos almacenados",
+      "bridge": "Claves v2 y webhooks del bridge",
+      "otherServices": "Datos del CLM, Risk e ID"
+    },
+    "c": {
+      "documents": "Documentos",
+      "versions": "Versiones de documentos",
+      "signing_sessions": "Sesiones de firma",
+      "signing_handoffs": "Traspasos de firma",
+      "signer_links": "Enlaces de firmantes",
+      "signing_one_touch_activations": "Activaciones One Touch",
+      "signing_otps": "Códigos de firma",
+      "document_closing_tasks": "Cierres de documentos",
+      "massive_jobs": "Envíos masivos",
+      "document_counters": "Consecutivos de documentos",
+      "blocks": "Bloques",
+      "flows": "Flujos",
+      "template_flows": "Flujos de plantilla",
+      "flow-processes": "Procesos de flujo",
+      "templates": "Plantillas",
+      "template_web_tokens": "Enlaces web de plantillas",
+      "directories": "Directorios",
+      "titles": "Títulos",
+      "properties": "Inmuebles",
+      "request-real-state": "Solicitudes de arriendo",
+      "property-forms": "Formularios de inmuebles",
+      "notifications": "Notificaciones",
+      "notification_dispatches": "Envíos de notificaciones",
+      "notification_preferences": "Preferencias de notificación",
+      "push_subscriptions": "Suscripciones push",
+      "org_invitations": "Invitaciones",
+      "auto_sign_otps": "Códigos de firma automática",
+      "users": "Usuarios miembros",
+      "signers": "Firmantes vinculados",
+      "support_tickets": "Casos de soporte",
+      "document_traceability": "Trazabilidad de documentos",
+      "consumption_entries": "Asientos de consumo",
+      "consumption_counters": "Contadores del plan"
+    }
   }
 }

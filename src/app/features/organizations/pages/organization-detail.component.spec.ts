@@ -177,6 +177,67 @@ describe('OrganizationDetailComponent', () => {
   const boton = (host: HTMLElement, texto: string) =>
     [...host.querySelectorAll<HTMLButtonElement>('button[dba-button]')].find((b) => b.textContent?.trim() === texto);
 
+  it('purgar datos de prueba solo aparece con platform:platform:manage y en organizaciones de prueba', async () => {
+    conPermisos(['platform:clients', 'platform:clients:manage']);
+    const sinPermiso = await montar();
+    expect(boton(sinPermiso.host, 'Purgar datos de prueba')).toBeUndefined();
+    sinPermiso.fixture.destroy();
+
+    conPermisos(['platform:platform', 'platform:platform:manage']);
+    const real = await montar(detail({ isTest: false }));
+    expect(boton(real.host, 'Purgar datos de prueba')).toBeUndefined();
+  });
+
+  it('la vista previa de la purga muestra lo que borraría y lo que queda, sin botón de ejecutar', async () => {
+    conPermisos(['platform:platform', 'platform:platform:manage']);
+    const { fixture, host } = await montar();
+    boton(host, 'Purgar datos de prueba')!.click();
+    fixture.detectChanges();
+    http.expectOne((r) => r.method === 'GET' && r.url === '/platform/organizations/org-1/purge/preview').flush({
+      organizationId: 'org-1',
+      businessName: 'Aeropuerto',
+      tributaryNumber: '900123456',
+      total: 9,
+      groups: [
+        { group: 'operation', total: 7, targets: [{ collection: 'documents', mode: 'delete', count: 7 }, { collection: 'flows', mode: 'delete', count: 0 }] },
+        { group: 'consumption', total: 0, targets: [] },
+        { group: 'membership', total: 2, targets: [{ collection: 'users', mode: 'pull', count: 2 }] },
+      ],
+      kept: ['organization', 'audit'],
+      previewToken: 'f'.repeat(64),
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const modal = host.querySelector('dba-org-purge-preview')!;
+    const filas = [...modal.querySelectorAll('.pp__row')].map((r) =>
+      [...r.querySelectorAll('.pp__name > span, .pp__count')].map((part) => part.textContent?.trim()),
+    );
+    expect(filas).toEqual([
+      ['Documentos', 'documents', '7'],
+      ['Usuarios miembros', 'users', '2'],
+    ]);
+    expect(modal.querySelector('.pp__none')?.textContent).toContain('Nada que purgar');
+    expect(modal.querySelector('.pp__kept')?.textContent).toContain('Bitácoras y auditoría');
+    expect(modal.textContent).not.toMatch(/purge\./);
+    expect(modal.querySelector('.foot__go')?.textContent?.trim()).toBe('Cerrar');
+    modal.querySelector<HTMLButtonElement>('.foot__go')!.click();
+    fixture.detectChanges();
+    expect(host.querySelector('dba-org-purge-preview')).toBeNull();
+  });
+
+  it('si la organización dejó de ser de prueba, la vista previa lo explica', async () => {
+    conPermisos(['platform:platform', 'platform:platform:manage']);
+    const { fixture, host } = await montar();
+    boton(host, 'Purgar datos de prueba')!.click();
+    fixture.detectChanges();
+    http
+      .expectOne((r) => r.url.endsWith('/purge/preview'))
+      .flush({ code: 'PURGA_SOLO_PRUEBAS', message: 'x' }, { status: 409, statusText: 'Conflict' });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(host.querySelector('dba-org-purge-preview dba-empty-state')?.textContent).toContain('Solo se purgan organizaciones marcadas como de prueba.');
+  });
+
   it('suspender pide motivo y escribir el NIT, y la ficha pasa a suspendida con Reactivar', async () => {
     conPermisos(['platform:clients', 'platform:clients:manage']);
     const { fixture, host } = await montar();

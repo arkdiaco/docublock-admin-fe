@@ -141,3 +141,29 @@ export interface DocumentTransferResult {
   source: DocumentsBalance;
   target: DocumentsBalance;
 }
+
+export type PurgeGroup = 'operation' | 'consumption' | 'membership';
+
+export type PurgeMode = 'delete' | 'pull' | 'reset';
+
+export interface PurgePreviewTarget {
+  collection: string;
+  mode: PurgeMode;
+  count: number;
+}
+
+export interface PurgePreviewGroup {
+  group: PurgeGroup;
+  total: number;
+  targets: PurgePreviewTarget[];
+}
+
+export interface OrganizationPurgePreview {
+  organizationId: string;
+  businessName: string;
+  tributaryNumber: string;
+  total: number;
+  groups: PurgePreviewGroup[];
+  kept: string[];
+  previewToken: string;
+}

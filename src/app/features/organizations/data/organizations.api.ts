@@ -10,6 +10,7 @@ import type {
   CreatedOrganization,
   CreateOrganizationBody,
   DocumentTransferResult,
+  OrganizationPurgePreview,
   PlatformOrgDetail,
   PlatformOrgPage,
   PlatformOrgQuery,
@@ -86,6 +87,12 @@ export class OrganizationsApi {
     body: { targetOrganizationId: string; documents: number; reason: string },
   ): Observable<DocumentTransferResult> {
     return this.http.post<DocumentTransferResult>(`/platform/organizations/${id}/documents/transfer`, body, {
+      context: silent(),
+    });
+  }
+
+  purgePreview(id: string): Observable<OrganizationPurgePreview> {
+    return this.http.get<OrganizationPurgePreview>(`/platform/organizations/${id}/purge/preview`, {
       context: silent(),
     });
   }
