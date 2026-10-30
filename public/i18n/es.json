@@ -217,7 +217,13 @@
       "actionMenuNote": "Sobre el popover del menú. Agrupa con separador; lo destructivo va en rojo y al final. Lo usan la cuenta y las filas de Personal.",
       "actionPicked": "Elegiste: {{key}}",
       "usage": "Uso en una fila",
-      "usageNote": "Documentos usados contra el límite dentro de una tabla: tono de aviso desde el 90 % y de exceso al pasar el límite; ∞ cuando no hay tope."
+      "usageNote": "Documentos usados contra el límite dentro de una tabla: tono de aviso desde el 90 % y de exceso al pasar el límite; ∞ cuando no hay tope.",
+      "tiers": "Tramos de descuento",
+      "tiersNote": "Lista editable de cantidad y descuento: valida orden ascendente y tope de 10; «Agregar» propone el doble de la última cantidad.",
+      "textArea": "Texto largo",
+      "textAreaLabel": "Resumen",
+      "textAreaHint": "Se muestra en la tienda.",
+      "textAreaNote": "Área de texto con contador cuando hay límite; mismo borde y foco que el campo de una línea."
     },
     "pieces": "Tabla y ficha",
     "piecesNote": "La tabla de organizaciones y la cabecera de la ficha, con datos de muestra. Cabecera en mono, filas de 48 px, fila elegida en morado tenue con el identificador en morado 700; paginación con ventana. «Entrar como» no se construye: se abre la ficha."
@@ -594,7 +600,11 @@
   "orgModules": {
     "on": "Módulo activado",
     "off": "Módulo desactivado",
-    "error": "No se pudo cambiar el módulo. Inténtalo de nuevo."
+    "error": {
+      "generic": "No se pudo cambiar el módulo. Inténtalo de nuevo.",
+      "ADDON_COBRADO_POR_STRIPE": "Ese módulo lo cobra Stripe: cancélalo al fin del periodo en la pestaña Marketplace.",
+      "ADDON_NO_DISPONIBLE_EN_PAIS": "Ese módulo no se vende en el país de la organización."
+    }
   },
   "orgReseller": {
     "title": "Asignar reseller",
@@ -1477,6 +1487,291 @@
       "expired": "Vencida",
       "none": "Sin suscripción",
       "active": "Vigente"
+    }
+  },
+  "mkt": {
+    "loading": "Cargando productos…",
+    "detailLoading": "Cargando producto…",
+    "count": "{{total}} productos",
+    "create": "Nuevo producto",
+    "searchPlaceholder": "Buscar por nombre o código",
+    "emptyTitle": "No hay productos con este filtro",
+    "emptyLead": "Cambia el filtro o crea un producto nuevo.",
+    "errorTitle": "No se pudo cargar el catálogo",
+    "notFound": "Ese producto no existe",
+    "filter": {
+      "active": "A la venta",
+      "retired": "Retirados",
+      "all": "Todos",
+      "allKinds": "Todos los tipos",
+      "validations": "Validaciones",
+      "addons": "Add-ons"
+    },
+    "col": {
+      "product": "Producto",
+      "kind": "Tipo",
+      "currency": "Moneda",
+      "price": "Precio",
+      "tax": "IVA",
+      "usage": "Uso",
+      "state": "Estado",
+      "version": "Versión",
+      "unitPrice": "Precio unitario",
+      "tiers": "Tramos",
+      "date": "Fecha"
+    },
+    "kind": {
+      "VALIDATION_PACKAGE": "Validación",
+      "ADDON": "Add-on"
+    },
+    "credit": {
+      "ani": "Consultar Registraduría",
+      "identity": "Validación contra documento",
+      "biometric": "Biometría avanzada",
+      "none": "Sin tipo"
+    },
+    "addon": {
+      "pagares": "Pagarés",
+      "consentimiento_informado": "Consentimiento informado",
+      "bienes_raices": "Bienes raíces",
+      "none": "Sin módulo"
+    },
+    "state": {
+      "ACTIVE": "A la venta",
+      "RETIRED": "Retirado"
+    },
+    "hidden": "Oculto en la tienda",
+    "perMonth": "{{amount}} / mes",
+    "perQuery": "{{amount}} / consulta",
+    "fromPrice": "Desde {{from}} (base {{unit}})",
+    "noTiers": "Sin descuento por volumen",
+    "tierLine": "{{pct}} % desde {{from}}",
+    "queries": "consultas",
+    "usage": {
+      "addons": "{{total}} add-ons activos",
+      "orders": "{{total}} compras en 30 días",
+      "overrides": "{{total}} precios especiales"
+    },
+    "newVersion": "Nueva versión",
+    "more": "Más acciones",
+    "terms": "Términos vigentes",
+    "visibleYes": "Se muestra",
+    "visibleNo": "Oculto",
+    "storeCopy": "Textos de la tienda",
+    "storeDetailMissing": "La tienda de Firma no tiene ficha propia para este código: el cliente solo verá nombre, resumen y viñetas.",
+    "storeAddonMissing": "La tienda de Firma no tiene la lista de cambios de este add-on: el cliente solo verá nombre, resumen y viñetas.",
+    "usageTitle": "Uso",
+    "activeAddons": "Add-ons activos",
+    "paidOrders": "Compras pagadas (30 días)",
+    "overrides": "Precios especiales",
+    "usageHint": "Retirar un producto no corta lo que ya se vendió: los add-ons siguen y los precios especiales se conservan.",
+    "history": "Versiones ({{total}})",
+    "historyLabel": "Historial de versiones",
+    "hide": "Ocultar en la tienda",
+    "show": "Mostrar en la tienda",
+    "hideTitle": "¿Ocultar este producto?",
+    "hideMessage": "{{name}} deja de verse en la tienda. Lo que ya se vendió no cambia.",
+    "showTitle": "¿Mostrar este producto?",
+    "showMessage": "{{name}} vuelve a verse en la tienda.",
+    "retire": "Retirar",
+    "retireVerb": "retirarlo",
+    "retireTitle": "¿Retirar este producto?",
+    "retireMessage": "{{name}} deja de venderse. Las compras pendientes se acreditan si se pagan.",
+    "retireAddonMessage": "{{name}} deja de venderse. Los {{total}} add-ons activos siguen hasta que se cancelen.",
+    "reactivate": "Volver a vender",
+    "reactivateTitle": "¿Volver a vender este producto?",
+    "reactivateMessage": "{{name}} vuelve a estar a la venta con su última versión.",
+    "texts": {
+      "open": "Editar textos",
+      "title": "Textos de la tienda",
+      "confirm": "Guardar textos",
+      "lead": "Cambiar los textos no crea una versión nueva: se aplican al producto vigente."
+    },
+    "f": {
+      "kind": "Tipo",
+      "creditType": "Validación",
+      "addonCode": "Módulo",
+      "currency": "Moneda",
+      "code": "Código",
+      "level": "Nivel",
+      "name": "Nombre",
+      "summary": "Resumen",
+      "bullets": "Viñetas",
+      "limitations": "Limitaciones",
+      "unitPrice": "Precio unitario",
+      "monthlyPrice": "Precio mensual",
+      "taxPct": "IVA (%)",
+      "minQuantity": "Cantidad mínima",
+      "tiers": "Descuento por volumen",
+      "visible": "Mostrar en la tienda",
+      "reason": "Motivo",
+      "price": "Precio"
+    },
+    "form": {
+      "createTitle": "Nuevo producto",
+      "createConfirm": "Crear producto",
+      "versionTitle": "Nueva versión",
+      "versionConfirm": "Crear versión",
+      "versionLead": "Precio, tramos, cantidad mínima e IVA crean una versión nueva; la anterior queda en el historial.",
+      "versionWarning": "Las compras ya hechas conservan el precio con que se pagaron.",
+      "codeHint": "Mayúsculas y guion bajo, de 3 a 40 caracteres.",
+      "codeInvalid": "Usa solo mayúsculas y guion bajo (3 a 40).",
+      "currencyHint": "La moneda define en qué país se vende.",
+      "levelHint": "De 1 a 9; ordena los paquetes en la tienda.",
+      "levelInvalid": "El nivel va de 1 a 9.",
+      "bulletsHint": "Una viñeta por línea.",
+      "bulletsTooMany": "Máximo 8 viñetas.",
+      "bulletTooLong": "Cada viñeta admite hasta 200 caracteres.",
+      "price": "Precio",
+      "priceInvalid": "Escribe un precio entero mayor que cero.",
+      "taxInvalid": "El IVA va de 0 a 100.",
+      "minQuantityInvalid": "La cantidad mínima es un entero mayor que cero.",
+      "visibleHint": "Si lo apagas, el producto existe pero no se ve en la tienda.",
+      "reasonPlaceholder": "Por qué haces este cambio"
+    },
+    "done": {
+      "created": "Producto {{code}} creado",
+      "versioned": "Versión nueva creada",
+      "texts": "Textos guardados",
+      "hidden": "Producto oculto en la tienda",
+      "shown": "Producto visible en la tienda",
+      "retired": "Producto retirado",
+      "reactivated": "Producto otra vez a la venta"
+    },
+    "error": {
+      "PRODUCTO_CODIGO_EN_USO": "Ese código ya lo usa otro producto. Elige uno distinto.",
+      "PRODUCTO_DATOS_INVALIDOS": "Hay datos del producto que no son válidos. Revisa precio, tramos y textos.",
+      "MONEDA_NO_ADMITIDA": "Ningún país configurado usa esa moneda.",
+      "ADDON_YA_EN_VENTA": "Ese add-on ya tiene un producto en venta en esa moneda.",
+      "PRODUCTO_SIN_CAMBIOS": "No cambiaste nada de los términos.",
+      "PRODUCTO_RETIRADO": "El producto ya está retirado.",
+      "PRODUCTO_EN_CAMBIO": "Otro cambio se guardó al mismo tiempo. Recarga y vuelve a intentarlo.",
+      "PRODUCTO_ACTIVO": "El producto ya está a la venta.",
+      "generic": "No se pudo completar. Inténtalo de nuevo."
+    }
+  },
+  "tiers": {
+    "label": "Descuento por volumen",
+    "unit": "unidades",
+    "empty": "Sin descuento por volumen.",
+    "from": "Desde",
+    "discount": "Descuento",
+    "fromRow": "Desde, tramo {{n}}",
+    "discountRow": "Descuento, tramo {{n}}",
+    "remove": "Quitar el tramo {{n}}",
+    "add": "Agregar tramo",
+    "tooMany": "Máximo 10 tramos.",
+    "quantityInvalid": "Cada tramo empieza en una cantidad entera mayor que cero.",
+    "discountInvalid": "El descuento va de 0 a 100 %.",
+    "notAscending": "Las cantidades deben ir de menor a mayor, sin repetirse."
+  },
+  "orgMkt": {
+    "loading": "Cargando marketplace…",
+    "errorTitle": "No se pudo cargar el marketplace",
+    "errorLead": "Vuelve a intentarlo en un momento.",
+    "prices": "Precios",
+    "pricesLead": "Precio general y el que paga esta organización. Solo productos en su moneda.",
+    "noPrices": "No hay productos a la venta en la moneda de esta organización.",
+    "addons": "Add-ons",
+    "addonsLead": "Módulos que se contratan aparte y quién los cobra.",
+    "noAddons": "No hay add-ons disponibles para esta organización.",
+    "stripeNote": "Lo que cobra Stripe no se apaga desde aquí: se cancela al fin del periodo pagado.",
+    "col": {
+      "product": "Producto",
+      "general": "General",
+      "effective": "Paga",
+      "tiers": "Tramos",
+      "tax": "IVA",
+      "addon": "Add-on",
+      "state": "Estado",
+      "source": "Lo cobra",
+      "monthly": "Precio mensual",
+      "period": "Fin del periodo"
+    },
+    "special": "Precio especial",
+    "monthly": "Mensual",
+    "noTiers": "Sin descuento por volumen",
+    "tierLine": "{{pct}} % desde {{from}}",
+    "queries": "consultas",
+    "offSale": "Ya no se vende",
+    "addonState": {
+      "ACTIVE": "Activo",
+      "PENDING": "Pago pendiente",
+      "INACTIVE": "Inactivo",
+      "CANCELLED": "Cancelado",
+      "CANCELLING": "Se cancela al fin del periodo"
+    },
+    "source": {
+      "STRIPE": "Stripe",
+      "PLATFORM": "Convenio",
+      "none": "—"
+    },
+    "actionsFor": "Acciones de {{name}}",
+    "action": {
+      "override": "Precio especial",
+      "editOverride": "Editar precio especial",
+      "remove": "Quitar precio especial",
+      "activate": "Activar por convenio",
+      "deactivate": "Desactivar",
+      "cancel": "Cancelar al fin del periodo"
+    },
+    "override": {
+      "title": "Precio especial",
+      "confirm": "Guardar precio",
+      "lead": "El precio general es {{general}}.",
+      "unit": "Precio unitario",
+      "monthly": "Precio mensual",
+      "tax": "IVA (%)",
+      "taxGeneral": "El general",
+      "ownTiers": "Tramos propios",
+      "ownTiersHint": "Apagado, usa los tramos generales del producto.",
+      "tiers": "Descuento por volumen",
+      "noDiscount": "Sin descuento por volumen.",
+      "note": "Nota interna",
+      "priceInvalid": "Escribe un precio entero.",
+      "taxInvalid": "El IVA va de 0 a 100."
+    },
+    "f": {
+      "reason": "Motivo",
+      "reasonPlaceholder": "Por qué haces este cambio"
+    },
+    "confirm": {
+      "remove": {
+        "title": "¿Quitar el precio especial?",
+        "message": "{{name}} vuelve al precio general de {{general}}.",
+        "button": "Quitar"
+      },
+      "activate": {
+        "title": "¿Activar por convenio?",
+        "message": "{{name}} queda activo para {{org}} sin cobro de Stripe.",
+        "button": "Activar"
+      },
+      "deactivate": {
+        "title": "¿Desactivar el add-on?",
+        "message": "{{name}} se apaga ya para {{org}}.",
+        "button": "Desactivar"
+      },
+      "cancel": {
+        "title": "¿Cancelar al fin del periodo?",
+        "message": "Stripe deja de cobrar {{name}} y el módulo sigue hasta el {{date}}.",
+        "button": "Programar cancelación"
+      }
+    },
+    "done": {
+      "override": "Precio especial de {{name}} guardado",
+      "remove": "Precio especial de {{name}} quitado",
+      "activate": "{{name}} activado por convenio",
+      "deactivate": "{{name}} desactivado",
+      "cancel": "{{name}} se cancela al fin del periodo"
+    },
+    "error": {
+      "ADDON_COBRADO_POR_STRIPE": "Este add-on lo cobra Stripe: cancélalo al fin del periodo.",
+      "ADDON_NO_COBRADO_POR_STRIPE": "Este add-on no lo cobra Stripe.",
+      "ADDON_NO_DISPONIBLE_EN_PAIS": "Este add-on no se vende en el país de la organización.",
+      "PRODUCTO_NO_ENCONTRADO": "El producto ya no está a la venta.",
+      "PRODUCTO_NO_DISPONIBLE_EN_PAIS": "El producto se vende en otra moneda.",
+      "PRODUCTO_DATOS_INVALIDOS": "El precio o los tramos no son válidos.",
+      "generic": "No se pudo completar. Inténtalo de nuevo."
     }
   }
 }

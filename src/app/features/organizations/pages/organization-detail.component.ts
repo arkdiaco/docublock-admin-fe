@@ -35,6 +35,7 @@ import { QuotasTabComponent } from '../components/quotas/quotas-tab.component';
 import { SubscriptionTabComponent } from '../components/subscription/subscription-tab.component';
 import { OrgPurgeComponent } from '../components/purge/org-purge.component';
 import { OrgAuditTabComponent } from '../components/audit/org-audit-tab.component';
+import { OrgMarketplaceTabComponent } from '../components/marketplace/org-marketplace-tab.component';
 import { OrganizationsApi } from '../data/organizations.api';
 import type { PlatformOrgDetail, PlatformOrgUpdate } from '../data/organizations.models';
 import { orgStateView } from '../data/platform-org-state';
@@ -56,6 +57,8 @@ const MODULES = [
   { code: 'consentimiento_informado', abbr: 'CI', labelKey: 'orgd.module.consent' },
   { code: 'bienes_raices', abbr: 'BR', labelKey: 'orgd.module.realEstate' },
 ] as const;
+
+const MODULE_ERRORS = ['ADDON_COBRADO_POR_STRIPE', 'ADDON_NO_DISPONIBLE_EN_PAIS'];
 
 const ORG_EDIT_ERRORS = ['TRIBUTARY_NUMBER_INVALID', 'NIT_EN_USO', 'CIUDAD_FUERA_DEL_PAIS', 'ORG_NO_EXISTE'];
 
@@ -89,6 +92,7 @@ const initialsOf = (name: string): string =>
     IntegrationsTabComponent,
     OrgPurgeComponent,
     OrgAuditTabComponent,
+    OrgMarketplaceTabComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -226,6 +230,8 @@ const initialsOf = (name: string): string =>
           <dba-validations-tab [org]="org" />
         } @else if (tab() === 'integrations') {
           <dba-integrations-tab [org]="org" />
+        } @else if (tab() === 'marketplace') {
+          <dba-org-marketplace-tab [org]="org" />
         } @else if (tab() === 'audit') {
           <dba-org-audit-tab [org]="org" />
         } @else {
@@ -395,7 +401,11 @@ export class OrganizationDetailComponent {
   );
 
   protected readonly tabs = computed<UnderlineTab[]>(() =>
-    TAB_KEYS.filter((key) => key !== 'audit' || this.auth.canRead('platform')).map((key) => ({
+    TAB_KEYS.filter(
+      (key) =>
+        (key !== 'audit' || this.auth.canRead('platform')) &&
+        (key !== 'marketplace' || this.auth.canRead('commercial')),
+    ).map((key) => ({
       key,
       label: this.translate.instant('orgd.tab.' + key) as string,
     })),
@@ -484,8 +494,10 @@ export class OrganizationDetailComponent {
       await firstValueFrom(this.api.setModules(org.id, modules));
       this.detail.update((current) => (current ? { ...current, modules } : current));
       this.notify.success(this.translate.instant(on ? 'orgModules.on' : 'orgModules.off') as string);
-    } catch {
-      this.notify.error(this.translate.instant('orgModules.error') as string);
+    } catch (error) {
+      const code = errorCodeOf(error);
+      const known = code !== null && MODULE_ERRORS.includes(code);
+      this.notify.error(this.translate.instant(known ? `orgModules.error.${code}` : 'orgModules.error.generic') as string);
     } finally {
       this.savingModule.set(false);
     }

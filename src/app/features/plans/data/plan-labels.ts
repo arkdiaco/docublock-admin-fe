@@ -1,5 +1,6 @@
 import type { TranslateService } from '@ngx-translate/core';
-import { money, type PriceTerms } from './plan-format';
+import { money } from '../../../shared/domain/money';
+import type { PriceTerms } from './plan-format';
 
 export const priceLabel = (
   terms: PriceTerms,

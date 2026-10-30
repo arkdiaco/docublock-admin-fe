@@ -50,12 +50,25 @@ describe('DesignSystemComponent', () => {
     expect(host.querySelector('.type__row .dba-id')).not.toBeNull();
   });
 
-  it('el cuadro de componentes trae acciones, campo, KPI, cuotas, módulos, eventos, filtros y entornos', () => {
+  it('el cuadro de componentes trae acciones, campo, KPI, cuotas, tramos, texto largo, módulos, eventos, filtros y entornos', () => {
     const { fixture, host } = montar();
     const variantes = Array.from(host.querySelectorAll('.cards [dba-button]')).map(
       (b) => b.className.match(/btn--(primary|secondary|destructive|dark)/)?.[1],
     );
-    expect(variantes).toEqual(['primary', 'secondary', 'dark', 'secondary', 'destructive', 'secondary', 'secondary']);
+    expect(variantes).toEqual([
+      'primary',
+      'secondary',
+      'dark',
+      'secondary',
+      'destructive',
+      'secondary',
+      'secondary',
+      'secondary',
+      'secondary',
+      'secondary',
+    ]);
+    expect(host.querySelectorAll('dba-tier-editor .tiers__row').length).toBe(2);
+    expect(host.querySelector('dba-text-area textarea')).not.toBeNull();
     expect(host.querySelector<HTMLInputElement>('dba-field .field__input')?.value).toBe('sierranorte.aero');
     expect(host.querySelectorAll('dba-kpi-card').length).toBe(4);
     expect(host.querySelectorAll('dba-quota-bar').length).toBe(3);

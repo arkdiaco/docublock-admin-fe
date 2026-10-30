@@ -217,7 +217,13 @@
       "actionMenuNote": "Built on the menu popover. Groups with a separator; destructive goes in red and last. Used by the account and Staff rows.",
       "actionPicked": "You picked: {{key}}",
       "usage": "Usage in a row",
-      "usageNote": "Documents used against the limit inside a table: warning tone from 90 % and over tone past the limit; ∞ when there is no cap."
+      "usageNote": "Documents used against the limit inside a table: warning tone from 90 % and over tone past the limit; ∞ when there is no cap.",
+      "tiers": "Discount tiers",
+      "tiersNote": "Editable list of quantity and discount: checks ascending order and a cap of 10; «Add» proposes double the last quantity.",
+      "textArea": "Long text",
+      "textAreaLabel": "Summary",
+      "textAreaHint": "Shown in the store.",
+      "textAreaNote": "Text area with a counter when there's a limit; same border and focus as the single-line field."
     },
     "pieces": "Table and record",
     "piecesNote": "The organizations table and the record header, with sample data. Mono header, 48 px rows, the selected row in soft purple with its identifier in purple 700; windowed pagination. «Impersonate» is not built: the record opens instead."
@@ -594,7 +600,11 @@
   "orgModules": {
     "on": "Module enabled",
     "off": "Module disabled",
-    "error": "The module couldn't be changed. Try again."
+    "error": {
+      "generic": "Couldn't change the module. Try again.",
+      "ADDON_COBRADO_POR_STRIPE": "Stripe bills that module: cancel it at period end in the Marketplace tab.",
+      "ADDON_NO_DISPONIBLE_EN_PAIS": "That module isn't sold in the organization's country."
+    }
   },
   "orgReseller": {
     "title": "Assign reseller",
@@ -1477,6 +1487,291 @@
       "expired": "Expired",
       "none": "No subscription",
       "active": "Current"
+    }
+  },
+  "mkt": {
+    "loading": "Loading products…",
+    "detailLoading": "Loading product…",
+    "count": "{{total}} products",
+    "create": "New product",
+    "searchPlaceholder": "Search by name or code",
+    "emptyTitle": "No products match this filter",
+    "emptyLead": "Change the filter or create a new product.",
+    "errorTitle": "Couldn't load the catalog",
+    "notFound": "That product doesn't exist",
+    "filter": {
+      "active": "On sale",
+      "retired": "Retired",
+      "all": "All",
+      "allKinds": "All types",
+      "validations": "Validations",
+      "addons": "Add-ons"
+    },
+    "col": {
+      "product": "Product",
+      "kind": "Type",
+      "currency": "Currency",
+      "price": "Price",
+      "tax": "Tax",
+      "usage": "Usage",
+      "state": "Status",
+      "version": "Version",
+      "unitPrice": "Unit price",
+      "tiers": "Tiers",
+      "date": "Date"
+    },
+    "kind": {
+      "VALIDATION_PACKAGE": "Validation",
+      "ADDON": "Add-on"
+    },
+    "credit": {
+      "ani": "Civil registry lookup",
+      "identity": "Document check",
+      "biometric": "Advanced biometrics",
+      "none": "No type"
+    },
+    "addon": {
+      "pagares": "Promissory notes",
+      "consentimiento_informado": "Informed consent",
+      "bienes_raices": "Real estate",
+      "none": "No module"
+    },
+    "state": {
+      "ACTIVE": "On sale",
+      "RETIRED": "Retired"
+    },
+    "hidden": "Hidden in the store",
+    "perMonth": "{{amount}} / month",
+    "perQuery": "{{amount}} / check",
+    "fromPrice": "From {{from}} (base {{unit}})",
+    "noTiers": "No volume discount",
+    "tierLine": "{{pct}} % from {{from}}",
+    "queries": "checks",
+    "usage": {
+      "addons": "{{total}} active add-ons",
+      "orders": "{{total}} purchases in 30 days",
+      "overrides": "{{total}} special prices"
+    },
+    "newVersion": "New version",
+    "more": "More actions",
+    "terms": "Current terms",
+    "visibleYes": "Shown",
+    "visibleNo": "Hidden",
+    "storeCopy": "Store copy",
+    "storeDetailMissing": "The Firma store has no dedicated page for this code: customers only see name, summary and bullets.",
+    "storeAddonMissing": "The Firma store has no change list for this add-on: customers only see name, summary and bullets.",
+    "usageTitle": "Usage",
+    "activeAddons": "Active add-ons",
+    "paidOrders": "Paid purchases (30 days)",
+    "overrides": "Special prices",
+    "usageHint": "Retiring a product doesn't cut what was sold: add-ons continue and special prices are kept.",
+    "history": "Versions ({{total}})",
+    "historyLabel": "Version history",
+    "hide": "Hide in the store",
+    "show": "Show in the store",
+    "hideTitle": "Hide this product?",
+    "hideMessage": "{{name}} stops showing in the store. What was sold doesn't change.",
+    "showTitle": "Show this product?",
+    "showMessage": "{{name}} shows in the store again.",
+    "retire": "Retire",
+    "retireVerb": "retire it",
+    "retireTitle": "Retire this product?",
+    "retireMessage": "{{name}} stops being sold. Pending purchases are credited if paid.",
+    "retireAddonMessage": "{{name}} stops being sold. The {{total}} active add-ons continue until cancelled.",
+    "reactivate": "Sell again",
+    "reactivateTitle": "Sell this product again?",
+    "reactivateMessage": "{{name}} goes back on sale with its last version.",
+    "texts": {
+      "open": "Edit copy",
+      "title": "Store copy",
+      "confirm": "Save copy",
+      "lead": "Changing the copy doesn't create a new version: it applies to the current product."
+    },
+    "f": {
+      "kind": "Type",
+      "creditType": "Validation",
+      "addonCode": "Module",
+      "currency": "Currency",
+      "code": "Code",
+      "level": "Level",
+      "name": "Name",
+      "summary": "Summary",
+      "bullets": "Bullets",
+      "limitations": "Limitations",
+      "unitPrice": "Unit price",
+      "monthlyPrice": "Monthly price",
+      "taxPct": "Tax (%)",
+      "minQuantity": "Minimum quantity",
+      "tiers": "Volume discount",
+      "visible": "Show in the store",
+      "reason": "Reason",
+      "price": "Price"
+    },
+    "form": {
+      "createTitle": "New product",
+      "createConfirm": "Create product",
+      "versionTitle": "New version",
+      "versionConfirm": "Create version",
+      "versionLead": "Price, tiers, minimum quantity and tax create a new version; the previous one stays in the history.",
+      "versionWarning": "Purchases already made keep the price they were paid at.",
+      "codeHint": "Uppercase and underscore, 3 to 40 characters.",
+      "codeInvalid": "Use only uppercase and underscore (3 to 40).",
+      "currencyHint": "The currency sets the country it's sold in.",
+      "levelHint": "1 to 9; orders packages in the store.",
+      "levelInvalid": "Level goes from 1 to 9.",
+      "bulletsHint": "One bullet per line.",
+      "bulletsTooMany": "Up to 8 bullets.",
+      "bulletTooLong": "Each bullet allows up to 200 characters.",
+      "price": "Price",
+      "priceInvalid": "Enter a whole price above zero.",
+      "taxInvalid": "Tax goes from 0 to 100.",
+      "minQuantityInvalid": "Minimum quantity is a whole number above zero.",
+      "visibleHint": "Off means the product exists but isn't shown in the store.",
+      "reasonPlaceholder": "Why you're making this change"
+    },
+    "done": {
+      "created": "Product {{code}} created",
+      "versioned": "New version created",
+      "texts": "Copy saved",
+      "hidden": "Product hidden in the store",
+      "shown": "Product shown in the store",
+      "retired": "Product retired",
+      "reactivated": "Product on sale again"
+    },
+    "error": {
+      "PRODUCTO_CODIGO_EN_USO": "That code is already used by another product. Pick a different one.",
+      "PRODUCTO_DATOS_INVALIDOS": "Some product data isn't valid. Check price, tiers and copy.",
+      "MONEDA_NO_ADMITIDA": "No configured country uses that currency.",
+      "ADDON_YA_EN_VENTA": "That add-on already has a product on sale in that currency.",
+      "PRODUCTO_SIN_CAMBIOS": "You didn't change any terms.",
+      "PRODUCTO_RETIRADO": "The product is already retired.",
+      "PRODUCTO_EN_CAMBIO": "Another change was saved at the same time. Reload and try again.",
+      "PRODUCTO_ACTIVO": "The product is already on sale.",
+      "generic": "Couldn't complete that. Try again."
+    }
+  },
+  "tiers": {
+    "label": "Volume discount",
+    "unit": "units",
+    "empty": "No volume discount.",
+    "from": "From",
+    "discount": "Discount",
+    "fromRow": "From, tier {{n}}",
+    "discountRow": "Discount, tier {{n}}",
+    "remove": "Remove tier {{n}}",
+    "add": "Add tier",
+    "tooMany": "Up to 10 tiers.",
+    "quantityInvalid": "Each tier starts at a whole quantity above zero.",
+    "discountInvalid": "Discount goes from 0 to 100 %.",
+    "notAscending": "Quantities must go up, without repeating."
+  },
+  "orgMkt": {
+    "loading": "Loading marketplace…",
+    "errorTitle": "Couldn't load the marketplace",
+    "errorLead": "Try again in a moment.",
+    "prices": "Prices",
+    "pricesLead": "General price and what this organization pays. Only products in its currency.",
+    "noPrices": "No products on sale in this organization's currency.",
+    "addons": "Add-ons",
+    "addonsLead": "Modules contracted separately and who bills them.",
+    "noAddons": "No add-ons available for this organization.",
+    "stripeNote": "What Stripe bills can't be turned off here: it's cancelled at the end of the paid period.",
+    "col": {
+      "product": "Product",
+      "general": "General",
+      "effective": "Pays",
+      "tiers": "Tiers",
+      "tax": "Tax",
+      "addon": "Add-on",
+      "state": "Status",
+      "source": "Billed by",
+      "monthly": "Monthly price",
+      "period": "Period end"
+    },
+    "special": "Special price",
+    "monthly": "Monthly",
+    "noTiers": "No volume discount",
+    "tierLine": "{{pct}} % from {{from}}",
+    "queries": "checks",
+    "offSale": "No longer sold",
+    "addonState": {
+      "ACTIVE": "Active",
+      "PENDING": "Payment pending",
+      "INACTIVE": "Inactive",
+      "CANCELLED": "Cancelled",
+      "CANCELLING": "Cancels at period end"
+    },
+    "source": {
+      "STRIPE": "Stripe",
+      "PLATFORM": "Agreement",
+      "none": "—"
+    },
+    "actionsFor": "Actions for {{name}}",
+    "action": {
+      "override": "Special price",
+      "editOverride": "Edit special price",
+      "remove": "Remove special price",
+      "activate": "Activate by agreement",
+      "deactivate": "Deactivate",
+      "cancel": "Cancel at period end"
+    },
+    "override": {
+      "title": "Special price",
+      "confirm": "Save price",
+      "lead": "The general price is {{general}}.",
+      "unit": "Unit price",
+      "monthly": "Monthly price",
+      "tax": "Tax (%)",
+      "taxGeneral": "The general one",
+      "ownTiers": "Own tiers",
+      "ownTiersHint": "Off, it uses the product's general tiers.",
+      "tiers": "Volume discount",
+      "noDiscount": "No volume discount.",
+      "note": "Internal note",
+      "priceInvalid": "Enter a whole price.",
+      "taxInvalid": "Tax goes from 0 to 100."
+    },
+    "f": {
+      "reason": "Reason",
+      "reasonPlaceholder": "Why you're making this change"
+    },
+    "confirm": {
+      "remove": {
+        "title": "Remove the special price?",
+        "message": "{{name}} goes back to the general price of {{general}}.",
+        "button": "Remove"
+      },
+      "activate": {
+        "title": "Activate by agreement?",
+        "message": "{{name}} becomes active for {{org}} without Stripe billing.",
+        "button": "Activate"
+      },
+      "deactivate": {
+        "title": "Deactivate the add-on?",
+        "message": "{{name}} turns off now for {{org}}.",
+        "button": "Deactivate"
+      },
+      "cancel": {
+        "title": "Cancel at period end?",
+        "message": "Stripe stops billing {{name}} and the module stays on until {{date}}.",
+        "button": "Schedule cancellation"
+      }
+    },
+    "done": {
+      "override": "Special price for {{name}} saved",
+      "remove": "Special price for {{name}} removed",
+      "activate": "{{name}} activated by agreement",
+      "deactivate": "{{name}} deactivated",
+      "cancel": "{{name}} cancels at period end"
+    },
+    "error": {
+      "ADDON_COBRADO_POR_STRIPE": "Stripe bills this add-on: cancel it at period end.",
+      "ADDON_NO_COBRADO_POR_STRIPE": "Stripe doesn't bill this add-on.",
+      "ADDON_NO_DISPONIBLE_EN_PAIS": "This add-on isn't sold in the organization's country.",
+      "PRODUCTO_NO_ENCONTRADO": "The product is no longer on sale.",
+      "PRODUCTO_NO_DISPONIBLE_EN_PAIS": "The product is sold in another currency.",
+      "PRODUCTO_DATOS_INVALIDOS": "The price or tiers aren't valid.",
+      "generic": "Couldn't complete that. Try again."
     }
   }
 }

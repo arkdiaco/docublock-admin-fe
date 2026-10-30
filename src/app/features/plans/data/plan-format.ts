@@ -11,18 +11,6 @@ export type PriceTerms = Pick<
   | 'negotiated'
 >;
 
-export const money = (amount: number, currency: string, locale: string): string => {
-  try {
-    return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  } catch {
-    return `${amount} ${currency}`;
-  }
-};
-
 export const limitText = (value: number | null): string => (value === null ? '∞' : String(value));
 
 export const LIMIT_LABEL: Record<keyof PlanLimits, string> = {

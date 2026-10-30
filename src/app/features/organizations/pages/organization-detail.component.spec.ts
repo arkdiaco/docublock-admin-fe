@@ -72,14 +72,15 @@ describe('OrganizationDetailComponent', () => {
     return { fixture, host: fixture.nativeElement as HTMLElement };
   };
 
-  it('pinta la cabecera con nombre, estado y meta, y ocho pestañas con Resumen activa (sin Auditoría si no lee plataforma)', async () => {
+  it('pinta la cabecera con nombre, estado y meta, y siete pestañas con Resumen activa (sin Auditoría ni Marketplace si no lee plataforma ni comercial)', async () => {
     const { host } = await montar();
     expect(host.querySelector('.rec__name')?.textContent?.trim()).toBe('Aeropuerto Sierra Norte');
     expect(host.querySelector('.rec__card .st--active')?.textContent).toContain('Activa');
     expect(host.querySelector('.rec__meta')?.textContent).toContain('900123456');
     expect(host.querySelector('.rec__meta')?.textContent).toContain('Corporativo');
-    expect(host.querySelectorAll('db-underline-tabs .tab').length).toBe(8);
+    expect(host.querySelectorAll('db-underline-tabs .tab').length).toBe(7);
     expect(host.querySelector('db-underline-tabs')?.textContent).not.toContain('Auditoría');
+    expect(host.querySelector('db-underline-tabs')?.textContent).not.toContain('Marketplace');
     expect(host.querySelector('.tab--on')?.textContent).toContain('Resumen');
     expect(host.querySelector('dba-org-flag .flag--test')?.textContent).toContain('PRUEBA');
   });
@@ -239,11 +240,25 @@ describe('OrganizationDetailComponent', () => {
     expect(host.querySelector('dba-org-purge dba-empty-state')?.textContent).toContain('Solo se purgan organizaciones marcadas como de prueba.');
   });
 
+  it('con lectura comercial la pestaña Marketplace carga precios y add-ons de la organización', async () => {
+    conPermisos(['platform:clients', 'platform:commercial']);
+    const { fixture, host } = await montar();
+    const tabs = [...host.querySelectorAll<HTMLButtonElement>('db-underline-tabs .tab')];
+    tabs.find((t) => t.textContent?.includes('Marketplace'))!.click();
+    fixture.detectChanges();
+    http.expectOne('/platform/marketplace/organizations/org-1/prices').flush([]);
+    http.expectOne('/platform/marketplace/organizations/org-1/addons').flush([]);
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(host.querySelector('dba-org-marketplace-tab')?.textContent).toContain('No hay add-ons disponibles');
+    });
+  });
+
   it('con lectura de plataforma la pestaña Auditoría muestra la actividad de la organización y enlaza a la bitácora filtrada', async () => {
     conPermisos(['platform:clients', 'platform:platform']);
     const { fixture, host } = await montar();
     const tabs = [...host.querySelectorAll<HTMLButtonElement>('db-underline-tabs .tab')];
-    expect(tabs.length).toBe(9);
+    expect(tabs.length).toBe(8);
     tabs.find((t) => t.textContent?.includes('Auditoría'))!.click();
     fixture.detectChanges();
     const req = http.expectOne((r) => r.url === '/platform/audit');

@@ -21,6 +21,9 @@ import { ModuleToggleComponent } from '../../../shared/ui/module-toggle.componen
 import { OrgStateComponent } from '../../../shared/ui/org-state.component';
 import { QuotaBarComponent } from '../../../shared/ui/quota-bar.component';
 import { UsageMeterComponent } from '../../../shared/ui/usage-meter.component';
+import { TierEditorComponent } from '../../../shared/ui/tier-editor.component';
+import { TextAreaComponent } from '../../../shared/ui/text-area.component';
+import type { TierDraft } from '../../../shared/domain/price-tiers';
 import { RoleTagComponent } from '../../../shared/ui/role-tag.component';
 
 const RAMP = [
@@ -158,6 +161,8 @@ const pctOf = (used: number, limit: number): string =>
     KpiCardComponent,
     QuotaBarComponent,
     UsageMeterComponent,
+    TierEditorComponent,
+    TextAreaComponent,
     ModuleToggleComponent,
     AuditEventComponent,
     FilterPillsComponent,
@@ -289,6 +294,21 @@ const pctOf = (used: number, limit: number): string =>
               <dba-usage-meter [used]="7" [limit]="null" />
             </div>
             <p class="dba-body">{{ 'sys.c.usageNote' | translate }}</p>
+          </div>
+
+          <div class="card">
+            <h3 class="dba-eyebrow">{{ 'sys.c.tiers' | translate }}</h3>
+            <dba-tier-editor [(tiers)]="sampleTiers" />
+            <p class="dba-body">{{ 'sys.c.tiersNote' | translate }}</p>
+
+            <h3 class="dba-eyebrow card__eyebrow">{{ 'sys.c.textArea' | translate }}</h3>
+            <dba-text-area
+              label="sys.c.textAreaLabel"
+              hint="sys.c.textAreaHint"
+              [maxlength]="300"
+              [(value)]="sampleText"
+            />
+            <p class="dba-body">{{ 'sys.c.textAreaNote' | translate }}</p>
           </div>
 
           <div class="card">
@@ -817,6 +837,11 @@ export class DesignSystemComponent {
 
   protected readonly domain = signal('sierranorte.aero');
   protected readonly modules = signal(MODULES);
+  protected readonly sampleTiers = signal<TierDraft[]>([
+    { minQuantity: '100', discountPct: '5' },
+    { minQuantity: '500', discountPct: '12' },
+  ]);
+  protected readonly sampleText = signal('');
   protected readonly filter = signal('all');
   protected readonly challengeResult = signal('');
   protected readonly selected = signal('ORG-0412');

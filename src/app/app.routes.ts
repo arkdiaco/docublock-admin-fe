@@ -46,6 +46,17 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
       loadComponent: () => import('./features/subscriptions/pages/subscriptions.component').then((m) => m.SubscriptionsComponent),
     },
   ],
+  marketplace: [
+    {
+      path: '',
+      loadComponent: () => import('./features/marketplace/pages/marketplace.component').then((m) => m.MarketplaceComponent),
+    },
+    {
+      path: ':code',
+      loadComponent: () =>
+        import('./features/marketplace/pages/product-detail.component').then((m) => m.ProductDetailComponent),
+    },
+  ],
   audit: [{ path: '', loadComponent: () => import('./features/audit/pages/audit.component').then((m) => m.AuditComponent) }],
   staff: [{ path: '', loadComponent: () => import('./features/staff/pages/staff.component').then((m) => m.StaffComponent) }],
   health: [{ path: '', loadComponent: () => import('./features/status/pages/status.component').then((m) => m.StatusComponent) }],

@@ -16,7 +16,8 @@ import { ToggleSwitch } from 'primeng/toggleswitch';
 import { firstValueFrom } from 'rxjs';
 import { FieldComponent } from '../../../shared/ui/field.component';
 import { ModalShellComponent } from '../../../shared/ui/modal-shell.component';
-import { LIMIT_LABEL, limitText, money } from '../data/plan-format';
+import { money } from '../../../shared/domain/money';
+import { LIMIT_LABEL, limitText } from '../data/plan-format';
 import { PlansApi } from '../data/plans.api';
 import {
   LIMIT_KEYS,

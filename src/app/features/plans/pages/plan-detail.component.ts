@@ -28,7 +28,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { LegacyLinkFormComponent } from '../components/legacy-link-form.component';
 import { PlanFormComponent } from '../components/plan-form.component';
 import { StripeLinkFormComponent } from '../components/stripe-link-form.component';
-import { LIMIT_LABEL, limitText, money, versionTerms } from '../data/plan-format';
+import { money } from '../../../shared/domain/money';
+import { LIMIT_LABEL, limitText, versionTerms } from '../data/plan-format';
 import { priceLabel } from '../data/plan-labels';
 import { PlansApi } from '../data/plans.api';
 import {
