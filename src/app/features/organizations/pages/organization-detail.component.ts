@@ -36,6 +36,7 @@ import { QuotasTabComponent } from '../components/quotas/quotas-tab.component';
 import { SubscriptionTabComponent } from '../components/subscription/subscription-tab.component';
 import { OrgPurgeComponent } from '../components/purge/org-purge.component';
 import { OrgAuditTabComponent } from '../components/audit/org-audit-tab.component';
+import { OrgBillingTabComponent } from '../components/billing/org-billing-tab.component';
 import { OrgMarketplaceTabComponent } from '../components/marketplace/org-marketplace-tab.component';
 import { OrganizationsApi } from '../data/organizations.api';
 import type { PlatformOrgDetail, PlatformOrgUpdate } from '../data/organizations.models';
@@ -44,6 +45,7 @@ import { orgStateView } from '../data/platform-org-state';
 const TAB_KEYS = [
   'summary',
   'subscription',
+  'billing',
   'quotas',
   'members',
   'integrations',
@@ -95,6 +97,7 @@ const initialsOf = (name: string): string =>
     IntegrationsTabComponent,
     OrgPurgeComponent,
     OrgAuditTabComponent,
+    OrgBillingTabComponent,
     OrgMarketplaceTabComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -225,6 +228,8 @@ const initialsOf = (name: string): string =>
           </div>
         } @else if (tab() === 'members') {
           <dba-members-tab [org]="org" />
+        } @else if (tab() === 'billing') {
+          <dba-org-billing-tab [org]="org" />
         } @else if (tab() === 'quotas') {
           <dba-quotas-tab [org]="org" />
         } @else if (tab() === 'subscription') {
@@ -422,7 +427,8 @@ export class OrganizationDetailComponent {
       (key) =>
         (key !== 'audit' || this.auth.canRead('platform')) &&
         ((key !== 'documents' && key !== 'support') || this.auth.canRead('operations')) &&
-        (key !== 'marketplace' || this.auth.canRead('commercial')),
+        (key !== 'marketplace' || this.auth.canRead('commercial')) &&
+        (key !== 'billing' || this.auth.canRead('commercial')),
     ).map((key) => ({
       key,
       label: this.translate.instant('orgd.tab.' + key) as string,

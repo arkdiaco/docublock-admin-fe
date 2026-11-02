@@ -192,6 +192,15 @@ describe('OverviewComponent', () => {
     expect(host.querySelector('.panel__link')?.getAttribute('href')).toBe('/plataforma/auditoria');
   });
 
+  it('el indicador de ingresos lleva a Ingresos y los demás no son enlace', async () => {
+    perfil(['platform:clients', 'platform:commercial']);
+    const { host } = await montar(dashboard());
+    const enlaces = host.querySelectorAll('.ov__kpiLink');
+    expect(enlaces.length).toBe(1);
+    expect(enlaces[0].getAttribute('href')).toBe('/comercial/facturacion/ingresos');
+    expect(host.querySelectorAll('dba-kpi-card').length).toBe(4);
+  });
+
   it('sin comercial ni plataforma: tres indicadores y sin panel de actividad', async () => {
     perfil(['platform:clients']);
     const { host } = await montar(dashboard({ revenue: null, activity: null }));

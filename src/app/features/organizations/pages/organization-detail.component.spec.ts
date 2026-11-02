@@ -269,6 +269,26 @@ describe('OrganizationDetailComponent', () => {
     });
   });
 
+  it('con lectura comercial la pestaña Facturación carga los últimos pagos y facturas; sin ella no aparece', async () => {
+    conPermisos(['platform:clients', 'platform:commercial']);
+    const { fixture, host } = await montar();
+    const tabs = [...host.querySelectorAll<HTMLButtonElement>('db-underline-tabs .tab')];
+    tabs.find((t) => t.textContent?.includes('Facturación'))!.click();
+    fixture.detectChanges();
+    http.expectOne((r) => r.url === '/platform/transactions' && r.params.get('organizationId') === 'org-1').flush({ total: 0, items: [] });
+    http.expectOne((r) => r.url === '/platform/invoices' && r.params.get('organizationId') === 'org-1').flush({ total: 0, items: [] });
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(host.querySelector('dba-org-billing-tab')?.textContent).toContain('Esta organización no tiene facturas.');
+    });
+  });
+
+  it('sin lectura comercial no hay pestaña Facturación', async () => {
+    conPermisos(['platform:clients']);
+    const { host } = await montar();
+    expect(host.querySelector('db-underline-tabs')?.textContent).not.toContain('Facturación');
+  });
+
   it('con lectura de plataforma la pestaña Auditoría muestra la actividad de la organización y enlaza a la bitácora filtrada', async () => {
     conPermisos(['platform:clients', 'platform:platform']);
     const { fixture, host } = await montar();

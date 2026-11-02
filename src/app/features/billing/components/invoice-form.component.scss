@@ -1,0 +1,60 @@
+@use '../../../shared/ui/modal-form';
+
+.form__triple {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: minmax(0, 2.4fr) minmax(0, 0.8fr) minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+}
+
+.item__remove {
+  margin-top: 24px;
+}
+
+.totals {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px 16px;
+  margin: 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--dba-border-row);
+  font-size: var(--dba-text-cell);
+  color: var(--dba-text);
+}
+
+.totals dd {
+  margin: 0;
+  font-family: var(--dba-font-mono);
+  font-size: var(--dba-text-id);
+  text-align: right;
+}
+
+.totals dt {
+  text-align: right;
+}
+
+.totals .totals__strong {
+  font-weight: 600;
+  color: var(--dba-ink);
+}
+
+@media (max-width: 620px) {
+  .form__triple {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .item {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  }
+
+  .item__concept {
+    grid-column: 1 / -1;
+  }
+}

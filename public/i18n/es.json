@@ -328,6 +328,7 @@
     "tab": {
       "summary": "Resumen",
       "subscription": "Suscripción",
+      "billing": "Facturación",
       "quotas": "Cupos",
       "members": "Miembros",
       "integrations": "Integraciones",
@@ -2609,6 +2610,430 @@
       "title": "Tickets de soporte de la organización",
       "lead": "Los tickets se atienden en Soporte y SLA. Abre la bandeja filtrada por esta organización.",
       "open": "Ver sus tickets"
+    }
+  },
+  "billing": {
+    "section": {
+      "transactions": "Transacciones",
+      "invoices": "Facturas",
+      "revenue": "Ingresos"
+    },
+    "txStatus": {
+      "PENDING": "Pendiente",
+      "APPROVED": "Aprobada",
+      "DECLINED": "Rechazada",
+      "VOIDED": "Anulada",
+      "ERROR": "Con error",
+      "UNKNOWN": "Sin identificar"
+    },
+    "invStatus": {
+      "draft": "Borrador",
+      "sent": "Enviada",
+      "void": "Anulada"
+    },
+    "source": {
+      "alohapay": "AlohaPay",
+      "stripe": "Stripe",
+      "manual": "Manual",
+      "legacy": "Legacy",
+      "unknown": "Sin identificar"
+    },
+    "interval": {
+      "monthly": "Mensual",
+      "annual": "Anual",
+      "once": "Recarga"
+    },
+    "error": {
+      "generic": "No pudimos completar la acción. Inténtalo de nuevo.",
+      "TRANSACCION_NO_ENCONTRADA": "Esa transacción ya no existe.",
+      "TRANSICION_NO_PERMITIDA": "La transacción ya no admite ese cambio de estado.",
+      "TRANSACCION_YA_FACTURADA": "Esta transacción ya tiene una factura.",
+      "TRANSACCION_NO_APROBADA": "Solo se factura una transacción aprobada.",
+      "FACTURA_VINCULADA": "La transacción tiene una factura vinculada. Anula la factura si quieres quitar la marca.",
+      "FACTURA_NO_ENCONTRADA": "Esa factura ya no existe.",
+      "FACTURA_NO_EDITABLE": "Solo se editan facturas en borrador.",
+      "FACTURA_ANULADA": "Esa factura está anulada.",
+      "DESTINO_REQUERIDO": "Escribe el correo de destino.",
+      "CLIENTE_INCOMPLETO": "Faltan el nombre y el correo del cliente.",
+      "ORGANIZACION_NO_ENCONTRADA": "Esa organización no existe.",
+      "PLAN_NO_ENCONTRADO": "Ese plan ya no está activo.",
+      "MONTO_REQUERIDO": "Este plan no tiene precio para ese intervalo: escribe el monto.",
+      "RANGO_INVALIDO": "La fecha inicial es posterior a la final.",
+      "PDF": "No pudimos abrir el PDF de la factura."
+    },
+    "tx": {
+      "count": "Transacciones: {{total}}",
+      "viewsLabel": "Vistas de transacciones",
+      "view": {
+        "todas": "Todas",
+        "pendientes": "Pendientes",
+        "aprobadas": "Aprobadas",
+        "sin-facturar": "Sin facturar"
+      },
+      "searchPlaceholder": "Buscar por id, referencia o enlace",
+      "f": {
+        "status": "Estado",
+        "anyStatus": "Todos los estados",
+        "invoiced": "Facturada",
+        "anyInvoiced": "Facturada o no",
+        "yes": "Facturadas",
+        "no": "Sin facturar",
+        "from": "Desde",
+        "to": "Hasta"
+      },
+      "col": {
+        "reference": "Referencia",
+        "org": "Organización",
+        "plan": "Plan",
+        "amount": "Monto",
+        "status": "Estado",
+        "invoiced": "Factura",
+        "date": "Fecha"
+      },
+      "invoicedYes": "Sí",
+      "invoicedNo": "No",
+      "loading": "Cargando transacciones",
+      "errorTitle": "No pudimos cargar las transacciones",
+      "errorLead": "Revisa tu conexión e inténtalo de nuevo.",
+      "emptyTitle": "Sin transacciones",
+      "emptyLead": "No hay transacciones con estos filtros.",
+      "rangeInvalid": "La fecha inicial es posterior a la final.",
+      "reconcile": {
+        "action": "Conciliar con AlohaPay",
+        "title": "Conciliar con AlohaPay",
+        "message": "Revisamos hasta 50 pagos pendientes de más de 30 minutos contra AlohaPay. Los que ya estén pagados se aprueban: abren el periodo, envían la factura y avisan al cliente.",
+        "confirm": "Conciliar",
+        "done": "Revisadas: {{checked}}. Corregidas: {{repaired}}. Con error: {{failed}}.",
+        "none": "No había pagos pendientes por revisar."
+      }
+    },
+    "manual": {
+      "action": "Registrar pago manual",
+      "title": "Registrar pago manual",
+      "subtitle": "Para pagos recibidos fuera de la pasarela",
+      "confirm": "Registrar y aplicar",
+      "org": "Organización",
+      "plan": "Plan",
+      "planLoading": "Cargando planes",
+      "planError": "No pudimos cargar los planes.",
+      "interval": "Intervalo",
+      "amount": "Monto",
+      "amountHint": "Vacío usa el precio del plan.",
+      "amountRequired": "Este plan no tiene precio para ese intervalo: escribe el monto.",
+      "amountInvalid": "Escribe un monto válido.",
+      "currency": "Moneda",
+      "currencyInvalid": "Usa el código de tres letras, como COP.",
+      "documents": "Documentos",
+      "documentsHint": "Vacío usa el cupo del plan.",
+      "documentsInvalid": "Escribe un número entero mayor que cero.",
+      "method": "Método de pago",
+      "methodPlaceholder": "Transferencia",
+      "reference": "Referencia",
+      "referenceHint": "Opcional. Solo letras, números, guion y guion bajo.",
+      "referenceInvalid": "Entre 4 y 80 letras, números, guiones o guiones bajos.",
+      "taxes": "Impuestos",
+      "taxesHint": "Salen en la factura que se genera con el pago.",
+      "warningTitle": "Al registrar este pago:",
+      "warningPeriod": "Se abre un periodo nuevo desde hoy, que reemplaza el plan vigente de la organización.",
+      "warningInvoice": "Se crea la factura y se envía al correo de la organización.",
+      "warningMail": "La organización recibe el correo «Recibimos tu pago».",
+      "done": "Pago registrado y aplicado."
+    },
+    "taxes": {
+      "type": "Impuesto",
+      "typePlaceholder": "IVA 19%",
+      "amount": "Valor",
+      "add": "Agregar impuesto",
+      "remove": "Quitar impuesto",
+      "invalid": "Escribe el nombre y un valor válido."
+    },
+    "td": {
+      "crumb": "Transacción",
+      "tab": {
+        "payment": "Pago",
+        "invoice": "Factura"
+      },
+      "loading": "Cargando la transacción",
+      "errorTitle": "No pudimos cargar la transacción",
+      "errorLead": "Revisa tu conexión e inténtalo de nuevo.",
+      "missingTitle": "Esa transacción no existe",
+      "missingLead": "Vuelve a la lista de transacciones.",
+      "back": "Volver a transacciones",
+      "refreshError": "No pudimos actualizar la transacción.",
+      "field": {
+        "amount": "Monto",
+        "currency": "Moneda",
+        "source": "Origen",
+        "plan": "Plan",
+        "interval": "Intervalo",
+        "documents": "Documentos",
+        "method": "Método de pago",
+        "org": "Organización",
+        "id": "Identificador",
+        "reference": "Referencia",
+        "link": "Enlace de AlohaPay",
+        "live": "Estado en AlohaPay",
+        "taxes": "Impuestos",
+        "promo": "Promocional",
+        "requested": "Solicitada",
+        "events": "Eventos de la pasarela",
+        "invoiced": "Marcada como facturada"
+      },
+      "promoValue": "{{code}} ({{discount}} %)",
+      "invoiceLinked": "Factura {{number}}",
+      "invoiceOpen": "Ver factura",
+      "invoiceCreate": "Crear factura",
+      "invoiceNone": "Esta transacción no tiene factura.",
+      "invoiceNotApproved": "Solo se factura una transacción aprobada.",
+      "invoiceOutside": "Está marcada como facturada, sin una factura en Docublock.",
+      "act": {
+        "APPROVED": {
+          "label": "Aprobar",
+          "title": "Aprobar esta transacción",
+          "message": "Se abre un periodo nuevo desde hoy para {{org}}, que reemplaza su plan vigente. Se crea y envía la factura, y la organización recibe el aviso de pago. Una transacción aprobada ya no cambia de estado.",
+          "confirm": "Aprobar y aplicar",
+          "done": "Transacción aprobada."
+        },
+        "DECLINED": {
+          "label": "Rechazar",
+          "title": "Rechazar esta transacción",
+          "message": "Se cancela el enlace de pago si sigue abierto y se libera el código promocional.",
+          "confirm": "Rechazar",
+          "done": "Transacción rechazada."
+        },
+        "VOIDED": {
+          "label": "Anular",
+          "title": "Anular esta transacción",
+          "message": "Se cancela el enlace de pago si sigue abierto y se libera el código promocional. Una transacción anulada ya no cambia de estado.",
+          "confirm": "Anular",
+          "done": "Transacción anulada."
+        },
+        "markInvoiced": {
+          "label": "Marcar como facturada",
+          "title": "Marcar como facturada",
+          "message": "Úsalo solo si se facturó fuera de Docublock. No crea ninguna factura.",
+          "confirm": "Marcar",
+          "done": "Transacción marcada como facturada."
+        },
+        "unmarkInvoiced": {
+          "label": "Quitar marca de facturada",
+          "title": "Quitar la marca de facturada",
+          "message": "La transacción vuelve a contar como sin facturar.",
+          "confirm": "Quitar marca",
+          "done": "Marca de facturada retirada."
+        },
+        "invoice": {
+          "done": "Factura {{number}} creada en borrador."
+        }
+      }
+    },
+    "inv": {
+      "count": "Facturas: {{total}}",
+      "searchPlaceholder": "Buscar por número, cliente o NIT",
+      "f": {
+        "status": "Estado",
+        "anyStatus": "Todos los estados"
+      },
+      "col": {
+        "number": "Número",
+        "client": "Cliente",
+        "total": "Total",
+        "status": "Estado",
+        "issued": "Emisión",
+        "sentTo": "Enviada a"
+      },
+      "new": "Nueva factura",
+      "loading": "Cargando facturas",
+      "errorTitle": "No pudimos cargar las facturas",
+      "errorLead": "Revisa tu conexión e inténtalo de nuevo.",
+      "emptyTitle": "Sin facturas",
+      "emptyLead": "No hay facturas con estos filtros."
+    },
+    "id": {
+      "crumb": "Factura",
+      "loading": "Cargando la factura",
+      "errorTitle": "No pudimos cargar la factura",
+      "errorLead": "Revisa tu conexión e inténtalo de nuevo.",
+      "missingTitle": "Esa factura no existe",
+      "missingLead": "Vuelve a la lista de facturas.",
+      "back": "Volver a facturas",
+      "refreshError": "No pudimos actualizar la factura.",
+      "section": {
+        "client": "Cliente",
+        "detail": "Detalle",
+        "info": "Información",
+        "notes": "Notas"
+      },
+      "field": {
+        "name": "Nombre",
+        "taxId": "NIT",
+        "email": "Correo",
+        "address": "Dirección",
+        "phone": "Teléfono",
+        "org": "Organización",
+        "issued": "Emisión",
+        "due": "Vencimiento",
+        "currency": "Moneda",
+        "sentAt": "Enviada",
+        "sentTo": "Enviada a",
+        "transaction": "Transacción",
+        "externalRef": "Referencia externa"
+      },
+      "col": {
+        "concept": "Concepto",
+        "quantity": "Cantidad",
+        "unitPrice": "Precio unitario",
+        "amount": "Importe"
+      },
+      "subtotal": "Subtotal",
+      "total": "Total",
+      "transactionOpen": "Ver transacción",
+      "orgOpen": "Ver organización",
+      "pdf": "Ver PDF",
+      "edit": "Editar",
+      "send": "Enviar",
+      "resend": "Reenviar",
+      "void": {
+        "label": "Anular",
+        "title": "Anular la factura {{number}}",
+        "message": "La factura queda anulada y no se puede deshacer. Si viene de una transacción, esa transacción vuelve a contar como sin facturar.",
+        "confirm": "Anular factura",
+        "done": "Factura anulada."
+      },
+      "sendForm": {
+        "title": "Enviar la factura",
+        "subtitle": "Factura {{number}}",
+        "email": "Correo de destino",
+        "invalid": "Escribe un correo válido.",
+        "confirm": "Enviar",
+        "done": "Factura enviada a {{email}}."
+      }
+    },
+    "form": {
+      "createTitle": "Nueva factura",
+      "editTitle": "Editar factura",
+      "create": "Crear borrador",
+      "save": "Guardar",
+      "createDone": "Factura {{number}} creada en borrador.",
+      "saveDone": "Factura actualizada.",
+      "org": "Organización",
+      "orgHint": "Opcional. Lo que dejes vacío en el cliente se toma de la organización.",
+      "orgLocked": "La organización no se cambia al editar.",
+      "clientSection": "Cliente",
+      "clientName": "Nombre",
+      "clientTaxId": "NIT",
+      "clientEmail": "Correo",
+      "clientAddress": "Dirección",
+      "clientPhone": "Teléfono",
+      "clientRequired": "Requerido si no eliges organización.",
+      "emailInvalid": "Escribe un correo válido.",
+      "datesSection": "Fechas y moneda",
+      "currency": "Moneda",
+      "currencyHint": "Vacío usa la del país de la organización, o COP.",
+      "currencyInvalid": "Usa el código de tres letras, como COP.",
+      "issueDate": "Emisión",
+      "dueDate": "Vencimiento",
+      "dueBeforeIssue": "El vencimiento no puede ser anterior a la emisión.",
+      "itemsSection": "Ítems",
+      "concept": "Concepto",
+      "quantity": "Cantidad",
+      "unitPrice": "Precio unitario",
+      "addItem": "Agregar ítem",
+      "removeItem": "Quitar ítem",
+      "itemInvalid": "Revisa el concepto, la cantidad y el precio.",
+      "taxesSection": "Impuestos",
+      "notes": "Notas",
+      "subtotal": "Subtotal",
+      "taxesTotal": "Impuestos",
+      "total": "Total"
+    },
+    "rev": {
+      "range": "Periodo",
+      "preset": {
+        "mes": "Este mes",
+        "ultimos-12": "Últimos 12 meses",
+        "anio": "Este año",
+        "personalizado": "Personalizado"
+      },
+      "from": "Desde",
+      "to": "Hasta",
+      "rangeInvalid": "La fecha inicial es posterior a la final.",
+      "currency": "Moneda",
+      "loading": "Calculando los ingresos",
+      "errorTitle": "No pudimos calcular los ingresos",
+      "errorLead": "Revisa tu conexión e inténtalo de nuevo.",
+      "capped": "Este periodo supera las 20 000 transacciones: las cifras solo cuentan las 20 000 más recientes. Acorta el periodo para verlas completas.",
+      "statsLabel": "Resumen de ingresos",
+      "gross": "Ingresos {{currency}}",
+      "grossNote": "Aprobadas: {{count}}",
+      "noRevenue": "Ingresos",
+      "pending": "Pendientes",
+      "rejected": "Rechazadas",
+      "rejectedNote": "Rechazadas, anuladas o con error",
+      "noApproved": "Sin ingresos aprobados en este periodo.",
+      "byMonth": "Por mes",
+      "byProvider": "Por proveedor",
+      "byPlan": "Por plan",
+      "byOrganization": "Organizaciones con más ingresos",
+      "barCount": "Transacciones: {{count}}",
+      "more": "y {{n}} más",
+      "list": "Transacciones del periodo",
+      "searchPlaceholder": "Buscar por id, referencia o enlace",
+      "f": {
+        "source": "Origen",
+        "anySource": "Todos los orígenes",
+        "status": "Estado",
+        "anyStatus": "Todos los estados"
+      },
+      "col": {
+        "id": "Identificador",
+        "source": "Origen",
+        "org": "Organización",
+        "plan": "Plan",
+        "amount": "Monto",
+        "status": "Estado",
+        "date": "Fecha"
+      },
+      "listLoading": "Cargando transacciones",
+      "listError": "No pudimos cargar las transacciones.",
+      "listEmpty": "No hay transacciones con estos filtros.",
+      "csv": "Descargar CSV",
+      "csvError": "No pudimos generar el CSV.",
+      "csvCapped": "El CSV llega hasta 20 000 filas: acorta el periodo para bajarlas todas."
+    },
+    "config": {
+      "title": "Estado de la configuración de pagos",
+      "lead": "Solo dice si cada valor está configurado; ningún secreto sale de los servicios.",
+      "ok": "Configurado",
+      "missing": "Falta",
+      "loading": "Consultando la configuración",
+      "error": "No pudimos consultar la configuración.",
+      "gatewaysUnavailable": "El servicio de pagos no respondió: no sabemos el estado de Stripe ni de AlohaPay.",
+      "stripe": "Stripe",
+      "stripeWebhook": "Webhook de Stripe",
+      "alohapay": "AlohaPay",
+      "alohapayWebhook": "Webhook de AlohaPay",
+      "forwardSigning": "Firma de los eventos reenviados",
+      "coreTarget": "Reenvío de eventos a este servicio",
+      "issuer": "Emisor de las facturas",
+      "issuerMissing": "Falta: {{fields}}",
+      "issuerField": {
+        "name": "nombre",
+        "taxId": "NIT",
+        "address": "dirección",
+        "email": "correo"
+      }
+    },
+    "orgTab": {
+      "transactions": "Últimas transacciones",
+      "invoices": "Últimas facturas",
+      "allTransactions": "Ver todas las transacciones",
+      "allInvoices": "Ver todas las facturas",
+      "register": "Registrar pago manual",
+      "noTransactions": "Esta organización no tiene transacciones.",
+      "noInvoices": "Esta organización no tiene facturas.",
+      "loading": "Cargando la facturación",
+      "error": "No pudimos cargar la facturación de esta organización."
     }
   }
 }

@@ -1,0 +1,61 @@
+@use '../components/billing-detail';
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.lines__row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) 80px 130px 130px;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--dba-border-row);
+  font-size: var(--dba-text-cell);
+  color: var(--dba-ink);
+}
+
+.lines__row--head {
+  padding-top: 0;
+  font-size: var(--dba-text-meta);
+  font-weight: 600;
+  color: var(--dba-text-muted);
+}
+
+.lines__num {
+  font-family: var(--dba-font-mono);
+  font-size: var(--dba-text-id);
+  text-align: right;
+}
+
+.lines__row--head .lines__num {
+  font-family: var(--dba-font-ui);
+  font-size: var(--dba-text-meta);
+}
+
+.sums {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 130px;
+  gap: 6px 12px;
+  margin: 0;
+  font-size: var(--dba-text-cell);
+  color: var(--dba-text);
+}
+
+.sums dt {
+  text-align: right;
+}
+
+.sums dd {
+  margin: 0;
+  font-family: var(--dba-font-mono);
+  font-size: var(--dba-text-id);
+  text-align: right;
+}
+
+.sums .sums__strong {
+  font-weight: 600;
+  color: var(--dba-ink);
+}

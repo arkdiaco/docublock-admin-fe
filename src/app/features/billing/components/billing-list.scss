@@ -1,0 +1,125 @@
+.bl {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.bl__tools {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bl__search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: 2 1 260px;
+  min-width: 0;
+  height: var(--dba-height-search);
+  padding: 0 12px;
+  border: 1px solid var(--dba-border-control);
+  border-radius: var(--dba-radius-control);
+  background: var(--dba-surface);
+  color: var(--dba-text-muted);
+}
+
+.bl__search:focus-within {
+  border-color: var(--dba-violet-500);
+  box-shadow: 0 0 0 3px var(--dba-focus-halo);
+}
+
+.bl__input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  font-family: var(--dba-font-ui);
+  font-size: var(--dba-text-cell);
+  color: var(--dba-ink);
+}
+
+.bl__input:focus {
+  outline: none;
+}
+
+:host ::ng-deep .bl__select.p-select {
+  flex: 1 1 170px;
+  min-width: 0;
+  max-width: 230px;
+  height: var(--dba-height-control);
+}
+
+.bl__date {
+  flex: 0 1 170px;
+  min-width: 140px;
+}
+
+.bl__panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid var(--dba-border-card);
+  border-radius: var(--dba-radius-panel);
+  background: var(--dba-surface);
+}
+
+.bl-row {
+  color: inherit;
+  text-decoration: none;
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.cell__label,
+.cell__text,
+.cell__muted,
+.cell__meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cell__label,
+.cell__text,
+.cell__muted {
+  font-size: var(--dba-text-cell);
+}
+
+.cell__label {
+  font-weight: 500;
+  color: var(--dba-ink);
+}
+
+.cell__muted {
+  color: var(--dba-text-muted);
+}
+
+.cell__meta {
+  font-size: var(--dba-text-meta);
+  color: var(--dba-text-muted);
+}
+
+.cell__amount {
+  font-family: var(--dba-font-mono);
+  font-size: var(--dba-text-id);
+  color: var(--dba-ink);
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .bl__search,
+  .bl__date,
+  :host ::ng-deep .bl__select.p-select {
+    flex-basis: 100%;
+    max-width: 100%;
+  }
+}

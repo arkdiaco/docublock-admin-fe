@@ -43,6 +43,15 @@
   border-top: 0;
 }
 
+.form__control dba-org-picker {
+  display: flex;
+  width: 100%;
+}
+
+:host ::ng-deep .form__control .pick.p-select {
+  width: 100%;
+}
+
 .form__section {
   margin: 6px 0 0;
 }

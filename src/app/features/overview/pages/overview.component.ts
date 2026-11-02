@@ -1,4 +1,4 @@
-import { formatDate } from '@angular/common';
+import { NgTemplateOutlet, formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -35,6 +35,7 @@ export const greetingKeyOf = (hour: number): string => {
 interface KpiView {
   label: string;
   value: string;
+  link?: string;
   deltaKey: string;
   deltaParams: Record<string, string | number>;
   extraKey?: string;
@@ -56,6 +57,7 @@ interface EventView {
   imports: [
     TranslatePipe,
     RouterLink,
+    NgTemplateOutlet,
     KpiCardComponent,
     EmptyStateComponent,
     ActionRowComponent,
@@ -92,17 +94,27 @@ interface EventView {
       } @else {
         <div class="ov__kpis" [class.ov__kpis--three]="kpis().length === 3">
           @for (kpi of kpis(); track kpi.label) {
-            <dba-kpi-card
-              [label]="kpi.label"
-              [value]="kpi.value"
-              [delta]="
-                (kpi.deltaKey | translate: kpi.deltaParams) +
-                (kpi.extraKey ? ' · ' + (kpi.extraKey | translate: kpi.extraParams) : '')
-              "
-              [deltaTone]="kpi.tone"
-            />
+            @if (kpi.link; as link) {
+              <a class="ov__kpiLink" [routerLink]="link">
+                <ng-container [ngTemplateOutlet]="kpiCard" [ngTemplateOutletContext]="{ $implicit: kpi }" />
+              </a>
+            } @else {
+              <ng-container [ngTemplateOutlet]="kpiCard" [ngTemplateOutletContext]="{ $implicit: kpi }" />
+            }
           }
         </div>
+
+        <ng-template #kpiCard let-kpi>
+          <dba-kpi-card
+            [label]="kpi.label"
+            [value]="kpi.value"
+            [delta]="
+              (kpi.deltaKey | translate: kpi.deltaParams) +
+              (kpi.extraKey ? ' · ' + (kpi.extraKey | translate: kpi.extraParams) : '')
+            "
+            [deltaTone]="kpi.tone"
+          />
+        </ng-template>
 
         <div class="ov__panels" [class.ov__panels--single]="events() === null">
           <section class="panel">
@@ -205,6 +217,18 @@ interface EventView {
 
     .ov__kpis--three {
       grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .ov__kpiLink {
+      display: block;
+      min-width: 0;
+      border-radius: var(--dba-radius-panel);
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .ov__kpiLink:hover {
+      box-shadow: 0 0 0 3px var(--dba-focus-halo);
     }
 
     .ov__panels {
@@ -334,6 +358,7 @@ export class OverviewComponent {
       views.push({
         label: 'overview.kpiRevenue',
         value: revenue.value,
+        link: `${sectionPath('billing')}/ingresos`,
         deltaKey: revenue.deltaKey,
         deltaParams: revenue.deltaParams,
         extraKey: revenue.others > 0 ? 'overview.revenueOthers' : undefined,

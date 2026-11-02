@@ -328,6 +328,7 @@
     "tab": {
       "summary": "Summary",
       "subscription": "Subscription",
+      "billing": "Billing",
       "quotas": "Quotas",
       "members": "Members",
       "integrations": "Integrations",
@@ -2609,6 +2610,430 @@
       "title": "The organization's support tickets",
       "lead": "Tickets are handled in Support & SLA. Open the inbox filtered by this organization.",
       "open": "View its tickets"
+    }
+  },
+  "billing": {
+    "section": {
+      "transactions": "Transactions",
+      "invoices": "Invoices",
+      "revenue": "Revenue"
+    },
+    "txStatus": {
+      "PENDING": "Pending",
+      "APPROVED": "Approved",
+      "DECLINED": "Declined",
+      "VOIDED": "Voided",
+      "ERROR": "Error",
+      "UNKNOWN": "Unknown"
+    },
+    "invStatus": {
+      "draft": "Draft",
+      "sent": "Sent",
+      "void": "Voided"
+    },
+    "source": {
+      "alohapay": "AlohaPay",
+      "stripe": "Stripe",
+      "manual": "Manual",
+      "legacy": "Legacy",
+      "unknown": "Unidentified"
+    },
+    "interval": {
+      "monthly": "Monthly",
+      "annual": "Annual",
+      "once": "Top-up"
+    },
+    "error": {
+      "generic": "We couldn't complete the action. Try again.",
+      "TRANSACCION_NO_ENCONTRADA": "That transaction no longer exists.",
+      "TRANSICION_NO_PERMITIDA": "The transaction no longer allows that status change.",
+      "TRANSACCION_YA_FACTURADA": "This transaction already has an invoice.",
+      "TRANSACCION_NO_APROBADA": "Only an approved transaction can be invoiced.",
+      "FACTURA_VINCULADA": "The transaction has a linked invoice. Void the invoice to remove the mark.",
+      "FACTURA_NO_ENCONTRADA": "That invoice no longer exists.",
+      "FACTURA_NO_EDITABLE": "Only draft invoices can be edited.",
+      "FACTURA_ANULADA": "That invoice is voided.",
+      "DESTINO_REQUERIDO": "Enter the destination email.",
+      "CLIENTE_INCOMPLETO": "The client's name and email are missing.",
+      "ORGANIZACION_NO_ENCONTRADA": "That organization does not exist.",
+      "PLAN_NO_ENCONTRADO": "That plan is no longer active.",
+      "MONTO_REQUERIDO": "This plan has no price for that interval: enter the amount.",
+      "RANGO_INVALIDO": "The start date is after the end date.",
+      "PDF": "We couldn't open the invoice PDF."
+    },
+    "tx": {
+      "count": "Transactions: {{total}}",
+      "viewsLabel": "Transaction views",
+      "view": {
+        "todas": "All",
+        "pendientes": "Pending",
+        "aprobadas": "Approved",
+        "sin-facturar": "Not invoiced"
+      },
+      "searchPlaceholder": "Search by id, reference or link",
+      "f": {
+        "status": "Status",
+        "anyStatus": "All statuses",
+        "invoiced": "Invoiced",
+        "anyInvoiced": "Invoiced or not",
+        "yes": "Invoiced",
+        "no": "Not invoiced",
+        "from": "From",
+        "to": "To"
+      },
+      "col": {
+        "reference": "Reference",
+        "org": "Organization",
+        "plan": "Plan",
+        "amount": "Amount",
+        "status": "Status",
+        "invoiced": "Invoice",
+        "date": "Date"
+      },
+      "invoicedYes": "Yes",
+      "invoicedNo": "No",
+      "loading": "Loading transactions",
+      "errorTitle": "We couldn't load the transactions",
+      "errorLead": "Check your connection and try again.",
+      "emptyTitle": "No transactions",
+      "emptyLead": "There are no transactions with these filters.",
+      "rangeInvalid": "The start date is after the end date.",
+      "reconcile": {
+        "action": "Reconcile with AlohaPay",
+        "title": "Reconcile with AlohaPay",
+        "message": "We check up to 50 payments pending for over 30 minutes against AlohaPay. Those already paid get approved: they open the period, send the invoice and notify the client.",
+        "confirm": "Reconcile",
+        "done": "Checked: {{checked}}. Fixed: {{repaired}}. With errors: {{failed}}.",
+        "none": "There were no pending payments to check."
+      }
+    },
+    "manual": {
+      "action": "Record manual payment",
+      "title": "Record manual payment",
+      "subtitle": "For payments received outside the gateway",
+      "confirm": "Record and apply",
+      "org": "Organization",
+      "plan": "Plan",
+      "planLoading": "Loading plans",
+      "planError": "We couldn't load the plans.",
+      "interval": "Interval",
+      "amount": "Amount",
+      "amountHint": "Empty uses the plan's price.",
+      "amountRequired": "This plan has no price for that interval: enter the amount.",
+      "amountInvalid": "Enter a valid amount.",
+      "currency": "Currency",
+      "currencyInvalid": "Use the three-letter code, like COP.",
+      "documents": "Documents",
+      "documentsHint": "Empty uses the plan's quota.",
+      "documentsInvalid": "Enter a whole number above zero.",
+      "method": "Payment method",
+      "methodPlaceholder": "Bank transfer",
+      "reference": "Reference",
+      "referenceHint": "Optional. Letters, numbers, hyphens and underscores only.",
+      "referenceInvalid": "Between 4 and 80 letters, numbers, hyphens or underscores.",
+      "taxes": "Taxes",
+      "taxesHint": "They appear on the invoice generated with the payment.",
+      "warningTitle": "When you record this payment:",
+      "warningPeriod": "A new period opens today, replacing the organization's current plan.",
+      "warningInvoice": "The invoice is created and sent to the organization's email.",
+      "warningMail": "The organization receives the \"We received your payment\" email.",
+      "done": "Payment recorded and applied."
+    },
+    "taxes": {
+      "type": "Tax",
+      "typePlaceholder": "VAT 19%",
+      "amount": "Value",
+      "add": "Add tax",
+      "remove": "Remove tax",
+      "invalid": "Enter the name and a valid value."
+    },
+    "td": {
+      "crumb": "Transaction",
+      "tab": {
+        "payment": "Payment",
+        "invoice": "Invoice"
+      },
+      "loading": "Loading the transaction",
+      "errorTitle": "We couldn't load the transaction",
+      "errorLead": "Check your connection and try again.",
+      "missingTitle": "That transaction does not exist",
+      "missingLead": "Go back to the transactions list.",
+      "back": "Back to transactions",
+      "refreshError": "We couldn't refresh the transaction.",
+      "field": {
+        "amount": "Amount",
+        "currency": "Currency",
+        "source": "Source",
+        "plan": "Plan",
+        "interval": "Interval",
+        "documents": "Documents",
+        "method": "Payment method",
+        "org": "Organization",
+        "id": "Identifier",
+        "reference": "Reference",
+        "link": "AlohaPay link",
+        "live": "Status in AlohaPay",
+        "taxes": "Taxes",
+        "promo": "Promo code",
+        "requested": "Requested",
+        "events": "Gateway events",
+        "invoiced": "Marked as invoiced"
+      },
+      "promoValue": "{{code}} ({{discount}}%)",
+      "invoiceLinked": "Invoice {{number}}",
+      "invoiceOpen": "View invoice",
+      "invoiceCreate": "Create invoice",
+      "invoiceNone": "This transaction has no invoice.",
+      "invoiceNotApproved": "Only an approved transaction can be invoiced.",
+      "invoiceOutside": "It is marked as invoiced, with no invoice in Docublock.",
+      "act": {
+        "APPROVED": {
+          "label": "Approve",
+          "title": "Approve this transaction",
+          "message": "A new period opens today for {{org}}, replacing its current plan. The invoice is created and sent, and the organization gets the payment notice. An approved transaction can no longer change status.",
+          "confirm": "Approve and apply",
+          "done": "Transaction approved."
+        },
+        "DECLINED": {
+          "label": "Decline",
+          "title": "Decline this transaction",
+          "message": "The payment link is cancelled if still open and the promo code is released.",
+          "confirm": "Decline",
+          "done": "Transaction declined."
+        },
+        "VOIDED": {
+          "label": "Void",
+          "title": "Void this transaction",
+          "message": "The payment link is cancelled if still open and the promo code is released. A voided transaction can no longer change status.",
+          "confirm": "Void",
+          "done": "Transaction voided."
+        },
+        "markInvoiced": {
+          "label": "Mark as invoiced",
+          "title": "Mark as invoiced",
+          "message": "Use it only if it was invoiced outside Docublock. It does not create an invoice.",
+          "confirm": "Mark",
+          "done": "Transaction marked as invoiced."
+        },
+        "unmarkInvoiced": {
+          "label": "Remove invoiced mark",
+          "title": "Remove the invoiced mark",
+          "message": "The transaction counts as not invoiced again.",
+          "confirm": "Remove mark",
+          "done": "Invoiced mark removed."
+        },
+        "invoice": {
+          "done": "Invoice {{number}} created as a draft."
+        }
+      }
+    },
+    "inv": {
+      "count": "Invoices: {{total}}",
+      "searchPlaceholder": "Search by number, client or tax ID",
+      "f": {
+        "status": "Status",
+        "anyStatus": "All statuses"
+      },
+      "col": {
+        "number": "Number",
+        "client": "Client",
+        "total": "Total",
+        "status": "Status",
+        "issued": "Issued",
+        "sentTo": "Sent to"
+      },
+      "new": "New invoice",
+      "loading": "Loading invoices",
+      "errorTitle": "We couldn't load the invoices",
+      "errorLead": "Check your connection and try again.",
+      "emptyTitle": "No invoices",
+      "emptyLead": "There are no invoices with these filters."
+    },
+    "id": {
+      "crumb": "Invoice",
+      "loading": "Loading the invoice",
+      "errorTitle": "We couldn't load the invoice",
+      "errorLead": "Check your connection and try again.",
+      "missingTitle": "That invoice does not exist",
+      "missingLead": "Go back to the invoices list.",
+      "back": "Back to invoices",
+      "refreshError": "We couldn't refresh the invoice.",
+      "section": {
+        "client": "Client",
+        "detail": "Detail",
+        "info": "Information",
+        "notes": "Notes"
+      },
+      "field": {
+        "name": "Name",
+        "taxId": "Tax ID",
+        "email": "Email",
+        "address": "Address",
+        "phone": "Phone",
+        "org": "Organization",
+        "issued": "Issued",
+        "due": "Due",
+        "currency": "Currency",
+        "sentAt": "Sent",
+        "sentTo": "Sent to",
+        "transaction": "Transaction",
+        "externalRef": "External reference"
+      },
+      "col": {
+        "concept": "Concept",
+        "quantity": "Quantity",
+        "unitPrice": "Unit price",
+        "amount": "Amount"
+      },
+      "subtotal": "Subtotal",
+      "total": "Total",
+      "transactionOpen": "View transaction",
+      "orgOpen": "Open organization",
+      "pdf": "View PDF",
+      "edit": "Edit",
+      "send": "Send",
+      "resend": "Resend",
+      "void": {
+        "label": "Void",
+        "title": "Void invoice {{number}}",
+        "message": "The invoice is voided and this cannot be undone. If it comes from a transaction, that transaction counts as not invoiced again.",
+        "confirm": "Void invoice",
+        "done": "Invoice voided."
+      },
+      "sendForm": {
+        "title": "Send the invoice",
+        "subtitle": "Invoice {{number}}",
+        "email": "Destination email",
+        "invalid": "Enter a valid email.",
+        "confirm": "Send",
+        "done": "Invoice sent to {{email}}."
+      }
+    },
+    "form": {
+      "createTitle": "New invoice",
+      "editTitle": "Edit invoice",
+      "create": "Create draft",
+      "save": "Save",
+      "createDone": "Invoice {{number}} created as a draft.",
+      "saveDone": "Invoice updated.",
+      "org": "Organization",
+      "orgHint": "Optional. Whatever you leave empty for the client comes from the organization.",
+      "orgLocked": "The organization cannot change when editing.",
+      "clientSection": "Client",
+      "clientName": "Name",
+      "clientTaxId": "Tax ID",
+      "clientEmail": "Email",
+      "clientAddress": "Address",
+      "clientPhone": "Phone",
+      "clientRequired": "Required if you pick no organization.",
+      "emailInvalid": "Enter a valid email.",
+      "datesSection": "Dates and currency",
+      "currency": "Currency",
+      "currencyHint": "Empty uses the organization's country currency, or COP.",
+      "currencyInvalid": "Use the three-letter code, like COP.",
+      "issueDate": "Issued",
+      "dueDate": "Due",
+      "dueBeforeIssue": "The due date cannot be before the issue date.",
+      "itemsSection": "Items",
+      "concept": "Concept",
+      "quantity": "Quantity",
+      "unitPrice": "Unit price",
+      "addItem": "Add item",
+      "removeItem": "Remove item",
+      "itemInvalid": "Check the concept, quantity and price.",
+      "taxesSection": "Taxes",
+      "notes": "Notes",
+      "subtotal": "Subtotal",
+      "taxesTotal": "Taxes",
+      "total": "Total"
+    },
+    "rev": {
+      "range": "Period",
+      "preset": {
+        "mes": "This month",
+        "ultimos-12": "Last 12 months",
+        "anio": "This year",
+        "personalizado": "Custom"
+      },
+      "from": "From",
+      "to": "To",
+      "rangeInvalid": "The start date is after the end date.",
+      "currency": "Currency",
+      "loading": "Calculating revenue",
+      "errorTitle": "We couldn't calculate the revenue",
+      "errorLead": "Check your connection and try again.",
+      "capped": "This period has over 20,000 transactions: the figures only count the latest 20,000. Shorten the period to see them all.",
+      "statsLabel": "Revenue summary",
+      "gross": "Revenue {{currency}}",
+      "grossNote": "Approved: {{count}}",
+      "noRevenue": "Revenue",
+      "pending": "Pending",
+      "rejected": "Rejected",
+      "rejectedNote": "Declined, voided or with errors",
+      "noApproved": "No approved revenue in this period.",
+      "byMonth": "By month",
+      "byProvider": "By provider",
+      "byPlan": "By plan",
+      "byOrganization": "Top organizations by revenue",
+      "barCount": "Transactions: {{count}}",
+      "more": "and {{n}} more",
+      "list": "Transactions in the period",
+      "searchPlaceholder": "Search by id, reference or link",
+      "f": {
+        "source": "Source",
+        "anySource": "All sources",
+        "status": "Status",
+        "anyStatus": "All statuses"
+      },
+      "col": {
+        "id": "Identifier",
+        "source": "Source",
+        "org": "Organization",
+        "plan": "Plan",
+        "amount": "Amount",
+        "status": "Status",
+        "date": "Date"
+      },
+      "listLoading": "Loading transactions",
+      "listError": "We couldn't load the transactions.",
+      "listEmpty": "There are no transactions with these filters.",
+      "csv": "Download CSV",
+      "csvError": "We couldn't generate the CSV.",
+      "csvCapped": "The CSV goes up to 20,000 rows: shorten the period to get them all."
+    },
+    "config": {
+      "title": "Payment configuration status",
+      "lead": "It only says whether each value is set; no secret leaves the services.",
+      "ok": "Configured",
+      "missing": "Missing",
+      "loading": "Checking the configuration",
+      "error": "We couldn't check the configuration.",
+      "gatewaysUnavailable": "The payment service did not respond: we don't know the status of Stripe or AlohaPay.",
+      "stripe": "Stripe",
+      "stripeWebhook": "Stripe webhook",
+      "alohapay": "AlohaPay",
+      "alohapayWebhook": "AlohaPay webhook",
+      "forwardSigning": "Signature of forwarded events",
+      "coreTarget": "Event forwarding to this service",
+      "issuer": "Invoice issuer",
+      "issuerMissing": "Missing: {{fields}}",
+      "issuerField": {
+        "name": "name",
+        "taxId": "tax ID",
+        "address": "address",
+        "email": "email"
+      }
+    },
+    "orgTab": {
+      "transactions": "Latest transactions",
+      "invoices": "Latest invoices",
+      "allTransactions": "See all transactions",
+      "allInvoices": "See all invoices",
+      "register": "Record manual payment",
+      "noTransactions": "This organization has no transactions.",
+      "noInvoices": "This organization has no invoices.",
+      "loading": "Loading billing",
+      "error": "We couldn't load this organization's billing."
     }
   }
 }

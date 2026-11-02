@@ -62,6 +62,30 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
         import('./features/support/pages/ticket-detail.component').then((m) => m.TicketDetailComponent),
     },
   ],
+  billing: [
+    {
+      path: '',
+      loadComponent: () => import('./features/billing/pages/transactions.component').then((m) => m.TransactionsComponent),
+    },
+    {
+      path: 'facturas',
+      loadComponent: () => import('./features/billing/pages/invoices.component').then((m) => m.InvoicesComponent),
+    },
+    {
+      path: 'facturas/:id',
+      loadComponent: () =>
+        import('./features/billing/pages/invoice-detail.component').then((m) => m.InvoiceDetailComponent),
+    },
+    {
+      path: 'ingresos',
+      loadComponent: () => import('./features/billing/pages/revenue.component').then((m) => m.RevenueComponent),
+    },
+    {
+      path: ':id',
+      loadComponent: () =>
+        import('./features/billing/pages/transaction-detail.component').then((m) => m.TransactionDetailComponent),
+    },
+  ],
   plans: [
     {
       path: '',
