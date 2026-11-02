@@ -14,7 +14,11 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Select, type SelectFilterEvent } from 'primeng/select';
 import { firstValueFrom } from 'rxjs';
 import { LatestRequest } from '../http/latest-request';
-import { OrganizationLookup, type OrganizationOption } from '../http/organization-lookup';
+import {
+  OrganizationLookup,
+  type LookupScope,
+  type OrganizationOption,
+} from '../http/organization-lookup';
 
 const ANY = '';
 
@@ -69,7 +73,10 @@ export class OrgPickerComponent {
   private readonly latest = new LatestRequest();
 
   readonly value = input<string | null>(null);
+  readonly scope = input<LookupScope>('clients');
+  readonly anyKey = input('orgPicker.any');
   readonly picked = output<string | null>();
+  readonly selection = output<OrganizationOption | null>();
 
   private readonly found = signal<OrganizationOption[]>([]);
   private readonly selected = signal<OrganizationOption | null>(null);
@@ -79,7 +86,7 @@ export class OrgPickerComponent {
     const chosen = this.selected();
     const rest = this.found().filter((org) => org.id !== chosen?.id);
     return [
-      { id: ANY, label: this.translate.instant('orgPicker.any') as string },
+      { id: ANY, label: this.translate.instant(this.anyKey()) as string },
       ...(chosen ? [chosen] : []).concat(rest).map((org) => ({
         id: org.id,
         label: org.tributaryNumber
@@ -100,6 +107,7 @@ export class OrgPickerComponent {
     const chosen = this.found().find((org) => org.id === id) ?? null;
     if (chosen) this.selected.set(chosen);
     this.picked.emit(id || null);
+    this.selection.emit(chosen);
   }
 
   protected warm(): void {
@@ -124,7 +132,7 @@ export class OrgPickerComponent {
       return;
     }
     try {
-      this.selected.set(await firstValueFrom(this.lookup.byId(id)));
+      this.selected.set(await firstValueFrom(this.lookup.byId(id, this.scope())));
     } catch {
       this.selected.set(null);
     }
@@ -133,7 +141,7 @@ export class OrgPickerComponent {
   private async load(term: string): Promise<void> {
     const current = this.latest.start();
     try {
-      const items = await firstValueFrom(this.lookup.search(term));
+      const items = await firstValueFrom(this.lookup.search(term, this.scope()));
       if (current()) this.found.set(items);
     } catch {
       if (current()) this.found.set([]);

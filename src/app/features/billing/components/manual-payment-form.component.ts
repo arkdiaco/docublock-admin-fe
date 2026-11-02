@@ -56,7 +56,7 @@ const CURRENCY = /^[A-Za-z]{3}$/;
       <div class="form">
         <div class="form__control">
           <span class="form__label">{{ 'billing.manual.org' | translate }}</span>
-          <dba-org-picker [value]="organization()" (picked)="organization.set($event)" />
+          <dba-org-picker scope="commercial" anyKey="orgPicker.choose" [value]="organization()" (picked)="organization.set($event)" />
         </div>
 
         <div class="form__pair">

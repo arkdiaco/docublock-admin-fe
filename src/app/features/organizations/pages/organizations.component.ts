@@ -31,6 +31,7 @@ import { OrgCreateFormComponent } from '../components/org-create-form.component'
 import { OrganizationsApi } from '../data/organizations.api';
 import type { CreateOrganizationBody, PlatformOrgRow, PlatformOrgState, PlatformStateCounts } from '../data/organizations.models';
 import { orgStateView } from '../data/platform-org-state';
+import { initialsOf } from '../../../shared/domain/initials';
 
 const LIMIT = 20;
 const DEBOUNCE_MS = 350;
@@ -68,14 +69,6 @@ const CREATE_ERRORS = [
   'PAIS_NO_ENCONTRADO',
   'CIUDAD_NO_ENCONTRADA',
 ];
-
-const initialsOf = (name: string): string =>
-  name
-    .split(/\s+/)
-    .filter((word) => word.length > 2)
-    .slice(0, 2)
-    .map((word) => word[0]?.toUpperCase() ?? '')
-    .join('') || name.slice(0, 2).toUpperCase();
 
 @Component({
   selector: 'dba-organizations',

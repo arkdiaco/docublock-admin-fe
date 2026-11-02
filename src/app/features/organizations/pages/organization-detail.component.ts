@@ -41,6 +41,7 @@ import { OrgMarketplaceTabComponent } from '../components/marketplace/org-market
 import { OrganizationsApi } from '../data/organizations.api';
 import type { PlatformOrgDetail, PlatformOrgUpdate } from '../data/organizations.models';
 import { orgStateView } from '../data/platform-org-state';
+import { initialsOf } from '../../../shared/domain/initials';
 
 const TAB_KEYS = [
   'summary',
@@ -65,14 +66,6 @@ const MODULES = [
 const MODULE_ERRORS = ['ADDON_COBRADO_POR_STRIPE', 'ADDON_NO_DISPONIBLE_EN_PAIS'];
 
 const ORG_EDIT_ERRORS = ['TRIBUTARY_NUMBER_INVALID', 'NIT_EN_USO', 'CIUDAD_FUERA_DEL_PAIS', 'ORG_NO_EXISTE'];
-
-const initialsOf = (name: string): string =>
-  name
-    .split(/\s+/)
-    .filter((word) => word.length > 2)
-    .slice(0, 2)
-    .map((word) => word[0]?.toUpperCase() ?? '')
-    .join('') || name.slice(0, 2).toUpperCase();
 
 @Component({
   selector: 'dba-organization-detail',

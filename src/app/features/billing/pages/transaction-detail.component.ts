@@ -230,7 +230,7 @@ interface StoredTax {
       </div>
     }
   `,
-  styleUrl: '../components/billing-detail.scss',
+  styleUrl: '../../../shared/ui/detail-page.scss',
 })
 export class TransactionDetailComponent {
   readonly id = input.required<string>();

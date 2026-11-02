@@ -177,7 +177,7 @@ interface RowView extends Invoice {
       />
     }
   `,
-  styleUrl: '../components/billing-list.scss',
+  styleUrl: '../../../shared/ui/list-page.scss',
 })
 export class InvoicesComponent {
   private readonly api = inject(BillingApi);

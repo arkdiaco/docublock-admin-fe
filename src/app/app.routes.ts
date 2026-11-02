@@ -113,6 +113,39 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
         import('./features/marketplace/pages/product-detail.component').then((m) => m.ProductDetailComponent),
     },
   ],
+  promotions: [
+    {
+      path: '',
+      loadComponent: () => import('./features/promotions/pages/promotions.component').then((m) => m.PromotionsComponent),
+    },
+    {
+      path: ':id',
+      loadComponent: () =>
+        import('./features/promotions/pages/promotion-detail.component').then((m) => m.PromotionDetailComponent),
+    },
+  ],
+  referrals: [
+    {
+      path: '',
+      loadComponent: () => import('./features/promotions/pages/referrals.component').then((m) => m.ReferralsComponent),
+    },
+    {
+      path: ':id',
+      loadComponent: () =>
+        import('./features/promotions/pages/referral-detail.component').then((m) => m.ReferralDetailComponent),
+    },
+  ],
+  resellers: [
+    {
+      path: '',
+      loadComponent: () => import('./features/resellers/pages/resellers.component').then((m) => m.ResellersComponent),
+    },
+    {
+      path: ':id',
+      loadComponent: () =>
+        import('./features/resellers/pages/reseller-detail.component').then((m) => m.ResellerDetailComponent),
+    },
+  ],
   audit: [{ path: '', loadComponent: () => import('./features/audit/pages/audit.component').then((m) => m.AuditComponent) }],
   staff: [{ path: '', loadComponent: () => import('./features/staff/pages/staff.component').then((m) => m.StaffComponent) }],
   health: [{ path: '', loadComponent: () => import('./features/status/pages/status.component').then((m) => m.StatusComponent) }],

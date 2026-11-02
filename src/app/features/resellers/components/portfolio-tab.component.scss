@@ -1,0 +1,27 @@
+.port__link {
+  color: var(--dba-violet-600);
+  text-decoration: none;
+}
+
+.port__link:hover {
+  text-decoration: underline;
+}
+
+.port__remove {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--dba-font-ui);
+  font-size: var(--dba-text-label);
+  color: var(--dba-violet-600);
+  cursor: pointer;
+}
+
+.port__remove:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.port__remove:disabled {
+  color: var(--dba-text-muted);
+  cursor: default;
+}

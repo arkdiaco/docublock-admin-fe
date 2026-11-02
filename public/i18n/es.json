@@ -2332,7 +2332,8 @@
     "label": "Organización",
     "any": "Todas las organizaciones",
     "filter": "Nombre o NIT",
-    "empty": "Sin coincidencias"
+    "empty": "Sin coincidencias",
+    "choose": "Elige una organización"
   },
   "support": {
     "section": {
@@ -3034,6 +3035,366 @@
       "noInvoices": "Esta organización no tiene facturas.",
       "loading": "Cargando la facturación",
       "error": "No pudimos cargar la facturación de esta organización."
+    }
+  },
+  "promo": {
+    "count": "Códigos: {{total}}",
+    "new": "Crear código",
+    "searchPlaceholder": "Buscar por código o nombre",
+    "viewsLabel": "Filtrar códigos",
+    "view": {
+      "all": "Todos",
+      "active": "Activos",
+      "inactive": "Inactivos"
+    },
+    "loading": "Cargando códigos",
+    "errorTitle": "No pudimos cargar los códigos",
+    "errorLead": "Revisa tu conexión e inténtalo de nuevo.",
+    "emptyTitle": "No hay códigos",
+    "emptyLead": "Cuando crees un código promocional aparecerá aquí.",
+    "anyCountry": "Todos los países",
+    "col": {
+      "code": "Código",
+      "discount": "Descuento",
+      "usage": "Canjeados",
+      "country": "País",
+      "expires": "Vence",
+      "state": "Estado"
+    },
+    "state": {
+      "available": "Disponible",
+      "inactive": "Inactivo",
+      "expired": "Vencido",
+      "exhausted": "Agotado"
+    },
+    "tab": {
+      "report": "Reporte",
+      "redemptions": "Redenciones"
+    },
+    "form": {
+      "createTitle": "Crear código",
+      "editTitle": "Editar código",
+      "create": "Crear código",
+      "save": "Guardar",
+      "name": "Nombre",
+      "code": "Código",
+      "codeHint": "De 3 a 40 letras, números, guiones o guiones bajos. Después no se puede cambiar.",
+      "codeInvalid": "Usa de 3 a 40 letras, números, guiones o guiones bajos.",
+      "discount": "Descuento (%)",
+      "discountHint": "Solo cambia para los canjes nuevos.",
+      "discountInvalid": "Escribe un número entero de 1 a 100.",
+      "quantity": "Cantidad",
+      "quantityHint": "Ya canjeados: {{redeemed}}. No puede ser menor.",
+      "quantityInvalid": "Escribe un número entero válido, no menor que lo ya canjeado.",
+      "country": "País",
+      "anyCountry": "Todos los países",
+      "expires": "Vence",
+      "expiresInvalid": "La fecha no puede ser anterior a hoy.",
+      "createDone": "Código {{code}} creado.",
+      "saveDone": "Cambios guardados."
+    },
+    "detail": {
+      "loading": "Cargando el código",
+      "missingTitle": "Este código no existe",
+      "missingLead": "Puede que el enlace esté mal.",
+      "back": "Volver a promocionales",
+      "errorTitle": "No pudimos cargar el código",
+      "errorLead": "Revisa tu conexión e inténtalo de nuevo.",
+      "edit": "Editar",
+      "activate": "Activar",
+      "activated": "Código activado.",
+      "deactivated": "Código desactivado.",
+      "deactivate": {
+        "label": "Desactivar",
+        "title": "¿Desactivar este código?",
+        "message": "Nadie más podrá canjear {{code}}. Los canjes ya hechos se conservan.",
+        "confirm": "Desactivar"
+      },
+      "section": "Datos del código",
+      "discount": "Descuento",
+      "usage": "Canjeados",
+      "remaining": "Disponibles",
+      "country": "País",
+      "expires": "Vence",
+      "created": "Creado",
+      "owner": "Referido",
+      "tabsLabel": "Secciones del código"
+    },
+    "red": {
+      "loading": "Cargando redenciones",
+      "errorTitle": "No pudimos cargar las redenciones",
+      "errorLead": "Revisa tu conexión e inténtalo de nuevo.",
+      "emptyTitle": "Sin redenciones registradas",
+      "emptyLead": "Cuando alguien canjee este código aparecerá aquí.",
+      "missing": "Canjeados según el contador: {{redeemed}}. Con detalle: {{total}}. Los canjes hechos antes de este registro no dejaron detalle.",
+      "released": "Liberada",
+      "effective": "Efectiva",
+      "col": {
+        "org": "Organización",
+        "reference": "Referencia",
+        "discount": "Descuento",
+        "date": "Fecha",
+        "state": "Estado"
+      }
+    },
+    "error": {
+      "CODIGO_EN_USO": "Ya existe un código con ese nombre.",
+      "CANTIDAD_BAJO_CANJES": "La cantidad no puede ser menor que lo ya canjeado.",
+      "CODIGO_NO_ENCONTRADO": "Ese código ya no existe.",
+      "PAIS_NO_ENCONTRADO": "Ese país ya no existe.",
+      "REFERIDO_EMAIL_EN_USO": "Ese correo ya tiene un referido activo.",
+      "REFERIDO_NO_ENCONTRADO": "Ese referido ya no existe.",
+      "CODIGO_CON_DUENO": "Ese código ya pertenece a otro referido.",
+      "CODIGO_REQUERIDO": "Falta el código del referido.",
+      "generic": "No pudimos guardar los cambios. Inténtalo de nuevo."
+    }
+  },
+  "promoReport": {
+    "from": "Desde",
+    "to": "Hasta",
+    "rangeInvalid": "La fecha final no puede ser anterior a la inicial.",
+    "loading": "Cargando el reporte",
+    "errorTitle": "No pudimos cargar el reporte",
+    "errorLead": "Revisa tu conexión e inténtalo de nuevo.",
+    "redemptionsTitle": "Canjes",
+    "redemptionsNote": "Estos conteos son de toda la vida del código y no dependen de las fechas elegidas.",
+    "effective": "Efectivos",
+    "released": "Liberados",
+    "recorded": "Registrados",
+    "totalsTitle": "Periodo en {{currency}}",
+    "total": "Total pagado",
+    "marketplace": "Marketplace",
+    "plans": "Planes",
+    "discount": "Descuento dado",
+    "orders": "Compras: {{count}}",
+    "transactions": "Pagos: {{count}}",
+    "emptyTitle": "Sin operaciones en el periodo",
+    "emptyLead": "Prueba con otro rango de fechas.",
+    "tableLabel": "Operaciones del periodo",
+    "kind": {
+      "MARKETPLACE": "Marketplace",
+      "PLAN": "Plan"
+    },
+    "col": {
+      "kind": "Tipo",
+      "reference": "Referencia",
+      "org": "Organización",
+      "date": "Fecha",
+      "discount": "Descuento",
+      "paid": "Pagado"
+    }
+  },
+  "ref": {
+    "count": "Referidos: {{total}}",
+    "new": "Crear referido",
+    "searchPlaceholder": "Buscar por nombre, correo o documento",
+    "viewsLabel": "Filtrar referidos",
+    "view": {
+      "all": "Todos",
+      "active": "Activos",
+      "inactive": "Inactivos"
+    },
+    "loading": "Cargando referidos",
+    "errorTitle": "No pudimos cargar los referidos",
+    "errorLead": "Revisa tu conexión e inténtalo de nuevo.",
+    "emptyTitle": "No hay referidos",
+    "emptyLead": "Cuando crees un referido aparecerá aquí.",
+    "col": {
+      "person": "Referido",
+      "code": "Código",
+      "discount": "Descuento",
+      "usage": "Canjeados",
+      "state": "Estado"
+    },
+    "state": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    },
+    "form": {
+      "createTitle": "Crear referido",
+      "editTitle": "Editar referido",
+      "create": "Crear referido",
+      "save": "Guardar",
+      "name": "Nombre",
+      "email": "Correo",
+      "emailInvalid": "Escribe un correo válido.",
+      "phone": "Teléfono",
+      "document": "Documento",
+      "notes": "Notas",
+      "codeSection": "Código del referido",
+      "modeNew": "Código nuevo",
+      "modeExisting": "Código existente",
+      "code": "Código",
+      "existing": "Código",
+      "existingEmpty": "Sin coincidencias",
+      "existingHint": "Solo se puede usar un código que no tenga otro referido.",
+      "existingOption": "{{code}} · {{discount}} %",
+      "createDone": "Referido {{name}} creado.",
+      "saveDone": "Cambios guardados."
+    },
+    "detail": {
+      "loading": "Cargando el referido",
+      "missingTitle": "Este referido no existe",
+      "missingLead": "Puede que el enlace esté mal.",
+      "back": "Volver a referidos",
+      "errorTitle": "No pudimos cargar el referido",
+      "errorLead": "Revisa tu conexión e inténtalo de nuevo.",
+      "edit": "Editar",
+      "activate": "Activar",
+      "activated": "Referido y código activados.",
+      "deactivated": "Referido y código desactivados.",
+      "deactivate": {
+        "label": "Desactivar",
+        "title": "¿Desactivar este referido?",
+        "message": "{{name}} quedará inactivo y su código {{code}} ya no se podrá canjear.",
+        "confirm": "Desactivar"
+      },
+      "contact": "Contacto",
+      "email": "Correo",
+      "phone": "Teléfono",
+      "document": "Documento",
+      "notes": "Notas",
+      "created": "Creado",
+      "code": "Código",
+      "codeValue": "Código",
+      "codeState": "Estado del código",
+      "discount": "Descuento",
+      "usage": "Canjeados",
+      "expires": "Vence",
+      "report": "Reporte"
+    }
+  },
+  "rsl": {
+    "count": "Resellers: {{total}}",
+    "mark": "Marcar como reseller",
+    "searchPlaceholder": "Buscar por nombre o NIT",
+    "loading": "Cargando resellers",
+    "errorTitle": "No pudimos cargar los resellers",
+    "errorLead": "Revisa tu conexión e inténtalo de nuevo.",
+    "emptyTitle": "No hay resellers",
+    "emptyLead": "Cuando marques una organización como reseller aparecerá aquí.",
+    "col": {
+      "org": "Organización",
+      "email": "Correo",
+      "portfolio": "Cartera",
+      "state": "Estado",
+      "created": "Creada"
+    },
+    "state": {
+      "active": "Activa",
+      "suspended": "Suspendida"
+    },
+    "tab": {
+      "portfolio": "Cartera",
+      "history": "Historial"
+    },
+    "form": {
+      "org": "Organización",
+      "alreadyReseller": "Esta organización ya es reseller.",
+      "self": "Un reseller no puede estar en su propia cartera.",
+      "alreadyHere": "Esta organización ya está en esta cartera.",
+      "moves": "Esta organización saldrá de la cartera de {{from}} y pasará a {{to}}.",
+      "mark": {
+        "title": "Marcar como reseller",
+        "confirm": "Marcar como reseller",
+        "note": "La organización podrá administrar una cartera de clientes.",
+        "done": "{{name}} ahora es reseller."
+      },
+      "assign": {
+        "title": "Asignar organización",
+        "confirm": "Asignar",
+        "note": "La organización quedará en la cartera de este reseller.",
+        "done": "Organización asignada."
+      }
+    },
+    "detail": {
+      "loading": "Cargando el reseller",
+      "missingTitle": "Este reseller no existe",
+      "missingLead": "La organización no existe o ya no es reseller.",
+      "back": "Volver a resellers",
+      "errorTitle": "No pudimos cargar el reseller",
+      "errorLead": "Revisa tu conexión e inténtalo de nuevo.",
+      "refreshError": "No pudimos actualizar los datos del reseller.",
+      "openOrg": "Ver organización",
+      "removeRole": {
+        "label": "Quitar rol",
+        "blocked": "Organizaciones en cartera: {{count}}. Reasígnalas antes de quitar el rol.",
+        "title": "¿Quitar el rol de reseller?",
+        "message": "{{name}} dejará de ser reseller. La organización sigue funcionando como cliente.",
+        "confirm": "Quitar rol",
+        "done": "{{name}} ya no es reseller."
+      },
+      "section": "Datos del reseller",
+      "taxId": "NIT",
+      "email": "Correo",
+      "portfolio": "Cartera",
+      "created": "Creada",
+      "tabsLabel": "Secciones del reseller"
+    },
+    "port": {
+      "searchPlaceholder": "Buscar por nombre o NIT",
+      "viewsLabel": "Filtrar cartera",
+      "assign": "Asignar organización",
+      "view": {
+        "all": "Todas",
+        "active": "Activas",
+        "suspended": "Suspendidas"
+      },
+      "loading": "Cargando la cartera",
+      "errorTitle": "No pudimos cargar la cartera",
+      "errorLead": "Revisa tu conexión e inténtalo de nuevo.",
+      "emptyTitle": "Sin organizaciones",
+      "emptyLead": "No hay organizaciones en esta vista.",
+      "col": {
+        "org": "Organización",
+        "plan": "Plan",
+        "documents": "Documentos",
+        "users": "Activos / usuarios",
+        "state": "Estado"
+      },
+      "until": "Hasta {{date}}",
+      "noEnd": "Sin vencimiento",
+      "noPlan": "Sin plan",
+      "remove": "Quitar",
+      "removeAria": "Quitar a {{name}} de la cartera",
+      "removeDialog": {
+        "title": "¿Quitar de la cartera?",
+        "message": "{{name}} dejará de estar en la cartera de {{reseller}}. Su plan no cambia.",
+        "confirm": "Quitar de la cartera",
+        "done": "{{name}} salió de la cartera."
+      }
+    },
+    "hist": {
+      "loading": "Cargando el historial",
+      "errorTitle": "No pudimos cargar el historial",
+      "errorLead": "Revisa tu conexión e inténtalo de nuevo.",
+      "emptyTitle": "Sin movimientos",
+      "emptyLead": "Aquí verás los cambios de rol y de cartera.",
+      "unknownOrg": "Organización desconocida",
+      "unknownActor": "Personal de plataforma",
+      "col": {
+        "what": "Qué pasó",
+        "who": "Quién",
+        "when": "Cuándo"
+      },
+      "action": {
+        "reseller": {
+          "flag_set": "{{org}} quedó marcada como reseller",
+          "flag_removed": "{{org}} dejó de ser reseller"
+        },
+        "organization": {
+          "reseller_assigned": "{{org}} entró a la cartera de {{reseller}}",
+          "reseller_unassigned": "{{org}} salió de la cartera de {{previous}}"
+        },
+        "moved": "{{org}} pasó de {{previous}} a {{reseller}}"
+      }
+    },
+    "error": {
+      "RESELLER_CON_CARTERA": "Tiene organizaciones en cartera: reasígnalas antes de quitar el rol.",
+      "RESELLER_PROPIO": "Una organización no puede ser su propio reseller.",
+      "NO_ES_RESELLER": "Esa organización ya no es reseller.",
+      "ORGANIZACION_NO_ENCONTRADA": "Esa organización ya no existe.",
+      "generic": "No pudimos guardar los cambios. Inténtalo de nuevo."
     }
   }
 }

@@ -44,6 +44,26 @@ describe('OrgPickerComponent', () => {
     pick: (id: string) => void;
   }
 
+  it('con alcance comercial consulta la ruta de comercial y emite la organización completa', async () => {
+    const fixture = TestBed.createComponent(OrgPickerComponent);
+    fixture.componentRef.setInput('scope', 'commercial');
+    fixture.componentRef.setInput('anyKey', 'orgPicker.choose');
+    fixture.detectChanges();
+    const picker = fixture.componentInstance as unknown as Picker;
+    const elegidas: unknown[] = [];
+    fixture.componentInstance.selection.subscribe((org) => elegidas.push(org));
+    expect(picker.options()[0]?.label).toBe('Elige una organización');
+    picker.warm();
+    http
+      .expectOne((r) => r.url === '/platform/commercial/organizations')
+      .flush({
+        items: [{ id: 'o1', businessName: 'Puerto', tributaryNumber: '900', isReseller: true }],
+      });
+    await fixture.whenStable();
+    picker.pick('o1');
+    expect(elegidas[0]).toMatchObject({ id: 'o1', isReseller: true });
+  });
+
   it('sin valor no pide nada hasta abrirse y ofrece «Todas» primero', async () => {
     const fixture = TestBed.createComponent(OrgPickerComponent);
     fixture.detectChanges();

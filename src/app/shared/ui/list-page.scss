@@ -123,3 +123,22 @@
     max-width: 100%;
   }
 }
+
+.bl__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.bl__title {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.bl__title h1 {
+  margin: 0;
+}

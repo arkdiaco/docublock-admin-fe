@@ -40,6 +40,7 @@ import { DocumentsApi } from '../data/documents.api';
 import { DOCUMENT_ERRORS } from '../data/document-errors';
 import type { DocumentVersion, PlatformDocumentDetail, TraceEvent } from '../data/documents.models';
 import { documentActionsOf, shortHash, statusViewOf } from '../data/document-view';
+import { initialsOf } from '../../../shared/domain/initials';
 
 const TAB_KEYS = ['summary', 'signers', 'versions', 'trace'] as const;
 
@@ -50,14 +51,6 @@ const REASON: DialogReason = {
   quick: [],
   required: true,
 };
-
-const initialsOf = (name: string): string =>
-  name
-    .split(/\s+/)
-    .filter((word) => word.length > 2)
-    .slice(0, 2)
-    .map((word) => word[0]?.toUpperCase() ?? '')
-    .join('') || name.slice(0, 2).toUpperCase();
 
 @Component({
   selector: 'dba-document-detail',

@@ -93,3 +93,11 @@
     margin-bottom: 8px;
   }
 }
+
+.bd__heading {
+  margin: 0;
+}
+
+.bd__usage dba-usage-meter {
+  width: min(280px, 100%);
+}

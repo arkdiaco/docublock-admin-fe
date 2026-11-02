@@ -7,33 +7,55 @@ export interface OrganizationOption {
   id: string;
   businessName: string;
   tributaryNumber: string;
+  isReseller?: boolean;
+  resellerId?: string;
+  resellerName?: string;
 }
 
+export type LookupScope = 'clients' | 'commercial';
+
 export const LOOKUP_LIMIT = 8;
+
+const ROUTES: Record<LookupScope, string> = {
+  clients: '/platform/organizations',
+  commercial: '/platform/commercial/organizations',
+};
 
 @Injectable({ providedIn: 'root' })
 export class OrganizationLookup {
   private readonly http = inject(HttpClient);
 
-  search(term: string): Observable<OrganizationOption[]> {
+  search(term: string, scope: LookupScope = 'clients'): Observable<OrganizationOption[]> {
     return this.http
-      .get<{ items: OrganizationOption[] }>('/platform/organizations', {
+      .get<{ items: OrganizationOption[] }>(ROUTES[scope], {
         params: toParams({ search: term || undefined, limit: LOOKUP_LIMIT }),
       })
       .pipe(
         map((page) =>
-          page.items.map(({ id, businessName, tributaryNumber }) => ({
-            id,
-            businessName,
-            tributaryNumber,
-          })),
+          page.items.map(
+            ({ id, businessName, tributaryNumber, isReseller, resellerId, resellerName }) => ({
+              id,
+              businessName,
+              tributaryNumber,
+              isReseller,
+              resellerId,
+              resellerName,
+            }),
+          ),
         ),
       );
   }
 
-  byId(id: string): Observable<OrganizationOption> {
-    return this.http
-      .get<OrganizationOption>(`/platform/organizations/${id}`)
-      .pipe(map(({ businessName, tributaryNumber }) => ({ id, businessName, tributaryNumber })));
+  byId(id: string, scope: LookupScope = 'clients'): Observable<OrganizationOption> {
+    return this.http.get<OrganizationOption>(`${ROUTES[scope]}/${id}`).pipe(
+      map(({ businessName, tributaryNumber, isReseller, resellerId, resellerName }) => ({
+        id,
+        businessName,
+        tributaryNumber,
+        isReseller,
+        resellerId,
+        resellerName,
+      })),
+    );
   }
 }

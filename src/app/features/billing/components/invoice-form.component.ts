@@ -73,7 +73,7 @@ const valueOf = (text: string): string | undefined => text.trim() || undefined;
         @if (canPickOrg() && !invoice()) {
           <div class="form__control">
             <span class="form__label">{{ 'billing.form.org' | translate }}</span>
-            <dba-org-picker [value]="organization()" (picked)="organization.set($event)" />
+            <dba-org-picker scope="commercial" anyKey="orgPicker.choose" [value]="organization()" (picked)="organization.set($event)" />
             <span class="dba-meta">{{ 'billing.form.orgHint' | translate }}</span>
           </div>
         } @else if (invoice()?.organizationId) {

@@ -2332,7 +2332,8 @@
     "label": "Organization",
     "any": "All organizations",
     "filter": "Name or tax ID",
-    "empty": "No matches"
+    "empty": "No matches",
+    "choose": "Choose an organization"
   },
   "support": {
     "section": {
@@ -3034,6 +3035,366 @@
       "noInvoices": "This organization has no invoices.",
       "loading": "Loading billing",
       "error": "We couldn't load this organization's billing."
+    }
+  },
+  "promo": {
+    "count": "Codes: {{total}}",
+    "new": "Create code",
+    "searchPlaceholder": "Search by code or name",
+    "viewsLabel": "Filter codes",
+    "view": {
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "loading": "Loading codes",
+    "errorTitle": "We couldn't load the codes",
+    "errorLead": "Check your connection and try again.",
+    "emptyTitle": "No codes yet",
+    "emptyLead": "Promotional codes you create will appear here.",
+    "anyCountry": "All countries",
+    "col": {
+      "code": "Code",
+      "discount": "Discount",
+      "usage": "Redeemed",
+      "country": "Country",
+      "expires": "Expires",
+      "state": "Status"
+    },
+    "state": {
+      "available": "Available",
+      "inactive": "Inactive",
+      "expired": "Expired",
+      "exhausted": "Used up"
+    },
+    "tab": {
+      "report": "Report",
+      "redemptions": "Redemptions"
+    },
+    "form": {
+      "createTitle": "Create code",
+      "editTitle": "Edit code",
+      "create": "Create code",
+      "save": "Save",
+      "name": "Name",
+      "code": "Code",
+      "codeHint": "3 to 40 letters, numbers, hyphens or underscores. It can't be changed later.",
+      "codeInvalid": "Use 3 to 40 letters, numbers, hyphens or underscores.",
+      "discount": "Discount (%)",
+      "discountHint": "Only changes for new redemptions.",
+      "discountInvalid": "Enter a whole number from 1 to 100.",
+      "quantity": "Quantity",
+      "quantityHint": "Already redeemed: {{redeemed}}. It can't be lower.",
+      "quantityInvalid": "Enter a valid whole number, not lower than what was already redeemed.",
+      "country": "Country",
+      "anyCountry": "All countries",
+      "expires": "Expires",
+      "expiresInvalid": "The date can't be earlier than today.",
+      "createDone": "Code {{code}} created.",
+      "saveDone": "Changes saved."
+    },
+    "detail": {
+      "loading": "Loading the code",
+      "missingTitle": "This code doesn't exist",
+      "missingLead": "The link may be wrong.",
+      "back": "Back to promotions",
+      "errorTitle": "We couldn't load the code",
+      "errorLead": "Check your connection and try again.",
+      "edit": "Edit",
+      "activate": "Activate",
+      "activated": "Code activated.",
+      "deactivated": "Code deactivated.",
+      "deactivate": {
+        "label": "Deactivate",
+        "title": "Deactivate this code?",
+        "message": "No one else will be able to redeem {{code}}. Past redemptions are kept.",
+        "confirm": "Deactivate"
+      },
+      "section": "Code details",
+      "discount": "Discount",
+      "usage": "Redeemed",
+      "remaining": "Available",
+      "country": "Country",
+      "expires": "Expires",
+      "created": "Created",
+      "owner": "Referrer",
+      "tabsLabel": "Code sections"
+    },
+    "red": {
+      "loading": "Loading redemptions",
+      "errorTitle": "We couldn't load the redemptions",
+      "errorLead": "Check your connection and try again.",
+      "emptyTitle": "No recorded redemptions",
+      "emptyLead": "When someone redeems this code it will appear here.",
+      "missing": "Redeemed per the counter: {{redeemed}}. With details: {{total}}. Redemptions made before this record have no details.",
+      "released": "Released",
+      "effective": "Effective",
+      "col": {
+        "org": "Organization",
+        "reference": "Reference",
+        "discount": "Discount",
+        "date": "Date",
+        "state": "Status"
+      }
+    },
+    "error": {
+      "CODIGO_EN_USO": "A code with that name already exists.",
+      "CANTIDAD_BAJO_CANJES": "The quantity can't be lower than what was already redeemed.",
+      "CODIGO_NO_ENCONTRADO": "That code no longer exists.",
+      "PAIS_NO_ENCONTRADO": "That country no longer exists.",
+      "REFERIDO_EMAIL_EN_USO": "That email already has an active referrer.",
+      "REFERIDO_NO_ENCONTRADO": "That referrer no longer exists.",
+      "CODIGO_CON_DUENO": "That code already belongs to another referrer.",
+      "CODIGO_REQUERIDO": "The referrer's code is missing.",
+      "generic": "We couldn't save the changes. Try again."
+    }
+  },
+  "promoReport": {
+    "from": "From",
+    "to": "To",
+    "rangeInvalid": "The end date can't be earlier than the start date.",
+    "loading": "Loading the report",
+    "errorTitle": "We couldn't load the report",
+    "errorLead": "Check your connection and try again.",
+    "redemptionsTitle": "Redemptions",
+    "redemptionsNote": "These counts cover the code's whole life and don't depend on the selected dates.",
+    "effective": "Effective",
+    "released": "Released",
+    "recorded": "Recorded",
+    "totalsTitle": "Period in {{currency}}",
+    "total": "Total paid",
+    "marketplace": "Marketplace",
+    "plans": "Plans",
+    "discount": "Discount given",
+    "orders": "Orders: {{count}}",
+    "transactions": "Payments: {{count}}",
+    "emptyTitle": "No activity in this period",
+    "emptyLead": "Try another date range.",
+    "tableLabel": "Period activity",
+    "kind": {
+      "MARKETPLACE": "Marketplace",
+      "PLAN": "Plan"
+    },
+    "col": {
+      "kind": "Type",
+      "reference": "Reference",
+      "org": "Organization",
+      "date": "Date",
+      "discount": "Discount",
+      "paid": "Paid"
+    }
+  },
+  "ref": {
+    "count": "Referrers: {{total}}",
+    "new": "Create referrer",
+    "searchPlaceholder": "Search by name, email or document",
+    "viewsLabel": "Filter referrers",
+    "view": {
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "loading": "Loading referrers",
+    "errorTitle": "We couldn't load the referrers",
+    "errorLead": "Check your connection and try again.",
+    "emptyTitle": "No referrers yet",
+    "emptyLead": "Referrers you create will appear here.",
+    "col": {
+      "person": "Referrer",
+      "code": "Code",
+      "discount": "Discount",
+      "usage": "Redeemed",
+      "state": "Status"
+    },
+    "state": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "form": {
+      "createTitle": "Create referrer",
+      "editTitle": "Edit referrer",
+      "create": "Create referrer",
+      "save": "Save",
+      "name": "Name",
+      "email": "Email",
+      "emailInvalid": "Enter a valid email.",
+      "phone": "Phone",
+      "document": "Document",
+      "notes": "Notes",
+      "codeSection": "Referrer's code",
+      "modeNew": "New code",
+      "modeExisting": "Existing code",
+      "code": "Code",
+      "existing": "Code",
+      "existingEmpty": "No matches",
+      "existingHint": "You can only use a code that has no other referrer.",
+      "existingOption": "{{code}} · {{discount}} %",
+      "createDone": "Referrer {{name}} created.",
+      "saveDone": "Changes saved."
+    },
+    "detail": {
+      "loading": "Loading the referrer",
+      "missingTitle": "This referrer doesn't exist",
+      "missingLead": "The link may be wrong.",
+      "back": "Back to referrers",
+      "errorTitle": "We couldn't load the referrer",
+      "errorLead": "Check your connection and try again.",
+      "edit": "Edit",
+      "activate": "Activate",
+      "activated": "Referrer and code activated.",
+      "deactivated": "Referrer and code deactivated.",
+      "deactivate": {
+        "label": "Deactivate",
+        "title": "Deactivate this referrer?",
+        "message": "{{name}} will become inactive and code {{code}} can no longer be redeemed.",
+        "confirm": "Deactivate"
+      },
+      "contact": "Contact",
+      "email": "Email",
+      "phone": "Phone",
+      "document": "Document",
+      "notes": "Notes",
+      "created": "Created",
+      "code": "Code",
+      "codeValue": "Code",
+      "codeState": "Code status",
+      "discount": "Discount",
+      "usage": "Redeemed",
+      "expires": "Expires",
+      "report": "Report"
+    }
+  },
+  "rsl": {
+    "count": "Resellers: {{total}}",
+    "mark": "Mark as reseller",
+    "searchPlaceholder": "Search by name or tax ID",
+    "loading": "Loading resellers",
+    "errorTitle": "We couldn't load the resellers",
+    "errorLead": "Check your connection and try again.",
+    "emptyTitle": "No resellers yet",
+    "emptyLead": "Organizations you mark as resellers will appear here.",
+    "col": {
+      "org": "Organization",
+      "email": "Email",
+      "portfolio": "Portfolio",
+      "state": "Status",
+      "created": "Created"
+    },
+    "state": {
+      "active": "Active",
+      "suspended": "Suspended"
+    },
+    "tab": {
+      "portfolio": "Portfolio",
+      "history": "History"
+    },
+    "form": {
+      "org": "Organization",
+      "alreadyReseller": "This organization is already a reseller.",
+      "self": "A reseller can't be in its own portfolio.",
+      "alreadyHere": "This organization is already in this portfolio.",
+      "moves": "This organization will leave {{from}}'s portfolio and move to {{to}}.",
+      "mark": {
+        "title": "Mark as reseller",
+        "confirm": "Mark as reseller",
+        "note": "The organization will be able to manage a client portfolio.",
+        "done": "{{name}} is now a reseller."
+      },
+      "assign": {
+        "title": "Assign organization",
+        "confirm": "Assign",
+        "note": "The organization will join this reseller's portfolio.",
+        "done": "Organization assigned."
+      }
+    },
+    "detail": {
+      "loading": "Loading the reseller",
+      "missingTitle": "This reseller doesn't exist",
+      "missingLead": "The organization doesn't exist or is no longer a reseller.",
+      "back": "Back to resellers",
+      "errorTitle": "We couldn't load the reseller",
+      "errorLead": "Check your connection and try again.",
+      "refreshError": "We couldn't refresh the reseller's data.",
+      "openOrg": "View organization",
+      "removeRole": {
+        "label": "Remove role",
+        "blocked": "Organizations in portfolio: {{count}}. Reassign them before removing the role.",
+        "title": "Remove the reseller role?",
+        "message": "{{name}} will no longer be a reseller. The organization keeps working as a client.",
+        "confirm": "Remove role",
+        "done": "{{name}} is no longer a reseller."
+      },
+      "section": "Reseller details",
+      "taxId": "Tax ID",
+      "email": "Email",
+      "portfolio": "Portfolio",
+      "created": "Created",
+      "tabsLabel": "Reseller sections"
+    },
+    "port": {
+      "searchPlaceholder": "Search by name or tax ID",
+      "viewsLabel": "Filter portfolio",
+      "assign": "Assign organization",
+      "view": {
+        "all": "All",
+        "active": "Active",
+        "suspended": "Suspended"
+      },
+      "loading": "Loading the portfolio",
+      "errorTitle": "We couldn't load the portfolio",
+      "errorLead": "Check your connection and try again.",
+      "emptyTitle": "No organizations",
+      "emptyLead": "There are no organizations in this view.",
+      "col": {
+        "org": "Organization",
+        "plan": "Plan",
+        "documents": "Documents",
+        "users": "Active / users",
+        "state": "Status"
+      },
+      "until": "Until {{date}}",
+      "noEnd": "No expiry",
+      "noPlan": "No plan",
+      "remove": "Remove",
+      "removeAria": "Remove {{name}} from the portfolio",
+      "removeDialog": {
+        "title": "Remove from portfolio?",
+        "message": "{{name}} will leave {{reseller}}'s portfolio. Its plan doesn't change.",
+        "confirm": "Remove from portfolio",
+        "done": "{{name}} left the portfolio."
+      }
+    },
+    "hist": {
+      "loading": "Loading the history",
+      "errorTitle": "We couldn't load the history",
+      "errorLead": "Check your connection and try again.",
+      "emptyTitle": "No changes yet",
+      "emptyLead": "Role and portfolio changes will appear here.",
+      "unknownOrg": "Unknown organization",
+      "unknownActor": "Platform staff",
+      "col": {
+        "what": "What happened",
+        "who": "Who",
+        "when": "When"
+      },
+      "action": {
+        "reseller": {
+          "flag_set": "{{org}} was marked as a reseller",
+          "flag_removed": "{{org}} stopped being a reseller"
+        },
+        "organization": {
+          "reseller_assigned": "{{org}} joined {{reseller}}'s portfolio",
+          "reseller_unassigned": "{{org}} left {{previous}}'s portfolio"
+        },
+        "moved": "{{org}} moved from {{previous}} to {{reseller}}"
+      }
+    },
+    "error": {
+      "RESELLER_CON_CARTERA": "It has organizations in its portfolio: reassign them before removing the role.",
+      "RESELLER_PROPIO": "An organization can't be its own reseller.",
+      "NO_ES_RESELLER": "That organization is no longer a reseller.",
+      "ORGANIZACION_NO_ENCONTRADA": "That organization no longer exists.",
+      "generic": "We couldn't save the changes. Try again."
     }
   }
 }

@@ -252,7 +252,7 @@ interface RowView extends TransactionRow {
       />
     }
   `,
-  styleUrl: '../components/billing-list.scss',
+  styleUrl: '../../../shared/ui/list-page.scss',
 })
 export class TransactionsComponent {
   private readonly api = inject(BillingApi);
