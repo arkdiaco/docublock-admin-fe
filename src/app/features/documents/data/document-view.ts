@@ -1,4 +1,3 @@
-import type { OrgState } from '../../../shared/domain/org-state';
 import type {
   DocumentVersion,
   PlatformDocumentSummary,
@@ -13,26 +12,7 @@ export type ListView = 'todos' | IssueView;
 export const ISSUE_LIMIT = 50;
 export const BULK_LIMIT = 100;
 
-export interface StatusView {
-  family: OrgState;
-  labelKey: string;
-}
-
-export const statusViewOf = (status: PlatformDocumentSummary['status']): StatusView => {
-  if (status.state === 4) return { family: 'suspended', labelKey: 'docs.status.cancelled' };
-  if (status.state === 5) return { family: 'closed', labelKey: 'docs.status.lapsed' };
-  if (status.state === 1) return { family: 'closed', labelKey: 'docs.status.archived' };
-  switch (status.progress) {
-    case 3:
-      return { family: 'active', labelKey: 'docs.status.signed' };
-    case 2:
-      return { family: 'warning', labelKey: 'docs.status.partial' };
-    case 0:
-      return { family: 'suspended', labelKey: 'docs.status.rejected' };
-    default:
-      return { family: 'trial', labelKey: 'docs.status.pending' };
-  }
-};
+export { statusViewOf, type StatusView } from '../../../shared/domain/document-status-view';
 
 export type ChainState = 'registered' | 'pending' | 'none';
 

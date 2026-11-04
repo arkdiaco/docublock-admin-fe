@@ -547,6 +547,13 @@
       "sessions_revoke": "closed all of a user's sessions",
       "unblock": "unblocked a user account",
       "update": "edited a user's details"
+    },
+    "signers": {
+      "auto_sign_disable": "turned off a signer's automatic signing",
+      "one_touch_revoke": "revoked a signer's One Touch key",
+      "organization_add": "linked a signer to {{org}}",
+      "organization_remove": "unlinked a signer from {{org}}",
+      "update": "edited a signer's details"
     }
   },
   "placeholder": {
@@ -3477,7 +3484,6 @@
         "subArea": "Sub-area"
       }
     },
-    "anyOrg": "an organization",
     "action": {
       "edit": "Edit details",
       "block": "Block account",
@@ -3600,15 +3606,6 @@
       "revokeMessage": "{{name}} won't be able to sign in with this key. They can still use their code.",
       "revoked": "Key revoked."
     },
-    "history": {
-      "title": "History",
-      "count": "{{shown}} of {{total}}",
-      "loading": "Loading history",
-      "errorTitle": "We couldn't load the history.",
-      "emptyTitle": "No recorded changes.",
-      "emptyLead": "Whatever is done to this user from the console will appear here.",
-      "more": "See more"
-    },
     "error": {
       "MIEMBRO_YA_EXISTE": "Already belongs to that organization.",
       "ROL_INVALIDO": "That role doesn't exist in the organization.",
@@ -3625,6 +3622,202 @@
       "PAIS_NO_EXISTE": "That country doesn't exist.",
       "CIUDAD_NO_EXISTE": "That city doesn't exist.",
       "generic": "We couldn't save the changes. Please try again."
+    }
+  },
+  "hist": {
+    "count": "{{shown}} of {{total}}",
+    "loading": "Loading the history",
+    "errorTitle": "We couldn't load the history.",
+    "emptyTitle": "No recorded changes.",
+    "emptyLead": "Anything done to this record from the console will appear here.",
+    "more": "See more",
+    "anyOrg": "an organization"
+  },
+  "sig": {
+    "count": "{{total}} signers",
+    "viewsLabel": "Signer views",
+    "searchPlaceholder": "Search by name, document, email or mobile",
+    "countryLabel": "Country",
+    "anyCountry": "All countries",
+    "loading": "Loading signers",
+    "errorTitle": "We couldn't load the signers.",
+    "errorLead": "Check your connection and try again.",
+    "emptyTitle": "No signers match these filters.",
+    "emptyLead": "Change the search, the view or the country.",
+    "noName": "No name",
+    "yes": "Yes",
+    "no": "No",
+    "view": {
+      "all": "All",
+      "identified": "Identified",
+      "unidentified": "Not identified",
+      "without": "No organization"
+    },
+    "col": {
+      "person": "Signer",
+      "document": "Document",
+      "country": "Country",
+      "organizations": "Organizations",
+      "state": "Identity",
+      "created": "Created"
+    },
+    "state": {
+      "identified": "Identified",
+      "unidentified": "Not identified"
+    },
+    "action": {
+      "edit": "Edit details"
+    },
+    "detail": {
+      "loading": "Loading the signer",
+      "missingTitle": "This signer doesn't exist.",
+      "missingLead": "The link may be mistyped.",
+      "back": "Back to signers",
+      "errorTitle": "We couldn't load the signer.",
+      "errorLead": "Check your connection and try again.",
+      "section": "Details",
+      "kind": "Person type",
+      "businessName": "Business name",
+      "document": "Document",
+      "email": "Email",
+      "personalMail": "Personal email",
+      "cellphone": "Mobile",
+      "country": "Country",
+      "expedition": "Document issued",
+      "birthDate": "Date of birth",
+      "legalRep": "Legal representative",
+      "created": "Created"
+    },
+    "autoSign": {
+      "title": "Automatic signing",
+      "state": "Status",
+      "active": "Active",
+      "enabledAt": "Enabled",
+      "verifiedAt": "Code verified",
+      "channels": "Code channels",
+      "ip": "IP",
+      "browser": "Browser",
+      "disable": "Turn off",
+      "disableTitle": "Turn off automatic signing",
+      "disableMessage": "{{name}} will stop signing automatically. To turn it back on, they will have to confirm a code from their account.",
+      "disabled": "Automatic signing turned off.",
+      "inactiveLead": "Inactive. Only the signer can turn it on, by confirming a code sent to their contact, so it can't be enabled from the console."
+    },
+    "tab": {
+      "label": "Signer sections",
+      "organizations": "Organizations",
+      "documents": "Documents",
+      "oneTouch": "One Touch",
+      "history": "History"
+    },
+    "organizations": {
+      "label": "Signer's organizations",
+      "add": "Link to an organization",
+      "addTitle": "Link to an organization",
+      "addConfirm": "Link",
+      "organization": "Organization",
+      "pick": "Search for the organization",
+      "already": "Already linked to that organization.",
+      "added": "Linked to {{org}}.",
+      "remove": "Unlink",
+      "removeTitle": "Unlink from the organization",
+      "removeMessage": "{{name}} will leave the directory of {{org}}. Their existing documents don't change.",
+      "removed": "{{name}} is no longer in {{org}}.",
+      "missing": "Organization without details",
+      "emptyTitle": "No organizations.",
+      "emptyLead": "This signer isn't in any organization's directory.",
+      "col": {
+        "organization": "Organization",
+        "tax": "Tax ID"
+      }
+    },
+    "documents": {
+      "label": "Signer's documents",
+      "lead": "To retry a validation or unblock the signer, open the document.",
+      "loading": "Loading the documents",
+      "errorTitle": "We couldn't load the documents.",
+      "emptyTitle": "No documents.",
+      "emptyLead": "This signer isn't on any document.",
+      "noIdentityTitle": "No signing identity.",
+      "noIdentityLead": "This signer has no identity yet, so they can't be on documents.",
+      "attempts": "{{count}} attempts",
+      "col": {
+        "document": "Document",
+        "organization": "Organization",
+        "status": "Document",
+        "signer": "Signer"
+      },
+      "state": {
+        "signed": "Signed",
+        "pending": "Pending",
+        "blocked": "Blocked"
+      }
+    },
+    "oneTouch": {
+      "lead": "Revoking every key turns One Touch off. The signer can still sign with a code.",
+      "loading": "Loading the keys",
+      "errorTitle": "We couldn't load the keys.",
+      "emptyTitle": "No One Touch keys.",
+      "emptyLead": "This signer hasn't registered any key.",
+      "flagWithoutKeys": "One Touch shows as on, but there are no keys. They can't use it until they register one, and can still sign with a code.",
+      "unknownDevice": "Unnamed device",
+      "revoke": "Revoke",
+      "revokeTitle": "Revoke the One Touch key",
+      "revokeMessage": "{{name}} won't be able to sign with this key and its authorizations end. This can't be undone. They can still sign with a code.",
+      "revoked": "Key revoked.",
+      "col": {
+        "device": "Device",
+        "synced": "Synced",
+        "created": "Registered",
+        "lastUsed": "Last used"
+      }
+    },
+    "edit": {
+      "title": "Edit details",
+      "firstName": "First names",
+      "lastName": "Last names",
+      "businessName": "Business name",
+      "email": "Email",
+      "personalMail": "Personal email",
+      "cellphone": "Mobile",
+      "cellphoneHint": "With country code, for example +573001234567",
+      "country": "Country",
+      "countryPlaceholder": "Choose the country",
+      "kind": "Person type",
+      "kindPlaceholder": "Choose the person type",
+      "type": "Document type",
+      "typePlaceholder": "Choose the document type",
+      "city": "City of issue",
+      "cityPlaceholder": "Choose the city",
+      "cityEmpty": "No cities with that name",
+      "noCountry": "Choose the country first",
+      "catalogRequired": "Choose the person type and document type: they depend on the country and the person type.",
+      "expeditionDate": "Date of issue",
+      "birthDate": "Date of birth",
+      "dateHint": "YYYY-MM-DD",
+      "confirm": "Save changes",
+      "done": "Details updated."
+    },
+    "error": {
+      "generic": "We couldn't complete the action. Try again.",
+      "FIRMANTE_NO_ENCONTRADO": "This signer no longer exists.",
+      "CONTACTO_EN_USO": "That email or mobile already belongs to another signer.",
+      "PAIS_NO_ENCONTRADO": "That country doesn't exist.",
+      "CIUDAD_NO_ENCONTRADA": "That city doesn't exist.",
+      "FECHA_INVALIDA": "The date isn't valid: use YYYY-MM-DD.",
+      "FECHAS_INVALIDAS": "The dates don't add up: check the issue date and date of birth.",
+      "TIPO_PERSONA_INVALIDO": "That person type doesn't exist in the chosen country.",
+      "TIPO_IDENTIFICACION_INVALIDO": "That document type doesn't match the country or person type.",
+      "CAMPOS_REQUERIDOS": "Required details are missing for this person type.",
+      "NOMBRE_REQUERIDO": "Enter the first names.",
+      "APELLIDO_REQUERIDO": "Enter the last names.",
+      "CORREO_INVALIDO": "The email format isn't valid.",
+      "CELULAR_INVALIDO": "The mobile format isn't valid.",
+      "ORGANIZACION_NO_ENCONTRADA": "That organization no longer exists.",
+      "FIRMANTE_YA_VINCULADO": "Already linked to that organization.",
+      "FIRMANTE_NO_VINCULADO": "No longer linked to that organization.",
+      "FIRMA_AUTOMATICA_INACTIVA": "Automatic signing was already off.",
+      "LLAVE_NO_ENCONTRADA": "That key no longer exists."
     }
   }
 }

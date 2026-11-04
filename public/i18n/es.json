@@ -547,6 +547,13 @@
       "sessions_revoke": "cerró todas las sesiones de un usuario",
       "unblock": "desbloqueó una cuenta de usuario",
       "update": "editó los datos de un usuario"
+    },
+    "signers": {
+      "auto_sign_disable": "desactivó la firma automática de un firmante",
+      "one_touch_revoke": "revocó una llave de One Touch de un firmante",
+      "organization_add": "vinculó a un firmante a {{org}}",
+      "organization_remove": "desvinculó a un firmante de {{org}}",
+      "update": "editó los datos de un firmante"
     }
   },
   "placeholder": {
@@ -3477,7 +3484,6 @@
         "subArea": "Subárea"
       }
     },
-    "anyOrg": "una organización",
     "action": {
       "edit": "Editar datos",
       "block": "Bloquear cuenta",
@@ -3600,15 +3606,6 @@
       "revokeMessage": "{{name}} ya no podrá iniciar sesión con esta llave. Podrá seguir entrando con su código.",
       "revoked": "Llave revocada."
     },
-    "history": {
-      "title": "Historial",
-      "count": "{{shown}} de {{total}}",
-      "loading": "Cargando el historial",
-      "errorTitle": "No pudimos cargar el historial.",
-      "emptyTitle": "Sin cambios registrados.",
-      "emptyLead": "Lo que se haga sobre este usuario desde la consola aparecerá aquí.",
-      "more": "Ver más"
-    },
     "error": {
       "MIEMBRO_YA_EXISTE": "Ya pertenece a esa organización.",
       "ROL_INVALIDO": "Ese rol no existe en la organización.",
@@ -3625,6 +3622,202 @@
       "PAIS_NO_EXISTE": "Ese país no existe.",
       "CIUDAD_NO_EXISTE": "Esa ciudad no existe.",
       "generic": "No pudimos guardar los cambios. Inténtalo de nuevo."
+    }
+  },
+  "hist": {
+    "count": "{{shown}} de {{total}}",
+    "loading": "Cargando el historial",
+    "errorTitle": "No pudimos cargar el historial.",
+    "emptyTitle": "Sin cambios registrados.",
+    "emptyLead": "Lo que se haga sobre este registro desde la consola aparecerá aquí.",
+    "more": "Ver más",
+    "anyOrg": "una organización"
+  },
+  "sig": {
+    "count": "{{total}} firmantes",
+    "viewsLabel": "Vistas de firmantes",
+    "searchPlaceholder": "Buscar por nombre, documento, correo o celular",
+    "countryLabel": "País",
+    "anyCountry": "Todos los países",
+    "loading": "Cargando firmantes",
+    "errorTitle": "No pudimos cargar los firmantes.",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "emptyTitle": "Sin firmantes con esos filtros.",
+    "emptyLead": "Cambia la búsqueda, la vista o el país.",
+    "noName": "Sin nombre",
+    "yes": "Sí",
+    "no": "No",
+    "view": {
+      "all": "Todos",
+      "identified": "Identificados",
+      "unidentified": "Sin identificar",
+      "without": "Sin organización"
+    },
+    "col": {
+      "person": "Firmante",
+      "document": "Documento",
+      "country": "País",
+      "organizations": "Organizaciones",
+      "state": "Identidad",
+      "created": "Creado"
+    },
+    "state": {
+      "identified": "Identificado",
+      "unidentified": "Sin identificar"
+    },
+    "action": {
+      "edit": "Editar datos"
+    },
+    "detail": {
+      "loading": "Cargando el firmante",
+      "missingTitle": "Este firmante no existe.",
+      "missingLead": "Puede que el enlace esté mal escrito.",
+      "back": "Volver a firmantes",
+      "errorTitle": "No pudimos cargar el firmante.",
+      "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+      "section": "Datos",
+      "kind": "Tipo de persona",
+      "businessName": "Razón social",
+      "document": "Documento",
+      "email": "Correo",
+      "personalMail": "Correo personal",
+      "cellphone": "Celular",
+      "country": "País",
+      "expedition": "Expedición del documento",
+      "birthDate": "Fecha de nacimiento",
+      "legalRep": "Representante legal",
+      "created": "Creado"
+    },
+    "autoSign": {
+      "title": "Firma automática",
+      "state": "Estado",
+      "active": "Activa",
+      "enabledAt": "Activada",
+      "verifiedAt": "Código verificado",
+      "channels": "Canales del código",
+      "ip": "IP",
+      "browser": "Navegador",
+      "disable": "Desactivar",
+      "disableTitle": "Desactivar la firma automática",
+      "disableMessage": "{{name}} dejará de firmar de forma automática. Para volver a activarla tendrá que confirmar un código desde su cuenta.",
+      "disabled": "Firma automática desactivada.",
+      "inactiveLead": "Inactiva. Solo la activa el firmante, confirmando un código enviado a su contacto, así que no se enciende desde la consola."
+    },
+    "tab": {
+      "label": "Secciones del firmante",
+      "organizations": "Organizaciones",
+      "documents": "Documentos",
+      "oneTouch": "One Touch",
+      "history": "Historial"
+    },
+    "organizations": {
+      "label": "Organizaciones del firmante",
+      "add": "Vincular a una organización",
+      "addTitle": "Vincular a una organización",
+      "addConfirm": "Vincular",
+      "organization": "Organización",
+      "pick": "Busca la organización",
+      "already": "Ya está vinculado a esa organización.",
+      "added": "Vinculado a {{org}}.",
+      "remove": "Desvincular",
+      "removeTitle": "Desvincular de la organización",
+      "removeMessage": "{{name}} saldrá del directorio de {{org}}. Los documentos que ya tiene no cambian.",
+      "removed": "{{name}} ya no está en {{org}}.",
+      "missing": "Organización sin datos",
+      "emptyTitle": "Sin organizaciones.",
+      "emptyLead": "Este firmante no aparece en el directorio de ninguna organización.",
+      "col": {
+        "organization": "Organización",
+        "tax": "Identificación tributaria"
+      }
+    },
+    "documents": {
+      "label": "Documentos del firmante",
+      "lead": "Para reintentar una validación o desbloquear al firmante, entra al documento.",
+      "loading": "Cargando los documentos",
+      "errorTitle": "No pudimos cargar los documentos.",
+      "emptyTitle": "Sin documentos.",
+      "emptyLead": "Este firmante no aparece en ningún documento.",
+      "noIdentityTitle": "Sin identidad de firma.",
+      "noIdentityLead": "Este firmante aún no tiene identidad, así que no puede estar en documentos.",
+      "attempts": "{{count}} intentos",
+      "col": {
+        "document": "Documento",
+        "organization": "Organización",
+        "status": "Documento",
+        "signer": "Firmante"
+      },
+      "state": {
+        "signed": "Firmó",
+        "pending": "Pendiente",
+        "blocked": "Bloqueado"
+      }
+    },
+    "oneTouch": {
+      "lead": "Si revocas todas las llaves se apaga One Touch. El firmante sigue pudiendo firmar con código.",
+      "loading": "Cargando las llaves",
+      "errorTitle": "No pudimos cargar las llaves.",
+      "emptyTitle": "Sin llaves de One Touch.",
+      "emptyLead": "Este firmante no ha registrado ninguna llave.",
+      "flagWithoutKeys": "Aparece con One Touch activo, pero no tiene llaves. No podrá usarlo hasta registrar una, y sigue pudiendo firmar con código.",
+      "unknownDevice": "Dispositivo sin nombre",
+      "revoke": "Revocar",
+      "revokeTitle": "Revocar la llave de One Touch",
+      "revokeMessage": "{{name}} no podrá firmar con esta llave y se cortan sus autorizaciones. Esto no se puede deshacer. Sigue pudiendo firmar con código.",
+      "revoked": "Llave revocada.",
+      "col": {
+        "device": "Dispositivo",
+        "synced": "Sincronizada",
+        "created": "Registrada",
+        "lastUsed": "Último uso"
+      }
+    },
+    "edit": {
+      "title": "Editar datos",
+      "firstName": "Nombres",
+      "lastName": "Apellidos",
+      "businessName": "Razón social",
+      "email": "Correo",
+      "personalMail": "Correo personal",
+      "cellphone": "Celular",
+      "cellphoneHint": "Con indicativo, por ejemplo +573001234567",
+      "country": "País",
+      "countryPlaceholder": "Elige el país",
+      "kind": "Tipo de persona",
+      "kindPlaceholder": "Elige el tipo de persona",
+      "type": "Tipo de documento",
+      "typePlaceholder": "Elige el tipo de documento",
+      "city": "Ciudad de expedición",
+      "cityPlaceholder": "Elige la ciudad",
+      "cityEmpty": "Sin ciudades con ese nombre",
+      "noCountry": "Primero elige el país",
+      "catalogRequired": "Elige el tipo de persona y el tipo de documento: dependen del país y del tipo de persona.",
+      "expeditionDate": "Fecha de expedición",
+      "birthDate": "Fecha de nacimiento",
+      "dateHint": "AAAA-MM-DD",
+      "confirm": "Guardar cambios",
+      "done": "Datos actualizados."
+    },
+    "error": {
+      "generic": "No pudimos completar la acción. Inténtalo de nuevo.",
+      "FIRMANTE_NO_ENCONTRADO": "Este firmante ya no existe.",
+      "CONTACTO_EN_USO": "Ese correo o celular ya es de otro firmante.",
+      "PAIS_NO_ENCONTRADO": "Ese país no existe.",
+      "CIUDAD_NO_ENCONTRADA": "Esa ciudad no existe.",
+      "FECHA_INVALIDA": "La fecha no es válida: usa AAAA-MM-DD.",
+      "FECHAS_INVALIDAS": "Las fechas no cuadran: revisa la expedición y el nacimiento.",
+      "TIPO_PERSONA_INVALIDO": "Ese tipo de persona no existe en el país elegido.",
+      "TIPO_IDENTIFICACION_INVALIDO": "Ese tipo de documento no corresponde al país o al tipo de persona.",
+      "CAMPOS_REQUERIDOS": "Faltan datos obligatorios para este tipo de persona.",
+      "NOMBRE_REQUERIDO": "Escribe los nombres.",
+      "APELLIDO_REQUERIDO": "Escribe los apellidos.",
+      "CORREO_INVALIDO": "El correo no tiene un formato válido.",
+      "CELULAR_INVALIDO": "El celular no tiene un formato válido.",
+      "ORGANIZACION_NO_ENCONTRADA": "Esa organización ya no existe.",
+      "FIRMANTE_YA_VINCULADO": "Ya está vinculado a esa organización.",
+      "FIRMANTE_NO_VINCULADO": "Ya no está vinculado a esa organización.",
+      "FIRMA_AUTOMATICA_INACTIVA": "La firma automática ya estaba inactiva.",
+      "LLAVE_NO_ENCONTRADA": "Esa llave ya no existe."
     }
   }
 }

@@ -40,6 +40,17 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
       loadComponent: () => import('./features/users/pages/user-detail.component').then((m) => m.UserDetailComponent),
     },
   ],
+  signers: [
+    {
+      path: '',
+      loadComponent: () => import('./features/signers/pages/signers.component').then((m) => m.SignersComponent),
+    },
+    {
+      path: ':id',
+      loadComponent: () =>
+        import('./features/signers/pages/signer-detail.component').then((m) => m.SignerDetailComponent),
+    },
+  ],
   documents: [
     {
       path: '',
