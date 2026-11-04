@@ -6,6 +6,7 @@ import {
   SignerDocumentsTabComponent,
   signerStateOf,
 } from './signer-documents-tab.component';
+import { SignerLegalEntitiesTabComponent } from './signer-legal-entities-tab.component';
 import { SignerOneTouchTabComponent } from './signer-one-touch-tab.component';
 import { SignerOrganizationsTabComponent } from './signer-organizations-tab.component';
 
@@ -17,6 +18,39 @@ describe('Firmantes › Pestañas de la ficha', () => {
   });
 
   afterEach(() => http.verify());
+
+  it('Empresas lista lo que representa con enlace a la entidad', async () => {
+    conPermisos(['platform:clients']);
+    const fixture = TestBed.createComponent(SignerLegalEntitiesTabComponent);
+    fixture.componentRef.setInput('signerId', 's1');
+    fixture.detectChanges();
+    await fixture.whenStable();
+    http.expectOne('/platform/legal-entities/by-signer/s1').flush([
+      { id: 'e1', businessName: 'Acme SAS', identification: '900', active: false, isLegalRep: true },
+    ]);
+    const host = fixture.nativeElement as HTMLElement;
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(host.textContent).toContain('Acme SAS');
+    });
+    expect(host.textContent).toContain('Representante legal');
+    expect(host.textContent).toContain('Inactiva');
+    expect(host.textContent).not.toMatch(/\bsig\.[a-z]/);
+  });
+
+  it('Empresas vacía lo dice', async () => {
+    conPermisos(['platform:clients']);
+    const fixture = TestBed.createComponent(SignerLegalEntitiesTabComponent);
+    fixture.componentRef.setInput('signerId', 's1');
+    fixture.detectChanges();
+    await fixture.whenStable();
+    http.expectOne('/platform/legal-entities/by-signer/s1').flush([]);
+    const host = fixture.nativeElement as HTMLElement;
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(host.textContent).toContain('No representa a ninguna empresa');
+    });
+  });
 
   const pulsar = (host: HTMLElement, texto: string): void => {
     [...host.querySelectorAll('button')].find((b) => b.textContent?.includes(texto))?.click();

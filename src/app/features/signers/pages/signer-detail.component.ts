@@ -34,12 +34,13 @@ import {
 } from '../../../shared/ui/underline-tabs.component';
 import { SignerDocumentsTabComponent } from '../components/signer-documents-tab.component';
 import { SignerEditFormComponent } from '../components/signer-edit-form.component';
+import { SignerLegalEntitiesTabComponent } from '../components/signer-legal-entities-tab.component';
 import { SignerOneTouchTabComponent } from '../components/signer-one-touch-tab.component';
 import { SignerOrganizationsTabComponent } from '../components/signer-organizations-tab.component';
 import { SIGNER_ERRORS, SignersApi } from '../data/signers.api';
 import type { PlatformSignerDetail, SignerChanges } from '../data/signers.models';
 
-type DetailTab = 'organizations' | 'documents' | 'oneTouch' | 'history';
+type DetailTab = 'organizations' | 'legalEntities' | 'documents' | 'oneTouch' | 'history';
 
 @Component({
   selector: 'dba-signer-detail',
@@ -52,6 +53,7 @@ type DetailTab = 'organizations' | 'documents' | 'oneTouch' | 'history';
     SectionLoaderComponent,
     SignerDocumentsTabComponent,
     SignerEditFormComponent,
+    SignerLegalEntitiesTabComponent,
     SignerOneTouchTabComponent,
     SignerOrganizationsTabComponent,
     TargetHistoryComponent,
@@ -175,6 +177,9 @@ type DetailTab = 'organizations' | 'documents' | 'oneTouch' | 'history';
               (changed)="signer.set($event)"
             />
           }
+          @case ('legalEntities') {
+            <dba-signer-legal-entities-tab [signerId]="item.id" />
+          }
           @case ('documents') {
             <dba-signer-documents-tab [identityId]="item.identityId" />
           }
@@ -239,6 +244,7 @@ export class SignerDetailComponent {
       label: this.label('sig.tab.organizations'),
       count: this.signer()?.organizations.length,
     },
+    { key: 'legalEntities', label: this.label('sig.tab.legalEntities') },
     ...(this.auth.canRead('operations')
       ? [{ key: 'documents', label: this.label('sig.tab.documents') }]
       : []),

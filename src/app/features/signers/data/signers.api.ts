@@ -12,6 +12,7 @@ import type {
   PlatformSignerDetail,
   SignerChanges,
   SignerDocument,
+  SignerLegalEntity,
   SignerOneTouch,
   SignersPage,
   SignerView,
@@ -99,6 +100,12 @@ export class SignersApi {
       `${BASE}/${id}/one-touch/credentials/${encodeURIComponent(credentialId)}`,
       { body: { reason }, context: silent() },
     );
+  }
+
+  legalEntities(id: string): Observable<SignerLegalEntity[]> {
+    return this.http.get<SignerLegalEntity[]>(`/platform/legal-entities/by-signer/${id}`, {
+      context: silent(),
+    });
   }
 
   documents(identity: string, page: number, limit: number): Observable<PageOf<SignerDocument>> {

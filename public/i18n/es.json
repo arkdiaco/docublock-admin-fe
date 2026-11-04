@@ -554,6 +554,15 @@
       "organization_add": "vinculó a un firmante a {{org}}",
       "organization_remove": "desvinculó a un firmante de {{org}}",
       "update": "editó los datos de un firmante"
+    },
+    "legal_entities": {
+      "activate": "activó una entidad jurídica",
+      "create": "registró una entidad jurídica",
+      "deactivate": "desactivó una entidad jurídica",
+      "representative_add": "agregó un representante a una entidad jurídica",
+      "representative_remove": "quitó un representante de una entidad jurídica",
+      "representative_update": "cambió el rol de un representante de una entidad jurídica",
+      "update": "editó los datos de una entidad jurídica"
     }
   },
   "placeholder": {
@@ -3706,6 +3715,7 @@
     "tab": {
       "label": "Secciones del firmante",
       "organizations": "Organizaciones",
+      "legalEntities": "Empresas",
       "documents": "Documentos",
       "oneTouch": "One Touch",
       "history": "Historial"
@@ -3818,6 +3828,173 @@
       "FIRMANTE_NO_VINCULADO": "Ya no está vinculado a esa organización.",
       "FIRMA_AUTOMATICA_INACTIVA": "La firma automática ya estaba inactiva.",
       "LLAVE_NO_ENCONTRADA": "Esa llave ya no existe."
+    },
+    "legalEntities": {
+      "loading": "Cargando empresas",
+      "errorTitle": "No se pudieron cargar las empresas",
+      "errorLead": "Intente de nuevo.",
+      "emptyTitle": "No representa a ninguna empresa",
+      "emptyLead": "Se vincula desde la ficha de la entidad jurídica.",
+      "legalRep": "Representante legal",
+      "proxy": "Apoderado",
+      "active": "Activa",
+      "inactive": "Inactiva",
+      "col": {
+        "company": "Empresa",
+        "document": "NIT",
+        "role": "Rol",
+        "state": "Estado"
+      }
+    }
+  },
+  "jur": {
+    "count": "{{total}} en esta vista",
+    "viewsLabel": "Vistas de entidades jurídicas",
+    "searchPlaceholder": "Buscar por razón social o NIT",
+    "countryLabel": "Filtrar por país",
+    "anyCountry": "Todos los países",
+    "loading": "Cargando entidades jurídicas",
+    "errorTitle": "No se pudieron cargar las entidades",
+    "errorLead": "Revise la conexión e intente de nuevo.",
+    "emptyTitle": "Sin entidades en esta vista",
+    "emptyLead": "Registre una entidad o revise la vista «Por registrar».",
+    "notice": "Este directorio no cambia cómo firma nadie: la firma sigue usando los datos de cada firmante.",
+    "yes": "Sí",
+    "no": "No",
+    "view": {
+      "all": "Todas",
+      "active": "Activas",
+      "inactive": "Inactivas",
+      "pending": "Por registrar"
+    },
+    "col": {
+      "company": "Empresa",
+      "document": "NIT",
+      "country": "País",
+      "legalRep": "Representante legal",
+      "representative": "Representante indicado",
+      "representatives": "Representantes",
+      "state": "Estado",
+      "created": "Creada"
+    },
+    "state": {
+      "active": "Activa",
+      "inactive": "Inactiva"
+    },
+    "role": {
+      "legalRep": "Representante legal",
+      "proxy": "Apoderado"
+    },
+    "pending": {
+      "notice": "Firmantes con razón social y NIT que aún no están en este directorio. Registrarlos no modifica al firmante.",
+      "register": "Registrar",
+      "noPerson": "Sin persona con ese documento",
+      "emptyTitle": "No hay empresas por registrar",
+      "emptyLead": "Todos los firmantes con razón social ya están en el directorio."
+    },
+    "picker": {
+      "placeholder": "Buscar firmante",
+      "filter": "Nombre o documento",
+      "empty": "Sin resultados"
+    },
+    "action": {
+      "create": "Nueva entidad",
+      "created": "Entidad registrada",
+      "edit": "Editar datos",
+      "edited": "Datos actualizados",
+      "deactivate": "Desactivar",
+      "activate": "Activar",
+      "deactivateTitle": "Desactivar entidad",
+      "activateTitle": "Activar entidad",
+      "deactivateMessage": "{{name}} quedará inactiva en el directorio. Sus representantes y la firma de sus documentos no cambian.",
+      "activateMessage": "{{name}} volverá a estar activa en el directorio.",
+      "deactivated": "Entidad desactivada",
+      "activated": "Entidad activada"
+    },
+    "form": {
+      "createTitle": "Registrar entidad jurídica",
+      "createConfirm": "Registrar",
+      "editTitle": "Editar entidad jurídica",
+      "editConfirm": "Guardar",
+      "businessName": "Razón social",
+      "identification": "NIT",
+      "country": "País",
+      "countryPlaceholder": "Elija un país",
+      "kind": "Tipo de persona",
+      "kindPlaceholder": "Elija un tipo",
+      "noCountry": "Elija primero el país",
+      "representative": "Representante (opcional)",
+      "representativeMissing": "El firmante indica el documento {{number}}, pero no hay una persona registrada con ese número.",
+      "isLegalRep": "Es representante legal"
+    },
+    "detail": {
+      "loading": "Cargando entidad",
+      "missingTitle": "Esta entidad no existe",
+      "missingLead": "Pudo haberse escrito mal el enlace.",
+      "back": "Volver a entidades",
+      "errorTitle": "No se pudo cargar la entidad",
+      "errorLead": "Revise la conexión e intente de nuevo.",
+      "section": "Datos de la entidad",
+      "businessName": "Razón social",
+      "identification": "NIT",
+      "country": "País",
+      "kind": "Tipo de persona",
+      "companySigner": "Firmante con este NIT",
+      "companySignerLink": "Ver firmante",
+      "created": "Creada"
+    },
+    "tab": {
+      "label": "Secciones de la entidad",
+      "representatives": "Representantes",
+      "history": "Historial"
+    },
+    "representatives": {
+      "notice": "Este vínculo es informativo. Para firmar a nombre de la empresa cuenta lo marcado en cada firmante, que se muestra en la columna «En el firmante».",
+      "label": "Representantes de la entidad",
+      "add": "Agregar representante",
+      "addTitle": "Agregar representante",
+      "addConfirm": "Agregar",
+      "added": "Representante agregado",
+      "signer": "Firmante",
+      "already": "Este firmante ya representa a la entidad.",
+      "emptyTitle": "Sin representantes",
+      "emptyLead": "Agregue a la persona que representa a esta empresa.",
+      "noName": "Firmante sin nombre",
+      "actions": "Acciones del representante",
+      "actionsFor": "Acciones de {{name}}",
+      "col": {
+        "person": "Persona",
+        "document": "Documento",
+        "role": "Rol",
+        "flag": "En el firmante"
+      },
+      "menu": {
+        "toLegalRep": "Marcar como representante legal",
+        "toProxy": "Marcar como apoderado",
+        "remove": "Quitar"
+      },
+      "toLegalRepTitle": "Marcar como representante legal",
+      "toProxyTitle": "Marcar como apoderado",
+      "roleMessage": "Se cambiará el rol de {{name}} en {{entity}}. El firmante no se modifica.",
+      "roleConfirm": "Cambiar rol",
+      "roleChanged": "Rol actualizado",
+      "removeTitle": "Quitar representante",
+      "removeMessage": "{{name}} dejará de figurar como representante de {{entity}}. El firmante y sus documentos no cambian.",
+      "removed": "{{name}} ya no representa a {{entity}}"
+    },
+    "error": {
+      "generic": "No se pudo completar la acción. Intente de nuevo.",
+      "ENTIDAD_NO_ENCONTRADA": "La entidad jurídica no existe.",
+      "ENTIDAD_YA_EXISTE": "Ya existe una entidad con ese NIT.",
+      "ENTIDAD_YA_ACTIVA": "La entidad ya está activa.",
+      "ENTIDAD_YA_INACTIVA": "La entidad ya está inactiva.",
+      "RAZON_SOCIAL_REQUERIDA": "Escriba la razón social.",
+      "NIT_REQUERIDO": "Escriba el NIT.",
+      "PAIS_NO_ENCONTRADO": "El país elegido no existe.",
+      "TIPO_PERSONA_INVALIDO": "El tipo de persona no corresponde a una empresa de ese país.",
+      "FIRMANTE_NO_ENCONTRADO": "El firmante no existe.",
+      "REPRESENTANTE_YA_VINCULADO": "Ese firmante ya representa a la entidad.",
+      "REPRESENTANTE_NO_VINCULADO": "Ese firmante ya no representa a la entidad."
     }
   }
 }

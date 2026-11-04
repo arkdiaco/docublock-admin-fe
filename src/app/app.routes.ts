@@ -51,6 +51,22 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
         import('./features/signers/pages/signer-detail.component').then((m) => m.SignerDetailComponent),
     },
   ],
+  legalEntities: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/legal-entities/pages/legal-entities.component').then(
+          (m) => m.LegalEntitiesComponent,
+        ),
+    },
+    {
+      path: ':id',
+      loadComponent: () =>
+        import('./features/legal-entities/pages/legal-entity-detail.component').then(
+          (m) => m.LegalEntityDetailComponent,
+        ),
+    },
+  ],
   documents: [
     {
       path: '',

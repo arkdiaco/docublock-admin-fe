@@ -120,3 +120,11 @@ export interface SignerDocument {
     blocked: boolean;
   };
 }
+
+export interface SignerLegalEntity {
+  id: string;
+  businessName: string;
+  identification: string;
+  active: boolean;
+  isLegalRep: boolean;
+}

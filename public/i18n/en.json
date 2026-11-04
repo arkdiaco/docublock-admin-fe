@@ -554,6 +554,15 @@
       "organization_add": "linked a signer to {{org}}",
       "organization_remove": "unlinked a signer from {{org}}",
       "update": "edited a signer's details"
+    },
+    "legal_entities": {
+      "activate": "activated a legal entity",
+      "create": "registered a legal entity",
+      "deactivate": "deactivated a legal entity",
+      "representative_add": "added a representative to a legal entity",
+      "representative_remove": "removed a representative from a legal entity",
+      "representative_update": "changed the role of a legal entity representative",
+      "update": "edited the data of a legal entity"
     }
   },
   "placeholder": {
@@ -3706,6 +3715,7 @@
     "tab": {
       "label": "Signer sections",
       "organizations": "Organizations",
+      "legalEntities": "Companies",
       "documents": "Documents",
       "oneTouch": "One Touch",
       "history": "History"
@@ -3818,6 +3828,173 @@
       "FIRMANTE_NO_VINCULADO": "No longer linked to that organization.",
       "FIRMA_AUTOMATICA_INACTIVA": "Automatic signing was already off.",
       "LLAVE_NO_ENCONTRADA": "That key no longer exists."
+    },
+    "legalEntities": {
+      "loading": "Loading companies",
+      "errorTitle": "Companies could not be loaded",
+      "errorLead": "Try again.",
+      "emptyTitle": "Does not represent any company",
+      "emptyLead": "The link is made from the legal entity record.",
+      "legalRep": "Legal representative",
+      "proxy": "Proxy",
+      "active": "Active",
+      "inactive": "Inactive",
+      "col": {
+        "company": "Company",
+        "document": "Tax ID",
+        "role": "Role",
+        "state": "State"
+      }
+    }
+  },
+  "jur": {
+    "count": "{{total}} in this view",
+    "viewsLabel": "Legal entity views",
+    "searchPlaceholder": "Search by company name or tax ID",
+    "countryLabel": "Filter by country",
+    "anyCountry": "All countries",
+    "loading": "Loading legal entities",
+    "errorTitle": "Legal entities could not be loaded",
+    "errorLead": "Check the connection and try again.",
+    "emptyTitle": "No entities in this view",
+    "emptyLead": "Register an entity or check the «To register» view.",
+    "notice": "This directory does not change how anyone signs: signing still uses each signer's data.",
+    "yes": "Yes",
+    "no": "No",
+    "view": {
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive",
+      "pending": "To register"
+    },
+    "col": {
+      "company": "Company",
+      "document": "Tax ID",
+      "country": "Country",
+      "legalRep": "Legal representative",
+      "representative": "Stated representative",
+      "representatives": "Representatives",
+      "state": "State",
+      "created": "Created"
+    },
+    "state": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "role": {
+      "legalRep": "Legal representative",
+      "proxy": "Proxy"
+    },
+    "pending": {
+      "notice": "Signers with a company name and tax ID that are not in this directory yet. Registering them does not change the signer.",
+      "register": "Register",
+      "noPerson": "No person with that document",
+      "emptyTitle": "No companies to register",
+      "emptyLead": "Every signer with a company name is already in the directory."
+    },
+    "picker": {
+      "placeholder": "Search signer",
+      "filter": "Name or document",
+      "empty": "No results"
+    },
+    "action": {
+      "create": "New entity",
+      "created": "Entity registered",
+      "edit": "Edit data",
+      "edited": "Data updated",
+      "deactivate": "Deactivate",
+      "activate": "Activate",
+      "deactivateTitle": "Deactivate entity",
+      "activateTitle": "Activate entity",
+      "deactivateMessage": "{{name}} will be inactive in the directory. Its representatives and the signing of its documents do not change.",
+      "activateMessage": "{{name}} will be active in the directory again.",
+      "deactivated": "Entity deactivated",
+      "activated": "Entity activated"
+    },
+    "form": {
+      "createTitle": "Register legal entity",
+      "createConfirm": "Register",
+      "editTitle": "Edit legal entity",
+      "editConfirm": "Save",
+      "businessName": "Company name",
+      "identification": "Tax ID",
+      "country": "Country",
+      "countryPlaceholder": "Choose a country",
+      "kind": "Person type",
+      "kindPlaceholder": "Choose a type",
+      "noCountry": "Choose the country first",
+      "representative": "Representative (optional)",
+      "representativeMissing": "The signer states document {{number}}, but no person is registered with that number.",
+      "isLegalRep": "Is the legal representative"
+    },
+    "detail": {
+      "loading": "Loading entity",
+      "missingTitle": "This entity does not exist",
+      "missingLead": "The link may be wrong.",
+      "back": "Back to entities",
+      "errorTitle": "The entity could not be loaded",
+      "errorLead": "Check the connection and try again.",
+      "section": "Entity data",
+      "businessName": "Company name",
+      "identification": "Tax ID",
+      "country": "Country",
+      "kind": "Person type",
+      "companySigner": "Signer with this tax ID",
+      "companySignerLink": "View signer",
+      "created": "Created"
+    },
+    "tab": {
+      "label": "Entity sections",
+      "representatives": "Representatives",
+      "history": "History"
+    },
+    "representatives": {
+      "notice": "This link is informative. To sign on behalf of the company, what counts is the mark on each signer, shown in the «On the signer» column.",
+      "label": "Entity representatives",
+      "add": "Add representative",
+      "addTitle": "Add representative",
+      "addConfirm": "Add",
+      "added": "Representative added",
+      "signer": "Signer",
+      "already": "This signer already represents the entity.",
+      "emptyTitle": "No representatives",
+      "emptyLead": "Add the person who represents this company.",
+      "noName": "Unnamed signer",
+      "actions": "Representative actions",
+      "actionsFor": "Actions for {{name}}",
+      "col": {
+        "person": "Person",
+        "document": "Document",
+        "role": "Role",
+        "flag": "On the signer"
+      },
+      "menu": {
+        "toLegalRep": "Mark as legal representative",
+        "toProxy": "Mark as proxy",
+        "remove": "Remove"
+      },
+      "toLegalRepTitle": "Mark as legal representative",
+      "toProxyTitle": "Mark as proxy",
+      "roleMessage": "The role of {{name}} in {{entity}} will change. The signer is not modified.",
+      "roleConfirm": "Change role",
+      "roleChanged": "Role updated",
+      "removeTitle": "Remove representative",
+      "removeMessage": "{{name}} will no longer appear as a representative of {{entity}}. The signer and their documents do not change.",
+      "removed": "{{name}} no longer represents {{entity}}"
+    },
+    "error": {
+      "generic": "The action could not be completed. Try again.",
+      "ENTIDAD_NO_ENCONTRADA": "The legal entity does not exist.",
+      "ENTIDAD_YA_EXISTE": "An entity with that tax ID already exists.",
+      "ENTIDAD_YA_ACTIVA": "The entity is already active.",
+      "ENTIDAD_YA_INACTIVA": "The entity is already inactive.",
+      "RAZON_SOCIAL_REQUERIDA": "Enter the company name.",
+      "NIT_REQUERIDO": "Enter the tax ID.",
+      "PAIS_NO_ENCONTRADO": "The chosen country does not exist.",
+      "TIPO_PERSONA_INVALIDO": "The person type does not match a company in that country.",
+      "FIRMANTE_NO_ENCONTRADO": "The signer does not exist.",
+      "REPRESENTANTE_YA_VINCULADO": "That signer already represents the entity.",
+      "REPRESENTANTE_NO_VINCULADO": "That signer no longer represents the entity."
     }
   }
 }
