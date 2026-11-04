@@ -29,7 +29,7 @@ describe('menú de la consola', () => {
       ['clientes', ['organizaciones', 'usuarios', 'firmantes', 'juridicas']],
       ['operacion', ['documentos', 'soporte', 'integraciones', 'tareas']],
       ['comercial', ['planes', 'suscripciones', 'marketplace', 'promocionales', 'referidos', 'resellers', 'facturacion']],
-      ['catalogos', ['paises', 'politicas', 'comunicaciones']],
+      ['catalogos', ['paises', 'ciudades', 'tipos-persona', 'tipos-identificacion', 'campos-firmante', 'inmuebles', 'politicas', 'comunicaciones']],
       ['plataforma', ['personal', 'auditoria', 'configuracion', 'salud']],
     ]);
     const keys = CONSOLE_GROUPS.flatMap((group) => group.items.map((item) => item.labelKey));
@@ -43,7 +43,7 @@ describe('menú de la consola', () => {
   });
 
   it('superadmin ve todo', () => {
-    expect(visibleGroups(SUPERADMIN).flatMap((group) => group.items).length).toBe(22);
+    expect(visibleGroups(SUPERADMIN).flatMap((group) => group.items).length).toBe(27);
   });
 
   it('support ve los cinco grupos, pero Plataforma sin Personal', () => {

@@ -71,12 +71,17 @@
     "promotions": "Promo codes",
     "referrals": "Referrals",
     "resellers": "Resellers",
-    "countries": "Countries & catalogs",
+    "countries": "Countries",
     "policies": "Policies",
     "communications": "Communications",
     "staff": "Staff",
     "settings": "Settings",
-    "health": "Health"
+    "health": "Health",
+    "cities": "Cities",
+    "kindPersons": "Person types",
+    "identificationTypes": "ID types",
+    "signerFields": "Signer fields",
+    "propertyCatalog": "Properties"
   },
   "auth": {
     "title": "Platform access",
@@ -563,6 +568,34 @@
       "representative_remove": "removed a representative from a legal entity",
       "representative_update": "changed the role of a legal entity representative",
       "update": "edited the data of a legal entity"
+    },
+    "catalog_cities": {
+      "create": "created a city",
+      "delete": "deleted a city",
+      "update": "edited a city"
+    },
+    "catalog_countries": {
+      "capabilities": "changed a country's capabilities",
+      "create": "created a country",
+      "delete": "deleted a country",
+      "update": "edited a country"
+    },
+    "catalog_identification_types": {
+      "create": "created an ID type",
+      "delete": "deleted an ID type",
+      "update": "edited an ID type"
+    },
+    "catalog_kind_persons": {
+      "create": "created a person type",
+      "delete": "deleted a person type",
+      "update": "edited a person type"
+    },
+    "catalog_signer_policies": {
+      "reset": "restored a country's default signer fields",
+      "update": "changed a country's signer fields"
+    },
+    "consent_policies": {
+      "publish": "published a consent policy"
     }
   },
   "placeholder": {
@@ -3995,6 +4028,266 @@
       "FIRMANTE_NO_ENCONTRADO": "The signer does not exist.",
       "REPRESENTANTE_YA_VINCULADO": "That signer already represents the entity.",
       "REPRESENTANTE_NO_VINCULADO": "That signer no longer represents the entity."
+    }
+  },
+  "cat": {
+    "count": "{{total}} in this view",
+    "loading": "Loading catalog…",
+    "errorTitle": "We couldn't load the catalog",
+    "errorLead": "Check the connection and try again.",
+    "on": "On",
+    "off": "Off",
+    "col": {
+      "name": "Name",
+      "country": "Country",
+      "noCountry": "No country"
+    },
+    "country": {
+      "label": "Country",
+      "placeholder": "Choose a country",
+      "any": "All countries"
+    },
+    "labels": {
+      "es": "Spanish label",
+      "en": "English label"
+    },
+    "action": {
+      "edit": "Edit",
+      "remove": "Delete",
+      "save": "Save",
+      "create": "Create",
+      "actions": "Actions",
+      "actionsFor": "Actions for {{name}}"
+    },
+    "remove": {
+      "title": "Delete “{{name}}”?"
+    },
+    "countries": {
+      "abbreviation": "Code",
+      "callingCode": "Calling code",
+      "currency": "Currency",
+      "timezone": "Time zone",
+      "kinds": "Person types",
+      "types": "ID types",
+      "create": "New country",
+      "search": "Search by name or code",
+      "emptyTitle": "No countries",
+      "emptyLead": "No country matches the search.",
+      "created": "Country created",
+      "updated": "Country updated",
+      "removed": "Country deleted",
+      "edit": "Edit profile",
+      "profile": "Profile",
+      "profileNotice": "These values are used in sign-up, dates and documents. Empty values use the generic one.",
+      "catalogs": "Country catalogs",
+      "openFields": "View rules",
+      "history": "History",
+      "genericResolution": "Uses the generic legend",
+      "removeMessage": "It is only deleted if no record uses this country.",
+      "missingTitle": "Country not found",
+      "missingLead": "It may have been deleted.",
+      "back": "Back to countries"
+    },
+    "countryForm": {
+      "createTitle": "New country",
+      "editTitle": "Edit country",
+      "abbreviation": "Code",
+      "abbreviationHint": "Two letters show the flag.",
+      "callingCode": "Calling code",
+      "callingCodePlaceholder": "+57",
+      "currency": "Currency",
+      "currencyPlaceholder": "COP",
+      "locale": "Language and region",
+      "localePlaceholder": "es-CO",
+      "timezone": "Time zone",
+      "timezonePlaceholder": "America/Bogota",
+      "taxSection": "Tax identification",
+      "taxLabel": "Name",
+      "taxExample": "Example",
+      "taxPattern": "Pattern",
+      "taxPatternHint": "Regular expression. Empty accepts any value from 3 to 40 characters.",
+      "stripCheckDigit": "Remove the check digit when saving",
+      "resolution": "Legal legend",
+      "resolutionHint": "Shown on documents. Empty uses the generic legend."
+    },
+    "capabilities": {
+      "title": "Capabilities",
+      "edit": "Edit capabilities",
+      "editTitle": "Country capabilities",
+      "notice": "The verifiers connected today are Colombian. Turning one on in another country would still call it: confirm before using it.",
+      "companyRegistry": "Company verification",
+      "identityRegistry": "Identity validation",
+      "docTypes": "Documents it validates",
+      "docTypesHint": "Comma separated, for example CC, CE.",
+      "registryFaceMatch": "Face comparison",
+      "idCardReader": "ID card reading",
+      "sms": "SMS messages",
+      "pagares": "Promissory notes",
+      "bienes_raices": "Real estate",
+      "updated": "Capabilities updated"
+    },
+    "city": {
+      "code": "Code",
+      "codeHint": "Signer import looks up this code. It can't repeat within the country.",
+      "name": "Name",
+      "create": "New city",
+      "createTitle": "New city",
+      "editTitle": "Edit city",
+      "search": "Search by name or code",
+      "emptyTitle": "No cities",
+      "emptyLead": "No city matches the filter.",
+      "created": "City created",
+      "updated": "City updated",
+      "removed": "City deleted",
+      "removeMessage": "It is only deleted if no record uses this city."
+    },
+    "kind": {
+      "type": "Class",
+      "typeHint": "Decides which fields are requested from the signer.",
+      "natural": "Natural person",
+      "legal": "Legal entity",
+      "typesCount": "ID types",
+      "create": "New person type",
+      "createTitle": "New person type",
+      "editTitle": "Edit person type",
+      "notice": "A country without person types can't register signers. Each type needs its ID types.",
+      "emptyTitle": "No person types",
+      "emptyLead": "This country has no person types.",
+      "created": "Person type created",
+      "updated": "Person type updated",
+      "removed": "Person type deleted",
+      "removeMessage": "It is only deleted if it has no ID types and nobody uses it."
+    },
+    "idType": {
+      "abbreviation": "Code",
+      "kind": "Person type",
+      "kindPlaceholder": "Choose a person type",
+      "noCountry": "Choose the country first",
+      "noKinds": "This country has no person types: create them first.",
+      "format": "Format",
+      "formatNumeric": "Numeric",
+      "formatAlphanumeric": "Alphanumeric",
+      "alphanumeric": "Accepts letters and numbers",
+      "create": "New ID type",
+      "createTitle": "New ID type",
+      "editTitle": "Edit ID type",
+      "emptyTitle": "No ID types",
+      "emptyLead": "This country has no ID types.",
+      "created": "ID type created",
+      "updated": "ID type updated",
+      "removed": "ID type deleted",
+      "removeMessage": "It is only deleted if no record uses it."
+    },
+    "fields": {
+      "field": "Field",
+      "default": "Default values",
+      "custom": "Country values",
+      "notice": "Decides what the form asks when creating or editing signers in this country. It applies to what is saved from now on: existing signers don't change until edited.",
+      "directory": "Directory",
+      "directoryHint": {
+        "OPEN": "An organization can find signers registered by others.",
+        "ORG_ONLY": "Each organization only sees its own signers."
+      },
+      "mode": {
+        "OPEN": "Open directory",
+        "ORG_ONLY": "Organization only"
+      },
+      "rule": {
+        "required": "Required",
+        "optional": "Optional",
+        "hidden": "Hidden"
+      },
+      "name": {
+        "businessName": "Company name",
+        "identificationTypeRepLegalId": "Representative document type",
+        "identificationRepLegal": "Representative document",
+        "expeditionDate": "Issue date",
+        "birthDate": "Birth or incorporation date",
+        "expeditionCityId": "Issue city",
+        "personalMail": "Personal email"
+      },
+      "saved": "Rules saved",
+      "reset": "Back to default values",
+      "resetTitle": "Back to default values?",
+      "resetMessage": "This country's own rules are deleted.",
+      "resetDone": "The country uses the default values"
+    },
+    "property": {
+      "label": "Name",
+      "key": "Key",
+      "keyHint": "Generated from the name if left empty.",
+      "keyLocked": "It doesn't change: forms store this key.",
+      "create": "New value",
+      "createTitle": "New value",
+      "editTitle": "Edit value",
+      "notice": "These are the options of the consignment form. Removing one doesn't change properties that already have it.",
+      "categories": "Catalog categories",
+      "category": {
+        "propertyType": "Property type",
+        "kitchenType": "Kitchen",
+        "kitchenFloorType": "Kitchen floor",
+        "livingRoomType": "Living room",
+        "bedroomFloorType": "Bedroom floor",
+        "socialAreaFloorType": "Social area floor",
+        "otherFloorsType": "Other floors",
+        "garageType": "Garage",
+        "consignmentType": "Consignment"
+      },
+      "emptyTitle": "No values",
+      "emptyLead": "This category has no values.",
+      "created": "Value added",
+      "updated": "Value updated",
+      "removed": "Value removed",
+      "removeMessage": "It stops being offered in the form."
+    },
+    "consent": {
+      "notice": "These are the texts accepted by the signer when their organization has none of its own. Each change publishes a new version; earlier ones are kept as evidence.",
+      "publishNotice": "It applies to signatures from now on. It can't be deleted after publishing.",
+      "create": "New policy",
+      "createTitle": "New policy",
+      "newVersion": "New version",
+      "newVersionTitle": "New version",
+      "versions": "Versions",
+      "versionsTitle": "Published versions",
+      "version": "Version {{version}}",
+      "versionCol": "Version",
+      "published": "Published",
+      "publish": "Publish",
+      "published_ok": "Version published",
+      "code": "Code",
+      "codeHint": "Lowercase, numbers and hyphens. It doesn't change later.",
+      "titleLabel": "Title",
+      "text": "Text",
+      "textHint": "At least 20 characters.",
+      "localeLabel": "Language",
+      "locale": {
+        "es": "Spanish",
+        "en": "English"
+      },
+      "emptyTitle": "No policies in this language",
+      "emptyLead": "Publish the first one for this language."
+    },
+    "error": {
+      "generic": "It couldn't be completed. Try again.",
+      "PAIS_NO_ENCONTRADO": "The country no longer exists.",
+      "NOMBRE_REQUERIDO": "Enter the name.",
+      "ABREVIATURA_REQUERIDA": "Enter the code.",
+      "ZONA_HORARIA_INVALIDA": "That time zone doesn't exist. Use the form America/Bogota.",
+      "LOCALE_INVALIDO": "The language must look like es-CO.",
+      "MONEDA_INVALIDA": "The currency must be a three-letter code, like COP.",
+      "INDICATIVO_INVALIDO": "The calling code must look like +57.",
+      "PATRON_INVALIDO": "The pattern isn't a valid regular expression.",
+      "CIUDAD_NO_ENCONTRADA": "The city no longer exists.",
+      "CODIGO_CIUDAD_EN_USO": "Another city in that country already has that code.",
+      "TIPO_PERSONA_NO_ENCONTRADO": "The person type no longer exists.",
+      "TIPO_PERSONA_OTRO_PAIS": "The person type belongs to another country.",
+      "TIPO_IDENTIFICACION_NO_ENCONTRADO": "The ID type no longer exists.",
+      "CATALOGO_EN_USO": "It can't be deleted: {{usage}} records use it.",
+      "ITEM_YA_EXISTE": "A value with that key already exists in this category.",
+      "ITEM_NO_EXISTE": "That value no longer exists.",
+      "POLITICA_INCOMPLETA": "The policy needs a title and at least 20 characters of text.",
+      "POLITICA_SIN_CAMBIOS": "The current version already has exactly that text.",
+      "POLITICA_CODIGO_INVALIDO": "The code must be lowercase, 2 to 40 characters."
     }
   }
 }

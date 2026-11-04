@@ -71,12 +71,17 @@
     "promotions": "Promocionales",
     "referrals": "Referidos",
     "resellers": "Resellers",
-    "countries": "Países y catálogos",
+    "countries": "Países",
     "policies": "Políticas",
     "communications": "Comunicaciones",
     "staff": "Personal",
     "settings": "Configuración",
-    "health": "Salud"
+    "health": "Salud",
+    "cities": "Ciudades",
+    "kindPersons": "Tipos de persona",
+    "identificationTypes": "Tipos de identificación",
+    "signerFields": "Campos del firmante",
+    "propertyCatalog": "Inmuebles"
   },
   "auth": {
     "title": "Acceso a la plataforma",
@@ -563,6 +568,34 @@
       "representative_remove": "quitó un representante de una entidad jurídica",
       "representative_update": "cambió el rol de un representante de una entidad jurídica",
       "update": "editó los datos de una entidad jurídica"
+    },
+    "catalog_cities": {
+      "create": "creó una ciudad",
+      "delete": "borró una ciudad",
+      "update": "editó una ciudad"
+    },
+    "catalog_countries": {
+      "capabilities": "cambió las capacidades de un país",
+      "create": "creó un país",
+      "delete": "borró un país",
+      "update": "editó un país"
+    },
+    "catalog_identification_types": {
+      "create": "creó un tipo de identificación",
+      "delete": "borró un tipo de identificación",
+      "update": "editó un tipo de identificación"
+    },
+    "catalog_kind_persons": {
+      "create": "creó un tipo de persona",
+      "delete": "borró un tipo de persona",
+      "update": "editó un tipo de persona"
+    },
+    "catalog_signer_policies": {
+      "reset": "volvió a los campos por defecto del firmante en un país",
+      "update": "cambió los campos del firmante de un país"
+    },
+    "consent_policies": {
+      "publish": "publicó una política de consentimiento"
     }
   },
   "placeholder": {
@@ -3995,6 +4028,266 @@
       "FIRMANTE_NO_ENCONTRADO": "El firmante no existe.",
       "REPRESENTANTE_YA_VINCULADO": "Ese firmante ya representa a la entidad.",
       "REPRESENTANTE_NO_VINCULADO": "Ese firmante ya no representa a la entidad."
+    }
+  },
+  "cat": {
+    "count": "{{total}} en esta vista",
+    "loading": "Cargando catálogo…",
+    "errorTitle": "No pudimos cargar el catálogo",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "on": "Encendido",
+    "off": "Apagado",
+    "col": {
+      "name": "Nombre",
+      "country": "País",
+      "noCountry": "Sin país"
+    },
+    "country": {
+      "label": "País",
+      "placeholder": "Elige un país",
+      "any": "Todos los países"
+    },
+    "labels": {
+      "es": "Etiqueta en español",
+      "en": "Etiqueta en inglés"
+    },
+    "action": {
+      "edit": "Editar",
+      "remove": "Borrar",
+      "save": "Guardar",
+      "create": "Crear",
+      "actions": "Acciones",
+      "actionsFor": "Acciones de {{name}}"
+    },
+    "remove": {
+      "title": "¿Borrar «{{name}}»?"
+    },
+    "countries": {
+      "abbreviation": "Sigla",
+      "callingCode": "Indicativo",
+      "currency": "Moneda",
+      "timezone": "Zona horaria",
+      "kinds": "T. persona",
+      "types": "T. identif.",
+      "create": "Nuevo país",
+      "search": "Buscar por nombre o sigla",
+      "emptyTitle": "Sin países",
+      "emptyLead": "Ningún país coincide con la búsqueda.",
+      "created": "País creado",
+      "updated": "País actualizado",
+      "removed": "País borrado",
+      "edit": "Editar perfil",
+      "profile": "Perfil",
+      "profileNotice": "Estos datos se usan en el registro, en las fechas y en los documentos. Lo vacío usa el valor genérico.",
+      "catalogs": "Catálogos del país",
+      "openFields": "Ver reglas",
+      "history": "Historial",
+      "genericResolution": "Se usa la leyenda genérica",
+      "removeMessage": "Solo se borra si ningún registro usa este país.",
+      "missingTitle": "País no encontrado",
+      "missingLead": "Puede que lo hayan borrado.",
+      "back": "Volver a países"
+    },
+    "countryForm": {
+      "createTitle": "Nuevo país",
+      "editTitle": "Editar país",
+      "abbreviation": "Sigla",
+      "abbreviationHint": "Dos letras muestran la bandera.",
+      "callingCode": "Indicativo",
+      "callingCodePlaceholder": "+57",
+      "currency": "Moneda",
+      "currencyPlaceholder": "COP",
+      "locale": "Idioma y región",
+      "localePlaceholder": "es-CO",
+      "timezone": "Zona horaria",
+      "timezonePlaceholder": "America/Bogota",
+      "taxSection": "Identificación tributaria",
+      "taxLabel": "Nombre",
+      "taxExample": "Ejemplo",
+      "taxPattern": "Patrón",
+      "taxPatternHint": "Expresión regular. Vacío acepta cualquier valor de 3 a 40 caracteres.",
+      "stripCheckDigit": "Quitar el dígito de verificación al guardar",
+      "resolution": "Leyenda legal",
+      "resolutionHint": "Sale en los documentos. Vacío usa la leyenda genérica."
+    },
+    "capabilities": {
+      "title": "Capacidades",
+      "edit": "Editar capacidades",
+      "editTitle": "Capacidades del país",
+      "notice": "Los verificadores conectados hoy son de Colombia. Encender uno en otro país lo llamaría igual: confírmalo antes de usarlo.",
+      "companyRegistry": "Verificación de empresas",
+      "identityRegistry": "Validación de identidad",
+      "docTypes": "Documentos que valida",
+      "docTypesHint": "Separados por coma, por ejemplo CC, CE.",
+      "registryFaceMatch": "Comparación facial",
+      "idCardReader": "Lectura de cédula",
+      "sms": "Mensajes SMS",
+      "pagares": "Pagarés",
+      "bienes_raices": "Bienes raíces",
+      "updated": "Capacidades actualizadas"
+    },
+    "city": {
+      "code": "Código",
+      "codeHint": "La importación de firmantes busca por este código. No se repite dentro del país.",
+      "name": "Nombre",
+      "create": "Nueva ciudad",
+      "createTitle": "Nueva ciudad",
+      "editTitle": "Editar ciudad",
+      "search": "Buscar por nombre o código",
+      "emptyTitle": "Sin ciudades",
+      "emptyLead": "Ninguna ciudad coincide con el filtro.",
+      "created": "Ciudad creada",
+      "updated": "Ciudad actualizada",
+      "removed": "Ciudad borrada",
+      "removeMessage": "Solo se borra si ningún registro usa esta ciudad."
+    },
+    "kind": {
+      "type": "Clase",
+      "typeHint": "Decide qué campos se piden al firmante.",
+      "natural": "Persona natural",
+      "legal": "Persona jurídica",
+      "typesCount": "Tipos de identificación",
+      "create": "Nuevo tipo de persona",
+      "createTitle": "Nuevo tipo de persona",
+      "editTitle": "Editar tipo de persona",
+      "notice": "Un país sin tipos de persona no puede registrar firmantes. Cada tipo necesita sus tipos de identificación.",
+      "emptyTitle": "Sin tipos de persona",
+      "emptyLead": "Este país no tiene tipos de persona.",
+      "created": "Tipo de persona creado",
+      "updated": "Tipo de persona actualizado",
+      "removed": "Tipo de persona borrado",
+      "removeMessage": "Solo se borra si no tiene tipos de identificación y nadie lo usa."
+    },
+    "idType": {
+      "abbreviation": "Sigla",
+      "kind": "Tipo de persona",
+      "kindPlaceholder": "Elige un tipo de persona",
+      "noCountry": "Primero elige el país",
+      "noKinds": "Este país no tiene tipos de persona: créalos primero.",
+      "format": "Formato",
+      "formatNumeric": "Numérico",
+      "formatAlphanumeric": "Alfanumérico",
+      "alphanumeric": "Acepta letras y números",
+      "create": "Nuevo tipo de identificación",
+      "createTitle": "Nuevo tipo de identificación",
+      "editTitle": "Editar tipo de identificación",
+      "emptyTitle": "Sin tipos de identificación",
+      "emptyLead": "Este país no tiene tipos de identificación.",
+      "created": "Tipo de identificación creado",
+      "updated": "Tipo de identificación actualizado",
+      "removed": "Tipo de identificación borrado",
+      "removeMessage": "Solo se borra si ningún registro lo usa."
+    },
+    "fields": {
+      "field": "Campo",
+      "default": "Valores por defecto",
+      "custom": "Valores propios del país",
+      "notice": "Decide qué pide el formulario al crear o editar firmantes en este país. Aplica a lo que se guarde desde ahora: los firmantes existentes no cambian hasta que se editen.",
+      "directory": "Directorio",
+      "directoryHint": {
+        "OPEN": "Una organización puede encontrar firmantes registrados por otras.",
+        "ORG_ONLY": "Cada organización solo ve sus propios firmantes."
+      },
+      "mode": {
+        "OPEN": "Directorio abierto",
+        "ORG_ONLY": "Solo la organización"
+      },
+      "rule": {
+        "required": "Obligatorio",
+        "optional": "Opcional",
+        "hidden": "Oculto"
+      },
+      "name": {
+        "businessName": "Razón social",
+        "identificationTypeRepLegalId": "Tipo de documento del representante",
+        "identificationRepLegal": "Documento del representante",
+        "expeditionDate": "Fecha de expedición",
+        "birthDate": "Fecha de nacimiento o constitución",
+        "expeditionCityId": "Ciudad de expedición",
+        "personalMail": "Correo personal"
+      },
+      "saved": "Reglas guardadas",
+      "reset": "Volver a los valores por defecto",
+      "resetTitle": "¿Volver a los valores por defecto?",
+      "resetMessage": "Se borran las reglas propias de este país.",
+      "resetDone": "El país usa los valores por defecto"
+    },
+    "property": {
+      "label": "Nombre",
+      "key": "Clave",
+      "keyHint": "Se genera del nombre si la dejas vacía.",
+      "keyLocked": "No se cambia: los formularios guardan esta clave.",
+      "create": "Nuevo valor",
+      "createTitle": "Nuevo valor",
+      "editTitle": "Editar valor",
+      "notice": "Son las opciones del formulario de consignación. Quitar una no cambia los inmuebles que ya la tienen.",
+      "categories": "Categorías del catálogo",
+      "category": {
+        "propertyType": "Tipo de inmueble",
+        "kitchenType": "Cocina",
+        "kitchenFloorType": "Piso de cocina",
+        "livingRoomType": "Sala",
+        "bedroomFloorType": "Piso de alcobas",
+        "socialAreaFloorType": "Piso de zona social",
+        "otherFloorsType": "Otros pisos",
+        "garageType": "Garaje",
+        "consignmentType": "Consignación"
+      },
+      "emptyTitle": "Sin valores",
+      "emptyLead": "Esta categoría no tiene valores.",
+      "created": "Valor agregado",
+      "updated": "Valor actualizado",
+      "removed": "Valor quitado",
+      "removeMessage": "Deja de ofrecerse en el formulario."
+    },
+    "consent": {
+      "notice": "Son los textos que acepta quien firma cuando su organización no tiene uno propio. Cada cambio publica una versión nueva; las anteriores se conservan como evidencia.",
+      "publishNotice": "Se aplica a las firmas desde ahora. No se puede borrar después de publicar.",
+      "create": "Nueva política",
+      "createTitle": "Nueva política",
+      "newVersion": "Nueva versión",
+      "newVersionTitle": "Nueva versión",
+      "versions": "Versiones",
+      "versionsTitle": "Versiones publicadas",
+      "version": "Versión {{version}}",
+      "versionCol": "Versión",
+      "published": "Publicada",
+      "publish": "Publicar",
+      "published_ok": "Versión publicada",
+      "code": "Código",
+      "codeHint": "Minúsculas, números y guiones. No cambia después.",
+      "titleLabel": "Título",
+      "text": "Texto",
+      "textHint": "Mínimo 20 caracteres.",
+      "localeLabel": "Idioma",
+      "locale": {
+        "es": "Español",
+        "en": "Inglés"
+      },
+      "emptyTitle": "Sin políticas en este idioma",
+      "emptyLead": "Publica la primera para este idioma."
+    },
+    "error": {
+      "generic": "No se pudo completar. Inténtalo de nuevo.",
+      "PAIS_NO_ENCONTRADO": "El país ya no existe.",
+      "NOMBRE_REQUERIDO": "Indica el nombre.",
+      "ABREVIATURA_REQUERIDA": "Indica la sigla.",
+      "ZONA_HORARIA_INVALIDA": "Esa zona horaria no existe. Usa la forma America/Bogota.",
+      "LOCALE_INVALIDO": "El idioma debe tener la forma es-CO.",
+      "MONEDA_INVALIDA": "La moneda debe ser un código de tres letras, como COP.",
+      "INDICATIVO_INVALIDO": "El indicativo debe tener la forma +57.",
+      "PATRON_INVALIDO": "El patrón no es una expresión regular válida.",
+      "CIUDAD_NO_ENCONTRADA": "La ciudad ya no existe.",
+      "CODIGO_CIUDAD_EN_USO": "Otra ciudad de ese país ya tiene ese código.",
+      "TIPO_PERSONA_NO_ENCONTRADO": "El tipo de persona ya no existe.",
+      "TIPO_PERSONA_OTRO_PAIS": "El tipo de persona es de otro país.",
+      "TIPO_IDENTIFICACION_NO_ENCONTRADO": "El tipo de identificación ya no existe.",
+      "CATALOGO_EN_USO": "No se puede borrar: lo usan {{usage}} registros.",
+      "ITEM_YA_EXISTE": "Ya existe un valor con esa clave en esta categoría.",
+      "ITEM_NO_EXISTE": "Ese valor ya no existe.",
+      "POLITICA_INCOMPLETA": "La política necesita título y un texto de al menos 20 caracteres.",
+      "POLITICA_SIN_CAMBIOS": "La versión vigente ya tiene exactamente ese texto.",
+      "POLITICA_CODIGO_INVALIDO": "El código debe ir en minúsculas, de 2 a 40 caracteres."
     }
   }
 }

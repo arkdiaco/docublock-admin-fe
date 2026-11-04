@@ -83,6 +83,56 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
         import('./features/documents/pages/document-detail.component').then((m) => m.DocumentDetailComponent),
     },
   ],
+  countries: [
+    {
+      path: '',
+      loadComponent: () => import('./features/catalogs/pages/countries.component').then((m) => m.CountriesComponent),
+    },
+    {
+      path: ':id',
+      loadComponent: () =>
+        import('./features/catalogs/pages/country-detail.component').then((m) => m.CountryDetailComponent),
+    },
+  ],
+  cities: [
+    {
+      path: '',
+      loadComponent: () => import('./features/catalogs/pages/cities.component').then((m) => m.CitiesComponent),
+    },
+  ],
+  kindPersons: [
+    {
+      path: '',
+      loadComponent: () => import('./features/catalogs/pages/kind-persons.component').then((m) => m.KindPersonsComponent),
+    },
+  ],
+  identificationTypes: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/catalogs/pages/identification-types.component').then((m) => m.IdentificationTypesComponent),
+    },
+  ],
+  signerFields: [
+    {
+      path: '',
+      loadComponent: () => import('./features/catalogs/pages/signer-fields.component').then((m) => m.SignerFieldsComponent),
+    },
+  ],
+  propertyCatalog: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/catalogs/pages/property-catalog.component').then((m) => m.PropertyCatalogComponent),
+    },
+  ],
+  policies: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/catalogs/pages/consent-policies.component').then((m) => m.ConsentPoliciesComponent),
+    },
+  ],
   support: [
     {
       path: '',

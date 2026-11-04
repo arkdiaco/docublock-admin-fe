@@ -17,6 +17,11 @@ export type ConsoleSection =
   | 'resellers'
   | 'billing'
   | 'countries'
+  | 'cities'
+  | 'kindPersons'
+  | 'identificationTypes'
+  | 'signerFields'
+  | 'propertyCatalog'
   | 'policies'
   | 'communications'
   | 'staff'
@@ -85,6 +90,11 @@ export const CONSOLE_GROUPS: readonly ConsoleGroup[] = [
     labelKey: 'nav.group.catalogs',
     items: [
       { key: 'countries', path: 'paises', labelKey: 'nav.countries' },
+      { key: 'cities', path: 'ciudades', labelKey: 'nav.cities' },
+      { key: 'kindPersons', path: 'tipos-persona', labelKey: 'nav.kindPersons' },
+      { key: 'identificationTypes', path: 'tipos-identificacion', labelKey: 'nav.identificationTypes' },
+      { key: 'signerFields', path: 'campos-firmante', labelKey: 'nav.signerFields' },
+      { key: 'propertyCatalog', path: 'inmuebles', labelKey: 'nav.propertyCatalog' },
       { key: 'policies', path: 'politicas', labelKey: 'nav.policies' },
       { key: 'communications', path: 'comunicaciones', labelKey: 'nav.communications' },
     ],
