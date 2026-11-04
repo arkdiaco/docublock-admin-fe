@@ -11,6 +11,7 @@ import {
 import { MessageService } from 'primeng/api';
 import { of, type Observable } from 'rxjs';
 import es from '../../../../../public/i18n/es.json';
+import { AuthStore } from '../../../core/auth/auth.store';
 import { API_BASE_URL } from '../../../core/config/api.tokens';
 import type { PlatformUser, PlatformUserDetail } from '../data/users.models';
 
@@ -56,6 +57,7 @@ export const usuario = (over: Partial<PlatformUser> = {}): PlatformUser => ({
 export const ficha = (over: Partial<PlatformUserDetail> = {}): PlatformUserDetail => ({
   ...usuario(),
   identificationType: 'Cédula de ciudadanía',
+  cityId: 'c1',
   cityName: 'Bogotá',
   expeditionCityName: 'Medellín',
   expeditionDate: '2010-05-20',
@@ -63,6 +65,8 @@ export const ficha = (over: Partial<PlatformUserDetail> = {}): PlatformUserDetai
   updatedAt: '2026-02-20T12:00:00.000Z',
   memberships: [
     {
+      membershipId: 'm1',
+      duplicate: false,
       organizationId: 'o1',
       organizationName: 'Notaría Central',
       tributaryNumber: '900111222',
@@ -76,6 +80,8 @@ export const ficha = (over: Partial<PlatformUserDetail> = {}): PlatformUserDetai
       branchType: 'region',
     },
     {
+      membershipId: 'm2',
+      duplicate: false,
       organizationId: 'o2',
       personal: true,
       roleId: 'r2',
@@ -86,3 +92,18 @@ export const ficha = (over: Partial<PlatformUserDetail> = {}): PlatformUserDetai
   ],
   ...over,
 });
+
+export const conPermisos = (permisos: string[]): void => {
+  TestBed.inject(AuthStore).setProfile({
+    user: {
+      id: 'a1',
+      names: 'Sam',
+      surNames: 'Ventas',
+      email: 'sam@docublock.co',
+      identification: '',
+      imageProfile: null,
+    },
+    platformStaff: true,
+    platformPermissions: permisos,
+  });
+};

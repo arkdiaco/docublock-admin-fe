@@ -535,6 +535,18 @@
     "validation_credits": {
       "pricing_update": "editó el precio de los créditos de validación",
       "update": "ajustó los créditos de validación de {{org}}"
+    },
+    "users": {
+      "block": "bloqueó una cuenta de usuario",
+      "membership_add": "agregó a una persona a {{org}}",
+      "membership_duplicate_remove": "quitó una membresía duplicada en {{org}}",
+      "membership_remove": "quitó a una persona de {{org}}",
+      "membership_update": "cambió la membresía de una persona en {{org}}",
+      "passkey_revoke": "revocó una llave de acceso de un usuario",
+      "session_revoke": "cerró una sesión de un usuario",
+      "sessions_revoke": "cerró todas las sesiones de un usuario",
+      "unblock": "desbloqueó una cuenta de usuario",
+      "update": "editó los datos de un usuario"
     }
   },
   "placeholder": {
@@ -3464,6 +3476,155 @@
         "orgArea": "Área",
         "subArea": "Subárea"
       }
+    },
+    "anyOrg": "una organización",
+    "action": {
+      "edit": "Editar datos",
+      "block": "Bloquear cuenta",
+      "unblock": "Desbloquear cuenta"
+    },
+    "tab": {
+      "organizations": "Organizaciones",
+      "sessions": "Sesiones",
+      "passkeys": "Llaves de acceso",
+      "history": "Historial",
+      "label": "Secciones del usuario"
+    },
+    "access": {
+      "blockTitle": "Bloquear la cuenta",
+      "blockMessage": "{{name}} no podrá iniciar sesión y se cerrarán todas sus sesiones. Si es el único administrador activo de una organización, esa organización quedará sin quien la administre.",
+      "unblockTitle": "Desbloquear la cuenta",
+      "unblockMessage": "{{name}} podrá volver a iniciar sesión.",
+      "blocked": "Cuenta bloqueada. Sesiones cerradas: {{count}}.",
+      "unblocked": "Cuenta desbloqueada."
+    },
+    "edit": {
+      "title": "Editar datos",
+      "names": "Nombres",
+      "surNames": "Apellidos",
+      "email": "Correo",
+      "phone": "Celular",
+      "phoneHint": "Con indicativo, por ejemplo +573001234567",
+      "expeditionDate": "Fecha de expedición",
+      "expeditionHint": "AAAA-MM-DD",
+      "country": "País",
+      "city": "Ciudad",
+      "countryPlaceholder": "Elige el país",
+      "cityPlaceholder": "Elige la ciudad",
+      "noCountry": "Primero elige el país",
+      "cityEmpty": "Sin ciudades con ese nombre",
+      "cityRequired": "Al cambiar de país, elige también la ciudad.",
+      "confirm": "Guardar cambios",
+      "done": "Datos actualizados."
+    },
+    "membership": {
+      "add": "Agregar a organización",
+      "addTitle": "Agregar a una organización",
+      "addConfirm": "Agregar",
+      "pickOrg": "Elige la organización",
+      "organization": "Organización",
+      "role": "Rol",
+      "rolePlaceholder": "Elige el rol",
+      "rolesLoading": "Cargando roles…",
+      "rolesError": "No pudimos cargar los roles de esa organización.",
+      "already": "Ya pertenece a esa organización.",
+      "roleTitle": "Cambiar rol en {{org}}",
+      "roleConfirm": "Cambiar rol",
+      "added": "Agregado a {{org}}.",
+      "roleChanged": "Rol actualizado en {{org}}.",
+      "actions": "Acciones de la membresía",
+      "actionsFor": "Acciones en {{org}}",
+      "menu": {
+        "role": "Cambiar rol",
+        "activate": "Activar membresía",
+        "deactivate": "Desactivar membresía",
+        "duplicate": "Quitar esta copia duplicada",
+        "remove": "Quitar de la organización"
+      },
+      "activateTitle": "Activar la membresía",
+      "activateMessage": "{{name}} podrá volver a entrar a {{org}}.",
+      "activated": "Membresía activada en {{org}}.",
+      "deactivateTitle": "Desactivar la membresía",
+      "deactivateMessage": "{{name}} no podrá entrar a {{org}} hasta que se active de nuevo.",
+      "deactivated": "Membresía desactivada en {{org}}.",
+      "removeTitle": "Quitar de la organización",
+      "removeMessage": "{{name}} dejará de pertenecer a {{org}}.",
+      "removed": "Quitado de {{org}}.",
+      "duplicateTitle": "Quitar la copia duplicada",
+      "duplicateMessage": "{{name}} aparece varias veces en {{org}}. Se quita solo esta copia y se conservan las demás.",
+      "duplicateRemoved": "Copia duplicada quitada.",
+      "duplicateTag": "Duplicada"
+    },
+    "sessions": {
+      "title": "Sesiones activas",
+      "count": "Activas: {{count}}",
+      "loading": "Cargando las sesiones",
+      "errorTitle": "No pudimos cargar las sesiones.",
+      "emptyTitle": "No tiene sesiones activas.",
+      "emptyLead": "Las verás aquí cuando inicie sesión.",
+      "col": {
+        "device": "Dispositivo",
+        "ip": "IP",
+        "lastUsed": "Última actividad",
+        "created": "Inicio"
+      },
+      "unknownDevice": "Dispositivo sin identificar",
+      "close": "Cerrar sesión",
+      "closeAll": "Cerrar todas",
+      "closeTitle": "Cerrar esta sesión",
+      "closeMessage": "La sesión de {{name}} en este dispositivo terminará de inmediato.",
+      "closeAllTitle": "Cerrar todas las sesiones",
+      "closeAllMessage": "Todas las sesiones de {{name}} terminarán de inmediato.",
+      "closed": "Sesión cerrada.",
+      "closedAll": "Sesiones cerradas: {{count}}."
+    },
+    "passkeys": {
+      "title": "Llaves de acceso",
+      "count": "Registradas: {{count}}",
+      "lead": "Son las llaves para iniciar sesión. Las de firma se administran en el firmante.",
+      "loading": "Cargando las llaves",
+      "errorTitle": "No pudimos cargar las llaves.",
+      "emptyTitle": "No tiene llaves de acceso.",
+      "emptyLead": "Inicia sesión con su código de acceso.",
+      "col": {
+        "device": "Dispositivo",
+        "synced": "Sincronizada",
+        "created": "Registrada",
+        "lastUsed": "Último uso"
+      },
+      "yes": "Sí",
+      "no": "No",
+      "unknownDevice": "Dispositivo sin nombre",
+      "revoke": "Revocar",
+      "revokeTitle": "Revocar la llave de acceso",
+      "revokeMessage": "{{name}} ya no podrá iniciar sesión con esta llave. Podrá seguir entrando con su código.",
+      "revoked": "Llave revocada."
+    },
+    "history": {
+      "title": "Historial",
+      "count": "{{shown}} de {{total}}",
+      "loading": "Cargando el historial",
+      "errorTitle": "No pudimos cargar el historial.",
+      "emptyTitle": "Sin cambios registrados.",
+      "emptyLead": "Lo que se haga sobre este usuario desde la consola aparecerá aquí.",
+      "more": "Ver más"
+    },
+    "error": {
+      "MIEMBRO_YA_EXISTE": "Ya pertenece a esa organización.",
+      "ROL_INVALIDO": "Ese rol no existe en la organización.",
+      "ROL_RESERVADO": "Ese rol no se puede asignar.",
+      "ULTIMO_ADMIN": "Es el último administrador activo de la organización: asigna a otro primero.",
+      "ORGANIZACION_NO_ENCONTRADA": "Esa organización ya no existe.",
+      "NO_ES_DUPLICADO": "Esa membresía ya no está duplicada.",
+      "NOMBRE_REQUERIDO": "Escribe los nombres.",
+      "APELLIDO_REQUERIDO": "Escribe los apellidos.",
+      "CORREO_INVALIDO": "El correo no tiene un formato válido.",
+      "CELULAR_INVALIDO": "El celular debe incluir el indicativo, por ejemplo +573001234567.",
+      "FECHA_INVALIDA": "La fecha debe tener el formato AAAA-MM-DD.",
+      "FECHA_FUTURA": "La fecha de expedición no puede estar en el futuro.",
+      "PAIS_NO_EXISTE": "Ese país no existe.",
+      "CIUDAD_NO_EXISTE": "Esa ciudad no existe.",
+      "generic": "No pudimos guardar los cambios. Inténtalo de nuevo."
     }
   }
 }

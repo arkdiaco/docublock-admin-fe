@@ -535,6 +535,18 @@
     "validation_credits": {
       "pricing_update": "edited the validation credit pricing",
       "update": "adjusted the validation credits of {{org}}"
+    },
+    "users": {
+      "block": "blocked a user account",
+      "membership_add": "added a person to {{org}}",
+      "membership_duplicate_remove": "removed a duplicate membership in {{org}}",
+      "membership_remove": "removed a person from {{org}}",
+      "membership_update": "changed a person's membership in {{org}}",
+      "passkey_revoke": "revoked a user's access key",
+      "session_revoke": "closed a user's session",
+      "sessions_revoke": "closed all of a user's sessions",
+      "unblock": "unblocked a user account",
+      "update": "edited a user's details"
     }
   },
   "placeholder": {
@@ -3464,6 +3476,155 @@
         "orgArea": "Area",
         "subArea": "Sub-area"
       }
+    },
+    "anyOrg": "an organization",
+    "action": {
+      "edit": "Edit details",
+      "block": "Block account",
+      "unblock": "Unblock account"
+    },
+    "tab": {
+      "organizations": "Organizations",
+      "sessions": "Sessions",
+      "passkeys": "Access keys",
+      "history": "History",
+      "label": "User sections"
+    },
+    "access": {
+      "blockTitle": "Block the account",
+      "blockMessage": "{{name}} won't be able to sign in and all their sessions will close. If they're an organization's only active admin, that organization will have nobody to manage it.",
+      "unblockTitle": "Unblock the account",
+      "unblockMessage": "{{name}} will be able to sign in again.",
+      "blocked": "Account blocked. Sessions closed: {{count}}.",
+      "unblocked": "Account unblocked."
+    },
+    "edit": {
+      "title": "Edit details",
+      "names": "First names",
+      "surNames": "Last names",
+      "email": "Email",
+      "phone": "Mobile",
+      "phoneHint": "With country code, for example +573001234567",
+      "expeditionDate": "Issue date",
+      "expeditionHint": "YYYY-MM-DD",
+      "country": "Country",
+      "city": "City",
+      "countryPlaceholder": "Choose the country",
+      "cityPlaceholder": "Choose the city",
+      "noCountry": "Choose the country first",
+      "cityEmpty": "No cities with that name",
+      "cityRequired": "When changing country, also choose the city.",
+      "confirm": "Save changes",
+      "done": "Details updated."
+    },
+    "membership": {
+      "add": "Add to organization",
+      "addTitle": "Add to an organization",
+      "addConfirm": "Add",
+      "pickOrg": "Choose the organization",
+      "organization": "Organization",
+      "role": "Role",
+      "rolePlaceholder": "Choose the role",
+      "rolesLoading": "Loading roles…",
+      "rolesError": "We couldn't load that organization's roles.",
+      "already": "Already belongs to that organization.",
+      "roleTitle": "Change role in {{org}}",
+      "roleConfirm": "Change role",
+      "added": "Added to {{org}}.",
+      "roleChanged": "Role updated in {{org}}.",
+      "actions": "Membership actions",
+      "actionsFor": "Actions in {{org}}",
+      "menu": {
+        "role": "Change role",
+        "activate": "Activate membership",
+        "deactivate": "Deactivate membership",
+        "duplicate": "Remove this duplicate copy",
+        "remove": "Remove from organization"
+      },
+      "activateTitle": "Activate the membership",
+      "activateMessage": "{{name}} will be able to enter {{org}} again.",
+      "activated": "Membership activated in {{org}}.",
+      "deactivateTitle": "Deactivate the membership",
+      "deactivateMessage": "{{name}} won't be able to enter {{org}} until it's activated again.",
+      "deactivated": "Membership deactivated in {{org}}.",
+      "removeTitle": "Remove from the organization",
+      "removeMessage": "{{name}} will no longer belong to {{org}}.",
+      "removed": "Removed from {{org}}.",
+      "duplicateTitle": "Remove the duplicate copy",
+      "duplicateMessage": "{{name}} appears several times in {{org}}. Only this copy is removed; the others stay.",
+      "duplicateRemoved": "Duplicate copy removed.",
+      "duplicateTag": "Duplicate"
+    },
+    "sessions": {
+      "title": "Active sessions",
+      "count": "Active: {{count}}",
+      "loading": "Loading sessions",
+      "errorTitle": "We couldn't load the sessions.",
+      "emptyTitle": "No active sessions.",
+      "emptyLead": "You'll see them here when they sign in.",
+      "col": {
+        "device": "Device",
+        "ip": "IP",
+        "lastUsed": "Last activity",
+        "created": "Started"
+      },
+      "unknownDevice": "Unidentified device",
+      "close": "Close session",
+      "closeAll": "Close all",
+      "closeTitle": "Close this session",
+      "closeMessage": "{{name}}'s session on this device will end immediately.",
+      "closeAllTitle": "Close all sessions",
+      "closeAllMessage": "All of {{name}}'s sessions will end immediately.",
+      "closed": "Session closed.",
+      "closedAll": "Sessions closed: {{count}}."
+    },
+    "passkeys": {
+      "title": "Access keys",
+      "count": "Registered: {{count}}",
+      "lead": "These keys are for signing in. Signing keys are managed on the signer.",
+      "loading": "Loading keys",
+      "errorTitle": "We couldn't load the keys.",
+      "emptyTitle": "No access keys.",
+      "emptyLead": "They sign in with their access code.",
+      "col": {
+        "device": "Device",
+        "synced": "Synced",
+        "created": "Registered",
+        "lastUsed": "Last used"
+      },
+      "yes": "Yes",
+      "no": "No",
+      "unknownDevice": "Unnamed device",
+      "revoke": "Revoke",
+      "revokeTitle": "Revoke the access key",
+      "revokeMessage": "{{name}} won't be able to sign in with this key. They can still use their code.",
+      "revoked": "Key revoked."
+    },
+    "history": {
+      "title": "History",
+      "count": "{{shown}} of {{total}}",
+      "loading": "Loading history",
+      "errorTitle": "We couldn't load the history.",
+      "emptyTitle": "No recorded changes.",
+      "emptyLead": "Whatever is done to this user from the console will appear here.",
+      "more": "See more"
+    },
+    "error": {
+      "MIEMBRO_YA_EXISTE": "Already belongs to that organization.",
+      "ROL_INVALIDO": "That role doesn't exist in the organization.",
+      "ROL_RESERVADO": "That role can't be assigned.",
+      "ULTIMO_ADMIN": "This is the organization's last active admin: assign another one first.",
+      "ORGANIZACION_NO_ENCONTRADA": "That organization no longer exists.",
+      "NO_ES_DUPLICADO": "That membership is no longer duplicated.",
+      "NOMBRE_REQUERIDO": "Enter the first names.",
+      "APELLIDO_REQUERIDO": "Enter the last names.",
+      "CORREO_INVALIDO": "The email format isn't valid.",
+      "CELULAR_INVALIDO": "The mobile number must include the country code, for example +573001234567.",
+      "FECHA_INVALIDA": "The date must use the format YYYY-MM-DD.",
+      "FECHA_FUTURA": "The issue date can't be in the future.",
+      "PAIS_NO_EXISTE": "That country doesn't exist.",
+      "CIUDAD_NO_EXISTE": "That city doesn't exist.",
+      "generic": "We couldn't save the changes. Please try again."
     }
   }
 }

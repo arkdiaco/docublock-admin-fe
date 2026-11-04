@@ -10,32 +10,35 @@ import {
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
+import { AuthStore } from '../../../core/auth/auth.store';
 import { sectionPath } from '../../../core/layout/console-nav';
-import { DensityService } from '../../../core/preferences/density.service';
+import { DialogService } from '../../../core/ui/dialog.service';
+import { NotificationService } from '../../../core/ui/notification.service';
+import { PendingAction } from '../../../shared/domain/pending-action';
 import { initialsOf } from '../../../shared/domain/initials';
-import { errorStatusOf } from '../../../shared/http/error-code';
+import { errorCodeOf, errorStatusOf } from '../../../shared/http/error-code';
 import { LatestRequest } from '../../../shared/http/latest-request';
 import { ButtonComponent } from '../../../shared/ui/button.component';
-import { DataTableComponent, type DataColumn } from '../../../shared/ui/data-table.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
-import { IconComponent } from '../../../shared/ui/icon.component';
-import { OrgStateComponent } from '../../../shared/ui/org-state.component';
 import { RecordHeaderComponent } from '../../../shared/ui/record-header.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
-import { UsersApi } from '../data/users.api';
-import type { PlatformUserDetail } from '../data/users.models';
+import {
+  UnderlineTabsComponent,
+  type UnderlineTab,
+} from '../../../shared/ui/underline-tabs.component';
+import { UserEditFormComponent } from '../components/user-edit-form.component';
+import { UserHistoryTabComponent } from '../components/user-history-tab.component';
+import { UserOrganizationsTabComponent } from '../components/user-organizations-tab.component';
+import { UserPasskeysTabComponent } from '../components/user-passkeys-tab.component';
+import { UserSessionsTabComponent } from '../components/user-sessions-tab.component';
+import { USER_ERRORS, UsersApi } from '../data/users.api';
+import type { PlatformUserDetail, UserChanges } from '../data/users.models';
+
+type DetailTab = 'organizations' | 'sessions' | 'passkeys' | 'history';
 
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}/;
-
-const COLUMNS: readonly DataColumn[] = [
-  { key: 'organization', labelKey: 'usr.detail.col.organization', width: 'minmax(0, 1.5fr)' },
-  { key: 'role', labelKey: 'usr.detail.col.role', width: 'minmax(0, 0.9fr)' },
-  { key: 'contact', labelKey: 'usr.detail.col.contact', width: 'minmax(0, 1.1fr)' },
-  { key: 'state', labelKey: 'usr.detail.col.state', width: '110px' },
-  { key: 'chevron', width: '24px', align: 'end' },
-];
 
 @Component({
   selector: 'dba-user-detail',
@@ -43,12 +46,15 @@ const COLUMNS: readonly DataColumn[] = [
     TranslatePipe,
     RouterLink,
     ButtonComponent,
-    DataTableComponent,
     EmptyStateComponent,
-    IconComponent,
-    OrgStateComponent,
     RecordHeaderComponent,
     SectionLoaderComponent,
+    UnderlineTabsComponent,
+    UserEditFormComponent,
+    UserHistoryTabComponent,
+    UserOrganizationsTabComponent,
+    UserPasskeysTabComponent,
+    UserSessionsTabComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -77,6 +83,35 @@ const COLUMNS: readonly DataColumn[] = [
           [stateLabelKey]="item.active ? 'usr.state.active' : 'usr.state.inactive'"
           [meta]="item.identification"
         />
+
+        @if (canManage()) {
+          <div class="bd__actions">
+            <button dba-button variant="secondary" (click)="editing.set(true)">
+              {{ 'usr.action.edit' | translate }}
+            </button>
+            @if (item.active) {
+              <button
+                dba-button
+                variant="destructive"
+                [busy]="pending.key() === 'access'"
+                [disabled]="!!pending.key()"
+                (click)="block()"
+              >
+                {{ 'usr.action.block' | translate }}
+              </button>
+            } @else {
+              <button
+                dba-button
+                variant="secondary"
+                [busy]="pending.key() === 'access'"
+                [disabled]="!!pending.key()"
+                (click)="unblock()"
+              >
+                {{ 'usr.action.unblock' | translate }}
+              </button>
+            }
+          </div>
+        }
 
         <section class="bd__card">
           <h2 class="dba-panel">{{ 'usr.detail.section' | translate }}</h2>
@@ -107,84 +142,82 @@ const COLUMNS: readonly DataColumn[] = [
           </dl>
         </section>
 
-        <h2 class="dba-panel bd__heading">
-          {{ 'usr.detail.organizations' | translate: { count: item.memberships.length } }}
-        </h2>
-        @if (item.memberships.length === 0) {
-          <div class="bd__panel">
-            <dba-empty-state titleKey="usr.detail.noOrgsTitle" leadKey="usr.detail.noOrgsLead" />
-          </div>
-        } @else {
-          <dba-data-table
-            [columns]="columns"
-            [label]="'usr.detail.organizationsLabel' | translate"
-            [dense]="density.compact()"
-            minWidth="760px"
-          >
-            @for (row of item.memberships; track row.organizationId) {
-              <a class="dba-tr bl-row" [routerLink]="[orgsPath, row.organizationId]">
-                <span class="dba-td cell">
-                  <span class="cell__label">{{
-                    row.organizationName || ('usr.detail.orgMissing' | translate)
-                  }}</span>
-                  <span class="cell__meta">
-                    <span class="dba-mono">{{ row.tributaryNumber || '—' }}</span>
-                    @if (row.personal) {
-                      · {{ 'usr.detail.personal' | translate }}
-                    }
-                  </span>
-                </span>
-                <span class="dba-td cell">
-                  <span class="cell__text">{{
-                    row.roleName || ('usr.detail.roleMissing' | translate)
-                  }}</span>
-                  @if (row.branchType) {
-                    <span class="cell__meta">{{
-                      'usr.detail.branch.' + row.branchType | translate
-                    }}</span>
-                  }
-                </span>
-                <span class="dba-td cell">
-                  <span class="cell__text">{{ row.email || '—' }}</span>
-                  <span class="cell__meta dba-mono">{{ row.phone || '—' }}</span>
-                </span>
-                <span class="dba-td">
-                  <dba-org-state
-                    [state]="row.active ? 'active' : 'suspended'"
-                    [labelKey]="row.active ? 'usr.state.active' : 'usr.state.inactive'"
-                    variant="inline"
-                  />
-                </span>
-                <db-icon class="dba-td dba-td--end" name="chevronRight" [size]="15" />
-              </a>
-            }
-          </dba-data-table>
+        <db-underline-tabs
+          [tabs]="tabs()"
+          [active]="tab()"
+          [label]="'usr.tab.label' | translate"
+          (picked)="tab.set($any($event))"
+        />
+        @switch (tab()) {
+          @case ('organizations') {
+            <dba-user-organizations-tab [user]="item" (changed)="applied($event)" />
+          }
+          @case ('sessions') {
+            <dba-user-sessions-tab
+              [userId]="item.id"
+              [userName]="fullName()"
+              [version]="accessVersion()"
+            />
+          }
+          @case ('passkeys') {
+            <dba-user-passkeys-tab [userId]="item.id" [userName]="fullName()" />
+          }
+          @case ('history') {
+            <dba-user-history-tab [userId]="item.id" />
+          }
         }
       </div>
+
+      @if (editing()) {
+        <dba-user-edit-form
+          [user]="item"
+          [busy]="pending.key() === 'edit'"
+          (submitted)="save($event)"
+          (dismissed)="editing.set(false)"
+        />
+      }
     }
   `,
-  styleUrls: ['../../../shared/ui/detail-page.scss', '../../../shared/ui/list-page.scss'],
+  styleUrl: '../../../shared/ui/detail-page.scss',
 })
 export class UserDetailComponent {
   readonly id = input.required<string>();
 
   private readonly api = inject(UsersApi);
+  private readonly auth = inject(AuthStore);
+  private readonly dialogs = inject(DialogService);
+  private readonly notify = inject(NotificationService);
+  private readonly translate = inject(TranslateService);
   private readonly locale = inject(LOCALE_ID);
   private readonly latest = new LatestRequest();
 
-  protected readonly density = inject(DensityService);
-  protected readonly columns = COLUMNS;
   protected readonly path = sectionPath('users');
-  protected readonly orgsPath = sectionPath('organizations');
+  protected readonly pending = new PendingAction();
+  protected readonly canManage = computed(() => this.auth.canManage('clients'));
   protected readonly loading = signal(true);
   protected readonly error = signal(false);
   protected readonly missing = signal(false);
+  protected readonly editing = signal(false);
+  protected readonly accessVersion = signal(0);
+  protected readonly tab = signal<DetailTab>('organizations');
   protected readonly user = signal<PlatformUserDetail | null>(null);
   protected readonly fullName = computed(() => {
     const user = this.user();
     return user ? `${user.names} ${user.surNames}`.trim() : '';
   });
   protected readonly initials = computed(() => initialsOf(this.fullName()));
+  protected readonly tabs = computed<UnderlineTab[]>(() => [
+    {
+      key: 'organizations',
+      label: this.label('usr.tab.organizations'),
+      count: this.user()?.memberships.length,
+    },
+    { key: 'sessions', label: this.label('usr.tab.sessions') },
+    { key: 'passkeys', label: this.label('usr.tab.passkeys') },
+    ...(this.auth.canRead('platform')
+      ? [{ key: 'history', label: this.label('usr.tab.history') }]
+      : []),
+  ]);
 
   constructor() {
     effect(() => {
@@ -207,6 +240,86 @@ export class UserDetailComponent {
     return [user.expeditionCityName, shown].filter(Boolean).join(' · ') || '—';
   }
 
+  protected applied(user: PlatformUserDetail): void {
+    this.user.set(user);
+  }
+
+  protected async save(value: { changes: UserChanges; reason: string }): Promise<void> {
+    await this.pending.run('edit', async () => {
+      try {
+        this.user.set(
+          await firstValueFrom(this.api.update(this.id(), value.changes, value.reason)),
+        );
+        this.editing.set(false);
+        this.notify.success(this.label('usr.edit.done'));
+      } catch (error) {
+        this.notifyFailure(error);
+      }
+    });
+  }
+
+  protected async block(): Promise<void> {
+    const reason = await this.ask('danger', 'lock', 'block');
+    if (!reason) return;
+    await this.pending.run('access', async () => {
+      try {
+        const access = await firstValueFrom(this.api.block(this.id(), reason));
+        await this.afterAccess();
+        this.notify.success(this.label('usr.access.blocked', { count: access.revokedSessions }));
+      } catch (error) {
+        this.notifyFailure(error);
+      }
+    });
+  }
+
+  protected async unblock(): Promise<void> {
+    const reason = await this.ask('primary', 'circleCheck', 'unblock');
+    if (!reason) return;
+    await this.pending.run('access', async () => {
+      try {
+        await firstValueFrom(this.api.unblock(this.id(), reason));
+        await this.afterAccess();
+        this.notify.success(this.label('usr.access.unblocked'));
+      } catch (error) {
+        this.notifyFailure(error);
+      }
+    });
+  }
+
+  private async afterAccess(): Promise<void> {
+    this.user.set(await firstValueFrom(this.api.get(this.id())));
+    this.accessVersion.update((version) => version + 1);
+  }
+
+  private async ask(
+    intent: 'danger' | 'primary',
+    icon: 'lock' | 'circleCheck',
+    action: 'block' | 'unblock',
+  ): Promise<string | null> {
+    const answer = await this.dialogs.open({
+      intent,
+      icon,
+      title: `usr.access.${action}Title`,
+      message: `usr.access.${action}Message`,
+      params: { name: this.fullName() },
+      confirmLabel: `usr.action.${action}`,
+      reason: {
+        labelKey: 'sub.reasonLabel',
+        placeholder: 'sub.reasonPlaceholder',
+        limit: 500,
+        quick: [],
+        required: true,
+      },
+    });
+    return answer.answer === 'confirm' && answer.reason ? answer.reason : null;
+  }
+
+  private notifyFailure(error: unknown): void {
+    const code = errorCodeOf(error);
+    const known = code !== null && USER_ERRORS.includes(code);
+    this.notify.error(this.label(known ? `usr.error.${code}` : 'usr.error.generic'));
+  }
+
   private async load(id: string): Promise<void> {
     const current = this.latest.start();
     this.loading.set(true);
@@ -223,5 +336,9 @@ export class UserDetailComponent {
       else this.error.set(true);
     }
     this.loading.set(false);
+  }
+
+  private label(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params) as string;
   }
 }
