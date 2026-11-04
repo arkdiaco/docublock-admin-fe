@@ -30,6 +30,16 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
       loadComponent: () => import('./features/organizations/pages/organization-detail.component').then((m) => m.OrganizationDetailComponent),
     },
   ],
+  users: [
+    {
+      path: '',
+      loadComponent: () => import('./features/users/pages/users.component').then((m) => m.UsersComponent),
+    },
+    {
+      path: ':id',
+      loadComponent: () => import('./features/users/pages/user-detail.component').then((m) => m.UserDetailComponent),
+    },
+  ],
   documents: [
     {
       path: '',

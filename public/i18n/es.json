@@ -3396,5 +3396,74 @@
       "ORGANIZACION_NO_ENCONTRADA": "Esa organización ya no existe.",
       "generic": "No pudimos guardar los cambios. Inténtalo de nuevo."
     }
+  },
+  "usr": {
+    "count": "Usuarios: {{total}}",
+    "viewsLabel": "Vistas de usuarios",
+    "searchPlaceholder": "Buscar por nombre, correo o documento",
+    "countryLabel": "País",
+    "anyCountry": "Todos los países",
+    "loading": "Cargando usuarios",
+    "errorTitle": "No pudimos cargar los usuarios.",
+    "errorLead": "Revisa tu conexión e inténtalo de nuevo.",
+    "emptyTitle": "No hay usuarios para mostrar.",
+    "emptyLead": "Prueba con otra búsqueda, vista o país.",
+    "view": {
+      "all": "Todos",
+      "active": "Activos",
+      "inactive": "Inactivos",
+      "without": "Sin organización"
+    },
+    "state": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    },
+    "col": {
+      "person": "Persona",
+      "document": "Documento",
+      "country": "País",
+      "organizations": "Organizaciones",
+      "state": "Estado",
+      "created": "Creado"
+    },
+    "detail": {
+      "loading": "Cargando el usuario",
+      "missingTitle": "Este usuario no existe.",
+      "missingLead": "Puede que lo hayan eliminado o que el enlace esté mal.",
+      "back": "Volver a usuarios",
+      "errorTitle": "No pudimos cargar el usuario.",
+      "errorLead": "Revisa tu conexión e inténtalo de nuevo.",
+      "section": "Datos",
+      "email": "Correo",
+      "phone": "Teléfono",
+      "document": "Documento",
+      "country": "País",
+      "city": "Ciudad",
+      "expedition": "Expedición del documento",
+      "terms": "Términos",
+      "termsYes": "Aceptados",
+      "termsNo": "Sin aceptar",
+      "created": "Creado",
+      "updated": "Actualizado",
+      "organizations": "Organizaciones ({{count}})",
+      "organizationsLabel": "Organizaciones del usuario",
+      "noOrgsTitle": "No pertenece a ninguna organización.",
+      "noOrgsLead": "Cuando se una a una, aparecerá aquí.",
+      "orgMissing": "Organización no disponible",
+      "roleMissing": "Sin rol reconocido",
+      "personal": "Cuenta personal",
+      "col": {
+        "organization": "Organización",
+        "role": "Rol",
+        "contact": "Contacto en la organización",
+        "state": "Estado"
+      },
+      "branch": {
+        "region": "Regional",
+        "subsidiary": "Sucursal",
+        "orgArea": "Área",
+        "subArea": "Subárea"
+      }
+    }
   }
 }

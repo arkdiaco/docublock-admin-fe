@@ -3396,5 +3396,74 @@
       "ORGANIZACION_NO_ENCONTRADA": "That organization no longer exists.",
       "generic": "We couldn't save the changes. Try again."
     }
+  },
+  "usr": {
+    "count": "Users: {{total}}",
+    "viewsLabel": "User views",
+    "searchPlaceholder": "Search by name, email or document",
+    "countryLabel": "Country",
+    "anyCountry": "All countries",
+    "loading": "Loading users",
+    "errorTitle": "We couldn't load the users.",
+    "errorLead": "Check your connection and try again.",
+    "emptyTitle": "No users to show.",
+    "emptyLead": "Try another search, view or country.",
+    "view": {
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive",
+      "without": "No organization"
+    },
+    "state": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "col": {
+      "person": "Person",
+      "document": "Document",
+      "country": "Country",
+      "organizations": "Organizations",
+      "state": "Status",
+      "created": "Created"
+    },
+    "detail": {
+      "loading": "Loading the user",
+      "missingTitle": "This user doesn't exist.",
+      "missingLead": "It may have been deleted, or the link may be wrong.",
+      "back": "Back to users",
+      "errorTitle": "We couldn't load the user.",
+      "errorLead": "Check your connection and try again.",
+      "section": "Details",
+      "email": "Email",
+      "phone": "Phone",
+      "document": "Document",
+      "country": "Country",
+      "city": "City",
+      "expedition": "Document issued",
+      "terms": "Terms",
+      "termsYes": "Accepted",
+      "termsNo": "Not accepted",
+      "created": "Created",
+      "updated": "Updated",
+      "organizations": "Organizations ({{count}})",
+      "organizationsLabel": "User's organizations",
+      "noOrgsTitle": "Doesn't belong to any organization.",
+      "noOrgsLead": "Once they join one, it will show up here.",
+      "orgMissing": "Organization unavailable",
+      "roleMissing": "Unrecognized role",
+      "personal": "Personal account",
+      "col": {
+        "organization": "Organization",
+        "role": "Role",
+        "contact": "Contact in the organization",
+        "state": "Status"
+      },
+      "branch": {
+        "region": "Region",
+        "subsidiary": "Branch",
+        "orgArea": "Area",
+        "subArea": "Sub-area"
+      }
+    }
   }
 }
