@@ -24,7 +24,7 @@ import { SettingActionConfirmComponent } from '../components/setting-action-conf
 import { SettingDetailComponent } from '../components/setting-detail.component';
 import { SettingEditComponent, type SettingEditResult } from '../components/setting-edit.component';
 import { SettingsTabsComponent } from '../components/settings-tabs.component';
-import { valueLabelOf } from '../data/settings-view';
+import { isTextKind, valueLabelOf } from '../data/settings-view';
 import { SettingsApi, settingErrorKey } from '../data/settings.api';
 import type { SettingGroup, SettingItem, SettingValue } from '../data/settings.models';
 
@@ -92,7 +92,12 @@ type SettingMode = 'detail' | 'edit' | 'reset';
                 }}</span>
               </span>
               <span class="dba-td cell"
-                ><span class="cell__text dba-mono">{{ label(item, item.value) }}</span></span
+                ><span
+                  class="cell__text"
+                  [class.dba-mono]="!textual(item)"
+                  [title]="label(item, item.value)"
+                  >{{ label(item, item.value) }}</span
+                ></span
               >
               <span class="dba-td cell">
                 <span class="cell__muted">{{
@@ -180,6 +185,10 @@ export class SettingsComponent {
   protected label(item: SettingItem, value: SettingValue): string {
     const { key, params } = valueLabelOf(item.unit, value);
     return this.translate.instant(key, params) as string;
+  }
+
+  protected textual(item: SettingItem): boolean {
+    return isTextKind(item.kind);
   }
 
   protected lastOf(item: SettingItem): string {

@@ -1,6 +1,6 @@
-export type SettingValue = number | number[];
-export type SettingKind = 'integer' | 'integer_list';
-export type SettingGroup = 'alerts' | 'access' | 'signing' | 'validation';
+export type SettingValue = number | number[] | string | string[];
+export type SettingKind = 'integer' | 'integer_list' | 'text' | 'text_list';
+export type SettingGroup = 'alerts' | 'access' | 'signing' | 'validation' | 'texts';
 export type SettingUnit =
   | 'percent'
   | 'days'
@@ -11,7 +11,10 @@ export type SettingUnit =
   | 'perHour'
   | 'reminders'
   | 'rows'
-  | 'megabytes';
+  | 'megabytes'
+  | 'text'
+  | 'lines';
+export type SettingCharset = 'name' | 'line';
 export type SettingChangeAction = 'change' | 'reset' | 'restore';
 
 export interface SettingRange {
@@ -30,6 +33,7 @@ export interface SettingItem {
   technical: SettingRange;
   recommended: SettingRange;
   maxItems: number | null;
+  charset: SettingCharset | null;
   version: number;
   lastChange: { at: string; adminName: string | null; reason: string } | null;
 }

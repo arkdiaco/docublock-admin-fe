@@ -393,6 +393,12 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
         import('./features/settings/pages/settings.component').then((m) => m.SettingsComponent),
     },
     {
+      path: 'textos',
+      data: { group: 'texts' },
+      loadComponent: () =>
+        import('./features/settings/pages/settings.component').then((m) => m.SettingsComponent),
+    },
+    {
       path: 'credenciales',
       loadComponent: () =>
         import('./features/settings/pages/settings-credentials.component').then(

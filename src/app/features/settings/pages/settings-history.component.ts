@@ -23,7 +23,7 @@ import { PagerComponent } from '../../../shared/ui/pager.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
 import { SettingActionConfirmComponent } from '../components/setting-action-confirm.component';
 import { SettingsTabsComponent } from '../components/settings-tabs.component';
-import { sameSettingValue, valueLabelOf } from '../data/settings-view';
+import { isTextKind, sameSettingValue, valueLabelOf } from '../data/settings-view';
 import { SettingsApi, settingErrorKey } from '../data/settings.api';
 import type { SettingChange, SettingItem, SettingValue } from '../data/settings.models';
 
@@ -111,10 +111,15 @@ const COLUMNS: readonly DataColumn[] = [
                 <span class="cell__muted">{{ 'cfg.action.' + row.action | translate }}</span>
               </span>
               <span class="dba-td cell">
-                <span class="cell__text dba-mono" [title]="newValueOf(row)">{{
-                  newValueOf(row)
+                <span
+                  class="cell__text"
+                  [class.dba-mono]="!textual(row)"
+                  [title]="newValueOf(row)"
+                  >{{ newValueOf(row) }}</span
+                >
+                <span class="cell__meta" [class.dba-mono]="!textual(row)" [title]="beforeOf(row)">{{
+                  beforeOf(row)
                 }}</span>
-                <span class="cell__meta dba-mono" [title]="beforeOf(row)">{{ beforeOf(row) }}</span>
               </span>
               <span class="dba-td cell">
                 <span class="cell__muted">{{
@@ -212,6 +217,11 @@ export class SettingsHistoryComponent {
     return this.translate.instant('cfg.history.before', {
       value: this.sideOf(row, row.from, row.fromDefault),
     }) as string;
+  }
+
+  protected textual(row: SettingChange): boolean {
+    const item = this.items().find((one) => one.key === row.key);
+    return !!item && isTextKind(item.kind);
   }
 
   protected canRestore(row: SettingChange): boolean {

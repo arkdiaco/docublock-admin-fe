@@ -3,7 +3,7 @@ import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Select } from 'primeng/select';
 import { conPermisos, configurar } from '../../catalogs/pages/catalogs-test-kit';
-import { parseSettingDraft, valueLabelOf } from '../data/settings-view';
+import { isRecommended, parseSettingDraft, valueLabelOf } from '../data/settings-view';
 import type { SettingChange, SettingItem } from '../data/settings.models';
 import { SettingsHistoryComponent } from './settings-history.component';
 import { SettingsComponent } from './settings.component';
@@ -24,6 +24,7 @@ const CUPO: SettingItem = {
   technical: { min: 1, max: 100 },
   recommended: { min: 70, max: 95 },
   maxItems: null,
+  charset: null,
   version: 0,
   lastChange: null,
 };
@@ -39,6 +40,7 @@ const HITOS: SettingItem = {
   technical: { min: 1, max: 90 },
   recommended: { min: 1, max: 30 },
   maxItems: 5,
+  charset: null,
   version: 3,
   lastChange: { at: '2026-11-05T10:00:00.000Z', adminName: 'Marta Vidal', reason: 'Más margen' },
 };
@@ -391,6 +393,190 @@ describe('Configuración: pestaña Validación', () => {
     expect(document.querySelector('dba-setting-edit')?.textContent).toContain(
       'fuera de lo recomendado',
     );
+  });
+});
+
+describe('Configuración: textos', () => {
+  const LEGAL = [
+    'Prohibida su reproducción total y/o parcial',
+    'Todos los derechos reservados Docublock',
+    'Propiedad intelectual de Docublock Ltd.',
+  ];
+  const REMITENTE: SettingItem = {
+    ...CUPO,
+    key: 'texts.sender_docublock',
+    group: 'texts',
+    kind: 'text',
+    unit: 'text',
+    value: 'Anasol de docublock',
+    defaultValue: 'Anasol de docublock',
+    technical: { min: 1, max: 60 },
+    recommended: { min: 3, max: 40 },
+    charset: 'name',
+    version: 2,
+  };
+  const SELLO: SettingItem = {
+    ...CUPO,
+    key: 'texts.seal_legal_lines',
+    group: 'texts',
+    kind: 'text_list',
+    unit: 'lines',
+    value: ['Uno', 'Dos'],
+    defaultValue: LEGAL,
+    isDefault: false,
+    technical: { min: 1, max: 45 },
+    recommended: { min: 3, max: 40 },
+    maxItems: 3,
+    charset: 'line',
+    version: 4,
+  };
+
+  const montarTextos = async (permisos: string[] = ADMINISTRAR) => {
+    const http = await configurar();
+    conPermisos(permisos);
+    const fixture = TestBed.createComponent(SettingsComponent);
+    fixture.componentRef.setInput('group', 'texts');
+    listar(http, [CUPO, REMITENTE, SELLO]);
+    await asentar(fixture);
+    return { fixture, http, root: fixture.nativeElement as HTMLElement };
+  };
+
+  const escribirArea = async (fixture: ComponentFixture<unknown>, valor: string) => {
+    const area = document.querySelector<HTMLTextAreaElement>('dba-setting-edit textarea');
+    if (!area) throw new Error('falta el área de texto');
+    area.value = valor;
+    area.dispatchEvent(new Event('input'));
+    await asentar(fixture);
+  };
+
+  it('el nombre del remitente se recorta y rechaza lo que permitiría suplantar a otro', () => {
+    expect(parseSettingDraft(REMITENTE, '  Equipo Docublock  ')).toBe('Equipo Docublock');
+    expect(parseSettingDraft(REMITENTE, 'Soporte <otro@correo.co>')).toBeNull();
+    expect(parseSettingDraft(REMITENTE, 'soporte@docublock.co')).toBeNull();
+    expect(parseSettingDraft(REMITENTE, 'Equipo "Docublock"')).toBeNull();
+    expect(parseSettingDraft(REMITENTE, 'Equipo\\Docublock')).toBeNull();
+    expect(parseSettingDraft(REMITENTE, '   ')).toBeNull();
+    expect(parseSettingDraft(REMITENTE, 'x'.repeat(61))).toBeNull();
+  });
+
+  it('las líneas del sello van una por renglón, en orden, sin renglones vacíos', () => {
+    expect(parseSettingDraft(SELLO, ' Tres \n\nUno\r\nDos ')).toEqual(['Tres', 'Uno', 'Dos']);
+    expect(parseSettingDraft(SELLO, 'a\nb\nc\nd')).toBeNull();
+    expect(parseSettingDraft(SELLO, `${'x'.repeat(46)}\nb`)).toBeNull();
+    expect(parseSettingDraft(SELLO, 'Con\ttabulador')).toBeNull();
+    expect(parseSettingDraft(SELLO, '\n \n')).toBeNull();
+  });
+
+  it('lo recomendado se mide en caracteres y las líneas se muestran separadas', () => {
+    expect(isRecommended(REMITENTE, 'Equipo Docublock')).toBe(true);
+    expect(isRecommended(REMITENTE, 'Eq')).toBe(false);
+    expect(isRecommended(SELLO, ['Uno', 'Do'])).toBe(false);
+    expect(valueLabelOf('lines', ['Uno', 'Dos'])).toEqual({
+      key: 'cfg.unit.lines',
+      params: { value: 'Uno · Dos' },
+    });
+  });
+
+  it('muestra solo los textos, sin letra de código, con el valor completo al pasar el puntero', async () => {
+    const { root } = await montarTextos(VER);
+    expect(root.querySelectorAll('.bl-row')).toHaveLength(2);
+    const texto = root.textContent ?? '';
+    expect(texto).toContain('Remitente de los correos de Docublock');
+    expect(texto).toContain('Anasol de docublock');
+    expect(texto).toContain('Texto legal del sello');
+    expect(texto).toContain('Uno · Dos');
+    expect(texto).not.toContain('Aviso de cupo');
+    expect(texto).not.toMatch(LLAVE_CRUDA);
+    const valores = [...root.querySelectorAll<HTMLElement>('.bl-row .cell__text')];
+    expect(valores.every((valor) => !valor.classList.contains('dba-mono'))).toBe(true);
+    expect(valores[1].title).toBe('Uno · Dos');
+  });
+
+  it('el detalle del sello pone cada línea en su renglón y el rango en caracteres', async () => {
+    const { fixture, root } = await montarTextos(VER);
+    await abrir(fixture, root, 1);
+    const modal = document.querySelector('dba-setting-detail');
+    const lineas = modal?.querySelector<HTMLElement>('dd.item__lines');
+    expect(lineas?.textContent?.trim()).toBe('Uno\nDos');
+    expect(modal?.textContent).toContain('De 3 a 40 caracteres por línea, hasta 3 líneas');
+    expect(modal?.textContent).toContain('los ya generados no cambian');
+    expect(modal?.textContent).not.toMatch(LLAVE_CRUDA);
+  });
+
+  it('cambia el remitente con un campo de texto y avisa qué caracteres no van', async () => {
+    const { fixture, http, root } = await montarTextos();
+    await abrir(fixture, root, 0);
+    botonCon('Cambiar valor')?.click();
+    await asentar(fixture);
+    const campo = document.querySelector<HTMLInputElement>('dba-setting-edit input');
+    expect(campo?.getAttribute('inputmode')).toBeNull();
+    expect(campo?.getAttribute('maxlength')).toBe('60');
+    const modal = () => document.querySelector('dba-setting-edit')?.textContent ?? '';
+    expect(modal()).toContain('Predeterminado: «Anasol de docublock».');
+
+    await escribir(fixture, 1, 'Marca nueva');
+    await escribir(fixture, 0, 'Equipo <x@y.co>');
+    expect(modal()).toContain('sin @, comillas, barra invertida');
+    expect(botonCon('Guardar cambio')?.disabled).toBe(true);
+
+    await escribir(fixture, 0, 'Eq');
+    expect(modal()).toContain('El largo está fuera de lo recomendado');
+    await escribir(fixture, 0, '  Equipo Docublock ');
+    expect(modal()).not.toMatch(LLAVE_CRUDA);
+    botonCon('Guardar cambio')?.click();
+    await asentar(fixture);
+    const put = http.expectOne((req) => req.method === 'PUT');
+    expect(put.request.url).toContain(`${BASE}/${REMITENTE.key}`);
+    expect(put.request.body).toEqual({
+      value: 'Equipo Docublock',
+      reason: 'Marca nueva',
+      expectedVersion: 2,
+    });
+    put.flush({ ...REMITENTE, value: 'Equipo Docublock' });
+    await asentar(fixture);
+    listar(http);
+    await asentar(fixture);
+  });
+
+  it('cambia las líneas del sello en un área de texto, una por renglón', async () => {
+    const { fixture, http, root } = await montarTextos();
+    await abrir(fixture, root, 1);
+    botonCon('Cambiar valor')?.click();
+    await asentar(fixture);
+    const area = document.querySelector<HTMLTextAreaElement>('dba-setting-edit textarea');
+    expect(area?.value).toBe('Uno\nDos');
+    const modal = () => document.querySelector('dba-setting-edit')?.textContent ?? '';
+    expect(modal()).toContain('Escribe cada línea en un renglón, hasta 3.');
+
+    await escribir(fixture, 0, 'Texto de la firma');
+    await escribirArea(fixture, 'a\nb\nc\nd');
+    expect(modal()).toContain('Escribe de 1 a 3 líneas, cada una de 1 a 45 caracteres.');
+    expect(botonCon('Guardar cambio')?.disabled).toBe(true);
+
+    await escribirArea(fixture, 'Propiedad de Docublock\n\nReservados todos los derechos');
+    expect(modal()).not.toMatch(LLAVE_CRUDA);
+    botonCon('Guardar cambio')?.click();
+    await asentar(fixture);
+    const put = http.expectOne((req) => req.method === 'PUT');
+    expect(put.request.body).toEqual({
+      value: ['Propiedad de Docublock', 'Reservados todos los derechos'],
+      reason: 'Texto de la firma',
+      expectedVersion: 4,
+    });
+    put.flush(SELLO);
+    await asentar(fixture);
+    listar(http);
+    await asentar(fixture);
+  });
+
+  it('la pestaña Textos va entre Validación y Credenciales', async () => {
+    const { root } = await montarTextos(VER);
+    const pestañas = [...root.querySelectorAll('dba-settings-tabs a')].map((a) =>
+      a.textContent?.trim(),
+    );
+    const posicion = pestañas.indexOf('Textos');
+    expect(pestañas[posicion - 1]).toBe('Validación');
+    expect(pestañas[posicion + 1]).toBe('Credenciales');
   });
 });
 

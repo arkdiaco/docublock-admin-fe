@@ -5059,6 +5059,8 @@
     "errorLead": "Revisa la conexión e inténtalo de nuevo.",
     "unknownAdmin": "Persona ya sin acceso",
     "range": "De {{min}} a {{max}}",
+    "rangeText": "De {{min}} a {{max}} caracteres",
+    "rangeLines": "De {{min}} a {{max}} caracteres por línea, hasta {{maxItems}} líneas",
     "reasonLabel": "Motivo · queda en la bitácora",
     "reasonPlaceholder": "Por qué se hace este cambio",
     "tab": {
@@ -5066,6 +5068,7 @@
       "access": "Accesos",
       "signing": "Firma y documentos",
       "validation": "Validación",
+      "texts": "Textos",
       "credentials": "Credenciales",
       "history": "Historial"
     },
@@ -5099,7 +5102,9 @@
       "rows": "{{value}} filas",
       "rowsOne": "{{value}} fila",
       "megabytes": "{{value}} MB",
-      "megabytesOne": "{{value}} MB"
+      "megabytesOne": "{{value}} MB",
+      "text": "{{value}}",
+      "lines": "{{value}}"
     },
     "editLabel": {
       "percent": "Porcentaje",
@@ -5111,7 +5116,9 @@
       "perHour": "Códigos por hora",
       "reminders": "Recordatorios",
       "rows": "Filas",
-      "megabytes": "Megabytes (MB)"
+      "megabytes": "Megabytes (MB)",
+      "text": "Texto",
+      "lines": "Líneas"
     },
     "item": {
       "alerts": {
@@ -5251,6 +5258,28 @@
           "audience": "Lo ven los firmantes",
           "hint": "Confianza que debe dar la prueba de vida para aprobarse. Aplica en la firma y al activar One Touch Sign."
         }
+      },
+      "texts": {
+        "sender_docublock": {
+          "label": "Remitente de los correos de Docublock",
+          "audience": "Lo ven quienes reciben los correos",
+          "hint": "Nombre que aparece como remitente en los correos que envía la plataforma con la marca Docublock. Solo cambia el nombre: la dirección de envío sigue siendo la misma. Los correos del CLM y de Risk no cambian."
+        },
+        "sender_docublock_id": {
+          "label": "Remitente de los correos de Docublock ID",
+          "audience": "Lo ven quienes reciben los correos",
+          "hint": "Nombre que aparece como remitente en los correos que envía la plataforma con la marca Docublock ID. Solo cambia el nombre: la dirección de envío sigue siendo la misma."
+        },
+        "sender_arkdia": {
+          "label": "Remitente de los correos de arKadia",
+          "audience": "Lo ven quienes reciben los correos",
+          "hint": "Nombre que aparece como remitente en los correos que envía la plataforma con la marca arKadia. Solo cambia el nombre: la dirección de envío sigue siendo la misma."
+        },
+        "seal_legal_lines": {
+          "label": "Texto legal del sello",
+          "audience": "Se ve en el sello de cada miembro",
+          "hint": "Líneas que van al pie del sello que se genera para cada miembro. Aplica a los sellos que se generen desde ahora; los ya generados no cambian."
+        }
       }
     },
     "detail": {
@@ -5268,9 +5297,16 @@
       "delay": "Se aplica en hasta 60 segundos.",
       "defaultHint": "Predeterminado: {{value}}.",
       "listHint": " Separa los valores con comas.",
+      "defaultTextHint": "Predeterminado: «{{value}}».",
+      "linesHint": "Escribe cada línea en un renglón, hasta {{maxItems}}.",
       "invalid": "Escribe un número entero de {{min}} a {{max}}.",
       "invalidList": "Escribe hasta {{maxItems}} números enteros distintos, de {{min}} a {{max}}, separados por comas.",
+      "invalidName": "Escribe de {{min}} a {{max}} caracteres, sin @, comillas, barra invertida ni los signos < y >.",
+      "invalidText": "Escribe de {{min}} a {{max}} caracteres en una sola línea.",
+      "invalidLines": "Escribe de 1 a {{maxItems}} líneas, cada una de {{min}} a {{max}} caracteres.",
       "outOfRecommended": "Este valor está fuera de lo recomendado (de {{min}} a {{max}}). Puedes guardarlo.",
+      "outOfRecommendedText": "El largo está fuera de lo recomendado (de {{min}} a {{max}} caracteres). Puedes guardarlo.",
+      "outOfRecommendedLines": "Alguna línea tiene un largo fuera de lo recomendado (de {{min}} a {{max}} caracteres). Puedes guardarlo.",
       "identityRisk": "Cambia la validación de identidad de todas las organizaciones. Bajarlo deja pasar a más personas; subirlo rechaza a más firmantes legítimos. Cada firma guarda el umbral que se le aplicó."
     },
     "reset": {

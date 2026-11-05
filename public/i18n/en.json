@@ -5059,6 +5059,8 @@
     "errorLead": "Check the connection and try again.",
     "unknownAdmin": "Person no longer has access",
     "range": "From {{min}} to {{max}}",
+    "rangeText": "From {{min}} to {{max}} characters",
+    "rangeLines": "From {{min}} to {{max}} characters per line, up to {{maxItems}} lines",
     "reasonLabel": "Reason · goes in the log",
     "reasonPlaceholder": "Why this change is being made",
     "tab": {
@@ -5066,6 +5068,7 @@
       "access": "Access",
       "signing": "Signing and documents",
       "validation": "Validation",
+      "texts": "Texts",
       "credentials": "Credentials",
       "history": "History"
     },
@@ -5099,7 +5102,9 @@
       "rows": "{{value}} rows",
       "rowsOne": "{{value}} row",
       "megabytes": "{{value}} MB",
-      "megabytesOne": "{{value}} MB"
+      "megabytesOne": "{{value}} MB",
+      "text": "{{value}}",
+      "lines": "{{value}}"
     },
     "editLabel": {
       "percent": "Percentage",
@@ -5111,7 +5116,9 @@
       "perHour": "Codes per hour",
       "reminders": "Reminders",
       "rows": "Rows",
-      "megabytes": "Megabytes (MB)"
+      "megabytes": "Megabytes (MB)",
+      "text": "Text",
+      "lines": "Lines"
     },
     "item": {
       "alerts": {
@@ -5251,6 +5258,28 @@
           "audience": "Seen by signers",
           "hint": "Confidence the liveness check must reach to pass. It applies when signing and when activating One Touch Sign."
         }
+      },
+      "texts": {
+        "sender_docublock": {
+          "label": "Sender of Docublock emails",
+          "audience": "Seen by email recipients",
+          "hint": "Name shown as the sender of the emails the platform sends under the Docublock brand. Only the name changes: the sending address stays the same. CLM and Risk emails do not change."
+        },
+        "sender_docublock_id": {
+          "label": "Sender of Docublock ID emails",
+          "audience": "Seen by email recipients",
+          "hint": "Name shown as the sender of the emails the platform sends under the Docublock ID brand. Only the name changes: the sending address stays the same."
+        },
+        "sender_arkdia": {
+          "label": "Sender of arKadia emails",
+          "audience": "Seen by email recipients",
+          "hint": "Name shown as the sender of the emails the platform sends under the arKadia brand. Only the name changes: the sending address stays the same."
+        },
+        "seal_legal_lines": {
+          "label": "Seal legal text",
+          "audience": "Shown on each member’s seal",
+          "hint": "Lines printed at the bottom of the seal generated for each member. It applies to seals generated from now on; seals already generated do not change."
+        }
       }
     },
     "detail": {
@@ -5268,9 +5297,16 @@
       "delay": "Takes effect within 60 seconds.",
       "defaultHint": "Default: {{value}}.",
       "listHint": " Separate values with commas.",
+      "defaultTextHint": "Default: “{{value}}”.",
+      "linesHint": "Write each line on its own row, up to {{maxItems}}.",
       "invalid": "Enter a whole number from {{min}} to {{max}}.",
       "invalidList": "Enter up to {{maxItems}} different whole numbers, from {{min}} to {{max}}, separated by commas.",
+      "invalidName": "Enter {{min}} to {{max}} characters, without @, quotes, backslash or the < and > signs.",
+      "invalidText": "Enter {{min}} to {{max}} characters on a single line.",
+      "invalidLines": "Enter 1 to {{maxItems}} lines, each from {{min}} to {{max}} characters.",
       "outOfRecommended": "This value is outside the recommended range ({{min}} to {{max}}). You can still save it.",
+      "outOfRecommendedText": "The length is outside the recommended range ({{min}} to {{max}} characters). You can still save it.",
+      "outOfRecommendedLines": "A line is outside the recommended length ({{min}} to {{max}} characters). You can still save it.",
       "identityRisk": "This changes identity validation for every organization. Lowering it lets more people through; raising it rejects more legitimate signers. Each signature keeps the threshold applied to it."
     },
     "reset": {

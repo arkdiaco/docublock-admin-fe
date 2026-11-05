@@ -12,7 +12,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { ButtonComponent } from '../../../shared/ui/button.component';
 import { ModalShellComponent } from '../../../shared/ui/modal-shell.component';
-import { valueLabelOf } from '../data/settings-view';
+import { isTextKind, linesOf, rangeKeyOf, valueLabelOf } from '../data/settings-view';
 import type { SettingItem, SettingValue } from '../data/settings.models';
 
 @Component({
@@ -34,11 +34,15 @@ import type { SettingItem, SettingValue } from '../data/settings.models';
       <p class="item__lead">{{ 'cfg.item.' + setting().key + '.hint' | translate }}</p>
       <dl class="item">
         <dt>{{ 'cfg.detail.value' | translate }}</dt>
-        <dd class="dba-mono">{{ label(setting().value) }}</dd>
+        <dd [class.dba-mono]="!textual()" [class.item__lines]="lined()">
+          {{ shown(setting().value) }}
+        </dd>
         <dt>{{ 'cfg.detail.default' | translate }}</dt>
-        <dd class="dba-mono">{{ label(setting().defaultValue) }}</dd>
+        <dd [class.dba-mono]="!textual()" [class.item__lines]="lined()">
+          {{ shown(setting().defaultValue) }}
+        </dd>
         <dt>{{ 'cfg.detail.recommended' | translate }}</dt>
-        <dd>{{ 'cfg.range' | translate: setting().recommended }}</dd>
+        <dd>{{ rangeKey() | translate: rangeParams() }}</dd>
         @if (setting().lastChange; as last) {
           <dt>{{ 'cfg.detail.lastChange' | translate }}</dt>
           <dd>{{ when(last.at) }} · {{ last.adminName || ('cfg.unknownAdmin' | translate) }}</dd>
@@ -68,8 +72,16 @@ export class SettingDetailComponent {
   private readonly translate = inject(TranslateService);
 
   protected readonly canManage = computed(() => this.auth.canManage('platform'));
+  protected readonly textual = computed(() => isTextKind(this.setting().kind));
+  protected readonly lined = computed(() => this.setting().kind === 'text_list');
+  protected readonly rangeKey = computed(() => rangeKeyOf(this.setting().kind));
+  protected readonly rangeParams = computed(() => ({
+    ...this.setting().recommended,
+    maxItems: this.setting().maxItems,
+  }));
 
-  protected label(value: SettingValue): string {
+  protected shown(value: SettingValue): string {
+    if (this.lined()) return linesOf(value);
     const { key, params } = valueLabelOf(this.setting().unit, value);
     return this.translate.instant(key, params) as string;
   }

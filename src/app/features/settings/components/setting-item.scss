@@ -16,6 +16,10 @@
   overflow-wrap: anywhere;
 }
 
+.item dd.item__lines {
+  white-space: pre-line;
+}
+
 .item__lead {
   margin: 0 0 16px;
   font-size: var(--dba-text-body);
