@@ -245,6 +245,16 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
         import('./features/resellers/pages/reseller-detail.component').then((m) => m.ResellerDetailComponent),
     },
   ],
+  tasks: [
+    {
+      path: '',
+      loadComponent: () => import('./features/tasks/pages/tasks.component').then((m) => m.TasksComponent),
+    },
+    {
+      path: ':queue',
+      loadComponent: () => import('./features/tasks/pages/queue-detail.component').then((m) => m.QueueDetailComponent),
+    },
+  ],
   audit: [{ path: '', loadComponent: () => import('./features/audit/pages/audit.component').then((m) => m.AuditComponent) }],
   staff: [{ path: '', loadComponent: () => import('./features/staff/pages/staff.component').then((m) => m.StaffComponent) }],
   health: [{ path: '', loadComponent: () => import('./features/status/pages/status.component').then((m) => m.StatusComponent) }],

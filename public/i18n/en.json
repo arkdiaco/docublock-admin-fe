@@ -4490,5 +4490,82 @@
       "forbidden": "You do not have permission to resend.",
       "unknown": "The resend could not be confirmed. Check the state before trying again."
     }
+  },
+  "task": {
+    "lead": "Background work: what is waiting, what is running and what failed.",
+    "refresh": "Refresh",
+    "loading": "Loading the queues…",
+    "back": "Back to Tasks",
+    "errorTitle": "We could not load the queues",
+    "errorLead": "Check your connection and try again.",
+    "missingTitle": "This queue does not exist",
+    "missingLead": "Go back to Tasks and pick one from the list.",
+    "noError": "No error was recorded.",
+    "col": {
+      "queue": "Queue",
+      "oldest": "Oldest",
+      "organization": "Organization",
+      "item": "Item",
+      "attempts": "Attempts",
+      "next": "Next attempt",
+      "created": "Created",
+      "updated": "Updated",
+      "error": "Last error",
+      "state": "State"
+    },
+    "state": {
+      "failed": "Failed",
+      "pending": "Pending",
+      "running": "Running"
+    },
+    "empty": {
+      "failed": "No failed items",
+      "pending": "No pending items",
+      "running": "No running items"
+    },
+    "kind": {
+      "DEFAULT_DIRECTORY_AND_TEMPLATE": "Initial directory and template",
+      "LEDGER_CONTRACT": "Blockchain contract",
+      "API_KEY": "API key",
+      "email": "Email",
+      "whatsapp": "WhatsApp",
+      "sms": "SMS",
+      "push": "Push notice"
+    },
+    "queue": {
+      "closing": {
+        "name": "Document closing",
+        "lead": "Anchoring, reports and notices when a document finishes signing."
+      },
+      "provisioning": {
+        "name": "Organization setup",
+        "lead": "Initial directory and template, blockchain contract and API key for each new organization."
+      },
+      "notifications": {
+        "name": "Notifications",
+        "lead": "Emails, WhatsApp, SMS and push notices to users."
+      },
+      "massive": {
+        "name": "Bulk sends",
+        "lead": "Documents created from a file with many rows."
+      },
+      "purge": {
+        "name": "Organization purges",
+        "lead": "Permanent deletion of an organization's data."
+      },
+      "campaigns": {
+        "name": "WhatsApp campaigns",
+        "lead": "General sends. Per-recipient failures are in each send's detail, under Communications."
+      },
+      "seals": {
+        "name": "Title seals",
+        "lead": "Signed titles waiting for their custody seal. The cause of a failure is not stored here."
+      }
+    },
+    "itemState": {
+      "failed": "Failed",
+      "pending": "Pending",
+      "running": "Running"
+    }
   }
 }

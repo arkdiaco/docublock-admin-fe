@@ -4490,5 +4490,82 @@
       "forbidden": "No tienes permiso para reenviar.",
       "unknown": "No se pudo confirmar el reenvío. Revisa el estado antes de reintentar."
     }
+  },
+  "task": {
+    "lead": "Trabajos en segundo plano: lo que espera, lo que corre y lo que falló.",
+    "refresh": "Actualizar",
+    "loading": "Cargando las colas…",
+    "back": "Volver a Tareas",
+    "errorTitle": "No pudimos cargar las colas",
+    "errorLead": "Revisa tu conexión e inténtalo de nuevo.",
+    "missingTitle": "Esta cola no existe",
+    "missingLead": "Vuelve a Tareas y elige una de la lista.",
+    "noError": "No hay un error registrado.",
+    "col": {
+      "queue": "Cola",
+      "oldest": "Más antiguo",
+      "organization": "Organización",
+      "item": "Elemento",
+      "attempts": "Intentos",
+      "next": "Próximo intento",
+      "created": "Creado",
+      "updated": "Actualizado",
+      "error": "Último error",
+      "state": "Estado"
+    },
+    "state": {
+      "failed": "Fallidos",
+      "pending": "Pendientes",
+      "running": "En curso"
+    },
+    "empty": {
+      "failed": "No hay elementos fallidos",
+      "pending": "No hay elementos pendientes",
+      "running": "No hay elementos en curso"
+    },
+    "kind": {
+      "DEFAULT_DIRECTORY_AND_TEMPLATE": "Directorio y plantilla iniciales",
+      "LEDGER_CONTRACT": "Contrato en blockchain",
+      "API_KEY": "Llave de API",
+      "email": "Correo",
+      "whatsapp": "WhatsApp",
+      "sms": "SMS",
+      "push": "Aviso push"
+    },
+    "queue": {
+      "closing": {
+        "name": "Cierre de documentos",
+        "lead": "Anclaje, reportes y avisos cuando un documento termina de firmarse."
+      },
+      "provisioning": {
+        "name": "Alta de organizaciones",
+        "lead": "Directorio y plantilla iniciales, contrato en blockchain y llave de API de cada organización nueva."
+      },
+      "notifications": {
+        "name": "Notificaciones",
+        "lead": "Correos, WhatsApp, SMS y avisos push a los usuarios."
+      },
+      "massive": {
+        "name": "Envíos masivos",
+        "lead": "Documentos creados desde un archivo con muchas filas."
+      },
+      "purge": {
+        "name": "Purgas de organización",
+        "lead": "Borrado definitivo de los datos de una organización."
+      },
+      "campaigns": {
+        "name": "Campañas de WhatsApp",
+        "lead": "Envíos generales. Los fallos por destinatario están en el detalle de cada envío, en Comunicaciones."
+      },
+      "seals": {
+        "name": "Sellos de títulos",
+        "lead": "Títulos firmados que esperan su sello de custodia. La causa de un fallo no queda guardada aquí."
+      }
+    },
+    "itemState": {
+      "failed": "Fallido",
+      "pending": "Pendiente",
+      "running": "En curso"
+    }
   }
 }
