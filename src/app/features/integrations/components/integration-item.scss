@@ -1,0 +1,57 @@
+.item {
+  display: grid;
+  grid-template-columns: minmax(120px, auto) minmax(0, 1fr);
+  gap: 8px 16px;
+  margin: 0;
+  font-size: var(--dba-text-label);
+}
+
+.item dt {
+  color: var(--dba-text-muted);
+}
+
+.item dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.item__link {
+  color: var(--dba-violet-600);
+  font-weight: 600;
+}
+
+.item__heading {
+  margin: 18px 0 8px;
+}
+
+.item__note {
+  margin: 14px 0 0;
+}
+
+.item__more {
+  margin-top: 18px;
+  font-size: var(--dba-text-label);
+}
+
+.item__more summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.item__more .item__code {
+  margin-top: 8px;
+}
+
+.item__code {
+  margin: 0;
+  padding: 12px;
+  max-height: 260px;
+  overflow: auto;
+  border: 1px solid var(--dba-border);
+  border-radius: var(--dba-radius-control);
+  background: var(--dba-surface-muted);
+  font-size: var(--dba-text-small);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

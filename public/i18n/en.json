@@ -609,7 +609,10 @@
       "execute": "executed a maintenance task"
     },
     "integrations": {
-      "replay": "resent a webhook delivery"
+      "replay": "resent a webhook delivery",
+      "retry_failed": "retried failed webhook deliveries",
+      "key_revoke": "revoked an integration key",
+      "endpoint_toggle": "changed the status of a webhook destination"
     }
   },
   "placeholder": {
@@ -4906,6 +4909,116 @@
       },
       "stillRetrying": "This delivery still has automatic retries. If one succeeds, the customer will receive it twice."
     },
-    "noDestinationNote": "It has no active destination. To resend it, the organization must set up its webhook again."
+    "noDestinationNote": "It has no active destination. To resend it, the organization must set up its webhook again.",
+    "tab": {
+      "deliveries": "Deliveries",
+      "keys": "Keys",
+      "endpoints": "Destinations"
+    },
+    "retry": {
+      "action": "Retry failed",
+      "title": "Retry failed",
+      "confirm": "Retry now",
+      "notice": "{{total}} deliveries will be retried ({{failed}} failed and {{exhausted}} exhausted) using the current filters. They go out in batches through the automatic job and reach the customers' real systems.",
+      "oneMore": "Exhausted deliveries get one more attempt. If it fails, they stay exhausted.",
+      "oldest": "The oldest one is from {{date}}. The customer will receive that event late.",
+      "overLimit": "Each retry takes {{limit}}. {{rest}} will be left for the next one.",
+      "none": "There are no deliveries to retry with these filters.",
+      "taken": "{{taken}} deliveries were taken. They will go out through the automatic job.",
+      "takenSome": "{{taken}} deliveries were taken and {{remaining}} are left to retry. They will go out through the automatic job.",
+      "error": {
+        "forbidden": "You do not have permission to retry deliveries.",
+        "gone": "We could not find those deliveries.",
+        "failed": "We could not retry the deliveries. Try again."
+      }
+    }
+  },
+  "ikey": {
+    "lead": "v2 integration keys across all organizations.",
+    "loading": "Loading keys…",
+    "tableLabel": "Integration keys",
+    "errorTitle": "We could not load the keys",
+    "empty": "There are no keys yet",
+    "emptyFiltered": "No keys match these filters",
+    "neverUsed": "Unused",
+    "noExpiry": "No expiry",
+    "prefix": "Prefix",
+    "scopes": "Scopes",
+    "created": "Created",
+    "revokedAt": "Revoked",
+    "col": {
+      "organization": "Organization",
+      "key": "Key",
+      "state": "Status",
+      "used": "Last used",
+      "expires": "Expires"
+    },
+    "filter": {
+      "all": "All",
+      "expiring": "Expiring",
+      "unused": "Unused",
+      "expired": "Expired",
+      "revoked": "Revoked"
+    },
+    "revoke": {
+      "action": "Revoke",
+      "title": "Revoke key",
+      "confirm": "Revoke now",
+      "notice": "Key {{name}} ({{prefix}}) will stop working immediately and the integrations using it will start failing. This cannot be undone.",
+      "done": "Key revoked.",
+      "already": "This key was already revoked.",
+      "error": {
+        "forbidden": "You do not have permission to revoke keys.",
+        "gone": "This key no longer exists.",
+        "failed": "We could not revoke the key. Try again."
+      }
+    }
+  },
+  "iep": {
+    "lead": "v2 webhook destinations across all organizations, with their failures in the last 7 days.",
+    "loading": "Loading destinations…",
+    "tableLabel": "Webhook destinations",
+    "errorTitle": "We could not load the destinations",
+    "empty": "There are no destinations yet",
+    "emptyFiltered": "No destinations match these filters",
+    "events": "Events",
+    "allEvents": "All events",
+    "lastFailure": "Last failure",
+    "created": "Created",
+    "col": {
+      "organization": "Organization",
+      "url": "Destination",
+      "state": "Status",
+      "failures": "Failures 7 days",
+      "error": "Last failure"
+    },
+    "state": {
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    },
+    "filter": {
+      "all": "All",
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    },
+    "disable": {
+      "action": "Disable",
+      "title": "Disable destination",
+      "confirm": "Disable now",
+      "notice": "New events will stop going to {{url}} and its pending deliveries will become exhausted in the next cycle.",
+      "done": "Destination disabled."
+    },
+    "enable": {
+      "action": "Enable",
+      "title": "Enable destination",
+      "confirm": "Enable now",
+      "notice": "{{url}} will receive new events again. Deliveries that are already exhausted do not go out on their own: use “Retry failed” in Deliveries.",
+      "done": "Destination enabled."
+    },
+    "error": {
+      "forbidden": "You do not have permission to change destinations.",
+      "gone": "This destination no longer exists.",
+      "failed": "We could not change the destination. Try again."
+    }
   }
 }

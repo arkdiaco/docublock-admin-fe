@@ -85,3 +85,87 @@ export interface ReplayResult {
   exhausted: boolean;
   delivery: DeliveryDetail;
 }
+
+export type RetryableStatus = 'failed' | 'exhausted';
+
+export interface RetryFilter {
+  organizationId?: string | null;
+  event?: string | null;
+  status?: RetryableStatus | null;
+  from?: string | null;
+}
+
+export interface RetryPreview {
+  failed: number;
+  exhausted: number;
+  oldestAt: string | null;
+  limit: number;
+}
+
+export interface RetryOutcome {
+  taken: number;
+  remaining: number;
+}
+
+export const KEY_FILTERS = ['expiring', 'unused', 'expired', 'revoked'] as const;
+export type KeyFilter = (typeof KEY_FILTERS)[number];
+export type KeyState = 'active' | 'rotating' | 'revoked' | 'expired';
+
+export interface KeyRow {
+  id: string;
+  organizationId: string;
+  organizationName: string | null;
+  name: string;
+  prefix: string;
+  scopes: string[];
+  state: KeyState;
+  expiresAt: string | null;
+  lastUsedAt: string | null;
+  revokedAt: string | null;
+  createdAt: string;
+}
+
+export interface KeysPage {
+  data: KeyRow[];
+  nextCursor: string | null;
+}
+
+export interface KeysQuery {
+  organizationId?: string | null;
+  filter?: KeyFilter | null;
+  cursor?: string | null;
+  limit: number;
+}
+
+export interface KeyCounts {
+  expiring: number;
+  unused: number;
+  expired: number;
+}
+
+export interface EndpointRow {
+  id: string;
+  organizationId: string;
+  organizationName: string | null;
+  url: string;
+  description?: string;
+  events: string[];
+  enabled: boolean;
+  secretRotatedAt?: string;
+  createdAt: string;
+  recentFailures: number;
+  lastFailureAt: string | null;
+  lastError: string | null;
+}
+
+export interface EndpointsPage {
+  data: EndpointRow[];
+  nextCursor: string | null;
+}
+
+export interface EndpointsQuery {
+  organizationId?: string | null;
+  enabled?: boolean | null;
+  cursor?: string | null;
+  limit: number;
+}

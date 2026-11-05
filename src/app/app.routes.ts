@@ -251,6 +251,15 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
       loadComponent: () =>
         import('./features/integrations/pages/deliveries.component').then((m) => m.DeliveriesComponent),
     },
+    {
+      path: 'claves',
+      loadComponent: () => import('./features/integrations/pages/keys.component').then((m) => m.KeysComponent),
+    },
+    {
+      path: 'destinos',
+      loadComponent: () =>
+        import('./features/integrations/pages/endpoints.component').then((m) => m.EndpointsComponent),
+    },
   ],
   tasks: [
     {

@@ -609,7 +609,10 @@
       "execute": "ejecutó una tarea de mantenimiento"
     },
     "integrations": {
-      "replay": "reenvió una entrega de webhook"
+      "replay": "reenvió una entrega de webhook",
+      "retry_failed": "reintentó entregas de webhook fallidas",
+      "key_revoke": "revocó una clave de integración",
+      "endpoint_toggle": "cambió el estado de un destino de webhook"
     }
   },
   "placeholder": {
@@ -4906,6 +4909,116 @@
       },
       "stillRetrying": "Esta entrega sigue con sus reintentos automáticos. Si uno llega, el cliente la recibirá dos veces."
     },
-    "noDestinationNote": "No tiene un destino activo. Para reenviarla, la organización debe volver a configurar su webhook."
+    "noDestinationNote": "No tiene un destino activo. Para reenviarla, la organización debe volver a configurar su webhook.",
+    "tab": {
+      "deliveries": "Entregas",
+      "keys": "Claves",
+      "endpoints": "Destinos"
+    },
+    "retry": {
+      "action": "Reintentar fallidas",
+      "title": "Reintentar fallidas",
+      "confirm": "Reintentar ahora",
+      "notice": "Se volverán a intentar {{total}} entregas ({{failed}} fallidas y {{exhausted}} agotadas) con los filtros puestos. Salen por lotes en el trabajo automático y llegan a los sistemas reales de los clientes.",
+      "oneMore": "Las agotadas tendrán un intento más. Si falla, vuelven a quedar agotadas.",
+      "oldest": "La más antigua es del {{date}}. El cliente recibirá ese evento con retraso.",
+      "overLimit": "Cada reintento toma {{limit}}. Quedarán {{rest}} para el siguiente.",
+      "none": "No hay entregas para reintentar con estos filtros.",
+      "taken": "Se tomaron {{taken}} entregas. Saldrán en el trabajo automático.",
+      "takenSome": "Se tomaron {{taken}} entregas y quedan {{remaining}} por reintentar. Saldrán en el trabajo automático.",
+      "error": {
+        "forbidden": "No tienes permiso para reintentar entregas.",
+        "gone": "No encontramos esas entregas.",
+        "failed": "No pudimos reintentar las entregas. Inténtalo de nuevo."
+      }
+    }
+  },
+  "ikey": {
+    "lead": "Claves de integración v2 de todas las organizaciones.",
+    "loading": "Cargando claves…",
+    "tableLabel": "Claves de integración",
+    "errorTitle": "No pudimos cargar las claves",
+    "empty": "Todavía no hay claves",
+    "emptyFiltered": "Ninguna clave con estos filtros",
+    "neverUsed": "Sin uso",
+    "noExpiry": "No vence",
+    "prefix": "Prefijo",
+    "scopes": "Permisos",
+    "created": "Creada",
+    "revokedAt": "Revocada",
+    "col": {
+      "organization": "Organización",
+      "key": "Clave",
+      "state": "Estado",
+      "used": "Último uso",
+      "expires": "Vence"
+    },
+    "filter": {
+      "all": "Todas",
+      "expiring": "Por vencer",
+      "unused": "Sin uso",
+      "expired": "Vencidas",
+      "revoked": "Revocadas"
+    },
+    "revoke": {
+      "action": "Revocar",
+      "title": "Revocar clave",
+      "confirm": "Revocar ahora",
+      "notice": "La clave {{name}} ({{prefix}}) dejará de funcionar de inmediato y las integraciones que la usen empezarán a fallar. No se puede deshacer.",
+      "done": "Clave revocada.",
+      "already": "Esta clave ya estaba revocada.",
+      "error": {
+        "forbidden": "No tienes permiso para revocar claves.",
+        "gone": "Esta clave ya no existe.",
+        "failed": "No pudimos revocar la clave. Inténtalo de nuevo."
+      }
+    }
+  },
+  "iep": {
+    "lead": "Destinos de webhook v2 de todas las organizaciones, con sus fallos de los últimos 7 días.",
+    "loading": "Cargando destinos…",
+    "tableLabel": "Destinos de webhook",
+    "errorTitle": "No pudimos cargar los destinos",
+    "empty": "Todavía no hay destinos",
+    "emptyFiltered": "Ningún destino con estos filtros",
+    "events": "Eventos",
+    "allEvents": "Todos los eventos",
+    "lastFailure": "Último fallo",
+    "created": "Creado",
+    "col": {
+      "organization": "Organización",
+      "url": "Destino",
+      "state": "Estado",
+      "failures": "Fallos 7 días",
+      "error": "Último fallo"
+    },
+    "state": {
+      "enabled": "Habilitado",
+      "disabled": "Deshabilitado"
+    },
+    "filter": {
+      "all": "Todos",
+      "enabled": "Habilitados",
+      "disabled": "Deshabilitados"
+    },
+    "disable": {
+      "action": "Deshabilitar",
+      "title": "Deshabilitar destino",
+      "confirm": "Deshabilitar ahora",
+      "notice": "Los eventos nuevos dejarán de enviarse a {{url}} y sus entregas pendientes quedarán agotadas en el siguiente ciclo.",
+      "done": "Destino deshabilitado."
+    },
+    "enable": {
+      "action": "Habilitar",
+      "title": "Habilitar destino",
+      "confirm": "Habilitar ahora",
+      "notice": "{{url}} volverá a recibir los eventos nuevos. Las entregas ya agotadas no salen solas: usa «Reintentar fallidas» en Entregas.",
+      "done": "Destino habilitado."
+    },
+    "error": {
+      "forbidden": "No tienes permiso para cambiar destinos.",
+      "gone": "Este destino ya no existe.",
+      "failed": "No pudimos cambiar el destino. Inténtalo de nuevo."
+    }
   }
 }

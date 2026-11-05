@@ -8,11 +8,23 @@ import type {
   DeliveriesPage,
   DeliveriesQuery,
   DeliveryDetail,
+  EndpointsPage,
+  EndpointsQuery,
+  KeyCounts,
+  KeyRow,
+  KeysPage,
+  KeysQuery,
   OpenDeliveryCounts,
   ReplayResult,
+  RetryFilter,
+  RetryOutcome,
+  RetryPreview,
 } from './integrations.models';
 
 const BASE = '/platform/integrations/deliveries';
+const RETRIES = '/platform/integrations/delivery-retries';
+const KEYS = '/platform/integrations/keys';
+const ENDPOINTS = '/platform/integrations/endpoints';
 const silent = (): HttpContext => new HttpContext().set(SILENT_ERRORS, true);
 
 const REPLAY_ERRORS: Record<string, string> = {
@@ -28,6 +40,16 @@ export const replayErrorKey = (error: unknown): string => {
   if (known) return known;
   if (errorStatusOf(error) === 403) return 'dlv.replay.error.forbidden';
   return 'dlv.replay.error.failed';
+};
+
+const present = (filter: RetryFilter): Record<string, string> =>
+  Object.fromEntries(Object.entries(filter).filter(([, value]) => !!value)) as Record<string, string>;
+
+export const actionErrorKey = (error: unknown, prefix: string): string => {
+  if (errorStatusOf(error) === 503) return 'dlv.replay.error.unavailable';
+  if (errorStatusOf(error) === 403) return `${prefix}.forbidden`;
+  if (errorStatusOf(error) === 404) return `${prefix}.gone`;
+  return `${prefix}.failed`;
 };
 
 export const isBridgeDown = (error: unknown): boolean => errorStatusOf(error) === 503;
@@ -50,5 +72,33 @@ export class IntegrationsApi {
 
   replay(id: string, reason: string): Observable<ReplayResult> {
     return this.http.post<ReplayResult>(`${BASE}/${id}/replay`, { reason }, { context: silent() });
+  }
+
+  retryPreview(filter: RetryFilter): Observable<RetryPreview> {
+    return this.http.get<RetryPreview>(RETRIES, { params: toParams({ ...filter }), context: silent() });
+  }
+
+  retryFailed(filter: RetryFilter, reason: string): Observable<RetryOutcome> {
+    return this.http.post<RetryOutcome>(RETRIES, { ...present(filter), reason }, { context: silent() });
+  }
+
+  keys(query: KeysQuery): Observable<KeysPage> {
+    return this.http.get<KeysPage>(KEYS, { params: toParams({ ...query }), context: silent() });
+  }
+
+  keySummary(): Observable<KeyCounts> {
+    return this.http.get<KeyCounts>(`${KEYS}/summary`, { context: silent() });
+  }
+
+  revokeKey(id: string, reason: string): Observable<KeyRow> {
+    return this.http.post<KeyRow>(`${KEYS}/${id}/revoke`, { reason }, { context: silent() });
+  }
+
+  endpoints(query: EndpointsQuery): Observable<EndpointsPage> {
+    return this.http.get<EndpointsPage>(ENDPOINTS, { params: toParams({ ...query }), context: silent() });
+  }
+
+  setEndpointEnabled(id: string, enabled: boolean, reason: string): Observable<unknown> {
+    return this.http.patch(`${ENDPOINTS}/${id}`, { enabled, reason }, { context: silent() });
   }
 }

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Select } from 'primeng/select';
 import { firstValueFrom } from 'rxjs';
+import { AuthStore } from '../../../core/auth/auth.store';
 import { DensityService } from '../../../core/preferences/density.service';
 import { NotificationService } from '../../../core/ui/notification.service';
 import { PendingAction } from '../../../shared/domain/pending-action';
@@ -16,10 +17,13 @@ import { IconComponent } from '../../../shared/ui/icon.component';
 import { OrgPickerComponent } from '../../../shared/ui/org-picker.component';
 import { OrgStateComponent } from '../../../shared/ui/org-state.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
+import { CursorNavComponent } from '../components/cursor-nav.component';
 import { DeliveryDetailComponent } from '../components/delivery-detail.component';
 import { DeliveryReplayConfirmComponent } from '../components/delivery-replay-confirm.component';
+import { DeliveryRetryConfirmComponent } from '../components/delivery-retry-confirm.component';
+import { IntegrationsTabsComponent } from '../components/integrations-tabs.component';
 import { ALL_STATUSES, deliveryStateOf, resultOf, statusPills } from '../data/delivery-view';
-import { IntegrationsApi, isBridgeDown, replayErrorKey } from '../data/integrations.api';
+import { IntegrationsApi, actionErrorKey, isBridgeDown, replayErrorKey } from '../data/integrations.api';
 import {
   DELIVERY_EVENTS,
   type DeliveryDetail,
@@ -27,6 +31,9 @@ import {
   type DeliveryStatus,
   type OpenDeliveryCounts,
   type ReplayResult,
+  type RetryableStatus,
+  type RetryFilter,
+  type RetryPreview,
 } from '../data/integrations.models';
 
 export const DELIVERIES_LIMIT = 25;
@@ -44,6 +51,7 @@ const COLUMNS: readonly DataColumn[] = [
 const HOUR = 3_600_000;
 const PERIODS: Record<string, number> = { '24h': 24 * HOUR, '7d': 7 * 24 * HOUR, '30d': 30 * 24 * HOUR };
 const ANY = '';
+const RETRYABLE: readonly string[] = ['failed', 'exhausted'];
 
 type LoadError = 'down' | 'failed' | null;
 
@@ -54,12 +62,15 @@ type LoadError = 'down' | 'failed' | null;
     FormsModule,
     Select,
     ButtonComponent,
+    CursorNavComponent,
     DataTableComponent,
     DeliveryDetailComponent,
     DeliveryReplayConfirmComponent,
+    DeliveryRetryConfirmComponent,
     EmptyStateComponent,
     FilterPillsComponent,
     IconComponent,
+    IntegrationsTabsComponent,
     OrgPickerComponent,
     OrgStateComponent,
     SectionLoaderComponent,
@@ -72,10 +83,19 @@ type LoadError = 'down' | 'failed' | null;
           <h1 class="dba-page">{{ 'nav.integrations' | translate }}</h1>
           <span class="dba-meta">{{ 'dlv.lead' | translate }}</span>
         </div>
-        <button dba-button variant="secondary" [disabled]="refreshing()" (click)="refresh()">
-          {{ 'dlv.refresh' | translate }}
-        </button>
+        <div class="heading-actions">
+          @if (canRetry()) {
+            <button dba-button variant="secondary" [disabled]="pending.key() === 'preview'" (click)="askRetry()">
+              {{ 'dlv.retry.action' | translate }}
+            </button>
+          }
+          <button dba-button variant="secondary" [disabled]="refreshing()" (click)="refresh()">
+            {{ 'dlv.refresh' | translate }}
+          </button>
+        </div>
       </header>
+
+      <dba-integrations-tabs active="deliveries" />
 
       <db-filter-pills
         [pills]="pills()"
@@ -156,19 +176,25 @@ type LoadError = 'down' | 'failed' | null;
         </dba-data-table>
 
         @if (hasPrevious() || nextCursor()) {
-          <nav class="cursor" [attr.aria-label]="'common.pagination' | translate">
-            <button dba-button variant="secondary" [disabled]="!hasPrevious() || refreshing()" (click)="previous()">
-              <db-icon name="chevronLeft" [size]="14" />
-              {{ 'common.prevPage' | translate }}
-            </button>
-            <button dba-button variant="secondary" [disabled]="!nextCursor() || refreshing()" (click)="next()">
-              {{ 'common.nextPage' | translate }}
-              <db-icon name="chevronRight" [size]="14" />
-            </button>
-          </nav>
+          <dba-cursor-nav
+            [hasPrevious]="hasPrevious()"
+            [hasNext]="!!nextCursor()"
+            [busy]="refreshing()"
+            (previous)="previous()"
+            (next)="next()"
+          />
         }
       }
     </section>
+
+    @if (retryPreview(); as preview) {
+      <dba-delivery-retry-confirm
+        [preview]="preview"
+        [busy]="pending.key() === 'retry'"
+        (submitted)="retry($event)"
+        (dismissed)="retryPreview.set(null)"
+      />
+    }
 
     @if (selected(); as row) {
       @if (confirming() && detail(); as delivery) {
@@ -195,15 +221,16 @@ type LoadError = 'down' | 'failed' | null;
       align-items: flex-end;
     }
 
-    .cursor {
+    .heading-actions {
       display: flex;
-      justify-content: flex-end;
+      flex-wrap: wrap;
       gap: 8px;
     }
   `,
 })
 export class DeliveriesComponent {
   private readonly api = inject(IntegrationsApi);
+  private readonly auth = inject(AuthStore);
   private readonly locale = inject(LOCALE_ID);
   private readonly notify = inject(NotificationService);
   private readonly translate = inject(TranslateService);
@@ -228,7 +255,11 @@ export class DeliveriesComponent {
   protected readonly detail = signal<DeliveryDetail | null>(null);
   protected readonly detailFailed = signal(false);
   protected readonly confirming = signal(false);
+  protected readonly retryPreview = signal<RetryPreview | null>(null);
 
+  protected readonly canRetry = computed(
+    () => this.auth.canManage('operations') && (!this.status() || RETRYABLE.includes(this.status())),
+  );
   protected readonly pills = computed(() => statusPills(this.counts()));
   protected readonly hasPrevious = computed(() => this.cursors().length > 1);
   protected readonly filtered = computed(
@@ -322,6 +353,36 @@ export class DeliveriesComponent {
     });
   }
 
+  protected async askRetry(): Promise<void> {
+    if (this.pending.key()) return;
+    await this.pending.run('preview', async () => {
+      try {
+        const preview = await firstValueFrom(this.api.retryPreview(this.retryFilter()));
+        if (preview.failed + preview.exhausted === 0) this.notify.info(this.text('dlv.retry.none'));
+        else this.retryPreview.set(preview);
+      } catch (error) {
+        this.notify.error(this.text(actionErrorKey(error, 'dlv.retry.error')));
+      }
+    });
+  }
+
+  protected async retry(reason: string): Promise<void> {
+    if (this.pending.key()) return;
+    await this.pending.run('retry', async () => {
+      try {
+        const { taken, remaining } = await firstValueFrom(this.api.retryFailed(this.retryFilter(), reason));
+        const key = remaining > 0 ? 'dlv.retry.takenSome' : 'dlv.retry.taken';
+        this.notify.success(this.translate.instant(key, { taken, remaining }) as string);
+        this.retryPreview.set(null);
+        this.cursors.set([null]);
+        void this.loadCounts();
+        await this.load(false);
+      } catch (error) {
+        this.notify.error(this.text(actionErrorKey(error, 'dlv.retry.error')));
+      }
+    });
+  }
+
   protected async load(withLoader: boolean): Promise<void> {
     const current = this.latest.start();
     if (withLoader) this.loading.set(true);
@@ -368,6 +429,15 @@ export class DeliveriesComponent {
     this.notify.error(
       this.translate.instant(key, { detail: result.error ?? result.statusCode ?? '—' }) as string,
     );
+  }
+
+  private retryFilter(): RetryFilter {
+    return {
+      organizationId: this.organizationId(),
+      event: this.event(),
+      status: (this.status() || null) as RetryableStatus | null,
+      from: this.fromDate(),
+    };
   }
 
   private fromDate(): string | null {

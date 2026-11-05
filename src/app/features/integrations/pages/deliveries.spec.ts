@@ -265,6 +265,76 @@ describe('Integraciones: entregas', () => {
   });
 });
 
+describe('Integraciones: reintento masivo', () => {
+  const RETRIES = '/platform/integrations/delivery-retries';
+  const VISTA = { failed: 2, exhausted: 3, oldestAt: '2026-10-01T10:00:00.000Z', limit: 500 };
+
+  const pedir = async (fixture: ComponentFixture<unknown>, http: HttpTestingController, vista = VISTA) => {
+    botonCon('Reintentar fallidas')?.click();
+    await asentar(fixture);
+    http.expectOne((req) => req.url.endsWith(RETRIES) && req.method === 'GET').flush(vista);
+    await asentar(fixture);
+  };
+
+  it('sin permiso de administrar no ofrece reintentar', async () => {
+    await montar(['platform:operations']);
+    expect(botonCon('Reintentar fallidas')).toBeUndefined();
+  });
+
+  it('muestra cuántas toma, avisa de las agotadas y la antigüedad, y exige motivo', async () => {
+    const { fixture, http } = await montar(['platform:operations:manage']);
+    await pedir(fixture, http);
+    const texto = document.querySelector('dba-delivery-retry-confirm')?.textContent ?? '';
+    expect(texto).toContain('5 entregas');
+    expect(texto).toContain('2 fallidas y 3 agotadas');
+    expect(texto).toContain('un intento más');
+    expect(texto).toContain('1/10/2026');
+    expect(texto).not.toContain('Cada reintento toma');
+    expect(botonCon('Reintentar ahora')?.disabled).toBe(true);
+  });
+
+  it('avisa del tope por reintento', async () => {
+    const { fixture, http } = await montar(['platform:operations:manage']);
+    await pedir(fixture, http, { ...VISTA, failed: 700 });
+    expect(document.body.textContent).toContain('Cada reintento toma 500');
+    expect(document.body.textContent).toContain('Quedarán 203');
+  });
+
+  it('sin entregas para reintentar lo dice y no abre la confirmación', async () => {
+    const { fixture, http } = await montar(['platform:operations:manage']);
+    await pedir(fixture, http, { ...VISTA, failed: 0, exhausted: 0, oldestAt: '' });
+    expect(document.querySelector('dba-delivery-retry-confirm')).toBeNull();
+  });
+
+  it('envía el motivo con los filtros puestos, sin vacíos', async () => {
+    const { fixture, http } = await montar(['platform:operations:manage']);
+    await pedir(fixture, http);
+    const campo = document.querySelector<HTMLInputElement>('.form input, .form textarea');
+    if (!campo) throw new Error('Falta el campo de motivo');
+    campo.value = 'El cliente ya se recuperó';
+    campo.dispatchEvent(new Event('input'));
+    await asentar(fixture);
+    botonCon('Reintentar ahora')?.click();
+    const envio = http.expectOne((req) => req.url.endsWith(RETRIES) && req.method === 'POST');
+    expect(envio.request.body).toEqual({ reason: 'El cliente ya se recuperó' });
+    envio.flush({ taken: 5, remaining: 0 });
+    await asentar(fixture);
+    atender(http);
+    atenderResumen(http);
+    await asentar(fixture);
+    expect(document.querySelector('dba-delivery-retry-confirm')).toBeNull();
+  });
+
+  it('con el filtro de entregadas no ofrece reintentar', async () => {
+    const { fixture, http } = await montar(['platform:operations:manage']);
+    botonCon('Entregadas')?.click();
+    await asentar(fixture);
+    atender(http);
+    await asentar(fixture);
+    expect(botonCon('Reintentar fallidas')).toBeUndefined();
+  });
+});
+
 describe('Vista de las entregas', () => {
   it('arma el resultado con lo que haya', () => {
     expect(resultOf({ lastStatusCode: 200 })).toBe('200');
