@@ -17,6 +17,7 @@ import {
   isRecommended,
   isTextKind,
   parseSettingDraft,
+  rangeParamsOf,
   sameSettingValue,
   valueLabelOf,
 } from '../data/settings-view';
@@ -75,7 +76,7 @@ export interface SettingEditResult {
         }
         @if (outOfRecommended()) {
           <p class="notice" role="note">
-            {{ outOfRecommendedKey() | translate: setting().recommended }}
+            {{ outOfRecommendedKey() | translate: recommendedParams() }}
           </p>
         }
         <dba-field
@@ -110,6 +111,12 @@ export class SettingEditComponent {
     return value !== null && !isRecommended(this.setting(), value);
   });
   protected readonly outOfRecommendedKey = computed(() => OUT_OF_RECOMMENDED[this.setting().kind]);
+  protected readonly recommendedParams = computed(() =>
+    rangeParamsOf(this.setting(), (value) => {
+      const { key, params } = valueLabelOf(this.setting().unit, value);
+      return this.translate.instant(key, params) as string;
+    }),
+  );
   protected readonly fieldLabel = computed(() => `cfg.editLabel.${this.setting().unit}`);
   protected readonly hint = computed(() => {
     const { unit, defaultValue, kind, maxItems } = this.setting();

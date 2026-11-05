@@ -12,7 +12,13 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { ButtonComponent } from '../../../shared/ui/button.component';
 import { ModalShellComponent } from '../../../shared/ui/modal-shell.component';
-import { isTextKind, linesOf, rangeKeyOf, valueLabelOf } from '../data/settings-view';
+import {
+  isTextKind,
+  linesOf,
+  rangeKeyOf,
+  rangeParamsOf,
+  valueLabelOf,
+} from '../data/settings-view';
 import type { SettingItem, SettingValue } from '../data/settings.models';
 
 @Component({
@@ -34,12 +40,16 @@ import type { SettingItem, SettingValue } from '../data/settings.models';
       <p class="item__lead">{{ 'cfg.item.' + setting().key + '.hint' | translate }}</p>
       <dl class="item">
         <dt>{{ 'cfg.detail.value' | translate }}</dt>
-        <dd [class.dba-mono]="!textual()" [class.item__lines]="lined()">
-          {{ shown(setting().value) }}
+        <dd [class.dba-mono]="!textual()">
+          @for (line of shown(setting().value); track $index) {
+            <span class="item__line">{{ line }}</span>
+          }
         </dd>
         <dt>{{ 'cfg.detail.default' | translate }}</dt>
-        <dd [class.dba-mono]="!textual()" [class.item__lines]="lined()">
-          {{ shown(setting().defaultValue) }}
+        <dd [class.dba-mono]="!textual()">
+          @for (line of shown(setting().defaultValue); track $index) {
+            <span class="item__line">{{ line }}</span>
+          }
         </dd>
         <dt>{{ 'cfg.detail.recommended' | translate }}</dt>
         <dd>{{ rangeKey() | translate: rangeParams() }}</dd>
@@ -73,15 +83,16 @@ export class SettingDetailComponent {
 
   protected readonly canManage = computed(() => this.auth.canManage('platform'));
   protected readonly textual = computed(() => isTextKind(this.setting().kind));
-  protected readonly lined = computed(() => this.setting().kind === 'text_list');
   protected readonly rangeKey = computed(() => rangeKeyOf(this.setting().kind));
-  protected readonly rangeParams = computed(() => ({
-    ...this.setting().recommended,
-    maxItems: this.setting().maxItems,
-  }));
+  protected readonly rangeParams = computed(() =>
+    rangeParamsOf(this.setting(), (value) => this.label(value)),
+  );
 
-  protected shown(value: SettingValue): string {
-    if (this.lined()) return linesOf(value);
+  protected shown(value: SettingValue): string[] {
+    return this.setting().kind === 'text_list' ? linesOf(value) : [this.label(value)];
+  }
+
+  private label(value: SettingValue): string {
     const { key, params } = valueLabelOf(this.setting().unit, value);
     return this.translate.instant(key, params) as string;
   }

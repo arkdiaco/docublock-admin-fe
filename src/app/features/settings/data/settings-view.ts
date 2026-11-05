@@ -60,7 +60,7 @@ export const isTextKind = (kind: SettingKind): boolean => kind === 'text' || kin
 export const draftOf = (item: SettingItem): string =>
   asValues(item.value).join(item.kind === 'text_list' ? '\n' : ', ');
 
-export const linesOf = (value: SettingValue): string => asValues(value).join('\n');
+export const linesOf = (value: SettingValue): string[] => asValues(value).map(String);
 
 export const sameSettingValue = (a: SettingValue, b: SettingValue): boolean =>
   JSON.stringify(asValues(a)) === JSON.stringify(asValues(b));
@@ -86,6 +86,14 @@ export const rangeKeyOf = (kind: SettingKind): string => {
   if (kind === 'text_list') return 'cfg.rangeLines';
   return 'cfg.range';
 };
+
+export const rangeParamsOf = (
+  item: SettingItem,
+  label: (value: number) => string,
+): Record<string, string | number | null> =>
+  isTextKind(item.kind)
+    ? { ...item.recommended, maxItems: item.maxItems }
+    : { min: label(item.recommended.min), max: label(item.recommended.max) };
 
 export interface SettingValueLabel {
   key: string;

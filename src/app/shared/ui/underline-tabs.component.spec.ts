@@ -35,6 +35,29 @@ describe('UnderlineTabsComponent', () => {
     expect(elegido).toBe('suspended');
   });
 
+  it('si la pestaña marcada queda fuera de la franja, la franja se corre hasta mostrarla', () => {
+    const caja = (left: number, right: number) => () => ({ left, right }) as DOMRect;
+    const original = HTMLElement.prototype.getBoundingClientRect;
+    HTMLElement.prototype.getBoundingClientRect = function (this: HTMLElement) {
+      if (this.classList.contains('tabs')) return caja(0, 300)();
+      if (this.classList.contains('tab--on')) return caja(380, 450)();
+      return caja(0, 0)();
+    };
+    try {
+      const fixture = montar(
+        [
+          { key: 'alerts', label: 'Avisos', link: '/a' },
+          { key: 'texts', label: 'Textos', link: '/b' },
+        ],
+        'texts',
+      );
+      const franja = (fixture.nativeElement as HTMLElement).querySelector<HTMLElement>('.tabs');
+      expect(franja?.scrollLeft).toBe(150);
+    } finally {
+      HTMLElement.prototype.getBoundingClientRect = original;
+    }
+  });
+
   it('con enlace se pintan como rutas y marcan la página actual', () => {
     const fixture = montar(
       [

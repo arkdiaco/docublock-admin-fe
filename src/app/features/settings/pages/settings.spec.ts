@@ -131,6 +131,18 @@ describe('Configuración: pestaña Avisos', () => {
     expect(texto).not.toMatch(LLAVE_CRUDA);
   });
 
+  it('lo recomendado dice la unidad', async () => {
+    const { fixture, root } = await montar(VER);
+    await abrir(fixture, root, 0);
+    expect(document.querySelector('dba-setting-detail')?.textContent).toContain('De 70 % a 95 %');
+    document.querySelector<HTMLButtonElement>('.head__close')?.click();
+    await asentar(fixture);
+    await abrir(fixture, root, 1);
+    expect(document.querySelector('dba-setting-detail')?.textContent).toContain(
+      'De 1 día a 30 días',
+    );
+  });
+
   it('sin permiso de cambio solo se puede leer', async () => {
     const { fixture, root } = await montar(VER);
     await abrir(fixture, root, 1);
@@ -391,7 +403,7 @@ describe('Configuración: pestaña Validación', () => {
     expect(aviso).toContain('Cambia la validación de identidad de todas las organizaciones');
     await escribir(fixture, 0, '60');
     expect(document.querySelector('dba-setting-edit')?.textContent).toContain(
-      'fuera de lo recomendado',
+      'fuera de lo recomendado (de 80 % a 95 %)',
     );
   });
 });
@@ -496,8 +508,8 @@ describe('Configuración: textos', () => {
     const { fixture, root } = await montarTextos(VER);
     await abrir(fixture, root, 1);
     const modal = document.querySelector('dba-setting-detail');
-    const lineas = modal?.querySelector<HTMLElement>('dd.item__lines');
-    expect(lineas?.textContent?.trim()).toBe('Uno\nDos');
+    const lineas = [...(modal?.querySelector('dd')?.querySelectorAll('.item__line') ?? [])];
+    expect(lineas.map((linea) => linea.textContent?.trim())).toEqual(['Uno', 'Dos']);
     expect(modal?.textContent).toContain('De 3 a 40 caracteres por línea, hasta 3 líneas');
     expect(modal?.textContent).toContain('los ya generados no cambian');
     expect(modal?.textContent).not.toMatch(LLAVE_CRUDA);

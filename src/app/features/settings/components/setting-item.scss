@@ -16,8 +16,12 @@
   overflow-wrap: anywhere;
 }
 
-.item dd.item__lines {
-  white-space: pre-line;
+.item__line {
+  display: block;
+}
+
+.item__line + .item__line {
+  margin-top: 4px;
 }
 
 .item__lead {

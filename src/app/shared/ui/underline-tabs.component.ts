@@ -1,8 +1,25 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  afterRenderEffect,
+  input,
+  output,
+  viewChild,
+} from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink, type Params } from '@angular/router';
 
 export type TabDot = 'warn' | 'danger';
+
+const revealActive = (strip: HTMLElement): void => {
+  const tab = strip.querySelector<HTMLElement>('.tab--on');
+  if (!tab) return;
+  const box = strip.getBoundingClientRect();
+  const { left, right } = tab.getBoundingClientRect();
+  if (left < box.left) strip.scrollLeft -= box.left - left;
+  else if (right > box.right) strip.scrollLeft += right - box.right;
+};
 
 export interface UnderlineTab {
   key: string;
@@ -18,7 +35,7 @@ export interface UnderlineTab {
   imports: [RouterLink, NgTemplateOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <nav class="tabs" [attr.aria-label]="label()">
+    <nav #strip class="tabs" [attr.aria-label]="label()">
       @for (tab of tabs(); track tab.key) {
         @if (tab.link) {
           <a
@@ -148,4 +165,14 @@ export class UnderlineTabsComponent {
   readonly active = input.required<string>();
   readonly label = input('');
   readonly picked = output<string>();
+
+  private readonly strip = viewChild.required<ElementRef<HTMLElement>>('strip');
+
+  constructor() {
+    afterRenderEffect(() => {
+      this.active();
+      this.tabs();
+      revealActive(this.strip().nativeElement);
+    });
+  }
 }
