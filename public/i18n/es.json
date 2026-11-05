@@ -252,7 +252,7 @@
     "stateDesc": {
       "active": "Contrato vigente, factura al día, al menos un administrador activo.",
       "trial": "Catorce días sin tarjeta. Anillo: aún no es un cliente.",
-      "warning": "Cuota al 90 % o factura vencida menos de 15 días.",
+      "warning": "Cuota cerca del límite o factura vencida menos de 15 días.",
       "suspended": "Acceso cortado; los datos se conservan 90 días.",
       "closed": "Cerrada a petición. Solo lectura para soporte y legal."
     },
@@ -284,7 +284,7 @@
     "errorTitle": "No se pudo cargar",
     "errorLead": "Inténtalo de nuevo.",
     "noPlan": "Sin plan",
-    "warning": "Documentos al 90 % o más",
+    "warning": "Documentos cerca del cupo",
     "filterAll": "Todas",
     "state": {
       "active": "Activa",
@@ -384,7 +384,7 @@
     "errorLead": "Revisa la conexión e inténtalo de nuevo.",
     "actions": "Requiere acción",
     "actionsEmpty": "Nada pendiente por ahora.",
-    "actionsLead": "Aquí aparecen las organizaciones con el cupo agotado o al 90 %, los tickets de soporte que pasaron su plazo, las suscripciones que vencen en 7 días y los documentos con incidencias.",
+    "actionsLead": "Aquí aparecen las organizaciones con el cupo agotado o cerca de agotarse, los tickets de soporte que pasaron su plazo, las suscripciones por vencer y los documentos con incidencias.",
     "action": {
       "quotaExhausted": "cupo de documentos agotado · {{used}} / {{limit}}",
       "quotaWarning": "cupo de documentos al {{pct}} % · {{used}} / {{limit}}",
@@ -613,6 +613,11 @@
       "retry_failed": "reintentó entregas de webhook fallidas",
       "key_revoke": "revocó una clave de integración",
       "endpoint_toggle": "cambió el estado de un destino de webhook"
+    },
+    "config": {
+      "change": "cambió un ajuste de la plataforma",
+      "reset": "volvió un ajuste a su valor predeterminado",
+      "restore": "restauró el valor anterior de un ajuste"
     }
   },
   "placeholder": {
@@ -5022,5 +5027,126 @@
     },
     "deliveries": "Entregas",
     "seeDeliveries": "Ver las entregas de esta organización"
+  },
+  "cfg": {
+    "lead": "Valores que se cambian sin desplegar y aplican a toda la plataforma.",
+    "refresh": "Actualizar",
+    "loading": "Cargando los ajustes",
+    "errorTitle": "No se pudieron cargar los ajustes",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "unknownAdmin": "Persona ya sin acceso",
+    "range": "De {{min}} a {{max}}",
+    "reasonLabel": "Motivo · queda en la bitácora",
+    "reasonPlaceholder": "Por qué se hace este cambio",
+    "tab": {
+      "alerts": "Avisos",
+      "history": "Historial"
+    },
+    "col": {
+      "setting": "Ajuste",
+      "value": "Valor",
+      "source": "Origen",
+      "last": "Último cambio"
+    },
+    "source": {
+      "default": "Predeterminado",
+      "changed": "Cambiado"
+    },
+    "unit": {
+      "percent": "{{value}} %",
+      "percentOne": "{{value}} %",
+      "days": "{{value}} días",
+      "daysOne": "{{value}} día",
+      "hours": "{{value}} horas",
+      "hoursOne": "{{value}} hora"
+    },
+    "editLabel": {
+      "percent": "Porcentaje",
+      "days": "Días",
+      "hours": "Horas"
+    },
+    "item": {
+      "alerts": {
+        "quota_warning_percent": {
+          "label": "Aviso de cupo",
+          "audience": "Se ve en la consola",
+          "hint": "Porcentaje de documentos usados desde el que una organización aparece con aviso en el Panel y en Organizaciones."
+        },
+        "expiring_days": {
+          "label": "Suscripciones por vencer",
+          "audience": "Se ve en la consola",
+          "hint": "Días de anticipación con los que una suscripción sin renovación automática aparece por vencer en el Panel."
+        },
+        "stuck_document_hours": {
+          "label": "Documentos atascados",
+          "audience": "Lo ven los clientes",
+          "hint": "Horas sin firma desde las que un documento cuenta como atascado en los reportes de cada organización."
+        },
+        "plan_reminder_days": {
+          "label": "Recordatorios de vencimiento",
+          "audience": "Llega a los clientes",
+          "hint": "Días antes del vencimiento en los que se envía un correo a las organizaciones sin cobro automático. El envío corre cada día a las 8:00. Si un hito ya se envió para un vencimiento, no se repite."
+        }
+      }
+    },
+    "detail": {
+      "change": "Cambiar valor",
+      "reset": "Volver al predeterminado",
+      "value": "Valor actual",
+      "default": "Predeterminado",
+      "recommended": "Recomendado",
+      "lastChange": "Último cambio",
+      "reason": "Motivo"
+    },
+    "edit": {
+      "confirm": "Guardar cambio",
+      "done": "Ajuste guardado",
+      "delay": "Se aplica en hasta 60 segundos.",
+      "defaultHint": "Predeterminado: {{value}}.",
+      "listHint": " Separa los valores con comas.",
+      "invalid": "Escribe un número entero de {{min}} a {{max}}.",
+      "invalidList": "Escribe hasta {{maxItems}} números enteros distintos, de {{min}} a {{max}}, separados por comas.",
+      "outOfRecommended": "Este valor está fuera de lo recomendado (de {{min}} a {{max}}). Puedes guardarlo."
+    },
+    "reset": {
+      "title": "Volver al predeterminado",
+      "confirm": "Volver al predeterminado",
+      "done": "El ajuste volvió a su valor predeterminado",
+      "summary": "Pasa de {{from}} a {{to}}."
+    },
+    "action": {
+      "change": "Cambio",
+      "reset": "Volvió al predeterminado",
+      "restore": "Restauración"
+    },
+    "error": {
+      "changed": "Otra persona cambió este ajuste. Revisa el valor actual.",
+      "range": "Este valor no puede funcionar en este ajuste.",
+      "gone": "Este cambio ya no existe.",
+      "forbidden": "No tienes permiso para cambiar ajustes.",
+      "failed": "No se pudo guardar. Inténtalo de nuevo."
+    },
+    "history": {
+      "lead": "Quién cambió cada ajuste, cuándo y por qué.",
+      "loading": "Cargando el historial",
+      "errorTitle": "No se pudo cargar el historial",
+      "empty": "Todavía no se ha cambiado ningún ajuste.",
+      "emptyFiltered": "Este ajuste no se ha cambiado.",
+      "all": "Todos",
+      "defaultMark": "(predeterminado)",
+      "before": "Antes: {{value}}",
+      "restore": "Restaurar",
+      "restoreTitle": "Restaurar el valor anterior",
+      "restoreConfirm": "Restaurar",
+      "restoreSummary": "El ajuste vuelve a {{value}}.",
+      "restoreDone": "Valor restaurado",
+      "col": {
+        "at": "Fecha",
+        "setting": "Ajuste",
+        "change": "Cambio",
+        "who": "Quién",
+        "reason": "Motivo"
+      }
+    }
   }
 }

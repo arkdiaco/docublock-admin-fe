@@ -1,0 +1,28 @@
+.item {
+  display: grid;
+  grid-template-columns: minmax(120px, auto) minmax(0, 1fr);
+  gap: 8px 16px;
+  margin: 0;
+  font-size: var(--dba-text-label);
+}
+
+.item dt {
+  color: var(--dba-text-muted);
+}
+
+.item dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.item__lead {
+  margin: 0 0 16px;
+  font-size: var(--dba-text-body);
+  line-height: 1.45;
+  color: var(--dba-ink);
+}
+
+.item__actions {
+  margin-top: 18px;
+}

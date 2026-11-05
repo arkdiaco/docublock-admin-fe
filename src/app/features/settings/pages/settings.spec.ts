@@ -1,0 +1,336 @@
+import type { HttpTestingController } from '@angular/common/http/testing';
+import { TestBed, type ComponentFixture } from '@angular/core/testing';
+import { conPermisos, configurar } from '../../catalogs/pages/catalogs-test-kit';
+import { parseSettingDraft, valueLabelOf } from '../data/settings-view';
+import type { SettingChange, SettingItem } from '../data/settings.models';
+import { SettingsHistoryComponent } from './settings-history.component';
+import { SettingsComponent } from './settings.component';
+
+const LLAVE_CRUDA = /\b(cfg|nav|common)\.[a-zA-Z]/;
+const BASE = '/platform/config';
+const VER = ['platform:platform'];
+const ADMINISTRAR = ['platform:platform', 'platform:platform:manage'];
+
+const CUPO: SettingItem = {
+  key: 'alerts.quota_warning_percent',
+  group: 'alerts',
+  kind: 'integer',
+  unit: 'percent',
+  value: 90,
+  defaultValue: 90,
+  isDefault: true,
+  technical: { min: 1, max: 100 },
+  recommended: { min: 70, max: 95 },
+  maxItems: null,
+  version: 0,
+  lastChange: null,
+};
+
+const HITOS: SettingItem = {
+  key: 'alerts.plan_reminder_days',
+  group: 'alerts',
+  kind: 'integer_list',
+  unit: 'days',
+  value: [7, 1],
+  defaultValue: [5, 1],
+  isDefault: false,
+  technical: { min: 1, max: 90 },
+  recommended: { min: 1, max: 30 },
+  maxItems: 5,
+  version: 3,
+  lastChange: { at: '2026-11-05T10:00:00.000Z', adminName: 'Marta Vidal', reason: 'Más margen' },
+};
+
+const CAMBIO: SettingChange = {
+  id: 'c1',
+  key: HITOS.key,
+  version: 3,
+  action: 'change',
+  from: [5, 1],
+  fromDefault: true,
+  to: [7, 1],
+  toDefault: false,
+  adminName: 'Marta Vidal',
+  reason: 'Más margen',
+  at: '2026-11-05T10:00:00.000Z',
+};
+
+const asentar = async (fixture: ComponentFixture<unknown>): Promise<void> => {
+  await fixture.whenStable();
+  fixture.detectChanges();
+};
+
+const listar = (http: HttpTestingController, items: SettingItem[] = [CUPO, HITOS]): void => {
+  http.expectOne((req) => req.url.endsWith(BASE) && req.method === 'GET').flush({ items });
+};
+
+const botonCon = (texto: string): HTMLButtonElement | undefined =>
+  [...document.querySelectorAll<HTMLButtonElement>('button')].find((b) =>
+    b.textContent?.trim().startsWith(texto),
+  );
+
+const montar = async (permisos: string[]) => {
+  const http = await configurar();
+  conPermisos(permisos);
+  const fixture = TestBed.createComponent(SettingsComponent);
+  listar(http);
+  await asentar(fixture);
+  return { fixture, http, root: fixture.nativeElement as HTMLElement };
+};
+
+const abrir = async (fixture: ComponentFixture<unknown>, root: HTMLElement, indice = 0) => {
+  root.querySelectorAll<HTMLButtonElement>('.bl-row')[indice].click();
+  await asentar(fixture);
+};
+
+const escribir = async (fixture: ComponentFixture<unknown>, indice: number, valor: string) => {
+  const campo = document.querySelectorAll<HTMLInputElement>('dba-setting-edit input')[indice];
+  campo.value = valor;
+  campo.dispatchEvent(new Event('input'));
+  await asentar(fixture);
+};
+
+describe('Configuración: valores', () => {
+  it('valida el entero contra el rango técnico', () => {
+    expect(parseSettingDraft(CUPO, '80')).toBe(80);
+    expect(parseSettingDraft(CUPO, '101')).toBeNull();
+    expect(parseSettingDraft(CUPO, '0')).toBeNull();
+    expect(parseSettingDraft(CUPO, '8.5')).toBeNull();
+    expect(parseSettingDraft(CUPO, '')).toBeNull();
+  });
+
+  it('valida la lista y la ordena de mayor a menor', () => {
+    expect(parseSettingDraft(HITOS, '1, 3 7')).toEqual([7, 3, 1]);
+    expect(parseSettingDraft(HITOS, '1, 1')).toBeNull();
+    expect(parseSettingDraft(HITOS, '1,2,3,4,5,6')).toBeNull();
+    expect(parseSettingDraft(HITOS, '91')).toBeNull();
+    expect(parseSettingDraft(HITOS, '')).toBeNull();
+  });
+
+  it('usa el singular solo con un único valor en 1', () => {
+    expect(valueLabelOf('days', 1).key).toBe('cfg.unit.daysOne');
+    expect(valueLabelOf('days', [1]).key).toBe('cfg.unit.daysOne');
+    expect(valueLabelOf('days', [5, 1]).key).toBe('cfg.unit.days');
+  });
+});
+
+describe('Configuración: pestaña Avisos', () => {
+  it('muestra valor, origen y último cambio sin llaves crudas', async () => {
+    const { root } = await montar(VER);
+    const texto = root.textContent ?? '';
+    expect(texto).toContain('Aviso de cupo');
+    expect(texto).toContain('90 %');
+    expect(texto).toContain('7, 1 días');
+    expect(texto).toContain('Predeterminado');
+    expect(texto).toContain('Cambiado');
+    expect(texto).toContain('Marta Vidal');
+    expect(texto).not.toMatch(LLAVE_CRUDA);
+  });
+
+  it('sin permiso de cambio solo se puede leer', async () => {
+    const { fixture, root } = await montar(VER);
+    await abrir(fixture, root, 1);
+    const modal = document.querySelector('dba-setting-detail')?.textContent ?? '';
+    expect(modal).toContain('Más margen');
+    expect(modal).not.toMatch(LLAVE_CRUDA);
+    expect(botonCon('Cambiar valor')).toBeUndefined();
+    expect(botonCon('Volver al predeterminado')).toBeUndefined();
+  });
+
+  it('guarda con motivo y versión esperada', async () => {
+    const { fixture, http, root } = await montar(ADMINISTRAR);
+    await abrir(fixture, root);
+    botonCon('Cambiar valor')?.click();
+    await asentar(fixture);
+    expect(botonCon('Guardar cambio')?.disabled).toBe(true);
+
+    await escribir(fixture, 0, '80');
+    expect(botonCon('Guardar cambio')?.disabled).toBe(true);
+    await escribir(fixture, 1, 'Aviso más temprano');
+    botonCon('Guardar cambio')?.click();
+    await asentar(fixture);
+
+    const put = http.expectOne((req) => req.method === 'PUT');
+    expect(put.request.url).toContain(`${BASE}/${CUPO.key}`);
+    expect(put.request.body).toEqual({
+      value: 80,
+      reason: 'Aviso más temprano',
+      expectedVersion: 0,
+    });
+    put.flush({ ...CUPO, value: 80, version: 1, isDefault: false });
+    await asentar(fixture);
+    listar(http);
+    await asentar(fixture);
+    expect(document.querySelector('dba-setting-edit')).toBeNull();
+  });
+
+  it('avisa fuera de lo recomendado y deja continuar; no deja guardar lo imposible', async () => {
+    const { fixture, root } = await montar(ADMINISTRAR);
+    await abrir(fixture, root);
+    botonCon('Cambiar valor')?.click();
+    await asentar(fixture);
+
+    await escribir(fixture, 1, 'Prueba');
+    await escribir(fixture, 0, '50');
+    const modal = () => document.querySelector('dba-setting-edit')?.textContent ?? '';
+    expect(modal()).toContain('fuera de lo recomendado');
+    expect(botonCon('Guardar cambio')?.disabled).toBe(false);
+
+    await escribir(fixture, 0, '500');
+    expect(modal()).toContain('de 1 a 100');
+    expect(botonCon('Guardar cambio')?.disabled).toBe(true);
+    expect(modal()).not.toMatch(LLAVE_CRUDA);
+  });
+
+  it('no envía nada si el valor no cambió', async () => {
+    const { fixture, http, root } = await montar(ADMINISTRAR);
+    await abrir(fixture, root);
+    botonCon('Cambiar valor')?.click();
+    await asentar(fixture);
+    await escribir(fixture, 1, 'Sin cambio');
+    expect(botonCon('Guardar cambio')?.disabled).toBe(true);
+    http.expectNone((req) => req.method === 'PUT');
+  });
+
+  it('solo ofrece volver al predeterminado si el ajuste cambió', async () => {
+    const { fixture, http, root } = await montar(ADMINISTRAR);
+    await abrir(fixture, root, 0);
+    expect(botonCon('Volver al predeterminado')).toBeUndefined();
+    document.querySelector<HTMLButtonElement>('.head__close')?.click();
+    await asentar(fixture);
+
+    await abrir(fixture, root, 1);
+    botonCon('Volver al predeterminado')?.click();
+    await asentar(fixture);
+    const campo = document.querySelector<HTMLInputElement>('dba-setting-action-confirm input');
+    if (!campo) throw new Error('falta el motivo');
+    campo.value = 'Volver';
+    campo.dispatchEvent(new Event('input'));
+    await asentar(fixture);
+    expect(document.querySelector('dba-setting-action-confirm')?.textContent).toContain(
+      '7, 1 días a 5, 1 días',
+    );
+    botonCon('Volver al predeterminado');
+    [
+      ...document.querySelectorAll<HTMLButtonElement>('dba-setting-action-confirm .foot__go'),
+    ][0].click();
+    await asentar(fixture);
+    const post = http.expectOne((req) => req.url.endsWith(`${BASE}/${HITOS.key}/reset`));
+    expect(post.request.body).toEqual({ reason: 'Volver', expectedVersion: 3 });
+    post.flush(HITOS);
+    await asentar(fixture);
+    listar(http);
+    await asentar(fixture);
+  });
+
+  it('si otra persona cambió el ajuste lo dice y recarga', async () => {
+    const { fixture, http, root } = await montar(ADMINISTRAR);
+    await abrir(fixture, root);
+    botonCon('Cambiar valor')?.click();
+    await asentar(fixture);
+    await escribir(fixture, 0, '80');
+    await escribir(fixture, 1, 'Prueba');
+    botonCon('Guardar cambio')?.click();
+    await asentar(fixture);
+    http
+      .expectOne((req) => req.method === 'PUT')
+      .flush({ code: 'CONFIG_EN_CAMBIO' }, { status: 409, statusText: 'Conflict' });
+    await asentar(fixture);
+    listar(http, [{ ...CUPO, value: 85, version: 1, isDefault: false }]);
+    await asentar(fixture);
+    expect(document.querySelector('dba-setting-detail')?.textContent).toContain('85 %');
+  });
+
+  it('un error de carga permite reintentar', async () => {
+    const http = await configurar();
+    conPermisos(VER);
+    const fixture = TestBed.createComponent(SettingsComponent);
+    http.expectOne((req) => req.url.endsWith(BASE)).flush({}, { status: 500, statusText: 'Error' });
+    await asentar(fixture);
+    const root = fixture.nativeElement as HTMLElement;
+    expect(root.textContent).toContain('No se pudieron cargar los ajustes');
+    expect(root.textContent).not.toMatch(LLAVE_CRUDA);
+  });
+});
+
+describe('Configuración: pestaña Historial', () => {
+  const atender = (http: HttpTestingController, items: SettingChange[], total = items.length) => {
+    listar(http);
+    http
+      .expectOne((req) => req.url.endsWith(`${BASE}/history`))
+      .flush({ total, page: 1, limit: 20, items });
+  };
+
+  const montarHistorial = async (
+    permisos: string[],
+    items: SettingChange[] = [CAMBIO],
+    total?: number,
+  ) => {
+    const http = await configurar();
+    conPermisos(permisos);
+    const fixture = TestBed.createComponent(SettingsHistoryComponent);
+    atender(http, items, total);
+    await asentar(fixture);
+    return { fixture, http, root: fixture.nativeElement as HTMLElement };
+  };
+
+  it('muestra el cambio, quién y por qué, con el predeterminado marcado', async () => {
+    const { root } = await montarHistorial(VER);
+    const texto = root.textContent ?? '';
+    expect(texto).toContain('7, 1 días');
+    expect(texto).toContain('Antes: 5, 1 días (predeterminado)');
+    expect(texto).toContain('Marta Vidal');
+    expect(texto).toContain('Más margen');
+    expect(texto).not.toMatch(LLAVE_CRUDA);
+  });
+
+  it('sin permiso de cambio no ofrece restaurar', async () => {
+    await montarHistorial(VER);
+    expect(botonCon('Restaurar')).toBeUndefined();
+  });
+
+  it('no ofrece restaurar si el valor anterior es el que ya rige', async () => {
+    const igual = { ...CAMBIO, from: [7, 1], fromDefault: false };
+    await montarHistorial(ADMINISTRAR, [igual]);
+    expect(botonCon('Restaurar')).toBeUndefined();
+  });
+
+  it('restaura con motivo y la versión vigente', async () => {
+    const { fixture, http } = await montarHistorial(ADMINISTRAR);
+    botonCon('Restaurar')?.click();
+    await asentar(fixture);
+    expect(document.querySelector('dba-setting-action-confirm')?.textContent).toContain(
+      '5, 1 días (predeterminado)',
+    );
+    const campo = document.querySelector<HTMLInputElement>('dba-setting-action-confirm input');
+    if (!campo) throw new Error('falta el motivo');
+    campo.value = 'Deshacer';
+    campo.dispatchEvent(new Event('input'));
+    await asentar(fixture);
+    document.querySelector<HTMLButtonElement>('dba-setting-action-confirm .foot__go')?.click();
+    await asentar(fixture);
+    const post = http.expectOne((req) => req.url.endsWith(`${BASE}/history/c1/restore`));
+    expect(post.request.body).toEqual({ reason: 'Deshacer', expectedVersion: 3 });
+    post.flush(HITOS);
+    await asentar(fixture);
+    atender(http, []);
+    await asentar(fixture);
+  });
+
+  it('filtra por ajuste y pagina', async () => {
+    const { fixture, http, root } = await montarHistorial(VER, [CAMBIO], 45);
+    expect(root.querySelector('db-pager')).not.toBeNull();
+    [...root.querySelectorAll<HTMLButtonElement>('db-filter-pills button')]
+      .find((b) => b.textContent?.includes('Aviso de cupo'))
+      ?.click();
+    await asentar(fixture);
+    listar(http);
+    const pedido = http.expectOne((req) => req.url.endsWith(`${BASE}/history`));
+    expect(pedido.request.params.get('key')).toBe(CUPO.key);
+    expect(pedido.request.params.get('page')).toBe('1');
+    pedido.flush({ total: 0, page: 1, limit: 20, items: [] });
+    await asentar(fixture);
+    await asentar(fixture);
+    expect(root.textContent).toContain('Este ajuste no se ha cambiado.');
+  });
+});

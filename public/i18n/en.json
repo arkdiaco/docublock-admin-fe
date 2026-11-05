@@ -252,7 +252,7 @@
     "stateDesc": {
       "active": "Contract in force, invoice up to date, at least one active administrator.",
       "trial": "Fourteen days without a card. Ring: not a customer yet.",
-      "warning": "Quota at 90 % or invoice overdue less than 15 days.",
+      "warning": "Quota close to the limit or invoice overdue less than 15 days.",
       "suspended": "Access cut; data kept for 90 days.",
       "closed": "Closed on request. Read-only for support and legal."
     },
@@ -284,7 +284,7 @@
     "errorTitle": "Couldn't load",
     "errorLead": "Try again.",
     "noPlan": "No plan",
-    "warning": "Documents at 90% or more",
+    "warning": "Documents close to quota",
     "filterAll": "All",
     "state": {
       "active": "Active",
@@ -384,7 +384,7 @@
     "errorLead": "Check your connection and try again.",
     "actions": "Needs action",
     "actionsEmpty": "Nothing pending for now.",
-    "actionsLead": "Organizations with their quota used up or at 90 %, support tickets past their target, subscriptions expiring within 7 days and documents with issues show up here.",
+    "actionsLead": "Organizations with their quota used up or nearly used up, support tickets past their target, expiring subscriptions and documents with issues show up here.",
     "action": {
       "quotaExhausted": "document quota exhausted · {{used}} / {{limit}}",
       "quotaWarning": "document quota at {{pct}} % · {{used}} / {{limit}}",
@@ -613,6 +613,11 @@
       "retry_failed": "retried failed webhook deliveries",
       "key_revoke": "revoked an integration key",
       "endpoint_toggle": "changed the status of a webhook destination"
+    },
+    "config": {
+      "change": "changed a platform setting",
+      "reset": "put a setting back to its default",
+      "restore": "restored a setting's previous value"
     }
   },
   "placeholder": {
@@ -5022,5 +5027,126 @@
     },
     "deliveries": "Deliveries",
     "seeDeliveries": "See this organization's deliveries"
+  },
+  "cfg": {
+    "lead": "Values that change without a deployment and apply to the whole platform.",
+    "refresh": "Refresh",
+    "loading": "Loading settings",
+    "errorTitle": "Settings could not be loaded",
+    "errorLead": "Check the connection and try again.",
+    "unknownAdmin": "Person no longer has access",
+    "range": "From {{min}} to {{max}}",
+    "reasonLabel": "Reason · goes in the log",
+    "reasonPlaceholder": "Why this change is being made",
+    "tab": {
+      "alerts": "Alerts",
+      "history": "History"
+    },
+    "col": {
+      "setting": "Setting",
+      "value": "Value",
+      "source": "Source",
+      "last": "Last change"
+    },
+    "source": {
+      "default": "Default",
+      "changed": "Changed"
+    },
+    "unit": {
+      "percent": "{{value}}%",
+      "percentOne": "{{value}}%",
+      "days": "{{value}} days",
+      "daysOne": "{{value}} day",
+      "hours": "{{value}} hours",
+      "hoursOne": "{{value}} hour"
+    },
+    "editLabel": {
+      "percent": "Percentage",
+      "days": "Days",
+      "hours": "Hours"
+    },
+    "item": {
+      "alerts": {
+        "quota_warning_percent": {
+          "label": "Quota alert",
+          "audience": "Shown in the console",
+          "hint": "Share of documents used from which an organization shows an alert in the Dashboard and in Organizations."
+        },
+        "expiring_days": {
+          "label": "Expiring subscriptions",
+          "audience": "Shown in the console",
+          "hint": "Days ahead at which a subscription without automatic renewal shows as expiring in the Dashboard."
+        },
+        "stuck_document_hours": {
+          "label": "Stuck documents",
+          "audience": "Seen by customers",
+          "hint": "Hours without a signature from which a document counts as stuck in each organization's reports."
+        },
+        "plan_reminder_days": {
+          "label": "Expiry reminders",
+          "audience": "Reaches customers",
+          "hint": "Days before expiry on which an email goes to organizations without automatic billing. The send runs daily at 8:00. A milestone already sent for an expiry date is not repeated."
+        }
+      }
+    },
+    "detail": {
+      "change": "Change value",
+      "reset": "Back to default",
+      "value": "Current value",
+      "default": "Default",
+      "recommended": "Recommended",
+      "lastChange": "Last change",
+      "reason": "Reason"
+    },
+    "edit": {
+      "confirm": "Save change",
+      "done": "Setting saved",
+      "delay": "Takes effect within 60 seconds.",
+      "defaultHint": "Default: {{value}}.",
+      "listHint": " Separate values with commas.",
+      "invalid": "Enter a whole number from {{min}} to {{max}}.",
+      "invalidList": "Enter up to {{maxItems}} different whole numbers, from {{min}} to {{max}}, separated by commas.",
+      "outOfRecommended": "This value is outside the recommended range ({{min}} to {{max}}). You can still save it."
+    },
+    "reset": {
+      "title": "Back to default",
+      "confirm": "Back to default",
+      "done": "The setting is back to its default value",
+      "summary": "Goes from {{from}} to {{to}}."
+    },
+    "action": {
+      "change": "Change",
+      "reset": "Back to default",
+      "restore": "Restore"
+    },
+    "error": {
+      "changed": "Someone else changed this setting. Check the current value.",
+      "range": "This value cannot work for this setting.",
+      "gone": "This change no longer exists.",
+      "forbidden": "You do not have permission to change settings.",
+      "failed": "It could not be saved. Try again."
+    },
+    "history": {
+      "lead": "Who changed each setting, when and why.",
+      "loading": "Loading history",
+      "errorTitle": "History could not be loaded",
+      "empty": "No setting has been changed yet.",
+      "emptyFiltered": "This setting has not been changed.",
+      "all": "All",
+      "defaultMark": "(default)",
+      "before": "Before: {{value}}",
+      "restore": "Restore",
+      "restoreTitle": "Restore the previous value",
+      "restoreConfirm": "Restore",
+      "restoreSummary": "The setting goes back to {{value}}.",
+      "restoreDone": "Value restored",
+      "col": {
+        "at": "Date",
+        "setting": "Setting",
+        "change": "Change",
+        "who": "Who",
+        "reason": "Reason"
+      }
+    }
   }
 }

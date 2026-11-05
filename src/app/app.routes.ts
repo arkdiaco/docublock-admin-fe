@@ -17,38 +17,50 @@ import {
   type ConsoleSection,
 } from './core/layout/console-nav';
 
-const placeholder = () => import('./features/placeholder/pages/placeholder.component').then((m) => m.PlaceholderComponent);
+const placeholder = () =>
+  import('./features/placeholder/pages/placeholder.component').then((m) => m.PlaceholderComponent);
 
 const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
   organizations: [
     {
       path: '',
-      loadComponent: () => import('./features/organizations/pages/organizations.component').then((m) => m.OrganizationsComponent),
+      loadComponent: () =>
+        import('./features/organizations/pages/organizations.component').then(
+          (m) => m.OrganizationsComponent,
+        ),
     },
     {
       path: ':id',
-      loadComponent: () => import('./features/organizations/pages/organization-detail.component').then((m) => m.OrganizationDetailComponent),
+      loadComponent: () =>
+        import('./features/organizations/pages/organization-detail.component').then(
+          (m) => m.OrganizationDetailComponent,
+        ),
     },
   ],
   users: [
     {
       path: '',
-      loadComponent: () => import('./features/users/pages/users.component').then((m) => m.UsersComponent),
+      loadComponent: () =>
+        import('./features/users/pages/users.component').then((m) => m.UsersComponent),
     },
     {
       path: ':id',
-      loadComponent: () => import('./features/users/pages/user-detail.component').then((m) => m.UserDetailComponent),
+      loadComponent: () =>
+        import('./features/users/pages/user-detail.component').then((m) => m.UserDetailComponent),
     },
   ],
   signers: [
     {
       path: '',
-      loadComponent: () => import('./features/signers/pages/signers.component').then((m) => m.SignersComponent),
+      loadComponent: () =>
+        import('./features/signers/pages/signers.component').then((m) => m.SignersComponent),
     },
     {
       path: ':id',
       loadComponent: () =>
-        import('./features/signers/pages/signer-detail.component').then((m) => m.SignerDetailComponent),
+        import('./features/signers/pages/signer-detail.component').then(
+          (m) => m.SignerDetailComponent,
+        ),
     },
   ],
   legalEntities: [
@@ -70,225 +82,328 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
   documents: [
     {
       path: '',
-      loadComponent: () => import('./features/documents/pages/documents.component').then((m) => m.DocumentsComponent),
+      loadComponent: () =>
+        import('./features/documents/pages/documents.component').then((m) => m.DocumentsComponent),
     },
     {
       path: 'regenerar',
       loadComponent: () =>
-        import('./features/documents/pages/document-regenerate.component').then((m) => m.DocumentRegenerateComponent),
+        import('./features/documents/pages/document-regenerate.component').then(
+          (m) => m.DocumentRegenerateComponent,
+        ),
     },
     {
       path: ':id',
       loadComponent: () =>
-        import('./features/documents/pages/document-detail.component').then((m) => m.DocumentDetailComponent),
+        import('./features/documents/pages/document-detail.component').then(
+          (m) => m.DocumentDetailComponent,
+        ),
     },
   ],
   countries: [
     {
       path: '',
-      loadComponent: () => import('./features/catalogs/pages/countries.component').then((m) => m.CountriesComponent),
+      loadComponent: () =>
+        import('./features/catalogs/pages/countries.component').then((m) => m.CountriesComponent),
     },
     {
       path: ':id',
       loadComponent: () =>
-        import('./features/catalogs/pages/country-detail.component').then((m) => m.CountryDetailComponent),
+        import('./features/catalogs/pages/country-detail.component').then(
+          (m) => m.CountryDetailComponent,
+        ),
     },
   ],
   cities: [
     {
       path: '',
-      loadComponent: () => import('./features/catalogs/pages/cities.component').then((m) => m.CitiesComponent),
+      loadComponent: () =>
+        import('./features/catalogs/pages/cities.component').then((m) => m.CitiesComponent),
     },
   ],
   kindPersons: [
     {
       path: '',
-      loadComponent: () => import('./features/catalogs/pages/kind-persons.component').then((m) => m.KindPersonsComponent),
+      loadComponent: () =>
+        import('./features/catalogs/pages/kind-persons.component').then(
+          (m) => m.KindPersonsComponent,
+        ),
     },
   ],
   identificationTypes: [
     {
       path: '',
       loadComponent: () =>
-        import('./features/catalogs/pages/identification-types.component').then((m) => m.IdentificationTypesComponent),
+        import('./features/catalogs/pages/identification-types.component').then(
+          (m) => m.IdentificationTypesComponent,
+        ),
     },
   ],
   signerFields: [
     {
       path: '',
-      loadComponent: () => import('./features/catalogs/pages/signer-fields.component').then((m) => m.SignerFieldsComponent),
+      loadComponent: () =>
+        import('./features/catalogs/pages/signer-fields.component').then(
+          (m) => m.SignerFieldsComponent,
+        ),
     },
   ],
   propertyCatalog: [
     {
       path: '',
       loadComponent: () =>
-        import('./features/catalogs/pages/property-catalog.component').then((m) => m.PropertyCatalogComponent),
+        import('./features/catalogs/pages/property-catalog.component').then(
+          (m) => m.PropertyCatalogComponent,
+        ),
     },
   ],
   policies: [
     {
       path: '',
       loadComponent: () =>
-        import('./features/catalogs/pages/consent-policies.component').then((m) => m.ConsentPoliciesComponent),
+        import('./features/catalogs/pages/consent-policies.component').then(
+          (m) => m.ConsentPoliciesComponent,
+        ),
     },
   ],
   communications: [
     {
       path: '',
       loadComponent: () =>
-        import('./features/communications/pages/communications.component').then((m) => m.CommunicationsComponent),
+        import('./features/communications/pages/communications.component').then(
+          (m) => m.CommunicationsComponent,
+        ),
     },
     {
       path: ':id',
       loadComponent: () =>
-        import('./features/communications/pages/campaign-detail.component').then((m) => m.CampaignDetailComponent),
+        import('./features/communications/pages/campaign-detail.component').then(
+          (m) => m.CampaignDetailComponent,
+        ),
     },
   ],
   support: [
     {
       path: '',
-      loadComponent: () => import('./features/support/pages/tickets.component').then((m) => m.TicketsComponent),
+      loadComponent: () =>
+        import('./features/support/pages/tickets.component').then((m) => m.TicketsComponent),
     },
     {
       path: 'politicas',
       loadComponent: () =>
-        import('./features/support/pages/sla-policies.component').then((m) => m.SlaPoliciesComponent),
+        import('./features/support/pages/sla-policies.component').then(
+          (m) => m.SlaPoliciesComponent,
+        ),
     },
     {
       path: ':id',
       loadComponent: () =>
-        import('./features/support/pages/ticket-detail.component').then((m) => m.TicketDetailComponent),
+        import('./features/support/pages/ticket-detail.component').then(
+          (m) => m.TicketDetailComponent,
+        ),
     },
   ],
   billing: [
     {
       path: '',
-      loadComponent: () => import('./features/billing/pages/transactions.component').then((m) => m.TransactionsComponent),
+      loadComponent: () =>
+        import('./features/billing/pages/transactions.component').then(
+          (m) => m.TransactionsComponent,
+        ),
     },
     {
       path: 'facturas',
-      loadComponent: () => import('./features/billing/pages/invoices.component').then((m) => m.InvoicesComponent),
+      loadComponent: () =>
+        import('./features/billing/pages/invoices.component').then((m) => m.InvoicesComponent),
     },
     {
       path: 'facturas/:id',
       loadComponent: () =>
-        import('./features/billing/pages/invoice-detail.component').then((m) => m.InvoiceDetailComponent),
+        import('./features/billing/pages/invoice-detail.component').then(
+          (m) => m.InvoiceDetailComponent,
+        ),
     },
     {
       path: 'ingresos',
-      loadComponent: () => import('./features/billing/pages/revenue.component').then((m) => m.RevenueComponent),
+      loadComponent: () =>
+        import('./features/billing/pages/revenue.component').then((m) => m.RevenueComponent),
     },
     {
       path: ':id',
       loadComponent: () =>
-        import('./features/billing/pages/transaction-detail.component').then((m) => m.TransactionDetailComponent),
+        import('./features/billing/pages/transaction-detail.component').then(
+          (m) => m.TransactionDetailComponent,
+        ),
     },
   ],
   plans: [
     {
       path: '',
-      loadComponent: () => import('./features/plans/pages/plans.component').then((m) => m.PlansComponent),
+      loadComponent: () =>
+        import('./features/plans/pages/plans.component').then((m) => m.PlansComponent),
     },
     {
       path: ':code',
-      loadComponent: () => import('./features/plans/pages/plan-detail.component').then((m) => m.PlanDetailComponent),
+      loadComponent: () =>
+        import('./features/plans/pages/plan-detail.component').then((m) => m.PlanDetailComponent),
     },
   ],
   subscriptions: [
     {
       path: '',
-      loadComponent: () => import('./features/subscriptions/pages/subscriptions.component').then((m) => m.SubscriptionsComponent),
+      loadComponent: () =>
+        import('./features/subscriptions/pages/subscriptions.component').then(
+          (m) => m.SubscriptionsComponent,
+        ),
     },
   ],
   marketplace: [
     {
       path: '',
-      loadComponent: () => import('./features/marketplace/pages/marketplace.component').then((m) => m.MarketplaceComponent),
+      loadComponent: () =>
+        import('./features/marketplace/pages/marketplace.component').then(
+          (m) => m.MarketplaceComponent,
+        ),
     },
     {
       path: ':code',
       loadComponent: () =>
-        import('./features/marketplace/pages/product-detail.component').then((m) => m.ProductDetailComponent),
+        import('./features/marketplace/pages/product-detail.component').then(
+          (m) => m.ProductDetailComponent,
+        ),
     },
   ],
   promotions: [
     {
       path: '',
-      loadComponent: () => import('./features/promotions/pages/promotions.component').then((m) => m.PromotionsComponent),
+      loadComponent: () =>
+        import('./features/promotions/pages/promotions.component').then(
+          (m) => m.PromotionsComponent,
+        ),
     },
     {
       path: ':id',
       loadComponent: () =>
-        import('./features/promotions/pages/promotion-detail.component').then((m) => m.PromotionDetailComponent),
+        import('./features/promotions/pages/promotion-detail.component').then(
+          (m) => m.PromotionDetailComponent,
+        ),
     },
   ],
   referrals: [
     {
       path: '',
-      loadComponent: () => import('./features/promotions/pages/referrals.component').then((m) => m.ReferralsComponent),
+      loadComponent: () =>
+        import('./features/promotions/pages/referrals.component').then((m) => m.ReferralsComponent),
     },
     {
       path: ':id',
       loadComponent: () =>
-        import('./features/promotions/pages/referral-detail.component').then((m) => m.ReferralDetailComponent),
+        import('./features/promotions/pages/referral-detail.component').then(
+          (m) => m.ReferralDetailComponent,
+        ),
     },
   ],
   resellers: [
     {
       path: '',
-      loadComponent: () => import('./features/resellers/pages/resellers.component').then((m) => m.ResellersComponent),
+      loadComponent: () =>
+        import('./features/resellers/pages/resellers.component').then((m) => m.ResellersComponent),
     },
     {
       path: ':id',
       loadComponent: () =>
-        import('./features/resellers/pages/reseller-detail.component').then((m) => m.ResellerDetailComponent),
+        import('./features/resellers/pages/reseller-detail.component').then(
+          (m) => m.ResellerDetailComponent,
+        ),
     },
   ],
   integrations: [
     {
       path: '',
       loadComponent: () =>
-        import('./features/integrations/pages/deliveries.component').then((m) => m.DeliveriesComponent),
+        import('./features/integrations/pages/deliveries.component').then(
+          (m) => m.DeliveriesComponent,
+        ),
     },
     {
       path: 'claves',
-      loadComponent: () => import('./features/integrations/pages/keys.component').then((m) => m.KeysComponent),
+      loadComponent: () =>
+        import('./features/integrations/pages/keys.component').then((m) => m.KeysComponent),
     },
     {
       path: 'destinos',
       loadComponent: () =>
-        import('./features/integrations/pages/endpoints.component').then((m) => m.EndpointsComponent),
+        import('./features/integrations/pages/endpoints.component').then(
+          (m) => m.EndpointsComponent,
+        ),
     },
   ],
   tasks: [
     {
       path: '',
-      loadComponent: () => import('./features/tasks/pages/tasks.component').then((m) => m.TasksComponent),
+      loadComponent: () =>
+        import('./features/tasks/pages/tasks.component').then((m) => m.TasksComponent),
     },
     {
       path: 'jobs',
-      loadComponent: () => import('./features/tasks/pages/jobs.component').then((m) => m.JobsComponent),
+      loadComponent: () =>
+        import('./features/tasks/pages/jobs.component').then((m) => m.JobsComponent),
     },
     {
       path: 'maintenance',
-      loadComponent: () => import('./features/tasks/pages/maintenance.component').then((m) => m.MaintenanceComponent),
+      loadComponent: () =>
+        import('./features/tasks/pages/maintenance.component').then((m) => m.MaintenanceComponent),
     },
     {
       path: ':queue',
-      loadComponent: () => import('./features/tasks/pages/queue-detail.component').then((m) => m.QueueDetailComponent),
+      loadComponent: () =>
+        import('./features/tasks/pages/queue-detail.component').then((m) => m.QueueDetailComponent),
     },
   ],
-  audit: [{ path: '', loadComponent: () => import('./features/audit/pages/audit.component').then((m) => m.AuditComponent) }],
-  staff: [{ path: '', loadComponent: () => import('./features/staff/pages/staff.component').then((m) => m.StaffComponent) }],
-  health: [{ path: '', loadComponent: () => import('./features/status/pages/status.component').then((m) => m.StatusComponent) }],
+  audit: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/audit/pages/audit.component').then((m) => m.AuditComponent),
+    },
+  ],
+  settings: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/settings/pages/settings.component').then((m) => m.SettingsComponent),
+    },
+    {
+      path: 'historial',
+      loadComponent: () =>
+        import('./features/settings/pages/settings-history.component').then(
+          (m) => m.SettingsHistoryComponent,
+        ),
+    },
+  ],
+  staff: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/staff/pages/staff.component').then((m) => m.StaffComponent),
+    },
+  ],
+  health: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/status/pages/status.component').then((m) => m.StatusComponent),
+    },
+  ],
 };
 
 const sectionRoute = (group: ConsoleGroup, item: ConsoleItem): Route => ({
   path: item.path,
   canMatch: [platformMatchGuard],
   data: { titleKey: item.labelKey, platform: itemAccess(group, item) },
-  children: SECTION_PAGES[item.key] ?? [{ path: '', loadComponent: placeholder, data: { titleKey: item.labelKey } }],
+  children: SECTION_PAGES[item.key] ?? [
+    { path: '', loadComponent: placeholder, data: { titleKey: item.labelKey } },
+  ],
 });
 
 const firstVisible = (group: ConsoleGroup) => () => {
@@ -301,14 +416,18 @@ const groupRoute = (group: ConsoleGroup): Route => ({
   path: group.path,
   canMatch: [authGuard, platformMatchGuard],
   data: { titleKey: group.labelKey, platform: groupAccess(group.key) },
-  children: [{ path: '', pathMatch: 'full', redirectTo: firstVisible(group) }, ...group.items.map((item) => sectionRoute(group, item))],
+  children: [
+    { path: '', pathMatch: 'full', redirectTo: firstVisible(group) },
+    ...group.items.map((item) => sectionRoute(group, item)),
+  ],
 });
 
 export const routes: Routes = [
   {
     path: 'acceso',
     canMatch: [guestGuard],
-    loadComponent: () => import('./features/access/pages/access.component').then((m) => m.AccessComponent),
+    loadComponent: () =>
+      import('./features/access/pages/access.component').then((m) => m.AccessComponent),
     data: { titleKey: 'access.title' },
   },
   {
@@ -318,23 +437,32 @@ export const routes: Routes = [
       {
         path: OVERVIEW_PATH,
         canMatch: [authGuard],
-        loadComponent: () => import('./features/overview/pages/overview.component').then((m) => m.OverviewComponent),
+        loadComponent: () =>
+          import('./features/overview/pages/overview.component').then((m) => m.OverviewComponent),
         data: { titleKey: 'nav.overview' },
       },
       ...CONSOLE_GROUPS.map(groupRoute),
       {
         path: MY_ACCESS_PATH,
         canMatch: [authGuard],
-        loadComponent: () => import('./features/my-access/pages/my-access.component').then((m) => m.MyAccessComponent),
+        loadComponent: () =>
+          import('./features/my-access/pages/my-access.component').then((m) => m.MyAccessComponent),
         data: { titleKey: 'mine.title' },
       },
       {
         path: 'sistema/diseno',
         canMatch: [authGuard],
-        loadComponent: () => import('./features/design-system/pages/design-system.component').then((m) => m.DesignSystemComponent),
+        loadComponent: () =>
+          import('./features/design-system/pages/design-system.component').then(
+            (m) => m.DesignSystemComponent,
+          ),
         data: { titleKey: 'sys.title' },
       },
-      ...LEGACY_REDIRECTS.map(([path, redirectTo]): Route => ({ path, pathMatch: 'full', redirectTo })),
+      ...LEGACY_REDIRECTS.map(([path, redirectTo]): Route => ({
+        path,
+        pathMatch: 'full',
+        redirectTo,
+      })),
       { path: '', pathMatch: 'full', redirectTo: OVERVIEW_PATH },
     ],
   },
