@@ -4289,5 +4289,82 @@
       "POLITICA_SIN_CAMBIOS": "La versión vigente ya tiene exactamente ese texto.",
       "POLITICA_CODIGO_INVALIDO": "El código debe ir en minúsculas, de 2 a 40 caracteres."
     }
+  },
+  "comm": {
+    "lead": "Mensajes por WhatsApp con imagen, nombre y texto",
+    "loading": "Cargando destinatarios…",
+    "search": "Buscar por nombre, correo o teléfono",
+    "markPage": "Marcar esta página",
+    "markAll": "Marcar los {{total}}",
+    "markOne": "Marcar a {{name}}",
+    "clear": "Quitar los {{total}}",
+    "markCapped": "Se marcaron los primeros {{max}}: es el máximo por envío.",
+    "markFailed": "No se pudieron marcar todos. Intenta de nuevo.",
+    "noName": "Sin nombre",
+    "errorTitle": "No se pudieron cargar los destinatarios",
+    "errorLead": "Revisa tu conexión e intenta de nuevo.",
+    "emptyTitle": "Sin resultados",
+    "emptyLead": "Prueba con otra búsqueda.",
+    "col": {
+      "name": "Nombre",
+      "phone": "Teléfono",
+      "email": "Correo",
+      "source": "Origen",
+      "reason": "Motivo"
+    },
+    "tab": {
+      "user": "Usuarios",
+      "signer": "Firmantes",
+      "number": "Números"
+    },
+    "source": {
+      "user": "Usuario",
+      "signer": "Firmante",
+      "number": "Número"
+    },
+    "reason": {
+      "SIN_TELEFONO": "Sin teléfono",
+      "SIN_INDICATIVO": "Sin indicativo de país",
+      "FORMATO_INVALIDO": "Formato inválido",
+      "SIN_NOMBRE": "Sin nombre",
+      "NO_ENCONTRADO": "No encontrado"
+    },
+    "recipients": {
+      "title": "Destinatarios"
+    },
+    "numbers": {
+      "label": "Números personalizados",
+      "placeholder": "+573001234567, Ana\n+573001234568",
+      "hint": "Uno por línea, con indicativo de país. El nombre es opcional y va después de una coma.",
+      "capped": "Solo se tomarán los primeros 10.000 números: es el máximo por envío."
+    },
+    "defaultName": {
+      "label": "Nombre para quien no lo tiene",
+      "hint": "Sin este dato, quien no tenga nombre no se podrá enviar."
+    },
+    "review": {
+      "title": "Revisión",
+      "run": "Revisar {{total}} destinatarios",
+      "sendable": "Se pueden enviar",
+      "excluded": "No enviables",
+      "duplicates": "Repetidos",
+      "stale": "La selección cambió. Vuelve a revisar.",
+      "failed": "No se pudo hacer la revisión. Intenta de nuevo.",
+      "empty": {
+        "sendable": "Nadie se puede enviar con esta selección",
+        "excluded": "Todos los destinatarios se pueden enviar"
+      }
+    },
+    "image": {
+      "title": "Imagen del mensaje",
+      "alt": "Imagen del mensaje",
+      "pick": "Subir imagen",
+      "change": "Cambiar imagen",
+      "remove": "Quitar",
+      "hint": "PNG o JPG, hasta 5 MB.",
+      "tooBig": "La imagen supera los 5 MB.",
+      "badType": "La imagen debe ser PNG o JPG.",
+      "failed": "No se pudo subir la imagen. Intenta de nuevo."
+    }
   }
 }

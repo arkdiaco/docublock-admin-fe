@@ -4289,5 +4289,82 @@
       "POLITICA_SIN_CAMBIOS": "The current version already has exactly that text.",
       "POLITICA_CODIGO_INVALIDO": "The code must be lowercase, 2 to 40 characters."
     }
+  },
+  "comm": {
+    "lead": "WhatsApp messages with an image, name and text",
+    "loading": "Loading recipients…",
+    "search": "Search by name, email or phone",
+    "markPage": "Select this page",
+    "markAll": "Select all {{total}}",
+    "markOne": "Select {{name}}",
+    "clear": "Clear {{total}}",
+    "markCapped": "The first {{max}} were selected: that is the maximum per send.",
+    "markFailed": "Could not select them all. Try again.",
+    "noName": "No name",
+    "errorTitle": "Could not load the recipients",
+    "errorLead": "Check your connection and try again.",
+    "emptyTitle": "No results",
+    "emptyLead": "Try another search.",
+    "col": {
+      "name": "Name",
+      "phone": "Phone",
+      "email": "Email",
+      "source": "Source",
+      "reason": "Reason"
+    },
+    "tab": {
+      "user": "Users",
+      "signer": "Signers",
+      "number": "Numbers"
+    },
+    "source": {
+      "user": "User",
+      "signer": "Signer",
+      "number": "Number"
+    },
+    "reason": {
+      "SIN_TELEFONO": "No phone",
+      "SIN_INDICATIVO": "No country code",
+      "FORMATO_INVALIDO": "Invalid format",
+      "SIN_NOMBRE": "No name",
+      "NO_ENCONTRADO": "Not found"
+    },
+    "recipients": {
+      "title": "Recipients"
+    },
+    "numbers": {
+      "label": "Custom numbers",
+      "placeholder": "+573001234567, Ana\n+573001234568",
+      "hint": "One per line, with the country code. The name is optional and goes after a comma.",
+      "capped": "Only the first 10,000 numbers will be used: that is the maximum per send."
+    },
+    "defaultName": {
+      "label": "Name for those without one",
+      "hint": "Without it, recipients with no name cannot be sent to."
+    },
+    "review": {
+      "title": "Review",
+      "run": "Review {{total}} recipients",
+      "sendable": "Can be sent",
+      "excluded": "Not sendable",
+      "duplicates": "Duplicates",
+      "stale": "The selection changed. Review again.",
+      "failed": "The review failed. Try again.",
+      "empty": {
+        "sendable": "No one can be sent to with this selection",
+        "excluded": "All recipients can be sent to"
+      }
+    },
+    "image": {
+      "title": "Message image",
+      "alt": "Message image",
+      "pick": "Upload image",
+      "change": "Change image",
+      "remove": "Remove",
+      "hint": "PNG or JPG, up to 5 MB.",
+      "tooBig": "The image is over 5 MB.",
+      "badType": "The image must be PNG or JPG.",
+      "failed": "Could not upload the image. Try again."
+    }
   }
 }

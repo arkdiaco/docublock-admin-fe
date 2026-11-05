@@ -133,6 +133,13 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
         import('./features/catalogs/pages/consent-policies.component').then((m) => m.ConsentPoliciesComponent),
     },
   ],
+  communications: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/communications/pages/communications.component').then((m) => m.CommunicationsComponent),
+    },
+  ],
   support: [
     {
       path: '',
