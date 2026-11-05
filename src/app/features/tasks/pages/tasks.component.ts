@@ -11,6 +11,7 @@ import { DataTableComponent, type DataColumn } from '../../../shared/ui/data-tab
 import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
 import { IconComponent } from '../../../shared/ui/icon.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
+import { TasksTabsComponent } from '../components/tasks-tabs.component';
 import { TasksApi } from '../data/tasks.api';
 import type { QueueSummary } from '../data/tasks.models';
 
@@ -33,6 +34,7 @@ const COLUMNS: readonly DataColumn[] = [
     EmptyStateComponent,
     IconComponent,
     SectionLoaderComponent,
+    TasksTabsComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -46,6 +48,8 @@ const COLUMNS: readonly DataColumn[] = [
           {{ 'task.refresh' | translate }}
         </button>
       </header>
+
+      <dba-tasks-tabs active="queues" />
 
       @if (loading()) {
         <db-section-loader [label]="'task.loading' | translate" />

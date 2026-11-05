@@ -47,3 +47,43 @@ export interface QueueItemsQuery {
   page: number;
   limit: number;
 }
+
+export const JOB_KEYS = [
+  'closing',
+  'provisioning',
+  'notifications',
+  'massive',
+  'purge',
+  'campaigns',
+  'seals',
+  'endorsements',
+  'deadlines',
+  'signerReminders',
+  'payments',
+  'planReminders',
+  'digestDaily',
+  'digestWeekly',
+] as const;
+export type JobKey = (typeof JOB_KEYS)[number];
+
+export type JobTrigger = 'schedule' | 'manual';
+export type JobResult = 'ok' | 'partial' | 'failed';
+
+export interface FinishedJobRun {
+  startedAt: string;
+  finishedAt: string;
+  durationMs: number;
+  trigger: JobTrigger;
+  result: JobResult;
+  metrics: Record<string, number>;
+  error: string | null;
+}
+
+export interface JobView {
+  key: JobKey;
+  enabled: boolean;
+  manual: boolean;
+  running: { since: string; trigger: JobTrigger } | null;
+  last: FinishedJobRun | null;
+  lastFailure: { at: string; error: string } | null;
+}

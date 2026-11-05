@@ -251,6 +251,10 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
       loadComponent: () => import('./features/tasks/pages/tasks.component').then((m) => m.TasksComponent),
     },
     {
+      path: 'jobs',
+      loadComponent: () => import('./features/tasks/pages/jobs.component').then((m) => m.JobsComponent),
+    },
+    {
       path: ':queue',
       loadComponent: () => import('./features/tasks/pages/queue-detail.component').then((m) => m.QueueDetailComponent),
     },

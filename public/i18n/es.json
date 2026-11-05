@@ -603,7 +603,8 @@
       "retry": "reenvió una campaña de WhatsApp a los fallidos"
     },
     "tasks": {
-      "retry": "reintentó un elemento de una cola"
+      "retry": "reintentó un elemento de una cola",
+      "run_job": "ejecutó un trabajo automático"
     }
   },
   "placeholder": {
@@ -4588,6 +4589,134 @@
     "noRetry": {
       "purge": "Una purga se repite desde la ficha de la organización, con su confirmación.",
       "channel": "Este canal no se puede reenviar desde aquí. Solo los correos vuelven a la cola."
+    },
+    "tab": {
+      "queues": "Colas",
+      "jobs": "Automáticos"
+    },
+    "job": {
+      "lead": "Lo que corre solo: cuándo fue la última vez y cómo terminó.",
+      "loading": "Cargando los trabajos…",
+      "errorTitle": "No pudimos cargar los trabajos",
+      "noWork": "Sin nada que hacer",
+      "noManual": "Este trabajo solo corre en su horario.",
+      "lastFailure": "Último fallo",
+      "runningSince": "En curso desde",
+      "trigger": "Origen",
+      "triggerOf": {
+        "schedule": "Automático",
+        "manual": "Manual"
+      },
+      "col": {
+        "job": "Trabajo",
+        "result": "Resultado",
+        "last": "Última corrida",
+        "duration": "Duración",
+        "detail": "Detalle"
+      },
+      "state": {
+        "ok": "Correcto",
+        "partial": "Con fallos",
+        "failed": "Falló",
+        "running": "En curso",
+        "never": "Sin registro",
+        "off": "Apagado"
+      },
+      "run": {
+        "action": "Ejecutar ahora",
+        "title": "Ejecutar ahora",
+        "confirm": "Ejecutar",
+        "started": "El trabajo arrancó. El resultado aparece aquí cuando termine.",
+        "busy": "Este trabajo ya está corriendo. Espera a que termine.",
+        "forbidden": "No tienes permiso para ejecutar trabajos.",
+        "failed": "No pudimos ejecutar el trabajo. Inténtalo de nuevo.",
+        "offNotice": "Este trabajo está apagado en este ambiente: no corre en su horario, pero se puede ejecutar a mano."
+      },
+      "metric": {
+        "processed": "Procesados",
+        "done": "Completos",
+        "failed": "Fallidos",
+        "scanned": "Revisados",
+        "lapsed": "Vencidos",
+        "claimed": "Tomados",
+        "retried": "Por reintentar",
+        "reviewed": "Revisadas",
+        "sent": "Enviados",
+        "skipped": "Omitidos",
+        "reminded": "Recordados",
+        "escalated": "Escalados",
+        "noticed": "Avisados",
+        "queued": "En cola",
+        "resumed": "Retomados",
+        "checked": "Revisados",
+        "repaired": "Corregidos",
+        "users": "Personas",
+        "custody": "En custodia",
+        "renotified": "Reavisados",
+        "requeued": "Devueltos a la cola",
+        "waiting": "En espera"
+      },
+      "closing": {
+        "name": "Cierre de documentos",
+        "schedule": "Cada 10 segundos"
+      },
+      "provisioning": {
+        "name": "Alta de organizaciones",
+        "schedule": "Cada minuto",
+        "notice": "Procesa las tareas pendientes de alta de organizaciones: directorio, plantilla, contrato y llaves. No envía mensajes."
+      },
+      "notifications": {
+        "name": "Envío de notificaciones",
+        "schedule": "Cada minuto"
+      },
+      "massive": {
+        "name": "Rescate de envíos masivos",
+        "schedule": "Cada 2 minutos"
+      },
+      "purge": {
+        "name": "Rescate de purgas",
+        "schedule": "Cada 2 minutos"
+      },
+      "campaigns": {
+        "name": "Rescate de campañas de WhatsApp",
+        "schedule": "Cada 2 minutos"
+      },
+      "seals": {
+        "name": "Sellos de títulos",
+        "schedule": "Cada 5 minutos",
+        "notice": "Revisa los títulos que esperan sello. Puede ponerlos en custodia, volver a pedir el sello y reenviar avisos a las personas."
+      },
+      "endorsements": {
+        "name": "Plazos de avales",
+        "schedule": "Cada 15 minutos",
+        "notice": "Revisa los plazos de aval vencidos. Puede enviar recordatorios y escalar a otras personas. Los mensajes llegan a personas reales."
+      },
+      "deadlines": {
+        "name": "Vencimiento de documentos",
+        "schedule": "Cada hora"
+      },
+      "signerReminders": {
+        "name": "Recordatorios a firmantes",
+        "schedule": "Cada hora"
+      },
+      "payments": {
+        "name": "Conciliación de pagos",
+        "schedule": "Cada hora",
+        "notice": "Consulta en la pasarela los pagos pendientes y aplica su estado real. Un pago aprobado activa lo que se compró. No genera cobros nuevos."
+      },
+      "planReminders": {
+        "name": "Recordatorios de plan",
+        "schedule": "Cada día, 8:00",
+        "notice": "Envía correos y avisos a las organizaciones cuyo plan vence pronto. Los mensajes llegan a personas reales. Los avisos ya enviados no se repiten."
+      },
+      "digestDaily": {
+        "name": "Resumen diario por correo",
+        "schedule": "Cada día, 8:00"
+      },
+      "digestWeekly": {
+        "name": "Resumen semanal por correo",
+        "schedule": "Lunes, 8:00"
+      }
     }
   }
 }

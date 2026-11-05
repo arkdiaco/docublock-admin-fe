@@ -4,9 +4,10 @@ import type { Observable } from 'rxjs';
 import { SILENT_ERRORS } from '../../../core/http/http.interceptors';
 import { errorStatusOf } from '../../../shared/http/error-code';
 import { toParams } from '../../../shared/http/query-params';
-import type { QueueItemsPage, QueueItemsQuery, QueueKey, QueueSummary } from './tasks.models';
+import type { JobKey, JobView, QueueItemsPage, QueueItemsQuery, QueueKey, QueueSummary } from './tasks.models';
 
 const BASE = '/platform/tasks/queues';
+const JOBS = '/platform/tasks/jobs';
 const silent = (): HttpContext => new HttpContext().set(SILENT_ERRORS, true);
 
 export const retryErrorKey = (error: unknown): string => {
@@ -14,6 +15,13 @@ export const retryErrorKey = (error: unknown): string => {
   if (status === 409) return 'task.retry.gone';
   if (status === 403) return 'task.retry.forbidden';
   return 'task.retry.failed';
+};
+
+export const runJobErrorKey = (error: unknown): string => {
+  const status = errorStatusOf(error);
+  if (status === 409) return 'task.job.run.busy';
+  if (status === 403) return 'task.job.run.forbidden';
+  return 'task.job.run.failed';
 };
 
 @Injectable({ providedIn: 'root' })
@@ -34,6 +42,18 @@ export class TasksApi {
   retry(queue: QueueKey, id: string, reason: string): Observable<{ id: string; state: 'pending' }> {
     return this.http.post<{ id: string; state: 'pending' }>(
       `${BASE}/${queue}/items/${id}/retry`,
+      { reason },
+      { context: silent() },
+    );
+  }
+
+  jobs(): Observable<{ jobs: JobView[] }> {
+    return this.http.get<{ jobs: JobView[] }>(JOBS, { context: silent() });
+  }
+
+  runJob(key: JobKey, reason: string): Observable<{ key: JobKey; state: 'running' }> {
+    return this.http.post<{ key: JobKey; state: 'running' }>(
+      `${JOBS}/${key}/run`,
       { reason },
       { context: silent() },
     );

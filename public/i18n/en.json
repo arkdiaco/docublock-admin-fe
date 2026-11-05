@@ -603,7 +603,8 @@
       "retry": "resent a WhatsApp campaign to the failed numbers"
     },
     "tasks": {
-      "retry": "retried a queue item"
+      "retry": "retried a queue item",
+      "run_job": "ran a scheduled job"
     }
   },
   "placeholder": {
@@ -4588,6 +4589,134 @@
     "noRetry": {
       "purge": "A purge is repeated from the organization page, with its confirmation.",
       "channel": "This channel cannot be resent from here. Only emails go back to the queue."
+    },
+    "tab": {
+      "queues": "Queues",
+      "jobs": "Scheduled"
+    },
+    "job": {
+      "lead": "What runs on its own: when it last ran and how it ended.",
+      "loading": "Loading jobs…",
+      "errorTitle": "We couldn't load the jobs",
+      "noWork": "Nothing to do",
+      "noManual": "This job only runs on its schedule.",
+      "lastFailure": "Last failure",
+      "runningSince": "Running since",
+      "trigger": "Trigger",
+      "triggerOf": {
+        "schedule": "Scheduled",
+        "manual": "Manual"
+      },
+      "col": {
+        "job": "Job",
+        "result": "Result",
+        "last": "Last run",
+        "duration": "Duration",
+        "detail": "Detail"
+      },
+      "state": {
+        "ok": "OK",
+        "partial": "With failures",
+        "failed": "Failed",
+        "running": "Running",
+        "never": "No record",
+        "off": "Off"
+      },
+      "run": {
+        "action": "Run now",
+        "title": "Run now",
+        "confirm": "Run",
+        "started": "The job started. The result shows here when it ends.",
+        "busy": "This job is already running. Wait for it to end.",
+        "forbidden": "You don't have permission to run jobs.",
+        "failed": "We couldn't run the job. Try again.",
+        "offNotice": "This job is off in this environment: it does not run on schedule, but it can be run by hand."
+      },
+      "metric": {
+        "processed": "Processed",
+        "done": "Done",
+        "failed": "Failed",
+        "scanned": "Reviewed",
+        "lapsed": "Expired",
+        "claimed": "Claimed",
+        "retried": "To retry",
+        "reviewed": "Reviewed",
+        "sent": "Sent",
+        "skipped": "Skipped",
+        "reminded": "Reminded",
+        "escalated": "Escalated",
+        "noticed": "Notified",
+        "queued": "Queued",
+        "resumed": "Resumed",
+        "checked": "Checked",
+        "repaired": "Fixed",
+        "users": "People",
+        "custody": "In custody",
+        "renotified": "Renotified",
+        "requeued": "Requeued",
+        "waiting": "Waiting"
+      },
+      "closing": {
+        "name": "Document closing",
+        "schedule": "Every 10 seconds"
+      },
+      "provisioning": {
+        "name": "Organization setup",
+        "schedule": "Every minute",
+        "notice": "Processes pending organization setup tasks: directory, template, contract and keys. It sends no messages."
+      },
+      "notifications": {
+        "name": "Notification delivery",
+        "schedule": "Every minute"
+      },
+      "massive": {
+        "name": "Bulk send recovery",
+        "schedule": "Every 2 minutes"
+      },
+      "purge": {
+        "name": "Purge recovery",
+        "schedule": "Every 2 minutes"
+      },
+      "campaigns": {
+        "name": "WhatsApp campaign recovery",
+        "schedule": "Every 2 minutes"
+      },
+      "seals": {
+        "name": "Title seals",
+        "schedule": "Every 5 minutes",
+        "notice": "Reviews titles waiting for their seal. It may move them to custody, request the seal again and resend notices to people."
+      },
+      "endorsements": {
+        "name": "Endorsement deadlines",
+        "schedule": "Every 15 minutes",
+        "notice": "Reviews overdue endorsement deadlines. It may send reminders and escalate to other people. Messages reach real people."
+      },
+      "deadlines": {
+        "name": "Document expiry",
+        "schedule": "Every hour"
+      },
+      "signerReminders": {
+        "name": "Signer reminders",
+        "schedule": "Every hour"
+      },
+      "payments": {
+        "name": "Payment reconciliation",
+        "schedule": "Every hour",
+        "notice": "Checks pending payments with the gateway and applies their real status. An approved payment activates what was bought. It creates no new charges."
+      },
+      "planReminders": {
+        "name": "Plan reminders",
+        "schedule": "Daily, 8:00",
+        "notice": "Sends emails and notices to organizations whose plan expires soon. Messages reach real people. Notices already sent are not repeated."
+      },
+      "digestDaily": {
+        "name": "Daily email digest",
+        "schedule": "Daily, 8:00"
+      },
+      "digestWeekly": {
+        "name": "Weekly email digest",
+        "schedule": "Mondays, 8:00"
+      }
     }
   }
 }
