@@ -596,6 +596,10 @@
     },
     "consent_policies": {
       "publish": "publicó una política de consentimiento"
+    },
+    "communications_whatsapp": {
+      "create": "envió una campaña de WhatsApp",
+      "image": "subió una imagen para WhatsApp"
     }
   },
   "placeholder": {
@@ -4356,7 +4360,6 @@
       }
     },
     "image": {
-      "title": "Imagen del mensaje",
       "alt": "Imagen del mensaje",
       "pick": "Subir imagen",
       "change": "Cambiar imagen",
@@ -4365,6 +4368,50 @@
       "tooBig": "La imagen supera los 5 MB.",
       "badType": "La imagen debe ser PNG o JPG.",
       "failed": "No se pudo subir la imagen. Intenta de nuevo."
+    },
+    "message": {
+      "title": "Mensaje",
+      "text": "Texto",
+      "placeholder": "Escribe el texto que recibirá cada destinatario",
+      "hint": "Es igual para todos; solo cambia el nombre. WhatsApp no admite saltos de línea aquí: se convierten en espacio.",
+      "previewTitle": "Lo que se llena en la plantilla",
+      "previewName": "Nombre",
+      "previewText": "Texto",
+      "previewNote": "El resto del mensaje lo pone la plantilla aprobada en WhatsApp.",
+      "noName": "Nombre del destinatario",
+      "noText": "Aquí saldrá el texto"
+    },
+    "send": {
+      "prepare": "Preparar envío",
+      "missing": "Falta: {{items}}",
+      "needRecipients": "destinatarios",
+      "needImage": "imagen",
+      "needText": "texto",
+      "confirmTitle": "Confirmar envío",
+      "confirmSubtitle": "Mensaje comercial por WhatsApp",
+      "confirm": "Enviar ahora",
+      "summary": "Se enviará a {{total}} destinatarios.",
+      "summaryOne": "Se enviará a 1 destinatario.",
+      "left": "{{total}} quedan fuera por no ser enviables.",
+      "notice": "Es un mensaje comercial con costo por cada envío. Quien envía responde por la autorización de los destinatarios.",
+      "badText": "El texto debe tener entre 1 y 500 caracteres.",
+      "noRecipients": "Ningún destinatario se puede enviar.",
+      "badRequest": "El servidor rechazó los datos. Revisa la imagen y los destinatarios.",
+      "forbidden": "No tienes permiso para enviar.",
+      "unknown": "No se pudo confirmar el envío. Antes de reintentar, verifica si los mensajes salieron.",
+      "leftOne": "1 queda fuera por no ser enviable."
+    },
+    "progress": {
+      "sending": "Enviando",
+      "finished": "Envío terminado",
+      "lead": "El envío sigue aunque salgas de esta pantalla.",
+      "accepted": "WhatsApp solo informa que aceptó el mensaje, no si llegó o se leyó.",
+      "stale": "No se pudo actualizar el avance. Sigue intentando; el envío no se detiene.",
+      "sent": "Aceptados",
+      "failed": "Fallidos",
+      "pending": "Pendientes",
+      "excluded": "No enviables",
+      "again": "Nuevo envío"
     }
   }
 }

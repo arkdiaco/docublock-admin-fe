@@ -6,6 +6,8 @@ import { errorCodeOf, errorStatusOf } from '../../../shared/http/error-code';
 import { toParams } from '../../../shared/http/query-params';
 import type {
   CampaignImage,
+  CampaignView,
+  NewCampaign,
   RecipientKind,
   RecipientsPage,
   RecipientsPreview,
@@ -20,6 +22,16 @@ export const imageErrorKey = (error: unknown): string => {
   if (code === 'ARCHIVO_DEMASIADO_GRANDE' || errorStatusOf(error) === 413) return 'comm.image.tooBig';
   if (code === 'TIPO_ARCHIVO_INVALIDO') return 'comm.image.badType';
   return 'comm.image.failed';
+};
+
+export const campaignErrorKey = (error: unknown): string => {
+  const code = errorCodeOf(error);
+  if (code === 'CAMPANA_TEXTO_INVALIDO') return 'comm.send.badText';
+  if (code === 'CAMPANA_SIN_DESTINATARIOS') return 'comm.send.noRecipients';
+  const status = errorStatusOf(error);
+  if (status === 400) return 'comm.send.badRequest';
+  if (status === 403) return 'comm.send.forbidden';
+  return 'comm.send.unknown';
 };
 
 @Injectable({ providedIn: 'root' })
@@ -45,5 +57,15 @@ export class CommunicationsApi {
     const form = new FormData();
     form.set('file', file);
     return this.http.post<CampaignImage>(`${BASE}/whatsapp/image`, form, { context: silent() });
+  }
+
+  createCampaign(campaign: NewCampaign): Observable<CampaignView> {
+    return this.http.post<CampaignView>(`${BASE}/whatsapp/campaigns`, campaign, {
+      context: silent(),
+    });
+  }
+
+  campaign(id: string): Observable<CampaignView> {
+    return this.http.get<CampaignView>(`${BASE}/whatsapp/campaigns/${id}`, { context: silent() });
   }
 }

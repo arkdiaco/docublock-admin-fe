@@ -51,3 +51,29 @@ export interface CampaignImage {
   id: string;
   url: string;
 }
+
+export interface PickedImage extends CampaignImage {
+  localUrl: string;
+}
+
+export interface NewCampaign extends RecipientsSelection {
+  text: string;
+  imageUrl: string;
+  reason: string;
+}
+
+export interface CampaignCounts {
+  pending: number;
+  sending: number;
+  sent: number;
+  failed: number;
+  excluded: number;
+  total: number;
+}
+
+export interface CampaignView {
+  id: string;
+  state: 'queued' | 'sending' | 'finished';
+  duplicates: number;
+  counts: CampaignCounts;
+}

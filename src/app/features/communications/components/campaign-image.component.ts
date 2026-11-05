@@ -4,10 +4,18 @@ import { firstValueFrom } from 'rxjs';
 import { ButtonComponent } from '../../../shared/ui/button.component';
 import { IconComponent } from '../../../shared/ui/icon.component';
 import { CommunicationsApi, imageErrorKey } from '../data/communications.api';
-import type { CampaignImage } from '../data/communications.models';
+import type { PickedImage } from '../data/communications.models';
 
 const MAX_BYTES = 5 * 1024 * 1024;
 const TYPES = ['image/png', 'image/jpeg'];
+
+const dataUrlOf = (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(new Error('lectura'));
+    reader.readAsDataURL(file);
+  });
 
 @Component({
   selector: 'dba-campaign-image',
@@ -16,7 +24,7 @@ const TYPES = ['image/png', 'image/jpeg'];
   template: `
     <div class="image">
       @if (image(); as current) {
-        <img class="image__thumb" [src]="current.url" [alt]="'comm.image.alt' | translate" />
+        <img class="image__thumb" [src]="current.localUrl" [alt]="'comm.image.alt' | translate" />
       }
       <div class="image__side">
         <input
@@ -92,7 +100,7 @@ const TYPES = ['image/png', 'image/jpeg'];
   `,
 })
 export class CampaignImageComponent {
-  readonly image = model<CampaignImage | null>(null);
+  readonly image = model<PickedImage | null>(null);
 
   private readonly api = inject(CommunicationsApi);
 
@@ -115,7 +123,11 @@ export class CampaignImageComponent {
     this.error.set('');
     this.busy.set(true);
     try {
-      this.image.set(await firstValueFrom(this.api.uploadImage(file)));
+      const [uploaded, localUrl] = await Promise.all([
+        firstValueFrom(this.api.uploadImage(file)),
+        dataUrlOf(file),
+      ]);
+      this.image.set({ ...uploaded, localUrl });
     } catch (error) {
       this.error.set(imageErrorKey(error));
     } finally {

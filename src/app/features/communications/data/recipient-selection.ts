@@ -5,6 +5,10 @@ const MAX_PHONE = 40;
 const MAX_NAME = 120;
 const FIRST_SEPARATOR = /[,;\t]/;
 
+export const TEXT_MAX = 500;
+
+export const cleanVariable = (value: string): string => value.replace(/\s+/g, ' ').trim();
+
 export const parseNumbers = (text: string): CustomNumber[] =>
   text
     .split(/\r?\n/)

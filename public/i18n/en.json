@@ -596,6 +596,10 @@
     },
     "consent_policies": {
       "publish": "published a consent policy"
+    },
+    "communications_whatsapp": {
+      "create": "sent a WhatsApp campaign",
+      "image": "uploaded an image for WhatsApp"
     }
   },
   "placeholder": {
@@ -4356,7 +4360,6 @@
       }
     },
     "image": {
-      "title": "Message image",
       "alt": "Message image",
       "pick": "Upload image",
       "change": "Change image",
@@ -4365,6 +4368,50 @@
       "tooBig": "The image is over 5 MB.",
       "badType": "The image must be PNG or JPG.",
       "failed": "Could not upload the image. Try again."
+    },
+    "message": {
+      "title": "Message",
+      "text": "Text",
+      "placeholder": "Write the text each recipient will get",
+      "hint": "The same for everyone; only the name changes. WhatsApp does not allow line breaks here: they become spaces.",
+      "previewTitle": "What fills in the template",
+      "previewName": "Name",
+      "previewText": "Text",
+      "previewNote": "The rest of the message comes from the template approved in WhatsApp.",
+      "noName": "Recipient name",
+      "noText": "The text will show here"
+    },
+    "send": {
+      "prepare": "Prepare send",
+      "missing": "Missing: {{items}}",
+      "needRecipients": "recipients",
+      "needImage": "image",
+      "needText": "text",
+      "confirmTitle": "Confirm send",
+      "confirmSubtitle": "Commercial message via WhatsApp",
+      "confirm": "Send now",
+      "summary": "It will be sent to {{total}} recipients.",
+      "summaryOne": "It will be sent to 1 recipient.",
+      "left": "{{total}} are left out as not sendable.",
+      "notice": "This is a commercial message and each send has a cost. The sender is responsible for the recipients' consent.",
+      "badText": "The text must be between 1 and 500 characters.",
+      "noRecipients": "No recipient can be sent to.",
+      "badRequest": "The server rejected the data. Check the image and the recipients.",
+      "forbidden": "You do not have permission to send.",
+      "unknown": "The send could not be confirmed. Before retrying, verify whether the messages went out.",
+      "leftOne": "1 is left out as not sendable."
+    },
+    "progress": {
+      "sending": "Sending",
+      "finished": "Send finished",
+      "lead": "The send continues even if you leave this screen.",
+      "accepted": "WhatsApp only reports that it accepted the message, not whether it arrived or was read.",
+      "stale": "Could not update the progress. Still trying; the send does not stop.",
+      "sent": "Accepted",
+      "failed": "Failed",
+      "pending": "Pending",
+      "excluded": "Not sendable",
+      "again": "New send"
     }
   }
 }
