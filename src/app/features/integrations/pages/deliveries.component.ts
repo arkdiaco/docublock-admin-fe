@@ -23,6 +23,7 @@ import { DeliveryReplayConfirmComponent } from '../components/delivery-replay-co
 import { DeliveryRetryConfirmComponent } from '../components/delivery-retry-confirm.component';
 import { IntegrationsTabsComponent } from '../components/integrations-tabs.component';
 import { ALL_STATUSES, deliveryStateOf, resultOf, statusPills } from '../data/delivery-view';
+import { FilterUrl } from '../data/filter-url';
 import { IntegrationsApi, actionErrorKey, isBridgeDown, replayErrorKey } from '../data/integrations.api';
 import {
   DELIVERY_EVENTS,
@@ -52,6 +53,7 @@ const HOUR = 3_600_000;
 const PERIODS: Record<string, number> = { '24h': 24 * HOUR, '7d': 7 * 24 * HOUR, '30d': 30 * 24 * HOUR };
 const ANY = '';
 const RETRYABLE: readonly string[] = ['failed', 'exhausted'];
+const VIEWS: readonly string[] = ['failed', 'exhausted', 'pending', 'delivered'];
 
 type LoadError = 'down' | 'failed' | null;
 
@@ -95,7 +97,7 @@ type LoadError = 'down' | 'failed' | null;
         </div>
       </header>
 
-      <dba-integrations-tabs active="deliveries" />
+      <dba-integrations-tabs active="deliveries" [organizationId]="organizationId()" />
 
       <db-filter-pills
         [pills]="pills()"
@@ -105,7 +107,7 @@ type LoadError = 'down' | 'failed' | null;
       />
 
       <div class="bl__tools">
-        <dba-org-picker [value]="organizationId()" (picked)="setFilter(organizationId, $event)" />
+        <dba-org-picker [value]="organizationId()" (picked)="setOrganization($event)" />
         <p-select
           [options]="eventOptions()"
           optionLabel="label"
@@ -236,6 +238,8 @@ export class DeliveriesComponent {
   private readonly translate = inject(TranslateService);
   private readonly latest = new LatestRequest();
   private readonly latestDetail = new LatestRequest();
+  private readonly latestCounts = new LatestRequest();
+  private readonly url = new FilterUrl();
   private readonly cursors = signal<(string | null)[]>([null]);
 
   protected readonly density = inject(DensityService);
@@ -247,8 +251,8 @@ export class DeliveriesComponent {
   protected readonly rows = signal<DeliveryRow[]>([]);
   protected readonly nextCursor = signal<string | null>(null);
   protected readonly counts = signal<OpenDeliveryCounts | null>(null);
-  protected readonly status = signal(ALL_STATUSES);
-  protected readonly organizationId = signal<string | null>(null);
+  protected readonly status = signal(this.url.view(VIEWS) ?? ALL_STATUSES);
+  protected readonly organizationId = signal(this.url.organization());
   protected readonly event = signal(ANY);
   protected readonly period = signal(ANY);
   protected readonly selected = signal<DeliveryRow | null>(null);
@@ -294,7 +298,13 @@ export class DeliveriesComponent {
   protected setFilter<T>(filter: { set(value: T): void }, value: T): void {
     filter.set(value);
     this.cursors.set([null]);
+    this.url.write(this.organizationId(), this.status());
     void this.load(true);
+  }
+
+  protected setOrganization(id: string | null): void {
+    this.setFilter(this.organizationId, id);
+    void this.loadCounts();
   }
 
   protected refresh(): void {
@@ -413,10 +423,12 @@ export class DeliveriesComponent {
   }
 
   private async loadCounts(): Promise<void> {
+    const current = this.latestCounts.start();
     try {
-      this.counts.set(await firstValueFrom(this.api.summary()));
+      const counts = await firstValueFrom(this.api.summary(this.organizationId()));
+      if (current()) this.counts.set(counts);
     } catch {
-      this.counts.set(null);
+      if (current()) this.counts.set(null);
     }
   }
 

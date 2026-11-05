@@ -5019,6 +5019,8 @@
       "forbidden": "You do not have permission to change destinations.",
       "gone": "This destination no longer exists.",
       "failed": "We could not change the destination. Try again."
-    }
+    },
+    "deliveries": "Deliveries",
+    "seeDeliveries": "See this organization's deliveries"
   }
 }

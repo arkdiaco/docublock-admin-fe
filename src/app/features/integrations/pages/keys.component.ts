@@ -19,6 +19,7 @@ import { CursorNavComponent } from '../components/cursor-nav.component';
 import { IntegrationsTabsComponent } from '../components/integrations-tabs.component';
 import { KeyDetailComponent } from '../components/key-detail.component';
 import { KeyRevokeConfirmComponent } from '../components/key-revoke-confirm.component';
+import { FilterUrl } from '../data/filter-url';
 import { IntegrationsApi, actionErrorKey, isBridgeDown } from '../data/integrations.api';
 import type { KeyCounts, KeyFilter, KeyRow, KeyState } from '../data/integrations.models';
 import { ALL_KEYS, keyPills, keyStateOf } from '../data/key-view';
@@ -33,6 +34,8 @@ const COLUMNS: readonly DataColumn[] = [
   { key: 'expires', labelKey: 'ikey.col.expires', width: '150px' },
   { key: 'chevron', width: '24px', align: 'end' },
 ];
+
+const VIEWS: readonly string[] = ['expiring', 'unused', 'expired', 'revoked'];
 
 type LoadError = 'down' | 'failed' | null;
 
@@ -66,7 +69,7 @@ type LoadError = 'down' | 'failed' | null;
         </button>
       </header>
 
-      <dba-integrations-tabs active="keys" />
+      <dba-integrations-tabs active="keys" [organizationId]="organizationId()" />
 
       <db-filter-pills
         [pills]="pills()"
@@ -76,7 +79,7 @@ type LoadError = 'down' | 'failed' | null;
       />
 
       <div class="bl__tools">
-        <dba-org-picker [value]="organizationId()" (picked)="setFilter(organizationId, $event)" />
+        <dba-org-picker [value]="organizationId()" (picked)="setOrganization($event)" />
       </div>
 
       @if (loading()) {
@@ -152,6 +155,8 @@ export class KeysComponent {
   private readonly notify = inject(NotificationService);
   private readonly translate = inject(TranslateService);
   private readonly latest = new LatestRequest();
+  private readonly latestCounts = new LatestRequest();
+  private readonly url = new FilterUrl();
   private readonly cursors = signal<(string | null)[]>([null]);
 
   protected readonly density = inject(DensityService);
@@ -163,8 +168,8 @@ export class KeysComponent {
   protected readonly rows = signal<KeyRow[]>([]);
   protected readonly nextCursor = signal<string | null>(null);
   protected readonly counts = signal<KeyCounts | null>(null);
-  protected readonly filter = signal(ALL_KEYS);
-  protected readonly organizationId = signal<string | null>(null);
+  protected readonly filter = signal(this.url.view(VIEWS) ?? ALL_KEYS);
+  protected readonly organizationId = signal(this.url.organization());
   protected readonly selected = signal<KeyRow | null>(null);
   protected readonly confirming = signal(false);
 
@@ -191,7 +196,13 @@ export class KeysComponent {
   protected setFilter<T>(target: { set(value: T): void }, value: T): void {
     target.set(value);
     this.cursors.set([null]);
+    this.url.write(this.organizationId(), this.filter());
     void this.load(true);
+  }
+
+  protected setOrganization(id: string | null): void {
+    this.setFilter(this.organizationId, id);
+    void this.loadCounts();
   }
 
   protected refresh(): void {
@@ -263,10 +274,12 @@ export class KeysComponent {
   }
 
   private async loadCounts(): Promise<void> {
+    const current = this.latestCounts.start();
     try {
-      this.counts.set(await firstValueFrom(this.api.keySummary()));
+      const counts = await firstValueFrom(this.api.keySummary(this.organizationId()));
+      if (current()) this.counts.set(counts);
     } catch {
-      this.counts.set(null);
+      if (current()) this.counts.set(null);
     }
   }
 

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, type Params } from '@angular/router';
 
 export type TabDot = 'warn' | 'danger';
 
@@ -10,6 +10,7 @@ export interface UnderlineTab {
   count?: number;
   dot?: TabDot;
   link?: readonly string[] | string;
+  query?: Params;
 }
 
 @Component({
@@ -23,6 +24,7 @@ export interface UnderlineTab {
           <a
             class="tab"
             [routerLink]="tab.link"
+            [queryParams]="tab.query"
             [class.tab--on]="tab.key === active()"
             [attr.aria-current]="tab.key === active() ? 'page' : null"
           >

@@ -55,7 +55,12 @@ const LIMIT = 20;
             <h1 class="dba-page">{{ 'task.queue.' + key + '.name' | translate }}</h1>
             <span class="dba-meta">{{ 'task.queue.' + key + '.lead' | translate }}</span>
           </div>
-          <a dba-button variant="secondary" [routerLink]="[path]">{{ 'task.back' | translate }}</a>
+          <div class="heading-actions">
+            <button dba-button variant="secondary" [disabled]="refreshing()" (click)="load(false)">
+              {{ 'task.refresh' | translate }}
+            </button>
+            <a dba-button variant="secondary" [routerLink]="[path]">{{ 'task.back' | translate }}</a>
+          </div>
         </header>
 
         @if (counts(); as current) {
@@ -149,6 +154,12 @@ const LIMIT = 20;
       justify-content: flex-end;
       text-align: end;
     }
+
+    .heading-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
   `,
 })
 export class QueueDetailComponent {
@@ -186,6 +197,7 @@ export class QueueDetailComponent {
     { key: 'chevron', width: '24px', align: 'end' as const },
   ]);
   protected readonly loading = signal(true);
+  protected readonly refreshing = signal(false);
   protected readonly error = signal(false);
   protected readonly state = signal<QueueState | null>(null);
   protected readonly counts = signal<QueueCounts | null>(null);
@@ -257,6 +269,8 @@ export class QueueDetailComponent {
     if (withLoader) {
       this.loading.set(true);
       this.error.set(false);
+    } else {
+      this.refreshing.set(true);
     }
     const state = this.state();
     try {
@@ -272,14 +286,18 @@ export class QueueDetailComponent {
       this.counts.set(result.counts);
       this.items.set(result.items);
       this.total.set(result.total);
+      this.error.set(false);
       if (result.items.length === 0 && result.total > 0) {
         this.page.set(this.pageCount());
         await this.load(false);
       }
     } catch {
-      if (current() && withLoader) this.error.set(true);
+      if (current()) this.error.set(true);
     } finally {
-      if (current()) this.loading.set(false);
+      if (current()) {
+        this.loading.set(false);
+        this.refreshing.set(false);
+      }
     }
   }
 

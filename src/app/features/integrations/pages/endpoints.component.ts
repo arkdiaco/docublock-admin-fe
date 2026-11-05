@@ -18,6 +18,7 @@ import { CursorNavComponent } from '../components/cursor-nav.component';
 import { EndpointDetailComponent } from '../components/endpoint-detail.component';
 import { EndpointToggleConfirmComponent } from '../components/endpoint-toggle-confirm.component';
 import { IntegrationsTabsComponent } from '../components/integrations-tabs.component';
+import { FilterUrl } from '../data/filter-url';
 import { IntegrationsApi, actionErrorKey, isBridgeDown } from '../data/integrations.api';
 import type { EndpointRow } from '../data/integrations.models';
 
@@ -37,6 +38,8 @@ const PILLS: FilterPill[] = [
   { key: 'true', labelKey: 'iep.filter.enabled' },
   { key: 'false', labelKey: 'iep.filter.disabled' },
 ];
+
+const VIEWS: readonly string[] = ['true', 'false'];
 
 type LoadError = 'down' | 'failed' | null;
 
@@ -70,7 +73,7 @@ type LoadError = 'down' | 'failed' | null;
         </button>
       </header>
 
-      <dba-integrations-tabs active="endpoints" />
+      <dba-integrations-tabs active="endpoints" [organizationId]="organizationId()" />
 
       <db-filter-pills
         [pills]="pills"
@@ -169,6 +172,7 @@ export class EndpointsComponent {
   private readonly notify = inject(NotificationService);
   private readonly translate = inject(TranslateService);
   private readonly latest = new LatestRequest();
+  private readonly url = new FilterUrl();
   private readonly cursors = signal<(string | null)[]>([null]);
 
   protected readonly density = inject(DensityService);
@@ -180,8 +184,8 @@ export class EndpointsComponent {
   protected readonly loadError = signal<LoadError>(null);
   protected readonly rows = signal<EndpointRow[]>([]);
   protected readonly nextCursor = signal<string | null>(null);
-  protected readonly enabled = signal('');
-  protected readonly organizationId = signal<string | null>(null);
+  protected readonly enabled = signal(this.url.view(VIEWS) ?? '');
+  protected readonly organizationId = signal(this.url.organization());
   protected readonly selected = signal<EndpointRow | null>(null);
   protected readonly confirming = signal(false);
 
@@ -199,6 +203,7 @@ export class EndpointsComponent {
   protected setFilter<T>(target: { set(value: T): void }, value: T): void {
     target.set(value);
     this.cursors.set([null]);
+    this.url.write(this.organizationId(), this.enabled());
     void this.load(true);
   }
 

@@ -47,6 +47,12 @@ import type { EndpointRow } from '../data/integrations.models';
         <dd class="dba-mono">{{ endpoint().events.join(', ') || ('iep.allEvents' | translate) }}</dd>
         <dt>{{ 'iep.col.failures' | translate }}</dt>
         <dd class="dba-mono">{{ endpoint().recentFailures }}</dd>
+        <dt>{{ 'iep.deliveries' | translate }}</dt>
+        <dd>
+          <a class="item__link" [routerLink]="[deliveriesPath]" [queryParams]="{ organizacion: endpoint().organizationId }">{{
+            'iep.seeDeliveries' | translate
+          }}</a>
+        </dd>
         <dt>{{ 'iep.lastFailure' | translate }}</dt>
         <dd class="dba-mono">{{ when(endpoint().lastFailureAt) }}</dd>
         <dt>{{ 'iep.created' | translate }}</dt>
@@ -70,6 +76,7 @@ export class EndpointDetailComponent {
   private readonly locale = inject(LOCALE_ID);
 
   protected readonly orgsPath = sectionPath('organizations');
+  protected readonly deliveriesPath = sectionPath('integrations');
   protected readonly canManage = computed(() => this.auth.canManage('operations'));
 
   protected when(value: string | null): string {

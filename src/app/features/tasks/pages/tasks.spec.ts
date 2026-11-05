@@ -195,6 +195,28 @@ describe('Detalle de una cola', () => {
     expect(host.textContent).not.toContain('Acme SAS');
   });
 
+  it('actualizar conserva la tabla y un fallo se ve con opción de reintentar', async () => {
+    const fixture = abrir('closing');
+    http.expectOne((r) => r.url === `${BASE}/closing/items`).flush(PAGINA);
+    await asentar(fixture);
+    const host = fixture.nativeElement as HTMLElement;
+    const actualizar = () =>
+      [...host.querySelectorAll<HTMLButtonElement>('button')].find((b) => b.textContent?.trim() === 'Actualizar');
+    actualizar()?.click();
+    expect(host.textContent).toContain('Acme SAS');
+    http.expectOne((r) => r.url === `${BASE}/closing/items`).flush(PAGINA);
+    await asentar(fixture);
+    actualizar()?.click();
+    http
+      .expectOne((r) => r.url === `${BASE}/closing/items`)
+      .flush({}, { status: 500, statusText: 'Error' });
+    await asentar(fixture);
+    expect(host.textContent).not.toContain('Acme SAS');
+    expect(
+      [...host.querySelectorAll<HTMLButtonElement>('button')].some((b) => b.textContent?.trim() === 'Reintentar'),
+    ).toBe(true);
+  });
+
   it('abre el error completo al elegir una fila', async () => {
     const fixture = abrir('closing');
     http.expectOne((r) => r.url === `${BASE}/closing/items`).flush(PAGINA);

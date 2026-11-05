@@ -62,8 +62,11 @@ export class IntegrationsApi {
     return this.http.get<DeliveriesPage>(BASE, { params: toParams({ ...query }), context: silent() });
   }
 
-  summary(): Observable<OpenDeliveryCounts> {
-    return this.http.get<OpenDeliveryCounts>(`${BASE}/summary`, { context: silent() });
+  summary(organizationId: string | null = null): Observable<OpenDeliveryCounts> {
+    return this.http.get<OpenDeliveryCounts>(`${BASE}/summary`, {
+      params: toParams({ organizationId }),
+      context: silent(),
+    });
   }
 
   detail(id: string): Observable<DeliveryDetail> {
@@ -86,8 +89,11 @@ export class IntegrationsApi {
     return this.http.get<KeysPage>(KEYS, { params: toParams({ ...query }), context: silent() });
   }
 
-  keySummary(): Observable<KeyCounts> {
-    return this.http.get<KeyCounts>(`${KEYS}/summary`, { context: silent() });
+  keySummary(organizationId: string | null = null): Observable<KeyCounts> {
+    return this.http.get<KeyCounts>(`${KEYS}/summary`, {
+      params: toParams({ organizationId }),
+      context: silent(),
+    });
   }
 
   revokeKey(id: string, reason: string): Observable<KeyRow> {
