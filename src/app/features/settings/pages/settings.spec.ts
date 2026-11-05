@@ -293,6 +293,62 @@ describe('Configuración: pestaña Accesos', () => {
   });
 });
 
+describe('Configuración: pestaña Firma y documentos', () => {
+  const ENLACE: SettingItem = {
+    ...CUPO,
+    key: 'signing.link_days',
+    group: 'signing',
+    unit: 'days',
+    value: 3,
+    defaultValue: 3,
+    technical: { min: 1, max: 30 },
+    recommended: { min: 2, max: 7 },
+  };
+  const RECORDATORIOS: SettingItem = {
+    ...ENLACE,
+    key: 'signing.reminder_max',
+    unit: 'reminders',
+    value: 1,
+    defaultValue: 5,
+    isDefault: false,
+  };
+  const FILAS: SettingItem = {
+    ...ENLACE,
+    key: 'signing.massive_max_rows',
+    unit: 'rows',
+    value: 2000,
+    defaultValue: 2000,
+  };
+  const ADJUNTO: SettingItem = {
+    ...ENLACE,
+    key: 'signing.attachment_mb',
+    unit: 'megabytes',
+    value: 8,
+    defaultValue: 8,
+    technical: { min: 1, max: 8 },
+    recommended: { min: 4, max: 8 },
+  };
+
+  it('muestra solo los ajustes de firma, con su unidad y sin llaves crudas', async () => {
+    const http = await configurar();
+    conPermisos(VER);
+    const fixture = TestBed.createComponent(SettingsComponent);
+    fixture.componentRef.setInput('group', 'signing');
+    listar(http, [CUPO, ENLACE, RECORDATORIOS, FILAS, ADJUNTO]);
+    await asentar(fixture);
+    const root = fixture.nativeElement as HTMLElement;
+    const texto = root.textContent ?? '';
+    expect(root.querySelectorAll('.bl-row')).toHaveLength(4);
+    expect(texto).toContain('Vigencia del enlace de firma');
+    expect(texto).toContain('3 días');
+    expect(texto).toContain('1 recordatorio');
+    expect(texto).toContain('2000 filas');
+    expect(texto).toContain('8 MB');
+    expect(texto).not.toContain('Aviso de cupo');
+    expect(texto).not.toMatch(LLAVE_CRUDA);
+  });
+});
+
 describe('Configuración: pestaña Historial', () => {
   const atender = (http: HttpTestingController, items: SettingChange[], total = items.length) => {
     listar(http);

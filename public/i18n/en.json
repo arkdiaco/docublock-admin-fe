@@ -5041,6 +5041,7 @@
     "tab": {
       "alerts": "Alerts",
       "access": "Access",
+      "signing": "Signing and documents",
       "history": "History"
     },
     "col": {
@@ -5067,7 +5068,13 @@
       "attempts": "{{value}} attempts",
       "attemptsOne": "{{value}} attempt",
       "perHour": "{{value}} per hour",
-      "perHourOne": "{{value}} per hour"
+      "perHourOne": "{{value}} per hour",
+      "reminders": "{{value}} reminders",
+      "remindersOne": "{{value}} reminder",
+      "rows": "{{value}} rows",
+      "rowsOne": "{{value}} row",
+      "megabytes": "{{value}} MB",
+      "megabytesOne": "{{value}} MB"
     },
     "editLabel": {
       "percent": "Percentage",
@@ -5076,7 +5083,10 @@
       "minutes": "Minutes",
       "seconds": "Seconds",
       "attempts": "Attempts",
-      "perHour": "Codes per hour"
+      "perHour": "Codes per hour",
+      "reminders": "Reminders",
+      "rows": "Rows",
+      "megabytes": "Megabytes (MB)"
     },
     "item": {
       "alerts": {
@@ -5141,6 +5151,63 @@
           "label": "Wait before a new key",
           "audience": "Seen by signers",
           "hint": "Seconds to wait before requesting another key when signing a document and when turning on automatic signing. Bulk signing has no such wait."
+        }
+      },
+      "signing": {
+        "sign_days": {
+          "label": "Signing days for each version",
+          "audience": "Only stored in the version data",
+          "hint": "Days recorded as the signing expiry of each new document version. Today that date does not close or block the document: the deadline chosen when sending does that."
+        },
+        "link_days": {
+          "label": "Signing link validity",
+          "audience": "Seen by senders and signers",
+          "hint": "Days a signing link lasts when no other validity is chosen. It is the option selected in Docublock when sending or reminding, the one used by automatic reminders and by integrations that send no days."
+        },
+        "reminder_hours": {
+          "label": "Hours between reminders",
+          "audience": "Seen by signers",
+          "hint": "Minimum hours between automatic reminders to a pending signer, in documents without their own reminder rule."
+        },
+        "reminder_max": {
+          "label": "Reminders per signer",
+          "audience": "Seen by signers",
+          "hint": "Maximum automatic reminders each signer receives in documents without their own rule. When they run out, the document owner is notified once."
+        },
+        "invitation_days": {
+          "label": "Organization invitation validity",
+          "audience": "Seen by invited people",
+          "hint": "Days an invitation to join an organization lasts. It applies to invitations and resends made after the change."
+        },
+        "request_link_days": {
+          "label": "Web form validity",
+          "audience": "Seen by people filling the form",
+          "hint": "Days the web form link of a template lasts, both the one issued in the template and the one sent when requesting documents from third parties, when no other validity is chosen."
+        },
+        "identity_max_attempts": {
+          "label": "Identity validation attempts",
+          "audience": "Seen by signers",
+          "hint": "Failed attempts a signer has in ten minutes, counted separately for face, liveness and document. When they run out they wait for the window to pass; they are not blocked."
+        },
+        "massive_max_rows": {
+          "label": "Bulk sending rows",
+          "audience": "Seen by people doing bulk sends",
+          "hint": "Rows accepted by a bulk document sending file. More rows make the file review slower."
+        },
+        "signer_import_max_rows": {
+          "label": "Signer import rows",
+          "audience": "Seen by people importing signers",
+          "hint": "Rows accepted by a signer import file. The downloadable template states this number."
+        },
+        "document_file_mb": {
+          "label": "Integration file size",
+          "audience": "Seen by integrations",
+          "hint": "Maximum size of each file that arrives through the API to create a document. Docublock screens upload another way with their own limit. It cannot exceed 8 MB because the file travels in base64 inside a 12 MB request."
+        },
+        "attachment_mb": {
+          "label": "Signer attachment size",
+          "audience": "Seen by signers",
+          "hint": "Maximum size of each document a signer delivers before signing. It cannot exceed 8 MB because the file travels in base64 inside a 12 MB request."
         }
       }
     },

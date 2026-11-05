@@ -5041,6 +5041,7 @@
     "tab": {
       "alerts": "Avisos",
       "access": "Accesos",
+      "signing": "Firma y documentos",
       "history": "Historial"
     },
     "col": {
@@ -5067,7 +5068,13 @@
       "attempts": "{{value}} intentos",
       "attemptsOne": "{{value}} intento",
       "perHour": "{{value}} por hora",
-      "perHourOne": "{{value}} por hora"
+      "perHourOne": "{{value}} por hora",
+      "reminders": "{{value}} recordatorios",
+      "remindersOne": "{{value}} recordatorio",
+      "rows": "{{value}} filas",
+      "rowsOne": "{{value}} fila",
+      "megabytes": "{{value}} MB",
+      "megabytesOne": "{{value}} MB"
     },
     "editLabel": {
       "percent": "Porcentaje",
@@ -5076,7 +5083,10 @@
       "minutes": "Minutos",
       "seconds": "Segundos",
       "attempts": "Intentos",
-      "perHour": "Códigos por hora"
+      "perHour": "Códigos por hora",
+      "reminders": "Recordatorios",
+      "rows": "Filas",
+      "megabytes": "Megabytes (MB)"
     },
     "item": {
       "alerts": {
@@ -5141,6 +5151,63 @@
           "label": "Espera para pedir otra clave",
           "audience": "Lo ven los firmantes",
           "hint": "Segundos que hay que esperar para pedir otra clave al firmar un documento y al activar la firma automática. La firma masiva no tiene esta espera."
+        }
+      },
+      "signing": {
+        "sign_days": {
+          "label": "Días para firmar de cada versión",
+          "audience": "Solo queda en los datos de la versión",
+          "hint": "Días que se anotan como vencimiento de firma en cada versión nueva de un documento. Hoy esa fecha no cierra ni bloquea el documento: eso lo hace la fecha límite que se elige al enviar."
+        },
+        "link_days": {
+          "label": "Vigencia del enlace de firma",
+          "audience": "Lo ven quienes envían y los firmantes",
+          "hint": "Días que dura el enlace de firma cuando no se elige otra vigencia. Es la opción marcada en Docublock al enviar o recordar, la de los recordatorios automáticos y la de las integraciones que no mandan días."
+        },
+        "reminder_hours": {
+          "label": "Horas entre recordatorios",
+          "audience": "Lo ven los firmantes",
+          "hint": "Horas mínimas entre recordatorios automáticos a un firmante pendiente, en los documentos que no tienen su propia regla de recordatorios."
+        },
+        "reminder_max": {
+          "label": "Recordatorios por firmante",
+          "audience": "Lo ven los firmantes",
+          "hint": "Recordatorios automáticos que recibe como máximo cada firmante en los documentos sin regla propia. Al agotarlos se avisa una vez al dueño del documento."
+        },
+        "invitation_days": {
+          "label": "Vigencia de la invitación a una organización",
+          "audience": "Lo ven las personas invitadas",
+          "hint": "Días que dura la invitación para unirse a una organización. Se aplica a las invitaciones y reenvíos que se hagan desde el cambio."
+        },
+        "request_link_days": {
+          "label": "Vigencia del formulario web",
+          "audience": "Lo ven quienes llenan el formulario",
+          "hint": "Días que dura el enlace del formulario web de una plantilla, el que se emite en la plantilla y el que se manda al pedir documentos a terceros, cuando no se elige otra vigencia."
+        },
+        "identity_max_attempts": {
+          "label": "Intentos de validación de identidad",
+          "audience": "Lo ven los firmantes",
+          "hint": "Intentos fallidos que tiene un firmante en diez minutos, contados aparte para el rostro, la prueba de vida y el documento. Al agotarlos espera a que pase la ventana; no queda bloqueado."
+        },
+        "massive_max_rows": {
+          "label": "Filas del envío masivo",
+          "audience": "Lo ven quienes hacen envíos masivos",
+          "hint": "Filas que acepta un archivo de envío masivo de documentos. Más filas hacen más lenta la revisión del archivo."
+        },
+        "signer_import_max_rows": {
+          "label": "Filas de la importación de firmantes",
+          "audience": "Lo ven quienes importan firmantes",
+          "hint": "Filas que acepta un archivo de importación de firmantes. El formato descargable dice este número."
+        },
+        "document_file_mb": {
+          "label": "Tamaño del archivo por integración",
+          "audience": "Lo ven las integraciones",
+          "hint": "Tamaño máximo de cada archivo que llega por la API para crear un documento. Las pantallas de Docublock suben por otra vía con su propio límite. No pasa de 8 MB porque el archivo viaja en base64 dentro de una petición de 12 MB."
+        },
+        "attachment_mb": {
+          "label": "Tamaño del adjunto del firmante",
+          "audience": "Lo ven los firmantes",
+          "hint": "Tamaño máximo de cada documento que entrega un firmante antes de firmar. No pasa de 8 MB porque el archivo viaja en base64 dentro de una petición de 12 MB."
         }
       }
     },

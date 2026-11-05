@@ -381,6 +381,12 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
         import('./features/settings/pages/settings.component').then((m) => m.SettingsComponent),
     },
     {
+      path: 'firma',
+      data: { group: 'signing' },
+      loadComponent: () =>
+        import('./features/settings/pages/settings.component').then((m) => m.SettingsComponent),
+    },
+    {
       path: 'historial',
       loadComponent: () =>
         import('./features/settings/pages/settings-history.component').then(

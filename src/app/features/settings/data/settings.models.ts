@@ -1,8 +1,17 @@
 export type SettingValue = number | number[];
 export type SettingKind = 'integer' | 'integer_list';
-export type SettingGroup = 'alerts' | 'access';
+export type SettingGroup = 'alerts' | 'access' | 'signing';
 export type SettingUnit =
-  'percent' | 'days' | 'hours' | 'minutes' | 'seconds' | 'attempts' | 'perHour';
+  | 'percent'
+  | 'days'
+  | 'hours'
+  | 'minutes'
+  | 'seconds'
+  | 'attempts'
+  | 'perHour'
+  | 'reminders'
+  | 'rows'
+  | 'megabytes';
 export type SettingChangeAction = 'change' | 'reset' | 'restore';
 
 export interface SettingRange {
