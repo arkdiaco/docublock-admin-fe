@@ -5066,6 +5066,7 @@
       "access": "Accesos",
       "signing": "Firma y documentos",
       "validation": "Validación",
+      "credentials": "Credenciales",
       "history": "Historial"
     },
     "col": {
@@ -5310,6 +5311,75 @@
         "change": "Cambio",
         "who": "Quién",
         "reason": "Motivo"
+      }
+    },
+    "cred": {
+      "lead": "Muestra si cada credencial está puesta en el core. Nunca muestra valores ni prueba la conexión.",
+      "loading": "Cargando credenciales",
+      "errorTitle": "No se pudieron cargar las credenciales",
+      "col": {
+        "integration": "Integración",
+        "state": "Estado",
+        "pieces": "Piezas puestas"
+      },
+      "pieces": "{{set}} de {{total}}",
+      "state": {
+        "configured": "Configurada",
+        "partial": "Incompleta",
+        "missing": "Sin configurar"
+      },
+      "piece": {
+        "set": "Puesta",
+        "unset": "Falta"
+      },
+      "optional": "Opcional",
+      "note": "Los secretos propios del core (sesiones, cifrado, llaves de acceso, avisos de pago y enlaces de inmuebles) son obligatorios: si faltara alguno, el core no arrancaría. Las pasarelas de pago viven en commons y su estado se ve en Comercial › Facturación.",
+      "detail": {
+        "lead": "Variables que el core lee para esta integración. Solo se indica si cada una tiene valor.",
+        "partial": "Falta al menos una pieza obligatoria: lo que usa esta integración fallará hasta completarla en las variables del core.",
+        "missing": "No está configurada en este entorno: lo que usa esta integración no estará disponible."
+      },
+      "kind": {
+        "url": "Dirección del servicio",
+        "serviceKey": "Llave de servicio",
+        "user": "Usuario",
+        "password": "Contraseña",
+        "certificate": "Certificado de firma (.p12)",
+        "certificatePassword": "Contraseña del certificado",
+        "authorityCertificate": "Certificado de la autoridad",
+        "product": "Producto",
+        "securityUser": "Usuario de WS-Security",
+        "securityPassword": "Contraseña de WS-Security"
+      },
+      "group": {
+        "commons": {
+          "label": "Comunicaciones y archivos",
+          "use": "Correos, WhatsApp, almacenamiento de documentos, pagos y validación de identidad"
+        },
+        "signature": {
+          "label": "Firma y anclaje",
+          "use": "Firma de documentos, anclaje, custodia de títulos y aprovisionamiento de organizaciones"
+        },
+        "bridge": {
+          "label": "Integraciones de clientes",
+          "use": "Eventos hacia los sistemas de los clientes y la sección Integraciones"
+        },
+        "utility": {
+          "label": "Generación de PDF",
+          "use": "Hojas de firma, sellos, informes, facturas, conversión de documentos y lectura de cédulas"
+        },
+        "motor": {
+          "label": "Motor de estrategia",
+          "use": "Estudio de las solicitudes de arrendamiento en Bienes raíces"
+        },
+        "hc2": {
+          "label": "Historia de crédito HC2",
+          "use": "Consulta de historia de crédito en las solicitudes de arrendamiento"
+        },
+        "smartHome": {
+          "label": "Hogar inteligente",
+          "use": "Publicación del inmueble al aprobar una consignación"
+        }
       }
     }
   }

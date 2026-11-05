@@ -65,3 +65,18 @@ export interface SettingAction {
   reason: string;
   expectedVersion: number;
 }
+
+export type CredentialState = 'configured' | 'partial' | 'missing';
+
+export interface CredentialItem {
+  variable: string;
+  kind: string;
+  required: boolean;
+  configured: boolean;
+}
+
+export interface CredentialGroup {
+  key: string;
+  state: CredentialState;
+  items: CredentialItem[];
+}

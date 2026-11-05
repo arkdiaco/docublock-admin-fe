@@ -6,7 +6,8 @@ import {
   type UnderlineTab,
 } from '../../../shared/ui/underline-tabs.component';
 
-export type SettingsTab = 'alerts' | 'access' | 'signing' | 'validation' | 'history';
+export type SettingsTab =
+  'alerts' | 'access' | 'signing' | 'validation' | 'credentials' | 'history';
 
 @Component({
   selector: 'dba-settings-tabs',
@@ -40,6 +41,11 @@ export class SettingsTabsComponent {
       key: 'validation',
       label: this.translate.instant('cfg.tab.validation') as string,
       link: [this.path, 'validacion'],
+    },
+    {
+      key: 'credentials',
+      label: this.translate.instant('cfg.tab.credentials') as string,
+      link: [this.path, 'credenciales'],
     },
     {
       key: 'history',

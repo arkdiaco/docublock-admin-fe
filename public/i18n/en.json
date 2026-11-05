@@ -5066,6 +5066,7 @@
       "access": "Access",
       "signing": "Signing and documents",
       "validation": "Validation",
+      "credentials": "Credentials",
       "history": "History"
     },
     "col": {
@@ -5310,6 +5311,75 @@
         "change": "Change",
         "who": "Who",
         "reason": "Reason"
+      }
+    },
+    "cred": {
+      "lead": "Shows whether each credential is set in the core. It never shows values or tests the connection.",
+      "loading": "Loading credentials",
+      "errorTitle": "Credentials could not be loaded",
+      "col": {
+        "integration": "Integration",
+        "state": "Status",
+        "pieces": "Pieces set"
+      },
+      "pieces": "{{set}} of {{total}}",
+      "state": {
+        "configured": "Configured",
+        "partial": "Incomplete",
+        "missing": "Not configured"
+      },
+      "piece": {
+        "set": "Set",
+        "unset": "Missing"
+      },
+      "optional": "Optional",
+      "note": "The core's own secrets (sessions, encryption, access keys, payment notices and property links) are mandatory: if one were missing, the core would not start. Payment gateways live in commons and their status is shown in Commercial › Billing.",
+      "detail": {
+        "lead": "Variables the core reads for this integration. Only whether each one has a value is shown.",
+        "partial": "At least one required piece is missing: whatever uses this integration will fail until it is completed in the core's variables.",
+        "missing": "Not configured in this environment: whatever uses this integration will not be available."
+      },
+      "kind": {
+        "url": "Service address",
+        "serviceKey": "Service key",
+        "user": "User",
+        "password": "Password",
+        "certificate": "Signing certificate (.p12)",
+        "certificatePassword": "Certificate password",
+        "authorityCertificate": "Authority certificate",
+        "product": "Product",
+        "securityUser": "WS-Security user",
+        "securityPassword": "WS-Security password"
+      },
+      "group": {
+        "commons": {
+          "label": "Communications and files",
+          "use": "Email, WhatsApp, document storage, payments and identity validation"
+        },
+        "signature": {
+          "label": "Signing and anchoring",
+          "use": "Document signing, anchoring, title custody and organization provisioning"
+        },
+        "bridge": {
+          "label": "Client integrations",
+          "use": "Events to client systems and the Integrations section"
+        },
+        "utility": {
+          "label": "PDF generation",
+          "use": "Signature sheets, seals, reports, invoices, document conversion and ID card reading"
+        },
+        "motor": {
+          "label": "Strategy engine",
+          "use": "Review of rental applications in Real estate"
+        },
+        "hc2": {
+          "label": "HC2 credit history",
+          "use": "Credit history lookup in rental applications"
+        },
+        "smartHome": {
+          "label": "Smart home",
+          "use": "Publishing the property when a consignment is approved"
+        }
       }
     }
   }

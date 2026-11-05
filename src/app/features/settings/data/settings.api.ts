@@ -5,6 +5,7 @@ import { SILENT_ERRORS } from '../../../core/http/http.interceptors';
 import { errorCodeOf, errorStatusOf } from '../../../shared/http/error-code';
 import { toParams } from '../../../shared/http/query-params';
 import type {
+  CredentialGroup,
   SettingAction,
   SettingItem,
   SettingValue,
@@ -30,6 +31,12 @@ export class SettingsApi {
 
   list(): Observable<{ items: SettingItem[] }> {
     return this.http.get<{ items: SettingItem[] }>(BASE, { context: silent() });
+  }
+
+  credentials(): Observable<{ groups: CredentialGroup[] }> {
+    return this.http.get<{ groups: CredentialGroup[] }>(`${BASE}/credentials`, {
+      context: silent(),
+    });
   }
 
   history(query: SettingsHistoryQuery): Observable<SettingsHistoryPage> {
