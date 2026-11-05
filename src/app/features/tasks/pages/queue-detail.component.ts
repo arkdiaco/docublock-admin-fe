@@ -15,6 +15,8 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import { sectionPath } from '../../../core/layout/console-nav';
 import { DensityService } from '../../../core/preferences/density.service';
+import { NotificationService } from '../../../core/ui/notification.service';
+import { PendingAction } from '../../../shared/domain/pending-action';
 import { LatestRequest } from '../../../shared/http/latest-request';
 import { ButtonComponent } from '../../../shared/ui/button.component';
 import { DataTableComponent, type DataColumn } from '../../../shared/ui/data-table.component';
@@ -23,8 +25,9 @@ import { FilterPillsComponent } from '../../../shared/ui/filter-pills.component'
 import { IconComponent } from '../../../shared/ui/icon.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
 import { QueueItemDetailComponent } from '../components/queue-item-detail.component';
+import { QueueRetryConfirmComponent } from '../components/queue-retry-confirm.component';
 import { hasError, hasOrganization, hasRetries, isQueueKey, kindKeyOf, statePills } from '../data/queue-view';
-import { TasksApi } from '../data/tasks.api';
+import { TasksApi, retryErrorKey } from '../data/tasks.api';
 import type { QueueCounts, QueueItem, QueueKey, QueueState } from '../data/tasks.models';
 
 const LIMIT = 20;
@@ -40,6 +43,7 @@ const LIMIT = 20;
     FilterPillsComponent,
     IconComponent,
     QueueItemDetailComponent,
+    QueueRetryConfirmComponent,
     SectionLoaderComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -115,7 +119,22 @@ const LIMIT = 20;
       </section>
 
       @if (selected(); as item) {
-        <dba-queue-item-detail [queue]="key" [item]="item" (dismissed)="selected.set(null)" />
+        @if (retrying()) {
+          <dba-queue-retry-confirm
+            [queue]="key"
+            [item]="item"
+            [busy]="pending.key() === 'retry'"
+            (submitted)="retry(key, item, $event)"
+            (dismissed)="retrying.set(false)"
+          />
+        } @else {
+          <dba-queue-item-detail
+            [queue]="key"
+            [item]="item"
+            (retry)="retrying.set(true)"
+            (dismissed)="selected.set(null)"
+          />
+        }
       }
     } @else {
       <div class="bl__panel">
@@ -138,6 +157,7 @@ export class QueueDetailComponent {
   private readonly api = inject(TasksApi);
   private readonly locale = inject(LOCALE_ID);
   private readonly translate = inject(TranslateService);
+  private readonly notify = inject(NotificationService);
   private readonly latest = new LatestRequest();
 
   protected readonly density = inject(DensityService);
@@ -175,6 +195,8 @@ export class QueueDetailComponent {
   });
   protected readonly items = signal<QueueItem[]>([]);
   protected readonly selected = signal<QueueItem | null>(null);
+  protected readonly retrying = signal(false);
+  protected readonly pending = new PendingAction();
   protected readonly total = signal(0);
   protected readonly page = signal(1);
   protected readonly pageCount = computed(() => Math.max(1, Math.ceil(this.total() / LIMIT)));
@@ -211,6 +233,21 @@ export class QueueDetailComponent {
 
   protected when(value: string | null): string {
     return value ? formatDate(value, 'd/MM/y, HH:mm', this.locale) : '—';
+  }
+
+  protected async retry(queue: QueueKey, item: QueueItem, reason: string): Promise<void> {
+    if (this.pending.key()) return;
+    await this.pending.run('retry', async () => {
+      try {
+        await firstValueFrom(this.api.retry(queue, item.id, reason));
+        this.notify.success(this.translate.instant('task.retry.started') as string);
+      } catch (error) {
+        this.notify.error(this.translate.instant(retryErrorKey(error)) as string);
+      }
+      this.retrying.set(false);
+      this.selected.set(null);
+      await this.load(false);
+    });
   }
 
   protected async load(withLoader: boolean): Promise<void> {

@@ -42,7 +42,7 @@ import { ModalShellComponent } from '../../../shared/ui/modal-shell.component';
       </div>
     </db-modal-shell>
   `,
-  styleUrls: ['../../../shared/ui/modal-form.scss', './confirm-notice.scss'],
+  styleUrls: ['../../../shared/ui/modal-form.scss', '../../../shared/ui/confirm-notice.scss'],
 })
 export class SendConfirmComponent {
   readonly sendable = input.required<number>();

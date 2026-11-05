@@ -1,8 +1,10 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import type { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { conPermisos, configurar } from '../../catalogs/pages/catalogs-test-kit';
-import { isQueueKey, kindKeyOf, statePills } from '../data/queue-view';
-import type { QueueItemsPage, QueueSummary } from '../data/tasks.models';
+import { isQueueKey, kindKeyOf, noRetryKeyOf, statePills } from '../data/queue-view';
+import { retryErrorKey } from '../data/tasks.api';
+import type { QueueItem, QueueItemsPage, QueueSummary } from '../data/tasks.models';
 import { QueueDetailComponent } from './queue-detail.component';
 import { TasksComponent } from './tasks.component';
 
@@ -37,6 +39,7 @@ const PAGINA: QueueItemsPage = {
       attempts: 6,
       error: 'El cofre no respondió',
       nextAt: '2026-11-01T10:00:00.000Z',
+      retryable: true,
       createdAt: '2026-11-01T09:00:00.000Z',
       updatedAt: '2026-11-01T10:00:00.000Z',
     },
@@ -69,6 +72,25 @@ describe('vista de las colas', () => {
     const [sinFallos] = statePills({ failed: 0, pending: 0, running: 0 });
     expect(conFallos.danger).toBe(true);
     expect(sinFallos.danger).toBeUndefined();
+  });
+});
+
+describe('reintento', () => {
+  const fila = PAGINA.items[0];
+
+  it('explica por qué una purga o un canal no se reintentan', () => {
+    const fija: QueueItem = { ...fila, retryable: false };
+    expect(noRetryKeyOf('purge', fija)).toBe('task.noRetry.purge');
+    expect(noRetryKeyOf('notifications', fija)).toBe('task.noRetry.channel');
+    expect(noRetryKeyOf('notifications', fila)).toBeNull();
+    expect(noRetryKeyOf('purge', { ...fija, state: 'running' })).toBeNull();
+  });
+
+  it('traduce el error del servidor', () => {
+    const conEstado = (status: number) => new HttpErrorResponse({ status });
+    expect(retryErrorKey(conEstado(409))).toBe('task.retry.gone');
+    expect(retryErrorKey(conEstado(403))).toBe('task.retry.forbidden');
+    expect(retryErrorKey(conEstado(500))).toBe('task.retry.failed');
   });
 });
 
@@ -204,5 +226,109 @@ describe('Detalle de una cola', () => {
     const host = fixture.nativeElement as HTMLElement;
     expect(host.textContent).not.toMatch(LLAVE_CRUDA);
     expect(host.textContent).toContain('Volver a Tareas');
+  });
+});
+
+describe('Reintentar desde el detalle', () => {
+  let http: HttpTestingController;
+  const LISTA = `${BASE}/closing/items`;
+
+  const abrirFila = async (pagina: QueueItemsPage = PAGINA): Promise<ComponentFixture<QueueDetailComponent>> => {
+    const fixture = TestBed.createComponent(QueueDetailComponent);
+    fixture.componentRef.setInput('queue', pagina.key);
+    fixture.detectChanges();
+    http.expectOne((r) => r.url === `${BASE}/${pagina.key}/items`).flush(pagina);
+    await asentar(fixture);
+    (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('button.dba-tr')?.click();
+    await asentar(fixture);
+    return fixture;
+  };
+
+  const boton = (host: HTMLElement, texto: string): HTMLButtonElement | undefined =>
+    [...host.querySelectorAll<HTMLButtonElement>('.foot button')].find((b) => b.textContent?.includes(texto));
+
+  const escribirMotivo = (host: HTMLElement, motivo: string): void => {
+    const campo = host.querySelector('dba-queue-retry-confirm input, dba-queue-retry-confirm textarea') as HTMLInputElement;
+    campo.value = motivo;
+    campo.dispatchEvent(new Event('input'));
+  };
+
+  beforeEach(async () => {
+    http = await configurar();
+    conPermisos(['platform:operations:manage']);
+  });
+
+  afterEach(() => http.verify());
+
+  it('sin permiso de gestión solo deja cerrar', async () => {
+    conPermisos(['platform:operations']);
+    const fixture = await abrirFila();
+    const host = fixture.nativeElement as HTMLElement;
+    expect(boton(host, 'Reintentar')).toBeUndefined();
+    expect(boton(host, 'Cerrar')).toBeDefined();
+  });
+
+  it('una notificación por otro canal no ofrece reintentar y lo explica', async () => {
+    const fixture = await abrirFila({
+      ...PAGINA,
+      key: 'notifications',
+      items: [{ ...PAGINA.items[0], kind: 'push', retryable: false }],
+    });
+    const host = fixture.nativeElement as HTMLElement;
+    expect(boton(host, 'Reintentar')).toBeUndefined();
+    expect(host.textContent).toContain('Solo los correos vuelven a la cola');
+  });
+
+  it('pide motivo, avisa el efecto y actualiza la lista', async () => {
+    const fixture = await abrirFila();
+    const host = fixture.nativeElement as HTMLElement;
+    boton(host, 'Reintentar')?.click();
+    await asentar(fixture);
+    expect(host.querySelector('.notice')?.textContent).toContain('Los ya hechos no se repiten');
+    expect(host.textContent).not.toMatch(LLAVE_CRUDA);
+    expect(boton(host, 'Volver a la cola')?.disabled).toBe(true);
+
+    escribirMotivo(host, 'Ya volvió el cofre');
+    await asentar(fixture);
+    boton(host, 'Volver a la cola')?.click();
+    boton(host, 'Volver a la cola')?.click();
+    const envio = http.expectOne(`${LISTA.replace('/items', '')}/items/t1/retry`);
+    expect(envio.request.body).toEqual({ reason: 'Ya volvió el cofre' });
+    envio.flush({ id: 't1', state: 'pending' });
+    await fixture.whenStable();
+    const lista = http.expectOne((r) => r.url === LISTA);
+    expect(lista.request.params.get('state')).toBe('failed');
+    lista.flush({ ...PAGINA, counts: { failed: 0, pending: 4, running: 0 }, total: 0, items: [] });
+    await asentar(fixture);
+    expect(host.querySelector('dba-queue-retry-confirm')).toBeNull();
+    expect(host.querySelector('dba-queue-item-detail')).toBeNull();
+    expect(host.textContent).toContain('No hay elementos fallidos');
+  });
+
+  it('si otro ya lo reintentó cierra y refresca la lista', async () => {
+    const fixture = await abrirFila();
+    const host = fixture.nativeElement as HTMLElement;
+    boton(host, 'Reintentar')?.click();
+    await asentar(fixture);
+    escribirMotivo(host, 'Reintento');
+    await asentar(fixture);
+    boton(host, 'Volver a la cola')?.click();
+    http
+      .expectOne(`${BASE}/closing/items/t1/retry`)
+      .flush({ code: 'ELEMENTO_NO_REINTENTABLE' }, { status: 409, statusText: 'Conflict' });
+    await fixture.whenStable();
+    http.expectOne((r) => r.url === LISTA).flush({ ...PAGINA, total: 0, items: [] });
+    await asentar(fixture);
+    expect(host.querySelector('dba-queue-retry-confirm')).toBeNull();
+  });
+
+  it('cancelar la confirmación vuelve al detalle', async () => {
+    const fixture = await abrirFila();
+    const host = fixture.nativeElement as HTMLElement;
+    boton(host, 'Reintentar')?.click();
+    await asentar(fixture);
+    boton(host, 'Cancelar')?.click();
+    await asentar(fixture);
+    expect(host.querySelector('dba-queue-item-detail')).not.toBeNull();
   });
 });

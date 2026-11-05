@@ -29,6 +29,7 @@ export interface QueueItem {
   attempts: number | null;
   error: string | null;
   nextAt: string | null;
+  retryable: boolean;
   createdAt: string | null;
   updatedAt: string | null;
 }

@@ -5,7 +5,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { canSeeSection, sectionPath } from '../../../core/layout/console-nav';
 import { ModalShellComponent } from '../../../shared/ui/modal-shell.component';
-import { hasError, hasOrganization, hasRetries, kindKeyOf } from '../data/queue-view';
+import { hasError, hasOrganization, hasRetries, kindKeyOf, noRetryKeyOf } from '../data/queue-view';
 import type { QueueItem, QueueKey } from '../data/tasks.models';
 
 @Component({
@@ -17,9 +17,10 @@ import type { QueueItem, QueueKey } from '../data/tasks.models';
       icon="clock"
       [title]="'task.queue.' + queue() + '.name' | translate"
       [maxWidth]="620"
-      confirmLabel="common.close"
-      [cancelable]="false"
-      (confirmed)="dismissed.emit()"
+      [confirmLabel]="canRetry() ? 'task.retry.action' : 'common.close'"
+      [cancelable]="canRetry()"
+      cancelLabel="common.close"
+      (confirmed)="canRetry() ? retry.emit() : dismissed.emit()"
       (dismissed)="dismissed.emit()"
     >
       <dl class="item">
@@ -65,6 +66,10 @@ import type { QueueItem, QueueKey } from '../data/tasks.models';
           <p class="dba-meta item__none">{{ 'task.noError' | translate }}</p>
         }
       }
+
+      @if (noRetryKey(); as key) {
+        <p class="dba-meta item__note">{{ key | translate }}</p>
+      }
     </db-modal-shell>
   `,
   styles: `
@@ -94,6 +99,10 @@ import type { QueueItem, QueueKey } from '../data/tasks.models';
       margin: 0;
     }
 
+    .item__note {
+      margin: 14px 0 0;
+    }
+
     .item__error {
       margin: 0;
       padding: 12px;
@@ -112,6 +121,7 @@ export class QueueItemDetailComponent {
   readonly queue = input.required<QueueKey>();
   readonly item = input.required<QueueItem>();
   readonly dismissed = output<void>();
+  readonly retry = output<void>();
 
   private readonly auth = inject(AuthStore);
   private readonly locale = inject(LOCALE_ID);
@@ -120,6 +130,11 @@ export class QueueItemDetailComponent {
   protected readonly organizationsPath = sectionPath('organizations');
   protected readonly canOpenOrganization = computed(() =>
     canSeeSection(this.auth.platformPermissions(), 'organizations'),
+  );
+  private readonly canManage = computed(() => this.auth.canManage('operations'));
+  protected readonly canRetry = computed(() => this.canManage() && this.item().retryable);
+  protected readonly noRetryKey = computed(() =>
+    this.canManage() ? noRetryKeyOf(this.queue(), this.item()) : null,
   );
   protected readonly withOrganization = computed(() => hasOrganization(this.queue()));
   protected readonly withRetries = computed(() => hasRetries(this.queue()));

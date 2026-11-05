@@ -110,6 +110,7 @@ export const ACTIVITY_ACTIONS = [
   'support_tickets.priority_set',
   'support_tickets.reply',
   'support_tickets.status_set',
+  'tasks.retry',
   'transactions.invoiced_set',
   'transactions.manual_create',
   'transactions.reconcile',

@@ -1,5 +1,5 @@
 import type { FilterPill } from '../../../shared/ui/filter-pills.component';
-import { QUEUE_KEYS, QUEUE_STATES, type QueueCounts, type QueueKey } from './tasks.models';
+import { QUEUE_KEYS, QUEUE_STATES, type QueueCounts, type QueueItem, type QueueKey } from './tasks.models';
 
 const KNOWN_KINDS = new Set([
   'DEFAULT_DIRECTORY_AND_TEMPLATE',
@@ -22,6 +22,13 @@ export const hasRetries = (queue: QueueKey): boolean => WITH_RETRIES.has(queue);
 export const hasOrganization = (queue: QueueKey): boolean => !WITHOUT_ORGANIZATION.has(queue);
 
 export const hasError = (queue: QueueKey): boolean => !WITHOUT_ERROR.has(queue);
+
+export const noRetryKeyOf = (queue: QueueKey, item: QueueItem): string | null => {
+  if (item.state !== 'failed' || item.retryable) return null;
+  if (queue === 'purge') return 'task.noRetry.purge';
+  if (queue === 'notifications') return 'task.noRetry.channel';
+  return null;
+};
 
 export const kindKeyOf = (kind: string): string | null => (KNOWN_KINDS.has(kind) ? `task.kind.${kind}` : null);
 

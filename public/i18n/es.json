@@ -601,6 +601,9 @@
       "create": "envió una campaña de WhatsApp",
       "image": "subió una imagen para WhatsApp",
       "retry": "reenvió una campaña de WhatsApp a los fallidos"
+    },
+    "tasks": {
+      "retry": "reintentó un elemento de una cola"
     }
   },
   "placeholder": {
@@ -4566,6 +4569,25 @@
       "failed": "Fallido",
       "pending": "Pendiente",
       "running": "En curso"
+    },
+    "retry": {
+      "action": "Reintentar",
+      "title": "Reintentar elemento",
+      "confirm": "Volver a la cola",
+      "started": "El elemento volvió a la cola. El trabajo automático lo tomará en breve.",
+      "gone": "Este elemento ya no se puede reintentar. Actualizamos la lista.",
+      "forbidden": "No tienes permiso para reintentar elementos.",
+      "failed": "No pudimos reintentar. Inténtalo de nuevo.",
+      "notice": {
+        "closing": "Retoma los pasos que faltan del cierre: anclaje, reportes o avisos. Los ya hechos no se repiten. Puede enviar correos y WhatsApp a las personas del documento.",
+        "provisioning": "Vuelve a ejecutar este paso del alta de la organización.",
+        "notifications": "Se enviará este correo a la persona con el mensaje original del {{date}}, aunque ya sea antiguo. Si prefiere resúmenes, llegará con el próximo.",
+        "massive": "Retoma las filas que faltan; las ya procesadas no se repiten. Puede crear documentos y enviar invitaciones."
+      }
+    },
+    "noRetry": {
+      "purge": "Una purga se repite desde la ficha de la organización, con su confirmación.",
+      "channel": "Este canal no se puede reenviar desde aquí. Solo los correos vuelven a la cola."
     }
   }
 }

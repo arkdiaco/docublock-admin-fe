@@ -601,6 +601,9 @@
       "create": "sent a WhatsApp campaign",
       "image": "uploaded an image for WhatsApp",
       "retry": "resent a WhatsApp campaign to the failed numbers"
+    },
+    "tasks": {
+      "retry": "retried a queue item"
     }
   },
   "placeholder": {
@@ -4566,6 +4569,25 @@
       "failed": "Failed",
       "pending": "Pending",
       "running": "Running"
+    },
+    "retry": {
+      "action": "Retry",
+      "title": "Retry item",
+      "confirm": "Back to the queue",
+      "started": "The item is back in the queue. The automatic job will pick it up shortly.",
+      "gone": "This item can no longer be retried. We refreshed the list.",
+      "forbidden": "You do not have permission to retry items.",
+      "failed": "We could not retry. Try again.",
+      "notice": {
+        "closing": "Resumes the missing closing steps: anchoring, reports or notices. Finished steps are not repeated. It may send emails and WhatsApp messages to the people on the document.",
+        "provisioning": "Runs this organization setup step again.",
+        "notifications": "This email will go to the person with the original message from {{date}}, even if it is old. If they prefer digests, it will arrive with the next one.",
+        "massive": "Resumes the missing rows; processed rows are not repeated. It may create documents and send invitations."
+      }
+    },
+    "noRetry": {
+      "purge": "A purge is repeated from the organization page, with its confirmation.",
+      "channel": "This channel cannot be resent from here. Only emails go back to the queue."
     }
   }
 }
