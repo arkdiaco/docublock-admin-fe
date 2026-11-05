@@ -604,7 +604,9 @@
     },
     "tasks": {
       "retry": "reintentó un elemento de una cola",
-      "run_job": "ejecutó un trabajo automático"
+      "run_job": "ejecutó un trabajo automático",
+      "rehearse": "ensayó una tarea de mantenimiento",
+      "execute": "ejecutó una tarea de mantenimiento"
     }
   },
   "placeholder": {
@@ -4592,7 +4594,8 @@
     },
     "tab": {
       "queues": "Colas",
-      "jobs": "Automáticos"
+      "jobs": "Automáticos",
+      "maintenance": "Mantenimiento"
     },
     "job": {
       "lead": "Lo que corre solo: cuándo fue la última vez y cómo terminó.",
@@ -4716,6 +4719,111 @@
       "digestWeekly": {
         "name": "Resumen semanal por correo",
         "schedule": "Lunes, 8:00"
+      }
+    },
+    "mnt": {
+      "lead": "Ajustes de datos: primero se ensayan sin escribir nada y después se ejecutan con un motivo.",
+      "loading": "Cargando las tareas…",
+      "errorTitle": "No pudimos cargar las tareas",
+      "col": {
+        "task": "Tarea",
+        "rehearsal": "Último ensayo",
+        "execution": "Última ejecución",
+        "state": "Estado"
+      },
+      "mode": {
+        "rehearsal": "Ensayo",
+        "execution": "Ejecución"
+      },
+      "state": {
+        "running": "En curso",
+        "ok": "Correcto",
+        "partial": "Con fallos",
+        "failed": "Falló",
+        "interrupted": "Interrumpida",
+        "upToDate": "Al día",
+        "pendingWork": "Con pendientes",
+        "never": "Sin ensayar"
+      },
+      "count": {
+        "scanned": "Revisados",
+        "pending": "Pendientes",
+        "changed": "Cambiados",
+        "failed": "Fallidos"
+      },
+      "rows": {
+        "pending": "Pendientes: {{count}}",
+        "changed": "Cambiados: {{count}}",
+        "failed": "Fallidos: {{count}}"
+      },
+      "item": {
+        "pending": "Pendiente",
+        "done": "Aplicado",
+        "failed": "Falló",
+        "info": "Distinto, no se toca"
+      },
+      "note": {
+        "none": "Esta tarea aún no se ha ensayado. Ensayar no escribe nada.",
+        "running": "El ensayo está corriendo.",
+        "failed": "El ensayo no terminó bien. Hay que ensayar de nuevo para poder ejecutar.",
+        "expired": "Este ensayo venció. Hay que ensayar de nuevo para poder ejecutar.",
+        "valid": "Se puede ejecutar durante los 30 minutos siguientes al ensayo.",
+        "nothing": "El ensayo no encontró nada pendiente. No hay nada que ejecutar.",
+        "truncated": "Solo se muestran los primeros 200 elementos.",
+        "used": "Ya se ejecutó después de este ensayo. Para ejecutar otra vez hay que ensayar de nuevo."
+      },
+      "rehearse": {
+        "action": "Ensayar",
+        "again": "Volver a ensayar",
+        "started": "El ensayo arrancó. El resultado aparece aquí cuando termine."
+      },
+      "execute": {
+        "action": "Ejecutar",
+        "title": "Ejecutar tarea",
+        "confirm": "Ejecutar",
+        "affected": "Pendientes según el ensayo: {{count}}",
+        "started": "La ejecución arrancó. El resultado aparece aquí cuando termine."
+      },
+      "error": {
+        "rehearsalRequired": "Hay que ensayar esta tarea antes de ejecutarla.",
+        "busy": "Esta tarea ya está corriendo. Espera a que termine.",
+        "forbidden": "No tienes permiso para esta acción.",
+        "failed": "No pudimos iniciar la tarea. Inténtalo de nuevo."
+      },
+      "history": {
+        "title": "Historial",
+        "empty": "Todavía no se ha ensayado ni ejecutado nada",
+        "errorTitle": "No pudimos cargar el historial",
+        "openFailed": "No pudimos abrir esta corrida. Inténtalo de nuevo.",
+        "col": {
+          "when": "Cuándo",
+          "task": "Tarea",
+          "mode": "Tipo",
+          "result": "Resultado",
+          "rows": "Filas",
+          "who": "Quién",
+          "reason": "Motivo"
+        }
+      },
+      "verifyIndexes": {
+        "name": "Verificar índices",
+        "lead": "Compara los índices esperados con los que existen y crea los que faltan. No borra ni cambia los existentes.",
+        "notice": "Crea los índices que faltan, uno por uno. En colecciones grandes puede tardar varios minutos y cargar la base mientras tanto. Los marcados «borra al vencer» empiezan a borrar las filas vencidas."
+      },
+      "seedSystemRoles": {
+        "name": "Crear roles de sistema",
+        "lead": "Crea en cada organización los roles de sistema que le falten. No toca los que ya existen.",
+        "notice": "Crea los roles de sistema que falten en cada organización. Los que ya existen no cambian."
+      },
+      "syncRolePermissions": {
+        "name": "Actualizar permisos de roles de sistema",
+        "lead": "Agrega a los roles de sistema los permisos que les faltan. No quita ninguno ni toca los roles personalizados.",
+        "notice": "Agrega permisos a roles en uso: las personas con esos roles van a poder hacer más cosas en su organización."
+      },
+      "grantDerivedPermissions": {
+        "name": "Conceder permisos derivados",
+        "lead": "Concede los permisos que se derivan de los que cada rol ya tiene. Incluye roles personalizados y no quita ninguno.",
+        "notice": "Agrega permisos a roles en uso, también a los personalizados: las personas con esos roles van a poder hacer más cosas en su organización."
       }
     }
   }

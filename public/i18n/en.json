@@ -604,7 +604,9 @@
     },
     "tasks": {
       "retry": "retried a queue item",
-      "run_job": "ran a scheduled job"
+      "run_job": "ran a scheduled job",
+      "rehearse": "rehearsed a maintenance task",
+      "execute": "executed a maintenance task"
     }
   },
   "placeholder": {
@@ -4592,7 +4594,8 @@
     },
     "tab": {
       "queues": "Queues",
-      "jobs": "Scheduled"
+      "jobs": "Scheduled",
+      "maintenance": "Maintenance"
     },
     "job": {
       "lead": "What runs on its own: when it last ran and how it ended.",
@@ -4716,6 +4719,111 @@
       "digestWeekly": {
         "name": "Weekly email digest",
         "schedule": "Mondays, 8:00"
+      }
+    },
+    "mnt": {
+      "lead": "Data adjustments: rehearse first without writing anything, then execute with a reason.",
+      "loading": "Loading tasks…",
+      "errorTitle": "We could not load the tasks",
+      "col": {
+        "task": "Task",
+        "rehearsal": "Last rehearsal",
+        "execution": "Last execution",
+        "state": "Status"
+      },
+      "mode": {
+        "rehearsal": "Rehearsal",
+        "execution": "Execution"
+      },
+      "state": {
+        "running": "Running",
+        "ok": "Correct",
+        "partial": "With failures",
+        "failed": "Failed",
+        "interrupted": "Interrupted",
+        "upToDate": "Up to date",
+        "pendingWork": "Pending work",
+        "never": "Not rehearsed"
+      },
+      "count": {
+        "scanned": "Checked",
+        "pending": "Pending",
+        "changed": "Changed",
+        "failed": "Failed"
+      },
+      "rows": {
+        "pending": "Pending: {{count}}",
+        "changed": "Changed: {{count}}",
+        "failed": "Failed: {{count}}"
+      },
+      "item": {
+        "pending": "Pending",
+        "done": "Applied",
+        "failed": "Failed",
+        "info": "Different, left as is"
+      },
+      "note": {
+        "none": "This task has not been rehearsed yet. Rehearsing writes nothing.",
+        "running": "The rehearsal is running.",
+        "failed": "The rehearsal did not finish well. Rehearse again to be able to execute.",
+        "expired": "This rehearsal expired. Rehearse again to be able to execute.",
+        "valid": "You can execute during the 30 minutes after the rehearsal.",
+        "nothing": "The rehearsal found nothing pending. There is nothing to execute.",
+        "truncated": "Only the first 200 items are shown.",
+        "used": "It was already executed after this rehearsal. Rehearse again to execute once more."
+      },
+      "rehearse": {
+        "action": "Rehearse",
+        "again": "Rehearse again",
+        "started": "The rehearsal started. The result appears here when it ends."
+      },
+      "execute": {
+        "action": "Execute",
+        "title": "Execute task",
+        "confirm": "Execute",
+        "affected": "Pending according to the rehearsal: {{count}}",
+        "started": "The execution started. The result appears here when it ends."
+      },
+      "error": {
+        "rehearsalRequired": "This task must be rehearsed before executing it.",
+        "busy": "This task is already running. Wait for it to finish.",
+        "forbidden": "You do not have permission for this action.",
+        "failed": "We could not start the task. Try again."
+      },
+      "history": {
+        "title": "History",
+        "empty": "Nothing has been rehearsed or executed yet",
+        "errorTitle": "We could not load the history",
+        "openFailed": "We could not open this run. Try again.",
+        "col": {
+          "when": "When",
+          "task": "Task",
+          "mode": "Type",
+          "result": "Result",
+          "rows": "Rows",
+          "who": "Who",
+          "reason": "Reason"
+        }
+      },
+      "verifyIndexes": {
+        "name": "Verify indexes",
+        "lead": "Compares the expected indexes with the existing ones and creates the missing ones. It does not drop or change existing ones.",
+        "notice": "Creates the missing indexes one by one. On large collections it can take several minutes and load the database meanwhile. Those marked «borra al vencer» start deleting expired rows."
+      },
+      "seedSystemRoles": {
+        "name": "Create system roles",
+        "lead": "Creates in each organization the system roles it is missing. It does not touch existing ones.",
+        "notice": "Creates the system roles missing in each organization. Existing ones do not change."
+      },
+      "syncRolePermissions": {
+        "name": "Update system role permissions",
+        "lead": "Adds the missing permissions to system roles. It removes none and does not touch custom roles.",
+        "notice": "Adds permissions to roles in use: people with those roles will be able to do more in their organization."
+      },
+      "grantDerivedPermissions": {
+        "name": "Grant derived permissions",
+        "lead": "Grants the permissions derived from those each role already has. Includes custom roles and removes none.",
+        "notice": "Adds permissions to roles in use, custom ones too: people with those roles will be able to do more in their organization."
       }
     }
   }

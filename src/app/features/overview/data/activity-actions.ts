@@ -112,6 +112,8 @@ export const ACTIVITY_ACTIONS = [
   'support_tickets.status_set',
   'tasks.retry',
   'tasks.run_job',
+  'tasks.rehearse',
+  'tasks.execute',
   'transactions.invoiced_set',
   'transactions.manual_create',
   'transactions.reconcile',

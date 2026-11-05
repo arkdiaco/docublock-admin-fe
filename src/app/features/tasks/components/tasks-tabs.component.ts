@@ -3,7 +3,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { sectionPath } from '../../../core/layout/console-nav';
 import { UnderlineTabsComponent, type UnderlineTab } from '../../../shared/ui/underline-tabs.component';
 
-export type TasksTab = 'queues' | 'jobs';
+export type TasksTab = 'queues' | 'jobs' | 'maintenance';
 
 @Component({
   selector: 'dba-tasks-tabs',
@@ -20,5 +20,10 @@ export class TasksTabsComponent {
   protected readonly tabs = computed<UnderlineTab[]>(() => [
     { key: 'queues', label: this.translate.instant('task.tab.queues') as string, link: [this.path] },
     { key: 'jobs', label: this.translate.instant('task.tab.jobs') as string, link: [this.path, 'jobs'] },
+    {
+      key: 'maintenance',
+      label: this.translate.instant('task.tab.maintenance') as string,
+      link: [this.path, 'maintenance'],
+    },
   ]);
 }

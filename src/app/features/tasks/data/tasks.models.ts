@@ -87,3 +87,61 @@ export interface JobView {
   last: FinishedJobRun | null;
   lastFailure: { at: string; error: string } | null;
 }
+
+export const MAINTENANCE_TASK_KEYS = [
+  'verifyIndexes',
+  'seedSystemRoles',
+  'syncRolePermissions',
+  'grantDerivedPermissions',
+] as const;
+export type MaintenanceTaskKey = (typeof MAINTENANCE_TASK_KEYS)[number];
+
+export type MaintenanceMode = 'rehearsal' | 'execution';
+export type MaintenanceRunState = 'running' | 'ok' | 'partial' | 'failed' | 'interrupted';
+export type MaintenanceItemState = 'pending' | 'done' | 'failed' | 'info';
+
+export interface MaintenanceItem {
+  label: string;
+  detail: string | null;
+  state: MaintenanceItemState;
+}
+
+export interface MaintenanceRun {
+  id: string;
+  task: MaintenanceTaskKey;
+  mode: MaintenanceMode;
+  state: MaintenanceRunState;
+  adminId: string;
+  admin: { id: string; name: string } | null;
+  reason: string | null;
+  rehearsalId: string | null;
+  startedAt: string;
+  finishedAt: string | null;
+  durationMs: number | null;
+  scanned: number;
+  pending: number;
+  changed: number;
+  failed: number;
+  items: MaintenanceItem[];
+  itemsTruncated: boolean;
+  error: string | null;
+}
+
+export interface MaintenanceTaskView {
+  key: MaintenanceTaskKey;
+  running: boolean;
+  lastRehearsal: MaintenanceRun | null;
+  lastExecution: MaintenanceRun | null;
+  validRehearsalId: string | null;
+}
+
+export interface MaintenanceRunsPage {
+  total: number;
+  items: MaintenanceRun[];
+}
+
+export interface MaintenanceStarted {
+  id: string;
+  key: MaintenanceTaskKey;
+  state: 'running';
+}
