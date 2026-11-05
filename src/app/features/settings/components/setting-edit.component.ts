@@ -50,6 +50,9 @@ export interface SettingEditResult {
           [error]="invalid() ? errorText() : ''"
           [(value)]="draft"
         />
+        @if (setting().group === 'validation') {
+          <p class="notice" role="note">{{ 'cfg.edit.identityRisk' | translate }}</p>
+        }
         @if (outOfRecommended()) {
           <p class="notice" role="note">
             {{ 'cfg.edit.outOfRecommended' | translate: setting().recommended }}

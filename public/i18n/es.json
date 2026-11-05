@@ -5042,6 +5042,7 @@
       "alerts": "Avisos",
       "access": "Accesos",
       "signing": "Firma y documentos",
+      "validation": "Validación",
       "history": "Historial"
     },
     "col": {
@@ -5209,6 +5210,23 @@
           "audience": "Lo ven los firmantes",
           "hint": "Tamaño máximo de cada documento que entrega un firmante antes de firmar. No pasa de 8 MB porque el archivo viaja en base64 dentro de una petición de 12 MB."
         }
+      },
+      "validation": {
+        "face_similarity_percent": {
+          "label": "Similitud mínima del rostro",
+          "audience": "Lo ven los firmantes",
+          "hint": "Parecido mínimo entre la selfie y la foto del documento para aprobar la comparación. Aplica en la firma y al activar One Touch Sign. La consulta biométrica contra el registro la decide el proveedor y no cambia."
+        },
+        "recapture_confidence_percent": {
+          "label": "Confianza para detectar foto de pantalla",
+          "audience": "Lo ven los firmantes",
+          "hint": "Si la foto del documento parece tomada a una pantalla con al menos esta confianza, se rechaza antes de comparar. Más bajo rechaza más fotos; más alto deja pasar más fotos de pantalla. Aplica en la firma y al activar One Touch Sign."
+        },
+        "liveness_confidence_percent": {
+          "label": "Confianza mínima de la prueba de vida",
+          "audience": "Lo ven los firmantes",
+          "hint": "Confianza que debe dar la prueba de vida para aprobarse. Aplica en la firma y al activar One Touch Sign."
+        }
       }
     },
     "detail": {
@@ -5228,7 +5246,8 @@
       "listHint": " Separa los valores con comas.",
       "invalid": "Escribe un número entero de {{min}} a {{max}}.",
       "invalidList": "Escribe hasta {{maxItems}} números enteros distintos, de {{min}} a {{max}}, separados por comas.",
-      "outOfRecommended": "Este valor está fuera de lo recomendado (de {{min}} a {{max}}). Puedes guardarlo."
+      "outOfRecommended": "Este valor está fuera de lo recomendado (de {{min}} a {{max}}). Puedes guardarlo.",
+      "identityRisk": "Cambia la validación de identidad de todas las organizaciones. Bajarlo deja pasar a más personas; subirlo rechaza a más firmantes legítimos. Cada firma guarda el umbral que se le aplicó."
     },
     "reset": {
       "title": "Volver al predeterminado",

@@ -1,6 +1,6 @@
 export type SettingValue = number | number[];
 export type SettingKind = 'integer' | 'integer_list';
-export type SettingGroup = 'alerts' | 'access' | 'signing';
+export type SettingGroup = 'alerts' | 'access' | 'signing' | 'validation';
 export type SettingUnit =
   | 'percent'
   | 'days'

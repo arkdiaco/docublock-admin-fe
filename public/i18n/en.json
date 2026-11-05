@@ -5042,6 +5042,7 @@
       "alerts": "Alerts",
       "access": "Access",
       "signing": "Signing and documents",
+      "validation": "Validation",
       "history": "History"
     },
     "col": {
@@ -5209,6 +5210,23 @@
           "audience": "Seen by signers",
           "hint": "Maximum size of each document a signer delivers before signing. It cannot exceed 8 MB because the file travels in base64 inside a 12 MB request."
         }
+      },
+      "validation": {
+        "face_similarity_percent": {
+          "label": "Minimum face similarity",
+          "audience": "Seen by signers",
+          "hint": "Minimum likeness between the selfie and the document photo to pass the comparison. It applies when signing and when activating One Touch Sign. The biometric check against the registry is decided by the provider and does not change."
+        },
+        "recapture_confidence_percent": {
+          "label": "Confidence to detect a screen photo",
+          "audience": "Seen by signers",
+          "hint": "If the document photo looks taken from a screen with at least this confidence, it is rejected before comparing. Lower rejects more photos; higher lets more screen photos through. It applies when signing and when activating One Touch Sign."
+        },
+        "liveness_confidence_percent": {
+          "label": "Minimum liveness confidence",
+          "audience": "Seen by signers",
+          "hint": "Confidence the liveness check must reach to pass. It applies when signing and when activating One Touch Sign."
+        }
       }
     },
     "detail": {
@@ -5228,7 +5246,8 @@
       "listHint": " Separate values with commas.",
       "invalid": "Enter a whole number from {{min}} to {{max}}.",
       "invalidList": "Enter up to {{maxItems}} different whole numbers, from {{min}} to {{max}}, separated by commas.",
-      "outOfRecommended": "This value is outside the recommended range ({{min}} to {{max}}). You can still save it."
+      "outOfRecommended": "This value is outside the recommended range ({{min}} to {{max}}). You can still save it.",
+      "identityRisk": "This changes identity validation for every organization. Lowering it lets more people through; raising it rejects more legitimate signers. Each signature keeps the threshold applied to it."
     },
     "reset": {
       "title": "Back to default",

@@ -349,6 +349,51 @@ describe('Configuración: pestaña Firma y documentos', () => {
   });
 });
 
+describe('Configuración: pestaña Validación', () => {
+  const SIMILITUD: SettingItem = {
+    ...CUPO,
+    key: 'validation.face_similarity_percent',
+    group: 'validation',
+    value: 85,
+    defaultValue: 85,
+    technical: { min: 1, max: 100 },
+    recommended: { min: 80, max: 95 },
+  };
+  const VIDA: SettingItem = {
+    ...SIMILITUD,
+    key: 'validation.liveness_confidence_percent',
+    value: 75,
+    defaultValue: 75,
+    recommended: { min: 70, max: 90 },
+  };
+
+  it('muestra los umbrales en porcentaje y al editar avisa que cambia la validación de todas las organizaciones', async () => {
+    const http = await configurar();
+    conPermisos(ADMINISTRAR);
+    const fixture = TestBed.createComponent(SettingsComponent);
+    fixture.componentRef.setInput('group', 'validation');
+    listar(http, [CUPO, SIMILITUD, VIDA]);
+    await asentar(fixture);
+    const root = fixture.nativeElement as HTMLElement;
+    const texto = root.textContent ?? '';
+    expect(root.querySelectorAll('.bl-row')).toHaveLength(2);
+    expect(texto).toContain('Similitud mínima del rostro');
+    expect(texto).toContain('85 %');
+    expect(texto).not.toContain('Aviso de cupo');
+    expect(texto).not.toMatch(LLAVE_CRUDA);
+
+    await abrir(fixture, root);
+    botonCon('Cambiar valor')?.click();
+    await asentar(fixture);
+    const aviso = document.querySelector('dba-setting-edit .notice')?.textContent ?? '';
+    expect(aviso).toContain('Cambia la validación de identidad de todas las organizaciones');
+    await escribir(fixture, 0, '60');
+    expect(document.querySelector('dba-setting-edit')?.textContent).toContain(
+      'fuera de lo recomendado',
+    );
+  });
+});
+
 describe('Configuración: pestaña Historial', () => {
   const atender = (http: HttpTestingController, items: SettingChange[], total = items.length) => {
     listar(http);
