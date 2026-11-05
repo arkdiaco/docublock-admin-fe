@@ -599,7 +599,8 @@
     },
     "communications_whatsapp": {
       "create": "sent a WhatsApp campaign",
-      "image": "uploaded an image for WhatsApp"
+      "image": "uploaded an image for WhatsApp",
+      "retry": "resent a WhatsApp campaign to the failed numbers"
     }
   },
   "placeholder": {
@@ -4314,7 +4315,9 @@
       "phone": "Phone",
       "email": "Email",
       "source": "Source",
-      "reason": "Reason"
+      "reason": "Reason",
+      "state": "State",
+      "detail": "Detail"
     },
     "tab": {
       "user": "Users",
@@ -4334,7 +4337,10 @@
       "NO_ENCONTRADO": "Not found"
     },
     "recipients": {
-      "title": "Recipients"
+      "title": "Recipients",
+      "result": "Result by number",
+      "search": "Search by name or phone",
+      "all": "All"
     },
     "numbers": {
       "label": "Custom numbers",
@@ -4367,7 +4373,8 @@
       "hint": "PNG or JPG, up to 5 MB.",
       "tooBig": "The image is over 5 MB.",
       "badType": "The image must be PNG or JPG.",
-      "failed": "Could not upload the image. Try again."
+      "failed": "Could not upload the image. Try again.",
+      "unavailable": "The image could not be loaded."
     },
     "message": {
       "title": "Message",
@@ -4398,20 +4405,90 @@
       "noRecipients": "No recipient can be sent to.",
       "badRequest": "The server rejected the data. Check the image and the recipients.",
       "forbidden": "You do not have permission to send.",
-      "unknown": "The send could not be confirmed. Before retrying, verify whether the messages went out.",
+      "unknown": "The send could not be confirmed. Check the history before trying again.",
       "leftOne": "1 is left out as not sendable."
     },
     "progress": {
       "sending": "Sending",
       "finished": "Send finished",
-      "lead": "The send continues even if you leave this screen.",
+      "lead": "The send continues even if you leave this screen. You can come back from the history.",
       "accepted": "WhatsApp only reports that it accepted the message, not whether it arrived or was read.",
       "stale": "Could not update the progress. Still trying; the send does not stop.",
       "sent": "Accepted",
       "failed": "Failed",
       "pending": "Pending",
-      "excluded": "Not sendable",
-      "again": "New send"
+      "excluded": "Not sendable"
+    },
+    "view": {
+      "new": "New send",
+      "recipients": "Recipients",
+      "history": "History"
+    },
+    "state": {
+      "queued": "Queued",
+      "sending": "Sending",
+      "finished": "Finished",
+      "finishedWithFailures": "Finished with failures"
+    },
+    "recipientState": {
+      "pending": "Pending",
+      "sending": "Sending",
+      "sent": "Accepted",
+      "failed": "Failed",
+      "excluded": "Not sendable"
+    },
+    "failure": {
+      "WHATSAPP_PROVIDER_FAILED": "WhatsApp rejected the message",
+      "WHATSAPP_NOT_CONFIGURED": "WhatsApp is not configured",
+      "WHATSAPP_SIN_DESTINATARIO": "Recipient missing",
+      "BLOCKED_URL": "Image address not allowed",
+      "ENVIO_INTERRUMPIDO": "Send interrupted; it may have gone out",
+      "ENVIO_FALLIDO": "Unexpected error; it may have gone out",
+      "COMMONS_SIN_RESPUESTA": "No response from the service; it may have gone out",
+      "COMMONS_ERROR": "Service error; it may have gone out",
+      "other": "Other error: {{code}}"
+    },
+    "history": {
+      "loading": "Loading sends…",
+      "errorTitle": "The history could not be loaded",
+      "emptyTitle": "No sends yet",
+      "emptyLead": "Sends will show up here.",
+      "col": {
+        "date": "Date",
+        "text": "Text",
+        "by": "Sent by",
+        "state": "State"
+      }
+    },
+    "detail": {
+      "loading": "Loading send…",
+      "missingTitle": "This send does not exist",
+      "missingLead": "The address may be wrong.",
+      "errorTitle": "The send could not be loaded",
+      "back": "Back to history",
+      "title": "Send of {{date}}",
+      "section": "Send details",
+      "by": "Sent by",
+      "reason": "Reason",
+      "finished": "Finished",
+      "duplicates": "Duplicates",
+      "retries": "Resends",
+      "failures": "Why they failed"
+    },
+    "retry": {
+      "action": "Resend to failed ({{total}})",
+      "title": "Resend to failed",
+      "confirm": "Resend now",
+      "summary": "It will be resent to {{total}} numbers.",
+      "summaryOne": "It will be resent to 1 number.",
+      "others": "Those already accepted receive nothing.",
+      "uncertain": "{{total}} may have gone out despite the error and could receive the message twice.",
+      "uncertainOne": "1 may have gone out despite the error and could receive the message twice.",
+      "started": "Resend in progress.",
+      "inProgress": "The send is still in progress.",
+      "noFailed": "There are no failed numbers left.",
+      "forbidden": "You do not have permission to resend.",
+      "unknown": "The resend could not be confirmed. Check the state before trying again."
     }
   }
 }

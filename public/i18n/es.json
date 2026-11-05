@@ -599,7 +599,8 @@
     },
     "communications_whatsapp": {
       "create": "envió una campaña de WhatsApp",
-      "image": "subió una imagen para WhatsApp"
+      "image": "subió una imagen para WhatsApp",
+      "retry": "reenvió una campaña de WhatsApp a los fallidos"
     }
   },
   "placeholder": {
@@ -4314,7 +4315,9 @@
       "phone": "Teléfono",
       "email": "Correo",
       "source": "Origen",
-      "reason": "Motivo"
+      "reason": "Motivo",
+      "state": "Estado",
+      "detail": "Detalle"
     },
     "tab": {
       "user": "Usuarios",
@@ -4334,7 +4337,10 @@
       "NO_ENCONTRADO": "No encontrado"
     },
     "recipients": {
-      "title": "Destinatarios"
+      "title": "Destinatarios",
+      "result": "Resultado por número",
+      "search": "Buscar por nombre o teléfono",
+      "all": "Todos"
     },
     "numbers": {
       "label": "Números personalizados",
@@ -4367,7 +4373,8 @@
       "hint": "PNG o JPG, hasta 5 MB.",
       "tooBig": "La imagen supera los 5 MB.",
       "badType": "La imagen debe ser PNG o JPG.",
-      "failed": "No se pudo subir la imagen. Intenta de nuevo."
+      "failed": "No se pudo subir la imagen. Intenta de nuevo.",
+      "unavailable": "No se pudo cargar la imagen."
     },
     "message": {
       "title": "Mensaje",
@@ -4398,20 +4405,90 @@
       "noRecipients": "Ningún destinatario se puede enviar.",
       "badRequest": "El servidor rechazó los datos. Revisa la imagen y los destinatarios.",
       "forbidden": "No tienes permiso para enviar.",
-      "unknown": "No se pudo confirmar el envío. Antes de reintentar, verifica si los mensajes salieron.",
+      "unknown": "No se pudo confirmar el envío. Revisa el historial antes de reintentar.",
       "leftOne": "1 queda fuera por no ser enviable."
     },
     "progress": {
       "sending": "Enviando",
       "finished": "Envío terminado",
-      "lead": "El envío sigue aunque salgas de esta pantalla.",
+      "lead": "El envío sigue aunque salgas de esta pantalla. Puedes volver desde el historial.",
       "accepted": "WhatsApp solo informa que aceptó el mensaje, no si llegó o se leyó.",
       "stale": "No se pudo actualizar el avance. Sigue intentando; el envío no se detiene.",
       "sent": "Aceptados",
       "failed": "Fallidos",
       "pending": "Pendientes",
-      "excluded": "No enviables",
-      "again": "Nuevo envío"
+      "excluded": "No enviables"
+    },
+    "view": {
+      "new": "Nuevo envío",
+      "recipients": "Destinatarios",
+      "history": "Historial"
+    },
+    "state": {
+      "queued": "En cola",
+      "sending": "Enviando",
+      "finished": "Terminado",
+      "finishedWithFailures": "Terminado con fallos"
+    },
+    "recipientState": {
+      "pending": "Pendiente",
+      "sending": "Enviando",
+      "sent": "Aceptado",
+      "failed": "Fallido",
+      "excluded": "No enviable"
+    },
+    "failure": {
+      "WHATSAPP_PROVIDER_FAILED": "WhatsApp rechazó el mensaje",
+      "WHATSAPP_NOT_CONFIGURED": "WhatsApp no está configurado",
+      "WHATSAPP_SIN_DESTINATARIO": "Falta el destinatario",
+      "BLOCKED_URL": "Dirección de imagen no permitida",
+      "ENVIO_INTERRUMPIDO": "Envío interrumpido; pudo haber salido",
+      "ENVIO_FALLIDO": "Error inesperado; pudo haber salido",
+      "COMMONS_SIN_RESPUESTA": "Sin respuesta del servicio; pudo haber salido",
+      "COMMONS_ERROR": "Error del servicio; pudo haber salido",
+      "other": "Otro error: {{code}}"
+    },
+    "history": {
+      "loading": "Cargando envíos…",
+      "errorTitle": "No se pudo cargar el historial",
+      "emptyTitle": "Todavía no hay envíos",
+      "emptyLead": "Los envíos que se hagan aparecerán aquí.",
+      "col": {
+        "date": "Fecha",
+        "text": "Texto",
+        "by": "Enviado por",
+        "state": "Estado"
+      }
+    },
+    "detail": {
+      "loading": "Cargando envío…",
+      "missingTitle": "Este envío no existe",
+      "missingLead": "Puede que la dirección esté mal.",
+      "errorTitle": "No se pudo cargar el envío",
+      "back": "Volver al historial",
+      "title": "Envío del {{date}}",
+      "section": "Datos del envío",
+      "by": "Enviado por",
+      "reason": "Motivo",
+      "finished": "Terminó",
+      "duplicates": "Repetidos",
+      "retries": "Reenvíos",
+      "failures": "Por qué fallaron"
+    },
+    "retry": {
+      "action": "Reenviar a fallidos ({{total}})",
+      "title": "Reenviar a los fallidos",
+      "confirm": "Reenviar ahora",
+      "summary": "Se reenviará a {{total}} números.",
+      "summaryOne": "Se reenviará a 1 número.",
+      "others": "Los ya aceptados no reciben nada.",
+      "uncertain": "{{total}} pudieron haber salido a pesar del error y podrían recibir el mensaje dos veces.",
+      "uncertainOne": "1 pudo haber salido a pesar del error y podría recibir el mensaje dos veces.",
+      "started": "Reenvío en curso.",
+      "inProgress": "El envío todavía está en curso.",
+      "noFailed": "Ya no hay números fallidos.",
+      "forbidden": "No tienes permiso para reenviar.",
+      "unknown": "No se pudo confirmar el reenvío. Revisa el estado antes de reintentar."
     }
   }
 }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, input, signal } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
@@ -8,8 +8,15 @@ import { TranslatePipe } from '@ngx-translate/core';
   template: `
     <div class="preview">
       <p class="dba-eyebrow">{{ 'comm.message.previewTitle' | translate }}</p>
-      @if (imageUrl()) {
-        <img class="preview__image" [src]="imageUrl()" [alt]="'comm.image.alt' | translate" />
+      @if (imageUrl() && !broken()) {
+        <img
+          class="preview__image"
+          [src]="imageUrl()"
+          [alt]="'comm.image.alt' | translate"
+          (error)="broken.set(true)"
+        />
+      } @else if (broken()) {
+        <p class="preview__image preview__image--empty preview__broken">{{ 'comm.image.unavailable' | translate }}</p>
       } @else {
         <div class="preview__image preview__image--empty" aria-hidden="true"></div>
       }
@@ -50,6 +57,15 @@ import { TranslatePipe } from '@ngx-translate/core';
       background: var(--dba-surface-head);
     }
 
+    .preview__broken {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      font-size: var(--dba-text-meta);
+      color: var(--dba-text-muted);
+    }
+
     .preview__vars {
       display: grid;
       grid-template-columns: auto minmax(0, 1fr);
@@ -85,4 +101,13 @@ export class MessagePreviewComponent {
   readonly imageUrl = input('');
   readonly name = input('');
   readonly text = input('');
+
+  protected readonly broken = signal(false);
+
+  constructor() {
+    effect(() => {
+      this.imageUrl();
+      this.broken.set(false);
+    });
+  }
 }

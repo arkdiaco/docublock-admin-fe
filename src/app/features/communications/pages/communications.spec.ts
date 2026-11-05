@@ -1,5 +1,6 @@
 import type { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { conPermisos, configurar } from '../../catalogs/pages/catalogs-test-kit';
 import { parseNumbers, toggled, withAll } from '../data/recipient-selection';
@@ -82,6 +83,9 @@ describe('Comunicaciones', () => {
 
   const lista = (kind = 'user') =>
     http.expectOne((req) => req.url.endsWith('/platform/communications/recipients') && req.params.get('kind') === kind);
+
+  const historial = () =>
+    http.expectOne((req) => req.method === 'GET' && req.url.endsWith('/platform/communications/whatsapp/campaigns'));
 
   const boton = (host: HTMLElement, texto: string): HTMLButtonElement =>
     [...host.querySelectorAll('button')].find((b) => b.textContent?.includes(texto)) as HTMLButtonElement;
@@ -338,12 +342,12 @@ describe('Comunicaciones', () => {
         imageUrl: IMG.url,
         reason: 'Lanzamiento',
       });
-      peticion.flush({ ...CAMPANA, state: 'finished', counts: { ...CAMPANA.counts, pending: 0, sent: 1 } });
-      await ver(fixture, 'Envío terminado');
-      expect(boton(host, 'Preparar envío')).toBeUndefined();
+      const ir = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+      peticion.flush(CAMPANA);
+      await vi.waitFor(() => expect(ir).toHaveBeenCalledWith(['/catalogos/comunicaciones', 'c1']));
     });
 
-    it('si hay fallo incierto avisa y deja la confirmación abierta', async () => {
+    it('si hay fallo incierto lleva al historial y conserva el formulario', async () => {
       const fixture = abrir(GESTIONAR);
       const host = await preparar(fixture);
       await abrirConfirmacion(fixture, host);
@@ -353,11 +357,30 @@ describe('Comunicaciones', () => {
       http.expectOne('/platform/communications/whatsapp/campaigns').flush({}, { status: 500, statusText: 'x' });
       await vi.waitFor(() =>
         expect(avisos).toHaveBeenCalledWith(
-          expect.objectContaining({ detail: expect.stringContaining('verifica') as string }),
+          expect.objectContaining({ detail: expect.stringContaining('historial') as string }),
         ),
       );
       fixture.detectChanges();
+      expect(host.querySelector('dba-send-confirm')).toBeNull();
+      historial().flush({ total: 0, items: [] });
+      await ver(fixture, 'Todavía no hay envíos');
+      const texto = [...host.querySelectorAll('textarea')].at(-1) as HTMLTextAreaElement;
+      expect(texto.value).toContain('Hola');
+    });
+
+    it('si el servidor rechaza los datos deja la confirmación abierta', async () => {
+      const fixture = abrir(GESTIONAR);
+      const host = await preparar(fixture);
+      await abrirConfirmacion(fixture, host);
+      motivo(host, fixture, 'Motivo');
+      confirmar(host).click();
+      http.expectOne('/platform/communications/whatsapp/campaigns').flush({}, { status: 400, statusText: 'x' });
+      await vi.waitFor(() => {
+        fixture.detectChanges();
+        expect(confirmar(host).disabled).toBe(false);
+      });
       expect(host.querySelector('dba-send-confirm')).toBeTruthy();
+      http.expectNone((req) => req.method === 'GET' && req.url.endsWith('/whatsapp/campaigns'));
     });
 
     it('si nadie se puede enviar no abre la confirmación', async () => {
@@ -370,64 +393,76 @@ describe('Comunicaciones', () => {
       await ver(fixture, 'Se pueden enviar');
       expect(host.querySelector('dba-send-confirm')).toBeNull();
     });
+  });
 
-    it('sigue el avance hasta terminar y deja empezar otro envío limpio', async () => {
-      vi.useFakeTimers({ shouldAdvanceTime: true });
-      try {
-        const fixture = abrir(GESTIONAR);
-        const host = await preparar(fixture);
-        await abrirConfirmacion(fixture, host);
-        motivo(host, fixture, 'Motivo');
-        confirmar(host).click();
-        http.expectOne('/platform/communications/whatsapp/campaigns').flush(CAMPANA);
-        await ver(fixture, 'Enviando');
-        await vi.advanceTimersByTimeAsync(3000);
-        http.expectOne('/platform/communications/whatsapp/campaigns/c1').flush({
-          ...CAMPANA,
-          state: 'sending',
-          counts: { ...CAMPANA.counts, pending: 0, sending: 1 },
-        });
-        await vi.advanceTimersByTimeAsync(3000);
-        http.expectOne('/platform/communications/whatsapp/campaigns/c1').flush({
-          ...CAMPANA,
-          state: 'finished',
-          counts: { ...CAMPANA.counts, pending: 0, failed: 1 },
-        });
-        await ver(fixture, 'Envío terminado');
-        await vi.advanceTimersByTimeAsync(9000);
-        http.expectNone('/platform/communications/whatsapp/campaigns/c1');
-        boton(host, 'Nuevo envío').click();
-        fixture.detectChanges();
-        lista().flush(FILAS);
-        await ver(fixture, 'Ana Ruiz');
-        expect(boton(host, 'Preparar envío').disabled).toBe(true);
-      } finally {
-        vi.useRealTimers();
-      }
+  describe('historial', () => {
+    const FILA = {
+      id: 'c1',
+      state: 'finished',
+      text: 'Hola a todos',
+      imageUrl: 'https://cdn.test/a.png',
+      reason: 'Lanzamiento',
+      duplicates: 0,
+      retries: 0,
+      createdAt: '2026-11-04T15:00:00.000Z',
+      createdByName: 'Ada Paz',
+      counts: { pending: 0, sending: 0, sent: 7, failed: 2, excluded: 1, total: 10 },
+    };
+
+    const abrirHistorial = (permisos: string[]): { fixture: ComponentFixture<CommunicationsComponent>; host: HTMLElement } => {
+      const fixture = abrir(permisos);
+      lista().flush(FILAS);
+      const host = fixture.nativeElement as HTMLElement;
+      boton(host, 'Historial').click();
+      fixture.detectChanges();
+      return { fixture, host };
+    };
+
+    it('lista quién, cuándo, conteos y estado, con enlace al detalle', async () => {
+      const { fixture, host } = abrirHistorial(LEER);
+      const peticion = historial();
+      expect(peticion.request.params.get('page')).toBe('1');
+      peticion.flush({ total: 1, items: [FILA] });
+      await ver(fixture, 'Ada Paz');
+      expect(host.textContent).toContain('Hola a todos');
+      expect(host.textContent).toContain('Terminado con fallos');
+      expect(host.querySelector('a.dba-tr')?.getAttribute('href')).toBe('/catalogos/comunicaciones/c1');
+      expect(host.textContent ?? '').not.toMatch(LLAVE_CRUDA);
     });
 
-    it('si no puede actualizar lo dice y sigue intentando', async () => {
-      vi.useFakeTimers({ shouldAdvanceTime: true });
-      try {
-        const fixture = abrir(GESTIONAR);
-        const host = await preparar(fixture);
-        await abrirConfirmacion(fixture, host);
-        motivo(host, fixture, 'Motivo');
-        confirmar(host).click();
-        http.expectOne('/platform/communications/whatsapp/campaigns').flush(CAMPANA);
-        await ver(fixture, 'Enviando');
-        await vi.advanceTimersByTimeAsync(3000);
-        http.expectOne('/platform/communications/whatsapp/campaigns/c1').flush({}, { status: 500, statusText: 'x' });
-        await ver(fixture, 'No se pudo actualizar');
-        await vi.advanceTimersByTimeAsync(3000);
-        http
-          .expectOne('/platform/communications/whatsapp/campaigns/c1')
-          .flush({ ...CAMPANA, state: 'finished', counts: { ...CAMPANA.counts, pending: 0, sent: 1 } });
-        await ver(fixture, 'Envío terminado');
-        expect(host.textContent).not.toContain('No se pudo actualizar');
-      } finally {
-        vi.useRealTimers();
-      }
+    it('sin envíos lo dice', async () => {
+      const { fixture } = abrirHistorial(LEER);
+      historial().flush({ total: 0, items: [] });
+      await ver(fixture, 'Todavía no hay envíos');
+    });
+
+    it('si falla deja reintentar', async () => {
+      const { fixture, host } = abrirHistorial(LEER);
+      historial().flush({}, { status: 500, statusText: 'x' });
+      await ver(fixture, 'No se pudo cargar el historial');
+      boton(host, 'Reintentar').click();
+      historial().flush({ total: 1, items: [FILA] });
+      await ver(fixture, 'Ada Paz');
+    });
+
+    it('abre directo en el historial con la vista de la dirección', async () => {
+      conPermisos(LEER);
+      const fixture = TestBed.createComponent(CommunicationsComponent);
+      fixture.componentRef.setInput('vista', 'historial');
+      fixture.detectChanges();
+      lista().flush(FILAS);
+      historial().flush({ total: 1, items: [FILA] });
+      await ver(fixture, 'Ada Paz');
+    });
+
+    it('quien solo lee ve «Destinatarios» y quien gestiona «Nuevo envío»', async () => {
+      const lectura = abrir(LEER);
+      lista().flush(FILAS);
+      await ver(lectura, 'Destinatarios');
+      expect((lectura.nativeElement as HTMLElement).textContent).not.toContain('Nuevo envío');
+      const gestion = abrir(GESTIONAR);
+      lista().flush(FILAS);
+      await ver(gestion, 'Nuevo envío');
     });
   });
 });

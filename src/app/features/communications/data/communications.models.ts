@@ -74,6 +74,47 @@ export interface CampaignCounts {
 export interface CampaignView {
   id: string;
   state: 'queued' | 'sending' | 'finished';
+  text: string;
+  imageUrl: string;
+  reason: string;
   duplicates: number;
+  retries: number;
+  createdAt?: string;
+  finishedAt?: string;
+  createdByName?: string;
   counts: CampaignCounts;
+}
+
+export interface CampaignsPage {
+  items: CampaignView[];
+  total: number;
+}
+
+export interface CampaignFailure {
+  code: string;
+  total: number;
+}
+
+export interface CampaignDetail extends CampaignView {
+  failures: CampaignFailure[];
+}
+
+export type CampaignRecipientState = 'pending' | 'sending' | 'sent' | 'failed' | 'excluded';
+
+export interface CampaignRecipient {
+  id: string;
+  state: CampaignRecipientState;
+  source: RecipientSource;
+  phone?: string;
+  rawPhone?: string;
+  name?: string;
+  reason?: string;
+  error?: string;
+  messageId?: string;
+  attemptedAt?: string;
+}
+
+export interface CampaignRecipientsPage {
+  items: CampaignRecipient[];
+  total: number;
 }

@@ -42,28 +42,7 @@ import { ModalShellComponent } from '../../../shared/ui/modal-shell.component';
       </div>
     </db-modal-shell>
   `,
-  styleUrl: '../../../shared/ui/modal-form.scss',
-  styles: `
-    .sum,
-    .notice {
-      margin: 0;
-      font-size: var(--dba-text-body);
-      line-height: 1.45;
-    }
-
-    .sum {
-      font-weight: 600;
-      color: var(--dba-ink);
-    }
-
-    .notice {
-      padding: 10px 12px;
-      border: 1px solid var(--dba-state-warning-border);
-      border-radius: var(--dba-radius-control);
-      background: var(--dba-state-warning-bg);
-      color: var(--dba-state-warning-fg);
-    }
-  `,
+  styleUrls: ['../../../shared/ui/modal-form.scss', './confirm-notice.scss'],
 })
 export class SendConfirmComponent {
   readonly sendable = input.required<number>();

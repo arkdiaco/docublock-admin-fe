@@ -5,8 +5,12 @@ import { SILENT_ERRORS } from '../../../core/http/http.interceptors';
 import { errorCodeOf, errorStatusOf } from '../../../shared/http/error-code';
 import { toParams } from '../../../shared/http/query-params';
 import type {
+  CampaignDetail,
   CampaignImage,
+  CampaignRecipientState,
+  CampaignRecipientsPage,
   CampaignView,
+  CampaignsPage,
   NewCampaign,
   RecipientKind,
   RecipientsPage,
@@ -24,6 +28,8 @@ export const imageErrorKey = (error: unknown): string => {
   return 'comm.image.failed';
 };
 
+export const CAMPAIGN_UNCERTAIN = 'comm.send.unknown';
+
 export const campaignErrorKey = (error: unknown): string => {
   const code = errorCodeOf(error);
   if (code === 'CAMPANA_TEXTO_INVALIDO') return 'comm.send.badText';
@@ -31,7 +37,15 @@ export const campaignErrorKey = (error: unknown): string => {
   const status = errorStatusOf(error);
   if (status === 400) return 'comm.send.badRequest';
   if (status === 403) return 'comm.send.forbidden';
-  return 'comm.send.unknown';
+  return CAMPAIGN_UNCERTAIN;
+};
+
+export const retryErrorKey = (error: unknown): string => {
+  const code = errorCodeOf(error);
+  if (code === 'CAMPANA_EN_CURSO') return 'comm.retry.inProgress';
+  if (code === 'CAMPANA_SIN_FALLIDOS') return 'comm.retry.noFailed';
+  if (errorStatusOf(error) === 403) return 'comm.retry.forbidden';
+  return 'comm.retry.unknown';
 };
 
 @Injectable({ providedIn: 'root' })
@@ -65,7 +79,32 @@ export class CommunicationsApi {
     });
   }
 
-  campaign(id: string): Observable<CampaignView> {
-    return this.http.get<CampaignView>(`${BASE}/whatsapp/campaigns/${id}`, { context: silent() });
+  campaigns(query: { page: number; limit: number }): Observable<CampaignsPage> {
+    return this.http.get<CampaignsPage>(`${BASE}/whatsapp/campaigns`, {
+      params: toParams(query),
+      context: silent(),
+    });
+  }
+
+  campaign(id: string): Observable<CampaignDetail> {
+    return this.http.get<CampaignDetail>(`${BASE}/whatsapp/campaigns/${id}`, { context: silent() });
+  }
+
+  campaignRecipients(
+    id: string,
+    query: { state?: CampaignRecipientState; search?: string; page: number; limit: number },
+  ): Observable<CampaignRecipientsPage> {
+    return this.http.get<CampaignRecipientsPage>(`${BASE}/whatsapp/campaigns/${id}/recipients`, {
+      params: toParams(query),
+      context: silent(),
+    });
+  }
+
+  retryCampaign(id: string, reason: string): Observable<CampaignView> {
+    return this.http.post<CampaignView>(
+      `${BASE}/whatsapp/campaigns/${id}/retry`,
+      { reason },
+      { context: silent() },
+    );
   }
 }

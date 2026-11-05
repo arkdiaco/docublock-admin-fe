@@ -139,6 +139,11 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
       loadComponent: () =>
         import('./features/communications/pages/communications.component').then((m) => m.CommunicationsComponent),
     },
+    {
+      path: ':id',
+      loadComponent: () =>
+        import('./features/communications/pages/campaign-detail.component').then((m) => m.CampaignDetailComponent),
+    },
   ],
   support: [
     {

@@ -17,6 +17,7 @@ export const ACTIVITY_ACTIONS = [
   'catalog_signer_policies.update',
   'communications_whatsapp.create',
   'communications_whatsapp.image',
+  'communications_whatsapp.retry',
   'consent_policies.publish',
   'documents.blockchain_register',
   'documents.cancel',
