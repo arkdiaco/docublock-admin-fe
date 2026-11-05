@@ -370,6 +370,13 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
   settings: [
     {
       path: '',
+      data: { group: 'alerts' },
+      loadComponent: () =>
+        import('./features/settings/pages/settings.component').then((m) => m.SettingsComponent),
+    },
+    {
+      path: 'accesos',
+      data: { group: 'access' },
       loadComponent: () =>
         import('./features/settings/pages/settings.component').then((m) => m.SettingsComponent),
     },

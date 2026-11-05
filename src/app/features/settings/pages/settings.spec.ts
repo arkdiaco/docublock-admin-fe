@@ -1,5 +1,7 @@
 import type { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { Select } from 'primeng/select';
 import { conPermisos, configurar } from '../../catalogs/pages/catalogs-test-kit';
 import { parseSettingDraft, valueLabelOf } from '../data/settings-view';
 import type { SettingChange, SettingItem } from '../data/settings.models';
@@ -253,6 +255,44 @@ describe('Configuración: pestaña Avisos', () => {
   });
 });
 
+describe('Configuración: pestaña Accesos', () => {
+  const VIGENCIA: SettingItem = {
+    ...CUPO,
+    key: 'access.otp_ttl_minutes',
+    group: 'access',
+    unit: 'minutes',
+    value: 10,
+    defaultValue: 10,
+    technical: { min: 1, max: 60 },
+    recommended: { min: 5, max: 15 },
+  };
+  const INTENTOS: SettingItem = {
+    ...VIGENCIA,
+    key: 'access.platform_otp_max_attempts',
+    unit: 'attempts',
+    value: 1,
+    defaultValue: 5,
+    isDefault: false,
+  };
+
+  it('muestra solo los ajustes del grupo, con su unidad y sin llaves crudas', async () => {
+    const http = await configurar();
+    conPermisos(VER);
+    const fixture = TestBed.createComponent(SettingsComponent);
+    fixture.componentRef.setInput('group', 'access');
+    listar(http, [CUPO, VIGENCIA, INTENTOS]);
+    await asentar(fixture);
+    const root = fixture.nativeElement as HTMLElement;
+    const texto = root.textContent ?? '';
+    expect(root.querySelectorAll('.bl-row')).toHaveLength(2);
+    expect(texto).toContain('Vigencia del código de acceso');
+    expect(texto).toContain('10 minutos');
+    expect(texto).toContain('1 intento');
+    expect(texto).not.toContain('Aviso de cupo');
+    expect(texto).not.toMatch(LLAVE_CRUDA);
+  });
+});
+
 describe('Configuración: pestaña Historial', () => {
   const atender = (http: HttpTestingController, items: SettingChange[], total = items.length) => {
     listar(http);
@@ -320,9 +360,7 @@ describe('Configuración: pestaña Historial', () => {
   it('filtra por ajuste y pagina', async () => {
     const { fixture, http, root } = await montarHistorial(VER, [CAMBIO], 45);
     expect(root.querySelector('db-pager')).not.toBeNull();
-    [...root.querySelectorAll<HTMLButtonElement>('db-filter-pills button')]
-      .find((b) => b.textContent?.includes('Aviso de cupo'))
-      ?.click();
+    fixture.debugElement.query(By.directive(Select)).triggerEventHandler('ngModelChange', CUPO.key);
     await asentar(fixture);
     listar(http);
     const pedido = http.expectOne((req) => req.url.endsWith(`${BASE}/history`));

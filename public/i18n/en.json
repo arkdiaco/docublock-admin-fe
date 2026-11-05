@@ -5040,6 +5040,7 @@
     "reasonPlaceholder": "Why this change is being made",
     "tab": {
       "alerts": "Alerts",
+      "access": "Access",
       "history": "History"
     },
     "col": {
@@ -5058,12 +5059,24 @@
       "days": "{{value}} days",
       "daysOne": "{{value}} day",
       "hours": "{{value}} hours",
-      "hoursOne": "{{value}} hour"
+      "hoursOne": "{{value}} hour",
+      "minutes": "{{value}} minutes",
+      "minutesOne": "{{value}} minute",
+      "seconds": "{{value}} seconds",
+      "secondsOne": "{{value}} second",
+      "attempts": "{{value}} attempts",
+      "attemptsOne": "{{value}} attempt",
+      "perHour": "{{value}} per hour",
+      "perHourOne": "{{value}} per hour"
     },
     "editLabel": {
       "percent": "Percentage",
       "days": "Days",
-      "hours": "Hours"
+      "hours": "Hours",
+      "minutes": "Minutes",
+      "seconds": "Seconds",
+      "attempts": "Attempts",
+      "perHour": "Codes per hour"
     },
     "item": {
       "alerts": {
@@ -5086,6 +5099,48 @@
           "label": "Expiry reminders",
           "audience": "Reaches customers",
           "hint": "Days before expiry on which an email goes to organizations without automatic billing. The send runs daily at 8:00. A milestone already sent for an expiry date is not repeated."
+        }
+      },
+      "access": {
+        "otp_ttl_minutes": {
+          "label": "Access code validity",
+          "audience": "Seen by users, signers and the console",
+          "hint": "Minutes a code lasts when entering Docublock, the wallet and the console."
+        },
+        "otp_resend_seconds": {
+          "label": "Wait before a new code",
+          "audience": "Seen by users and the console",
+          "hint": "Seconds to wait before requesting another code when entering Docublock and the console."
+        },
+        "otp_max_per_hour": {
+          "label": "Access codes per hour",
+          "audience": "Seen by users and the console",
+          "hint": "How many codes one account can request in an hour when entering Docublock and the console. With a very low value, someone who makes a mistake may be unable to enter until the hour passes."
+        },
+        "login_otp_max_attempts": {
+          "label": "Access code attempts",
+          "audience": "Seen by users and signers",
+          "hint": "Attempts each code has when entering Docublock and the wallet. Once used up, another code is needed."
+        },
+        "platform_otp_max_attempts": {
+          "label": "Console code attempts",
+          "audience": "Shown in the console",
+          "hint": "Attempts each code has when entering this console. Once used up, another code is needed."
+        },
+        "signing_otp_ttl_minutes": {
+          "label": "Signing key validity",
+          "audience": "Seen by signers",
+          "hint": "Minutes the dynamic key lasts when signing, in bulk signing and when turning on automatic signing."
+        },
+        "signing_otp_max_attempts": {
+          "label": "Signing key attempts",
+          "audience": "Seen by signers",
+          "hint": "Attempts each key has. Using them up on a document counts as a failed signing attempt; in bulk and automatic signing another key is needed."
+        },
+        "signing_otp_resend_seconds": {
+          "label": "Wait before a new key",
+          "audience": "Seen by signers",
+          "hint": "Seconds to wait before requesting another key when signing a document and when turning on automatic signing. Bulk signing has no such wait."
         }
       }
     },

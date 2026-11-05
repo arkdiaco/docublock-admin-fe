@@ -7,7 +7,9 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { Select } from 'primeng/select';
 import { firstValueFrom } from 'rxjs';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { DensityService } from '../../../core/preferences/density.service';
@@ -17,7 +19,6 @@ import { LatestRequest } from '../../../shared/http/latest-request';
 import { ButtonComponent } from '../../../shared/ui/button.component';
 import { DataTableComponent, type DataColumn } from '../../../shared/ui/data-table.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
-import { FilterPillsComponent, type FilterPill } from '../../../shared/ui/filter-pills.component';
 import { PagerComponent } from '../../../shared/ui/pager.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
 import { SettingActionConfirmComponent } from '../components/setting-action-confirm.component';
@@ -41,10 +42,11 @@ const COLUMNS: readonly DataColumn[] = [
   selector: 'dba-settings-history',
   imports: [
     TranslatePipe,
+    FormsModule,
+    Select,
     ButtonComponent,
     DataTableComponent,
     EmptyStateComponent,
-    FilterPillsComponent,
     PagerComponent,
     SectionLoaderComponent,
     SettingActionConfirmComponent,
@@ -65,12 +67,19 @@ const COLUMNS: readonly DataColumn[] = [
 
       <dba-settings-tabs active="history" />
 
-      <db-filter-pills
-        [pills]="pills()"
-        [active]="key()"
-        [label]="'cfg.history.col.setting' | translate"
-        (activeChange)="setKey($event)"
-      />
+      <div class="bl__tools">
+        <p-select
+          [options]="keyOptions()"
+          optionLabel="label"
+          optionValue="id"
+          [filter]="true"
+          [ngModel]="key()"
+          (ngModelChange)="setKey($event)"
+          [ariaLabel]="'cfg.history.col.setting' | translate"
+          appendTo="body"
+          styleClass="bl__select"
+        />
+      </div>
 
       @if (loading()) {
         <db-section-loader [label]="'cfg.history.loading' | translate" />
@@ -168,9 +177,12 @@ export class SettingsHistoryComponent {
   protected readonly restoring = signal<SettingChange | null>(null);
 
   protected readonly pageCount = computed(() => Math.ceil(this.total() / HISTORY_LIMIT));
-  protected readonly pills = computed<FilterPill[]>(() => [
-    { key: '', labelKey: 'cfg.history.all' },
-    ...this.items().map((item) => ({ key: item.key, labelKey: `cfg.item.${item.key}.label` })),
+  protected readonly keyOptions = computed(() => [
+    { id: '', label: this.translate.instant('cfg.history.all') as string },
+    ...this.items().map((item) => ({
+      id: item.key,
+      label: this.translate.instant(`cfg.item.${item.key}.label`) as string,
+    })),
   ]);
 
   constructor() {

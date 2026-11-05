@@ -5040,6 +5040,7 @@
     "reasonPlaceholder": "Por qué se hace este cambio",
     "tab": {
       "alerts": "Avisos",
+      "access": "Accesos",
       "history": "Historial"
     },
     "col": {
@@ -5058,12 +5059,24 @@
       "days": "{{value}} días",
       "daysOne": "{{value}} día",
       "hours": "{{value}} horas",
-      "hoursOne": "{{value}} hora"
+      "hoursOne": "{{value}} hora",
+      "minutes": "{{value}} minutos",
+      "minutesOne": "{{value}} minuto",
+      "seconds": "{{value}} segundos",
+      "secondsOne": "{{value}} segundo",
+      "attempts": "{{value}} intentos",
+      "attemptsOne": "{{value}} intento",
+      "perHour": "{{value}} por hora",
+      "perHourOne": "{{value}} por hora"
     },
     "editLabel": {
       "percent": "Porcentaje",
       "days": "Días",
-      "hours": "Horas"
+      "hours": "Horas",
+      "minutes": "Minutos",
+      "seconds": "Segundos",
+      "attempts": "Intentos",
+      "perHour": "Códigos por hora"
     },
     "item": {
       "alerts": {
@@ -5086,6 +5099,48 @@
           "label": "Recordatorios de vencimiento",
           "audience": "Llega a los clientes",
           "hint": "Días antes del vencimiento en los que se envía un correo a las organizaciones sin cobro automático. El envío corre cada día a las 8:00. Si un hito ya se envió para un vencimiento, no se repite."
+        }
+      },
+      "access": {
+        "otp_ttl_minutes": {
+          "label": "Vigencia del código de acceso",
+          "audience": "Lo ven usuarios, firmantes y consola",
+          "hint": "Minutos que dura el código para entrar a Docublock, a la wallet y a la consola."
+        },
+        "otp_resend_seconds": {
+          "label": "Espera para pedir otro código",
+          "audience": "Lo ven usuarios y consola",
+          "hint": "Segundos que hay que esperar para pedir otro código al entrar a Docublock y a la consola."
+        },
+        "otp_max_per_hour": {
+          "label": "Códigos de acceso por hora",
+          "audience": "Lo ven usuarios y consola",
+          "hint": "Cuántos códigos puede pedir una misma cuenta en una hora al entrar a Docublock y a la consola. Con un valor muy bajo, quien se equivoque puede quedar sin entrar hasta que pase la hora."
+        },
+        "login_otp_max_attempts": {
+          "label": "Intentos del código de acceso",
+          "audience": "Lo ven usuarios y firmantes",
+          "hint": "Intentos que tiene cada código al entrar a Docublock y a la wallet. Al agotarlos hay que pedir otro."
+        },
+        "platform_otp_max_attempts": {
+          "label": "Intentos del código de la consola",
+          "audience": "Se ve en la consola",
+          "hint": "Intentos que tiene cada código al entrar a esta consola. Al agotarlos hay que pedir otro."
+        },
+        "signing_otp_ttl_minutes": {
+          "label": "Vigencia de la clave de firma",
+          "audience": "Lo ven los firmantes",
+          "hint": "Minutos que dura la clave dinámica al firmar, en la firma masiva y al activar la firma automática."
+        },
+        "signing_otp_max_attempts": {
+          "label": "Intentos de la clave de firma",
+          "audience": "Lo ven los firmantes",
+          "hint": "Intentos que tiene cada clave. Al agotarlos en un documento cuenta como intento fallido de firma; en la firma masiva y en la firma automática hay que pedir otra."
+        },
+        "signing_otp_resend_seconds": {
+          "label": "Espera para pedir otra clave",
+          "audience": "Lo ven los firmantes",
+          "hint": "Segundos que hay que esperar para pedir otra clave al firmar un documento y al activar la firma automática. La firma masiva no tiene esta espera."
         }
       }
     },

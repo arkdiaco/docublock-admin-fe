@@ -5,6 +5,7 @@ import {
   LOCALE_ID,
   computed,
   inject,
+  input,
   signal,
 } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -25,7 +26,7 @@ import { SettingEditComponent, type SettingEditResult } from '../components/sett
 import { SettingsTabsComponent } from '../components/settings-tabs.component';
 import { valueLabelOf } from '../data/settings-view';
 import { SettingsApi, settingErrorKey } from '../data/settings.api';
-import type { SettingItem, SettingValue } from '../data/settings.models';
+import type { SettingGroup, SettingItem, SettingValue } from '../data/settings.models';
 
 const COLUMNS: readonly DataColumn[] = [
   { key: 'setting', labelKey: 'cfg.col.setting', width: 'minmax(0, 2.4fr)' },
@@ -64,7 +65,7 @@ type SettingMode = 'detail' | 'edit' | 'reset';
         </button>
       </header>
 
-      <dba-settings-tabs active="alerts" />
+      <dba-settings-tabs [active]="group()" />
 
       @if (loading()) {
         <db-section-loader [label]="'cfg.loading' | translate" />
@@ -78,7 +79,7 @@ type SettingMode = 'detail' | 'edit' | 'reset';
       } @else {
         <dba-data-table
           [columns]="columns"
-          [label]="'cfg.tab.alerts' | translate"
+          [label]="'cfg.tab.' + group() | translate"
           [dense]="density.compact()"
           minWidth="820px"
         >
@@ -143,6 +144,8 @@ type SettingMode = 'detail' | 'edit' | 'reset';
   styleUrl: '../../../shared/ui/list-page.scss',
 })
 export class SettingsComponent {
+  readonly group = input<SettingGroup>('alerts');
+
   private readonly api = inject(SettingsApi);
   private readonly locale = inject(LOCALE_ID);
   private readonly notify = inject(NotificationService);
@@ -155,7 +158,10 @@ export class SettingsComponent {
   protected readonly loading = signal(true);
   protected readonly refreshing = signal(false);
   protected readonly error = signal(false);
-  protected readonly items = signal<SettingItem[]>([]);
+  private readonly all = signal<SettingItem[]>([]);
+  protected readonly items = computed(() =>
+    this.all().filter((item) => item.group === this.group()),
+  );
   protected readonly selectedKey = signal<string | null>(null);
   protected readonly mode = signal<SettingMode>('detail');
   protected readonly selected = computed(
@@ -211,7 +217,7 @@ export class SettingsComponent {
     try {
       const { items } = await firstValueFrom(this.api.list());
       if (!current()) return;
-      this.items.set(items);
+      this.all.set(items);
       this.error.set(false);
     } catch {
       if (current()) this.error.set(true);

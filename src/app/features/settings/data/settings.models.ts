@@ -1,6 +1,8 @@
 export type SettingValue = number | number[];
 export type SettingKind = 'integer' | 'integer_list';
-export type SettingUnit = 'percent' | 'days' | 'hours';
+export type SettingGroup = 'alerts' | 'access';
+export type SettingUnit =
+  'percent' | 'days' | 'hours' | 'minutes' | 'seconds' | 'attempts' | 'perHour';
 export type SettingChangeAction = 'change' | 'reset' | 'restore';
 
 export interface SettingRange {
