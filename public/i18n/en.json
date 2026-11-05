@@ -1196,7 +1196,7 @@
       "identityValid": "Compares the selfie with the document photo",
       "biometricValid": "Selfie against the biometric record",
       "ani": "Confirms the ID with the civil registry",
-      "liveness": "Liveness check; uses no credits"
+      "liveness": "Confirms a real person is in front of the camera; uses no credits"
     },
     "selfService": "Set by the organization:",
     "self": {
@@ -2198,14 +2198,97 @@
         "2": "In progress",
         "3": "Finished"
       },
-      "empty": "The document has no versions."
+      "empty": "The document has no versions.",
+      "comments": "Version comments ({{total}})",
+      "bySigner": "Signer",
+      "byUser": "Organization user"
     },
     "traceUi": {
       "empty": "No events recorded.",
       "system": "System",
       "reason": "Reason: {{reason}}",
-      "count": "{{total}} events",
-      "errorTitle": "We couldn't load the traceability"
+      "cause": "Cause: {{cause}}",
+      "errorTitle": "We couldn't load the traceability",
+      "noFailures": "Nothing failed in this document.",
+      "filter": {
+        "label": "Filter the traceability",
+        "all": "All",
+        "failed": "Only what failed"
+      },
+      "title": {
+        "unsent": "Invitation not sent",
+        "resentUnsent": "Invitation resend not sent",
+        "covered": "Invitation included in another document of the process",
+        "anchorGaveUp": "Blockchain registration failed: no more retries"
+      },
+      "mail": {
+        "sent": "Email sent",
+        "sentTo": "Email sent to {{to}}",
+        "skipped": "Email skipped: the signer is set to receive no emails",
+        "missing": "No email: the signer has no email on record",
+        "failed": "Email not sent: {{error}}"
+      },
+      "whatsapp": {
+        "sent": "WhatsApp sent",
+        "missing": "WhatsApp not sent: the signer has no mobile number",
+        "failed": "WhatsApp not sent: {{error}}",
+        "noCause": "WhatsApp not sent; the cause was not recorded"
+      },
+      "block": "A single invitation for the {{total}} documents in the block",
+      "attempt": "Attempt {{attempts}}",
+      "attemptOf": "Attempt {{attempts}} of {{max}}",
+      "identity": {
+        "fields": "Data that doesn't match:",
+        "variant": {
+          "basic": "Email and mobile check",
+          "full": "Email, mobile, dates and place of issue check"
+        },
+        "otp": "Wrong one-time code {{total}} times",
+        "faceLow": "Face comparison: the face doesn't match the document",
+        "face": "Face comparison not passed: {{reason}}",
+        "score": "Score {{score}} %",
+        "capture": "The photo is suspected to be of a screen or a printout",
+        "confidence": "Confidence {{confidence}} %",
+        "liveness": "Liveness not passed: {{reason}}",
+        "livenessFailed": "Liveness not passed",
+        "quality": "Unclear selfie: {{reason}}",
+        "faceMatch": "Face match against the registry not passed (code {{code}})",
+        "documentMismatch": "The captured document isn't the signer's"
+      },
+      "field": {
+        "email": "Email",
+        "phone": "Mobile",
+        "expeditionDate": "Issue date",
+        "birthDate": "Birth date",
+        "expeditionCountryId": "Country of issue",
+        "expeditionCityId": "City of issue",
+        "other": "{{name}}"
+      },
+      "otp": {
+        "email": "Email: {{error}}",
+        "sms": "SMS: {{error}}",
+        "whatsapp": "WhatsApp: {{error}}",
+        "other": "{{channel}}: {{error}}"
+      },
+      "anchor": {
+        "status": {
+          "pending": "Status: queued for the chain",
+          "submitted": "Status: sent to the chain",
+          "anchored": "Status: registered on the chain",
+          "failed": "Status: failed"
+        },
+        "statusOther": "Status: {{status}}",
+        "code": "Registration code: {{code}}",
+        "lastError": "Last registration error: {{error}}",
+        "outcome": {
+          "already": "Result: it was already registered",
+          "registered": "Result: registered",
+          "renotified": "Result: the registration existed and was notified again",
+          "draining": "Result: the registration was still queued and the queue was resumed",
+          "reopened": "Result: the registration had run out of attempts and was reopened",
+          "queued": "Result: registration queued"
+        }
+      }
     },
     "trace": {
       "document_created": "Document created",

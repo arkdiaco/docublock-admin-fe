@@ -14,6 +14,7 @@ import {
 } from './data/document-view';
 import type { PlatformDocumentSummary, PlatformSigner, TraceEvent } from './data/documents.models';
 import { TRACE_KEYS } from './data/trace-keys';
+import { traceReadingOf } from './data/trace-reading';
 
 const leaf = (catalog: unknown, key: string): unknown =>
   key
@@ -231,5 +232,346 @@ describe('Documentos: trazabilidad', () => {
   it('el bloque docs tiene las mismas llaves en los dos idiomas', () => {
     expect(leaves(en.docs).sort()).toEqual(leaves(es.docs).sort());
     expect(leaves(en.orgPicker).sort()).toEqual(leaves(es.orgPicker).sort());
+  });
+});
+
+describe('Documentos: lo que dice cada evento', () => {
+  const event = (type: string, details?: Record<string, unknown>): TraceEvent => ({
+    type,
+    timestamp: '2026-10-30T10:00:00.000Z',
+    actor: { type: 'system' },
+    details,
+  });
+
+  const keys = (reading: ReturnType<typeof traceReadingOf>) =>
+    reading.lines.map((line) => line.key);
+
+  it('la invitación por correo con el WhatsApp caído dice qué salió y qué no', () => {
+    const reading = traceReadingOf(
+      event('notification.sent', {
+        sent: true,
+        email: 'ana@x.co',
+        whatsapp: false,
+        whatsappError: 'La URL de destino no está permitida',
+      }),
+    );
+    expect(reading.titleKey).toBeNull();
+    expect(reading.lines).toEqual([
+      { key: 'docs.traceUi.mail.sentTo', params: { to: 'ana@x.co' } },
+      {
+        key: 'docs.traceUi.whatsapp.failed',
+        params: { error: 'La URL de destino no está permitida' },
+        failed: true,
+      },
+    ]);
+    expect(reading.failed).toBe(true);
+  });
+
+  it('una invitación que no salió por ningún canal se llama «no enviada»', () => {
+    const sinCorreo = traceReadingOf(
+      event('notification.sent', { sent: false, error: 'sin correo' }),
+    );
+    expect(sinCorreo.titleKey).toBe('docs.traceUi.title.unsent');
+    expect(sinCorreo.lines).toEqual([{ key: 'docs.traceUi.mail.missing', failed: true }]);
+    expect(sinCorreo.failed).toBe(true);
+
+    const reenvio = traceReadingOf(
+      event('notification.resent', { sent: false, error: 'SMTP caído' }),
+    );
+    expect(reenvio.titleKey).toBe('docs.traceUi.title.resentUnsent');
+    expect(keys(reenvio)).toEqual(['docs.traceUi.mail.failed']);
+
+    const antigua = traceReadingOf(event('notification.sent', { sent: false }));
+    expect(antigua.titleKey).toBe('docs.traceUi.title.unsent');
+    expect(antigua.failed).toBe(true);
+  });
+
+  it('el correo omitido a propósito no cuenta como falla y el WhatsApp sí lo entrega', () => {
+    const omitido = traceReadingOf(
+      event('notification.sent', { sent: false, error: 'correo omitido por el firmante' }),
+    );
+    expect(omitido.titleKey).toBe('docs.traceUi.title.unsent');
+    expect(keys(omitido)).toEqual(['docs.traceUi.mail.skipped']);
+    expect(omitido.failed).toBe(false);
+
+    const porWhatsapp = traceReadingOf(
+      event('notification.sent', { sent: false, error: 'sin correo', whatsapp: true }),
+    );
+    expect(porWhatsapp.titleKey).toBeNull();
+    expect(porWhatsapp.lines).toEqual([
+      { key: 'docs.traceUi.mail.missing', failed: false },
+      { key: 'docs.traceUi.whatsapp.sent' },
+    ]);
+    expect(porWhatsapp.failed).toBe(false);
+
+    const sinCelular = traceReadingOf(
+      event('notification.sent', { sent: true, whatsapp: false, whatsappError: 'sin celular' }),
+    );
+    expect(keys(sinCelular)).toEqual(['docs.traceUi.mail.sent', 'docs.traceUi.whatsapp.missing']);
+    expect(sinCelular.failed).toBe(false);
+  });
+
+  it('el WhatsApp fallido sin causa, el block y la invitación cubierta por el proceso', () => {
+    const sinCausa = traceReadingOf(
+      event('notification.sent', { sent: true, whatsapp: false, documentsInBlock: 3 }),
+    );
+    expect(sinCausa.lines).toEqual([
+      { key: 'docs.traceUi.mail.sent' },
+      { key: 'docs.traceUi.whatsapp.noCause', failed: true },
+      { key: 'docs.traceUi.block', params: { total: 3 } },
+    ]);
+    expect(sinCausa.failed).toBe(true);
+
+    const cubierta = traceReadingOf(event('notification.sent', { sent: false, covered: true }));
+    expect(cubierta).toEqual({ titleKey: 'docs.traceUi.title.covered', lines: [], failed: false });
+  });
+
+  it('la validación fallida dice los datos, el puntaje y el intento', () => {
+    const datos = traceReadingOf(
+      event('identity.failed', {
+        fields: ['email', 'phone', 'nationality'],
+        variant: 'basic',
+        attempts: 2,
+        max: 6,
+      }),
+    );
+    expect(datos.lines).toEqual([
+      {
+        key: 'docs.traceUi.identity.fields',
+        terms: [
+          { key: 'docs.traceUi.field.email' },
+          { key: 'docs.traceUi.field.phone' },
+          { key: 'docs.traceUi.field.other', params: { name: 'nationality' } },
+        ],
+        failed: true,
+      },
+      { key: 'docs.traceUi.identity.variant.basic' },
+      { key: 'docs.traceUi.attemptOf', params: { attempts: 2, max: 6 } },
+    ]);
+    expect(datos.failed).toBe(true);
+
+    const rostro = traceReadingOf(
+      event('identity.failed', {
+        kind: 'document',
+        faceCompare: 'lowScore',
+        score: 0.9556,
+        attempts: 1,
+      }),
+    );
+    expect(rostro.lines).toEqual([
+      { key: 'docs.traceUi.identity.faceLow', failed: true },
+      { key: 'docs.traceUi.identity.score', params: { score: 96 } },
+      { key: 'docs.traceUi.attempt', params: { attempts: 1 } },
+    ]);
+
+    expect(
+      keys(traceReadingOf(event('identity.blocked', { otpAttempts: 5, attempts: 3, max: 3 }))),
+    ).toEqual(['docs.traceUi.identity.otp', 'docs.traceUi.attemptOf']);
+    expect(
+      keys(traceReadingOf(event('identity.failed', { faceMatch: 'SELFIE', quality: 'borrosa' }))),
+    ).toEqual(['docs.traceUi.identity.quality']);
+    expect(
+      keys(
+        traceReadingOf(event('identity.failed', { liveness: 'spoof', documentCheck: 'mismatch' })),
+      ),
+    ).toEqual(['docs.traceUi.identity.liveness', 'docs.traceUi.identity.documentMismatch']);
+  });
+
+  it('la comparación facial y Liveness dicen su resultado y su puntaje sin el código crudo', () => {
+    const fallida = traceReadingOf(
+      event('evidence.face_compared', {
+        passed: false,
+        score: 0,
+        reason: 'lowScore',
+        captureSuspected: true,
+      }),
+    );
+    expect(fallida.lines).toEqual([
+      { key: 'docs.traceUi.identity.faceLow', failed: true },
+      { key: 'docs.traceUi.identity.score', params: { score: 0 } },
+      { key: 'docs.traceUi.identity.capture', failed: true },
+    ]);
+    expect(fallida.failed).toBe(true);
+
+    const aprobada = traceReadingOf(
+      event('evidence.face_compared', { passed: true, score: 0.9689, captureSuspected: false }),
+    );
+    expect(aprobada.lines).toEqual([{ key: 'docs.traceUi.identity.score', params: { score: 97 } }]);
+    expect(aprobada.failed).toBe(false);
+
+    expect(
+      traceReadingOf(event('evidence.liveness_checked', { passed: true, confidence: 98 })).lines,
+    ).toEqual([{ key: 'docs.traceUi.identity.confidence', params: { confidence: 98 } }]);
+    expect(
+      keys(traceReadingOf(event('evidence.liveness_checked', { passed: false, reason: 'spoof' }))),
+    ).toEqual(['docs.traceUi.identity.liveness']);
+    expect(
+      keys(traceReadingOf(event('evidence.liveness_checked', { passed: false, confidence: 0.4 }))),
+    ).toEqual(['docs.traceUi.identity.livenessFailed', 'docs.traceUi.identity.confidence']);
+  });
+
+  it('los fallos de cierre, informe, cupo y clave dinámica dicen su causa', () => {
+    const cierre = traceReadingOf(
+      event('document.close_failed', { error: 'El servicio de firma rechazó la petición' }),
+    );
+    expect(cierre.lines).toEqual([
+      {
+        key: 'docs.traceUi.cause',
+        params: { cause: 'El servicio de firma rechazó la petición' },
+        failed: true,
+      },
+    ]);
+    expect(cierre.failed).toBe(true);
+
+    const cupo = traceReadingOf(event('plan.document_not_consumed', { reason: 'cupo agotado' }));
+    expect(cupo.lines).toEqual([
+      { key: 'docs.traceUi.reason', params: { reason: 'cupo agotado' }, failed: true },
+    ]);
+
+    const clave = traceReadingOf(
+      event('otp.failed', {
+        deliveries: [
+          { channel: 'email', to: 'ana@x.co', sent: false, error: 'No se pudo entregar el correo' },
+          { channel: 'sms', to: '300', sent: false, error: 'fetch failed' },
+          { channel: 'fax', to: '1', sent: false },
+        ],
+      }),
+    );
+    expect(clave.lines).toEqual([
+      {
+        key: 'docs.traceUi.otp.email',
+        params: { error: 'No se pudo entregar el correo' },
+        failed: true,
+      },
+      { key: 'docs.traceUi.otp.sms', params: { error: 'fetch failed' }, failed: true },
+      { key: 'docs.traceUi.otp.other', params: { channel: 'fax', error: '—' }, failed: true },
+    ]);
+  });
+
+  it('el anclaje dice su estado, su intento y si ya no se reintenta', () => {
+    const cola = traceReadingOf(event('blockchain.queued', { anchorId: 'a1', status: 'pending' }));
+    expect(cola.lines).toEqual([{ key: 'docs.traceUi.anchor.status.pending' }]);
+    expect(cola.failed).toBe(false);
+    expect(keys(traceReadingOf(event('blockchain.queued', { status: 'raro' })))).toEqual([
+      'docs.traceUi.anchor.statusOther',
+    ]);
+
+    const rendido = traceReadingOf(
+      event('blockchain.failed', {
+        code: 'RPC',
+        reason: 'nodo caído',
+        attempts: 5,
+        definitive: true,
+      }),
+    );
+    expect(rendido.titleKey).toBe('docs.traceUi.title.anchorGaveUp');
+    expect(keys(rendido)).toEqual([
+      'docs.traceUi.reason',
+      'docs.traceUi.attempt',
+      'docs.traceUi.anchor.code',
+    ]);
+    expect(traceReadingOf(event('blockchain.failed', { attempts: 1 })).titleKey).toBeNull();
+
+    expect(
+      keys(
+        traceReadingOf(
+          event('admin.blockchain_register_requested', { outcome: 'registered', already: true }),
+        ),
+      ),
+    ).toEqual(['docs.traceUi.anchor.outcome.already']);
+    const reabierto = traceReadingOf(
+      event('admin.blockchain_register_requested', { outcome: 'reopened', lastError: 'gas' }),
+    );
+    expect(keys(reabierto)).toEqual([
+      'docs.traceUi.anchor.outcome.reopened',
+      'docs.traceUi.anchor.lastError',
+    ]);
+    expect(reabierto.failed).toBe(false);
+  });
+
+  it('un evento sin falla con razón no cuenta para «Solo lo que falló»', () => {
+    const reading = traceReadingOf(event('admin.document_finalized', { reason: 'pedido' }));
+    expect(reading).toEqual({
+      titleKey: null,
+      lines: [{ key: 'docs.traceUi.reason', params: { reason: 'pedido' }, failed: false }],
+      failed: false,
+    });
+    expect(traceReadingOf(event('document.signed')).lines).toEqual([]);
+  });
+
+  it('cada frase que arma la lectura existe en español e inglés', () => {
+    const muestras = [
+      event('notification.sent', {
+        sent: true,
+        email: 'a@x.co',
+        whatsapp: true,
+        documentsInBlock: 2,
+      }),
+      event('notification.sent', { sent: true, whatsapp: false, whatsappError: 'x' }),
+      event('notification.sent', { sent: true, whatsapp: false }),
+      event('notification.sent', { sent: false, error: 'correo omitido por el firmante' }),
+      event('notification.sent', {
+        sent: false,
+        error: 'sin correo',
+        whatsappError: 'sin celular',
+        whatsapp: false,
+      }),
+      event('notification.sent', { sent: false, covered: true }),
+      event('notification.resent', { sent: false, error: 'x' }),
+      event('notification.reminder', { email: 'a@x.co' }),
+      event('identity.failed', {
+        fields: [
+          'email',
+          'phone',
+          'expeditionDate',
+          'birthDate',
+          'expeditionCountryId',
+          'expeditionCityId',
+          'x',
+        ],
+        variant: 'full',
+        attempts: 1,
+        max: 2,
+      }),
+      event('identity.failed', { variant: 'basic', otpAttempts: 5, faceCompare: 'otro', score: 0 }),
+      event('identity.failed', {
+        faceCompare: 'lowScore',
+        liveness: 'x',
+        faceMatch: 'X',
+        attempts: 1,
+      }),
+      event('identity.failed', { faceMatch: 'X', quality: 'x', documentCheck: 'mismatch' }),
+      event('otp.failed', {
+        deliveries: ['email', 'sms', 'whatsapp', 'fax'].map((channel) => ({
+          channel,
+          sent: false,
+        })),
+      }),
+      ...['pending', 'submitted', 'anchored', 'failed', 'raro'].map((status) =>
+        event('blockchain.queued', { status }),
+      ),
+      event('blockchain.failed', { code: 'X', attempts: 1, definitive: true }),
+      ...['registered', 'renotified', 'draining', 'reopened', 'queued'].map((outcome) =>
+        event('admin.blockchain_register_requested', { outcome, lastError: 'x' }),
+      ),
+      event('admin.blockchain_register_requested', { outcome: 'registered', already: true }),
+      event('document.close_failed', { error: 'x', reason: 'y' }),
+      event('evidence.face_compared', { passed: false, score: 0.5, captureSuspected: true }),
+      event('evidence.liveness_checked', { passed: false, confidence: 40 }),
+    ];
+    const usadas = new Set<string>();
+    for (const muestra of muestras) {
+      const reading = traceReadingOf(muestra);
+      if (reading.titleKey) usadas.add(reading.titleKey);
+      for (const line of reading.lines) {
+        usadas.add(line.key);
+        for (const term of line.terms ?? []) usadas.add(term.key);
+      }
+    }
+    expect(usadas.size).toBeGreaterThan(50);
+    for (const key of usadas) {
+      expect(typeof leaf(es, key), key).toBe('string');
+      expect(typeof leaf(en, key), key).toBe('string');
+    }
   });
 });

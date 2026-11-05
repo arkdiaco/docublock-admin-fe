@@ -8,12 +8,13 @@ import {
   input,
   output,
 } from '@angular/core';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { AuditEventComponent } from '../../../shared/ui/audit-event.component';
 import { ButtonComponent } from '../../../shared/ui/button.component';
 import { DataTableComponent, type DataColumn } from '../../../shared/ui/data-table.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
 import { IconComponent } from '../../../shared/ui/icon.component';
-import type { DocumentVersion } from '../data/documents.models';
+import type { DocumentVersion, PlatformSigner } from '../data/documents.models';
 import { currentVersionId, shortHash } from '../data/document-view';
 
 const COLUMNS: readonly DataColumn[] = [
@@ -35,9 +36,24 @@ interface VersionView extends DocumentVersion {
   hash: string;
 }
 
+interface CommentView {
+  id: string;
+  author: string;
+  text: string;
+  meta: string;
+  at: number;
+}
+
 @Component({
   selector: 'dba-document-versions',
-  imports: [TranslatePipe, ButtonComponent, DataTableComponent, EmptyStateComponent, IconComponent],
+  imports: [
+    TranslatePipe,
+    AuditEventComponent,
+    ButtonComponent,
+    DataTableComponent,
+    EmptyStateComponent,
+    IconComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (views().length === 0) {
@@ -91,6 +107,18 @@ interface VersionView extends DocumentVersion {
           </div>
         }
       </dba-data-table>
+      @if (comments().length > 0) {
+        <section class="vs__comments">
+          <p class="dba-eyebrow vs__eyebrow">
+            {{ 'docs.version.comments' | translate: { total: comments().length } }}
+          </p>
+          @for (comment of comments(); track comment.id; let last = $last) {
+            <dba-audit-event [actor]="comment.author" [meta]="comment.meta" [last]="last">
+              <span class="vs__comment">{{ comment.text }}</span>
+            </dba-audit-event>
+          }
+        </section>
+      }
     }
   `,
   styles: `
@@ -119,12 +147,33 @@ interface VersionView extends DocumentVersion {
       justify-content: flex-end;
       gap: 6px;
     }
+
+    .vs__comments {
+      margin-top: 16px;
+      padding: 16px 18px;
+      border: 1px solid var(--dba-border-card);
+      border-radius: var(--dba-radius-panel);
+      background: var(--dba-surface);
+    }
+
+    .vs__eyebrow {
+      margin: 0 0 14px;
+    }
+
+    .vs__comment {
+      display: block;
+      margin-top: 2px;
+      white-space: pre-line;
+      overflow-wrap: anywhere;
+    }
   `,
 })
 export class DocumentVersionsComponent {
   private readonly locale = inject(LOCALE_ID);
+  private readonly translate = inject(TranslateService);
 
   readonly versions = input.required<readonly DocumentVersion[]>();
+  readonly signers = input<readonly PlatformSigner[]>([]);
   readonly canManage = input(false);
   readonly cancelled = input(false);
   readonly busy = input<string | null>(null);
@@ -151,6 +200,34 @@ export class DocumentVersionsComponent {
             : null,
         hash: shortHash(version.checksum),
       }));
+  });
+
+  protected readonly comments = computed<CommentView[]>(() => {
+    const names = new Map(this.signers().map((signer) => [signer.identityId, signer.name]));
+    const signerLabel = this.translate.instant('docs.version.bySigner') as string;
+    const userLabel = this.translate.instant('docs.version.byUser') as string;
+    return this.versions()
+      .flatMap((version) =>
+        (version.comments ?? [])
+          .filter((comment) => comment.comment.trim() !== '')
+          .map((comment, index) => {
+            const name = comment.userId ? '' : (names.get(comment.signerId) ?? '');
+            return {
+              id: `${version.id}:${index}`,
+              author: comment.userId ? userLabel : name || signerLabel,
+              text: comment.comment.trim(),
+              meta: [
+                `v${version.index}`,
+                comment.date ? formatDate(comment.date, 'd/MM/y HH:mm', this.locale) : undefined,
+                name ? signerLabel : undefined,
+              ]
+                .filter((part) => !!part)
+                .join(' · '),
+              at: comment.date ? Date.parse(comment.date) : 0,
+            };
+          }),
+      )
+      .sort((a, b) => b.at - a.at);
   });
 
   private stamp(value?: string): string {

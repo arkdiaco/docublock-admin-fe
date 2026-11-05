@@ -73,6 +73,13 @@ export interface PlatformSigner {
   evidence?: Record<string, unknown>;
 }
 
+export interface VersionComment {
+  signerId: string;
+  userId?: string;
+  comment: string;
+  date?: string;
+}
+
 export interface DocumentVersion {
   id: string;
   index: number;
@@ -80,6 +87,7 @@ export interface DocumentVersion {
   signatureProgress?: string;
   expirationSign?: string;
   createdAt?: string;
+  comments?: VersionComment[];
 }
 
 export interface DocumentAnchor {

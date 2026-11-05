@@ -216,6 +216,7 @@ const REASON: DialogReason = {
           @case ('versions') {
             <dba-document-versions
               [versions]="doc.versions"
+              [signers]="doc.signers"
               [canManage]="canManage()"
               [cancelled]="doc.status.state === 4"
               [busy]="pending.key()"

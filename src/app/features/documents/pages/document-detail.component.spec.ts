@@ -127,7 +127,10 @@ describe('Operación › Documentos › ficha', () => {
       platformPermissions: permisos,
     });
 
-  const montar = async (body: PlatformDocumentDetail | null = detail()) => {
+  const montar = async (
+    body: PlatformDocumentDetail | null = detail(),
+    trace: TraceEvent[] = events,
+  ) => {
     const fixture = TestBed.createComponent(DocumentDetailComponent);
     fixture.componentRef.setInput('id', 'd1');
     fixture.detectChanges();
@@ -136,7 +139,7 @@ describe('Operación › Documentos › ficha', () => {
     else req.flush({ code: 'DOCUMENTO_NO_ENCONTRADO' }, { status: 404, statusText: 'Not Found' });
     http
       .expectOne('/platform/documents/d1/traceability')
-      .flush({ documentId: 'd1', total: events.length, events });
+      .flush({ documentId: 'd1', total: trace.length, events: trace });
     const host = fixture.nativeElement as HTMLElement;
     await vi.waitFor(() => {
       fixture.detectChanges();
@@ -246,7 +249,7 @@ describe('Operación › Documentos › ficha', () => {
     expect(row?.textContent).toContain('Bloqueado');
     host.querySelector<HTMLButtonElement>('.sg__toggle')!.click();
     fixture.detectChanges();
-    expect(host.querySelector('.sg__evidence')?.textContent).toContain('Prueba de vida');
+    expect(host.querySelector('.sg__evidence')?.textContent).toContain('Liveness');
     expect(host.querySelector('.sg__evidence')?.textContent).toContain('Aprobada');
     const abrir = vi
       .spyOn(TestBed.inject(DialogService), 'open')
@@ -297,5 +300,125 @@ describe('Operación › Documentos › ficha', () => {
     expect(text).toContain('Sistema');
     expect(host.querySelector('dba-document-trace code.dba-ref')?.textContent).toBe('algo.nuevo');
     expect(text).toContain('10.0.0.1');
+  });
+
+  it('la trazabilidad explica invitaciones, causas y validaciones, y filtra solo lo que falló', async () => {
+    conPermisos(['platform:operations']);
+    const { fixture, host } = await montar(detail(), [
+      {
+        type: 'document.close_failed',
+        timestamp: '2026-10-24T10:00:00.000Z',
+        actor: { type: 'system' },
+        details: { error: 'El servicio de firma rechazó la petición' },
+      },
+      {
+        type: 'identity.failed',
+        timestamp: '2026-10-23T12:00:00.000Z',
+        actor: { type: 'signer', name: 'Luis Mora' },
+        details: { fields: ['email', 'phone'], variant: 'basic', attempts: 2, max: 6 },
+      },
+      {
+        type: 'notification.sent',
+        timestamp: '2026-10-23T10:00:00.000Z',
+        actor: { type: 'user', name: 'Marta Vidal' },
+        details: { sent: false, error: 'sin correo' },
+      },
+      {
+        type: 'notification.sent',
+        timestamp: '2026-10-22T10:00:00.000Z',
+        actor: { type: 'user', name: 'Marta Vidal' },
+        details: { sent: true, email: 'ana@x.co' },
+      },
+    ]);
+    tab(host, 'Trazabilidad').click();
+    fixture.detectChanges();
+    const trace = host.querySelector('dba-document-trace')!;
+    expect(trace.textContent).toContain('Causa: El servicio de firma rechazó la petición');
+    expect(trace.textContent).toContain('Datos que no coinciden: Correo, Celular');
+    expect(trace.textContent).toContain('Intento 2 de 6');
+    expect(trace.textContent).toContain('Invitación no enviada');
+    expect(trace.textContent).toContain('Sin correo: el firmante no tiene correo registrado');
+    expect(trace.textContent).toContain('Correo enviado a ana@x.co');
+    expect(trace.querySelectorAll('.tr__line--failed').length).toBe(3);
+
+    const pills = [...trace.querySelectorAll<HTMLButtonElement>('db-filter-pills .pill')];
+    expect(pills.map((pill) => pill.textContent?.replace(/\s+/g, ' ').trim())).toEqual([
+      'Todo 4',
+      'Solo lo que falló 3',
+    ]);
+    pills[1].click();
+    fixture.detectChanges();
+    expect(trace.querySelectorAll('dba-audit-event')).toHaveLength(3);
+    expect(trace.textContent).not.toContain('Correo enviado a ana@x.co');
+  });
+
+  it('sin fallas, «Solo lo que falló» lo dice en vez de quedar en blanco', async () => {
+    conPermisos(['platform:operations']);
+    const { fixture, host } = await montar(detail(), [events[0]]);
+    tab(host, 'Trazabilidad').click();
+    fixture.detectChanges();
+    const trace = host.querySelector('dba-document-trace')!;
+    trace.querySelectorAll<HTMLButtonElement>('db-filter-pills .pill')[1].click();
+    fixture.detectChanges();
+    expect(trace.querySelectorAll('dba-audit-event')).toHaveLength(0);
+    expect(trace.textContent).toContain('Nada falló en este documento.');
+  });
+
+  it('Versiones pinta los comentarios con su autor, de lo más nuevo a lo más viejo', async () => {
+    conPermisos(['platform:operations']);
+    const base = detail();
+    const { fixture, host } = await montar(
+      detail({
+        versions: [
+          {
+            ...base.versions[0],
+            comments: [
+              {
+                signerId: 'i1',
+                comment: 'Falta la cláusula de mora',
+                date: '2026-10-20T12:00:00.000Z',
+              },
+              { signerId: 'i1', comment: '   ' },
+            ],
+          },
+          {
+            ...base.versions[1],
+            comments: [
+              {
+                signerId: '',
+                userId: 'u9',
+                comment: 'Se agregó la cláusula',
+                date: '2026-10-21T12:00:00.000Z',
+              },
+              { signerId: 'i404', comment: 'Revisado', date: '2026-10-21T09:00:00.000Z' },
+            ],
+          },
+        ],
+      }),
+    );
+    tab(host, 'Versiones').click();
+    fixture.detectChanges();
+    const section = host.querySelector('.vs__comments')!;
+    expect(section.textContent).toContain('Comentarios de las versiones (3)');
+    const items = [...section.querySelectorAll('dba-audit-event')].map((item) =>
+      item.textContent?.replace(/\s+/g, ' ').trim(),
+    );
+    expect(items).toHaveLength(3);
+    expect(items[0]).toContain('Usuario de la organización');
+    expect(items[0]).toContain('Se agregó la cláusula');
+    expect(items[0]).toContain('v2');
+    expect(items[1]).toContain('Firmante');
+    expect(items[1]).toContain('Revisado');
+    expect(items[2]).toContain('Ana Ruiz');
+    expect(items[2]).toContain('Falta la cláusula de mora');
+    expect(items[2]).toContain('v1');
+  });
+
+  it('Versiones sin comentarios no pinta la sección', async () => {
+    conPermisos(['platform:operations']);
+    const { fixture, host } = await montar();
+    tab(host, 'Versiones').click();
+    fixture.detectChanges();
+    expect(host.querySelector('.vs__comments')).toBeNull();
   });
 });

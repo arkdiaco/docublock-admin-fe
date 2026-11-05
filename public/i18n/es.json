@@ -1196,7 +1196,7 @@
       "identityValid": "Compara la selfie con la foto del documento",
       "biometricValid": "Selfie contra el registro biométrico",
       "ani": "Confirma la identificación en la Registraduría",
-      "liveness": "Prueba de vida; no descuenta créditos"
+      "liveness": "Confirma que hay una persona real frente a la cámara; no descuenta créditos"
     },
     "selfService": "Lo que configura la organización:",
     "self": {
@@ -2156,14 +2156,14 @@
       "unblock": "Desbloquear",
       "resend": "Reenviar invitación",
       "retry": {
-        "liveness": "Nuevo intento de prueba de vida",
+        "liveness": "Nuevo intento de Liveness",
         "faceCompare": "Nuevo intento de comparación facial",
         "faceMatch": "Nuevo intento de coincidencia facial",
         "documentCheck": "Nuevo intento de revisión del documento"
       }
     },
     "evidence": {
-      "liveness": "Prueba de vida",
+      "liveness": "Liveness",
       "faceCompare": "Comparación facial",
       "faceMatch": "Coincidencia facial",
       "documentCheck": "Documento de identidad",
@@ -2198,14 +2198,97 @@
         "2": "En progreso",
         "3": "Finalizada"
       },
-      "empty": "El documento no tiene versiones."
+      "empty": "El documento no tiene versiones.",
+      "comments": "Comentarios de las versiones ({{total}})",
+      "bySigner": "Firmante",
+      "byUser": "Usuario de la organización"
     },
     "traceUi": {
       "empty": "Sin eventos registrados.",
       "system": "Sistema",
       "reason": "Razón: {{reason}}",
-      "count": "{{total}} eventos",
-      "errorTitle": "No pudimos cargar la trazabilidad"
+      "cause": "Causa: {{cause}}",
+      "errorTitle": "No pudimos cargar la trazabilidad",
+      "noFailures": "Nada falló en este documento.",
+      "filter": {
+        "label": "Filtrar la trazabilidad",
+        "all": "Todo",
+        "failed": "Solo lo que falló"
+      },
+      "title": {
+        "unsent": "Invitación no enviada",
+        "resentUnsent": "Reenvío de la invitación no enviado",
+        "covered": "Invitación incluida en la de otro documento del proceso",
+        "anchorGaveUp": "Registro en blockchain fallido: ya no se reintenta"
+      },
+      "mail": {
+        "sent": "Correo enviado",
+        "sentTo": "Correo enviado a {{to}}",
+        "skipped": "Correo omitido: el firmante está marcado para no recibir correos",
+        "missing": "Sin correo: el firmante no tiene correo registrado",
+        "failed": "Correo no enviado: {{error}}"
+      },
+      "whatsapp": {
+        "sent": "WhatsApp enviado",
+        "missing": "WhatsApp no enviado: el firmante no tiene celular",
+        "failed": "WhatsApp no enviado: {{error}}",
+        "noCause": "WhatsApp no enviado; no quedó registrada la causa"
+      },
+      "block": "Una sola invitación para los {{total}} documentos del block",
+      "attempt": "Intento {{attempts}}",
+      "attemptOf": "Intento {{attempts}} de {{max}}",
+      "identity": {
+        "fields": "Datos que no coinciden:",
+        "variant": {
+          "basic": "Verificación de correo y celular",
+          "full": "Verificación de correo, celular, fechas y lugar de expedición"
+        },
+        "otp": "Clave dinámica incorrecta {{total}} veces",
+        "faceLow": "Comparación facial: el rostro no coincide con el del documento",
+        "face": "Comparación facial no superada: {{reason}}",
+        "score": "Puntaje {{score}} %",
+        "capture": "Se sospecha que la foto es de una pantalla o de una impresión",
+        "confidence": "Confianza {{confidence}} %",
+        "liveness": "Liveness no superado: {{reason}}",
+        "livenessFailed": "Liveness no superado",
+        "quality": "Selfie poco clara: {{reason}}",
+        "faceMatch": "Coincidencia facial con el registro no superada (código {{code}})",
+        "documentMismatch": "El documento capturado no es el del firmante"
+      },
+      "field": {
+        "email": "Correo",
+        "phone": "Celular",
+        "expeditionDate": "Fecha de expedición",
+        "birthDate": "Fecha de nacimiento",
+        "expeditionCountryId": "País de expedición",
+        "expeditionCityId": "Ciudad de expedición",
+        "other": "{{name}}"
+      },
+      "otp": {
+        "email": "Correo: {{error}}",
+        "sms": "SMS: {{error}}",
+        "whatsapp": "WhatsApp: {{error}}",
+        "other": "{{channel}}: {{error}}"
+      },
+      "anchor": {
+        "status": {
+          "pending": "Estado: en cola para la cadena",
+          "submitted": "Estado: enviado a la cadena",
+          "anchored": "Estado: registrado en la cadena",
+          "failed": "Estado: fallido"
+        },
+        "statusOther": "Estado: {{status}}",
+        "code": "Código del registro: {{code}}",
+        "lastError": "Último error del registro: {{error}}",
+        "outcome": {
+          "already": "Resultado: ya estaba registrado",
+          "registered": "Resultado: registrado",
+          "renotified": "Resultado: el registro ya existía y se volvió a avisar",
+          "draining": "Resultado: el registro seguía en cola y se reanudó la cola",
+          "reopened": "Resultado: el registro había agotado sus intentos y se reabrió",
+          "queued": "Resultado: registro encolado"
+        }
+      }
     },
     "trace": {
       "document_created": "Documento creado",
@@ -2247,7 +2330,7 @@
       "otp_verified": "Clave dinámica verificada",
       "evidence_uploaded": "Evidencia cargada",
       "evidence_provider_session_issued": "Sesión de validación emitida",
-      "evidence_liveness_checked": "Prueba de vida realizada",
+      "evidence_liveness_checked": "Liveness realizado",
       "evidence_face_compared": "Rostro comparado",
       "evidence_face_matched": "Rostro coincidente",
       "evidence_fallback_to_document": "Validación con el documento de identidad",
@@ -5219,7 +5302,7 @@
         "identity_max_attempts": {
           "label": "Intentos de validación de identidad",
           "audience": "Lo ven los firmantes",
-          "hint": "Intentos fallidos que tiene un firmante en diez minutos, contados aparte para el rostro, la prueba de vida y el documento. Al agotarlos espera a que pase la ventana; no queda bloqueado."
+          "hint": "Intentos fallidos que tiene un firmante en diez minutos, contados aparte para el rostro, Liveness y el documento. Al agotarlos espera a que pase la ventana; no queda bloqueado."
         },
         "massive_max_rows": {
           "label": "Filas del envío masivo",
@@ -5254,9 +5337,9 @@
           "hint": "Si la foto del documento parece tomada a una pantalla con al menos esta confianza, se rechaza antes de comparar. Más bajo rechaza más fotos; más alto deja pasar más fotos de pantalla. Aplica en la firma y al activar One Touch Sign."
         },
         "liveness_confidence_percent": {
-          "label": "Confianza mínima de la prueba de vida",
+          "label": "Confianza mínima de Liveness",
           "audience": "Lo ven los firmantes",
-          "hint": "Confianza que debe dar la prueba de vida para aprobarse. Aplica en la firma y al activar One Touch Sign."
+          "hint": "Confianza que debe dar Liveness para aprobarse. Aplica en la firma y al activar One Touch Sign."
         }
       },
       "texts": {
