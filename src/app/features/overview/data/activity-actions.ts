@@ -114,6 +114,7 @@ export const ACTIVITY_ACTIONS = [
   'tasks.run_job',
   'tasks.rehearse',
   'tasks.execute',
+  'integrations.replay',
   'transactions.invoiced_set',
   'transactions.manual_create',
   'transactions.reconcile',

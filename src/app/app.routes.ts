@@ -245,6 +245,13 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
         import('./features/resellers/pages/reseller-detail.component').then((m) => m.ResellerDetailComponent),
     },
   ],
+  integrations: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/integrations/pages/deliveries.component').then((m) => m.DeliveriesComponent),
+    },
+  ],
   tasks: [
     {
       path: '',

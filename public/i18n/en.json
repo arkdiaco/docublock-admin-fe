@@ -607,6 +607,9 @@
       "run_job": "ran a scheduled job",
       "rehearse": "rehearsed a maintenance task",
       "execute": "executed a maintenance task"
+    },
+    "integrations": {
+      "replay": "resent a webhook delivery"
     }
   },
   "placeholder": {
@@ -4826,5 +4829,83 @@
         "notice": "Adds permissions to roles in use, custom ones too: people with those roles will be able to do more in their organization."
       }
     }
+  },
+  "dlv": {
+    "lead": "What Docublock sent to customer systems, across all organizations.",
+    "refresh": "Refresh",
+    "loading": "Loading deliveries…",
+    "loadingDetail": "Loading delivery…",
+    "tableLabel": "Webhook deliveries",
+    "errorTitle": "We couldn't load the deliveries",
+    "errorLead": "Try again in a moment.",
+    "downTitle": "The integrations service isn't responding",
+    "downLead": "The rest of the console keeps working. Try again in a moment.",
+    "empty": "No deliveries yet",
+    "emptyFiltered": "No deliveries match these filters",
+    "detailFailed": "We couldn't load this delivery. Close it and try again.",
+    "unknownOrg": "Unknown organization",
+    "noDestination": "No destination",
+    "test": "Test",
+    "testNote": "This delivery was created by a webhook test.",
+    "contract": "Contract",
+    "contractOf": {
+      "legacy": "Classic",
+      "v2": "v2"
+    },
+    "destination": "Destination",
+    "lastCode": "Last code",
+    "document": "Document",
+    "deliveredAt": "Delivered",
+    "nextAttempt": "Next attempt",
+    "lastError": "Last error",
+    "payload": "View sent content",
+    "col": {
+      "organization": "Organization",
+      "event": "Event",
+      "status": "Status",
+      "attempts": "Attempts",
+      "result": "Last result",
+      "created": "Created"
+    },
+    "status": {
+      "pending": "Pending",
+      "delivered": "Delivered",
+      "failed": "Failed",
+      "exhausted": "Exhausted"
+    },
+    "filter": {
+      "all": "All",
+      "anyEvent": "All events",
+      "anyPeriod": "Any date",
+      "period": "Date",
+      "period24h": "Last 24 hours",
+      "period7d": "Last 7 days",
+      "period30d": "Last 30 days",
+      "pending": "Pending",
+      "delivered": "Delivered",
+      "failed": "Failed",
+      "exhausted": "Exhausted"
+    },
+    "replay": {
+      "action": "Resend",
+      "confirm": "Resend now",
+      "title": "Resend delivery",
+      "notice": "It will be sent again to {{url}} as a new delivery. It reaches the customer's real system.",
+      "alreadyDelivered": "This delivery already arrived. The customer will receive it again.",
+      "delivered": "Resent: the destination received it.",
+      "willRetry": "The destination didn't receive it ({{detail}}). It will retry on its own.",
+      "notDelivered": "The destination didn't receive it ({{detail}}). It won't be tried again.",
+      "error": {
+        "classicOff": "The organization's classic webhook is off or is missing its URL or secret.",
+        "classicRemoved": "That destination is no longer on the organization's classic webhook.",
+        "endpointGone": "This delivery's destination no longer exists.",
+        "gone": "This delivery no longer exists.",
+        "unavailable": "The integrations service isn't responding. Try again in a moment.",
+        "forbidden": "You don't have permission to resend deliveries.",
+        "failed": "We couldn't resend the delivery. Try again."
+      },
+      "stillRetrying": "This delivery still has automatic retries. If one succeeds, the customer will receive it twice."
+    },
+    "noDestinationNote": "It has no active destination. To resend it, the organization must set up its webhook again."
   }
 }

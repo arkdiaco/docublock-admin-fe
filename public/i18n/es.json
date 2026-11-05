@@ -607,6 +607,9 @@
       "run_job": "ejecutó un trabajo automático",
       "rehearse": "ensayó una tarea de mantenimiento",
       "execute": "ejecutó una tarea de mantenimiento"
+    },
+    "integrations": {
+      "replay": "reenvió una entrega de webhook"
     }
   },
   "placeholder": {
@@ -4826,5 +4829,83 @@
         "notice": "Agrega permisos a roles en uso, también a los personalizados: las personas con esos roles van a poder hacer más cosas en su organización."
       }
     }
+  },
+  "dlv": {
+    "lead": "Lo que Docublock envió a los sistemas de los clientes, en todas las organizaciones.",
+    "refresh": "Actualizar",
+    "loading": "Cargando entregas…",
+    "loadingDetail": "Cargando la entrega…",
+    "tableLabel": "Entregas de webhook",
+    "errorTitle": "No pudimos cargar las entregas",
+    "errorLead": "Inténtalo de nuevo en un momento.",
+    "downTitle": "El servicio de integraciones no responde",
+    "downLead": "El resto de la consola sigue funcionando. Inténtalo de nuevo en un momento.",
+    "empty": "Todavía no hay entregas",
+    "emptyFiltered": "Ninguna entrega con estos filtros",
+    "detailFailed": "No pudimos cargar esta entrega. Ciérrala e inténtalo de nuevo.",
+    "unknownOrg": "Organización desconocida",
+    "noDestination": "Sin destino",
+    "test": "Prueba",
+    "testNote": "Esta entrega se creó desde una prueba de webhook.",
+    "contract": "Contrato",
+    "contractOf": {
+      "legacy": "Clásico",
+      "v2": "v2"
+    },
+    "destination": "Destino",
+    "lastCode": "Último código",
+    "document": "Documento",
+    "deliveredAt": "Entregada",
+    "nextAttempt": "Próximo intento",
+    "lastError": "Último error",
+    "payload": "Ver contenido enviado",
+    "col": {
+      "organization": "Organización",
+      "event": "Evento",
+      "status": "Estado",
+      "attempts": "Intentos",
+      "result": "Último resultado",
+      "created": "Creada"
+    },
+    "status": {
+      "pending": "Pendiente",
+      "delivered": "Entregada",
+      "failed": "Fallida",
+      "exhausted": "Agotada"
+    },
+    "filter": {
+      "all": "Todas",
+      "anyEvent": "Todos los eventos",
+      "anyPeriod": "Cualquier fecha",
+      "period": "Fecha",
+      "period24h": "Últimas 24 horas",
+      "period7d": "Últimos 7 días",
+      "period30d": "Últimos 30 días",
+      "pending": "Pendientes",
+      "delivered": "Entregadas",
+      "failed": "Fallidas",
+      "exhausted": "Agotadas"
+    },
+    "replay": {
+      "action": "Reenviar",
+      "confirm": "Reenviar ahora",
+      "title": "Reenviar entrega",
+      "notice": "Se enviará de nuevo a {{url}} como una entrega nueva. Llega al sistema real del cliente.",
+      "alreadyDelivered": "Esta entrega ya llegó. El cliente la recibirá otra vez.",
+      "delivered": "Reenviada: el destino la recibió.",
+      "willRetry": "El destino no la recibió ({{detail}}). Se reintentará sola.",
+      "notDelivered": "El destino no la recibió ({{detail}}). No se volverá a intentar.",
+      "error": {
+        "classicOff": "El webhook clásico de la organización está apagado o le falta la URL o el secreto.",
+        "classicRemoved": "Ese destino ya no está en el webhook clásico de la organización.",
+        "endpointGone": "El destino de esta entrega ya no existe.",
+        "gone": "Esta entrega ya no existe.",
+        "unavailable": "El servicio de integraciones no responde. Inténtalo de nuevo en un momento.",
+        "forbidden": "No tienes permiso para reenviar entregas.",
+        "failed": "No pudimos reenviar la entrega. Inténtalo de nuevo."
+      },
+      "stillRetrying": "Esta entrega sigue con sus reintentos automáticos. Si uno llega, el cliente la recibirá dos veces."
+    },
+    "noDestinationNote": "No tiene un destino activo. Para reenviarla, la organización debe volver a configurar su webhook."
   }
 }
