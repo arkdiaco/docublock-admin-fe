@@ -24,6 +24,8 @@ import type { JobView } from '../data/tasks.models';
         <p class="notice" role="note">{{ 'task.job.' + job().key + '.notice' | translate }}</p>
         @if (!job().enabled) {
           <p class="notice" role="note">{{ 'task.job.run.offNotice' | translate }}</p>
+        } @else if (job().pause) {
+          <p class="notice" role="note">{{ 'task.job.run.pausedNotice' | translate }}</p>
         }
         <dba-field label="sub.reasonLabel" placeholder="sub.reasonPlaceholder" [maxlength]="500" [(value)]="reason" />
       </div>

@@ -13,10 +13,11 @@ import { IconComponent } from '../../../shared/ui/icon.component';
 import { OrgStateComponent } from '../../../shared/ui/org-state.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
 import { JobDetailComponent } from '../components/job-detail.component';
+import { JobPauseConfirmComponent } from '../components/job-pause-confirm.component';
 import { JobRunConfirmComponent } from '../components/job-run-confirm.component';
 import { TasksTabsComponent } from '../components/tasks-tabs.component';
 import { durationOf, jobMetricsOf, jobStateOf, type JobStateView } from '../data/job-view';
-import { TasksApi, runJobErrorKey } from '../data/tasks.api';
+import { TasksApi, pauseJobErrorKey, runJobErrorKey } from '../data/tasks.api';
 import type { JobKey, JobView } from '../data/tasks.models';
 
 const COLUMNS: readonly DataColumn[] = [
@@ -30,6 +31,8 @@ const COLUMNS: readonly DataColumn[] = [
 
 export const JOB_POLL_MS = 3000;
 
+type JobMode = 'detail' | 'run' | 'pause';
+
 @Component({
   selector: 'dba-jobs',
   imports: [
@@ -39,6 +42,7 @@ export const JOB_POLL_MS = 3000;
     EmptyStateComponent,
     IconComponent,
     JobDetailComponent,
+    JobPauseConfirmComponent,
     JobRunConfirmComponent,
     OrgStateComponent,
     SectionLoaderComponent,
@@ -76,7 +80,7 @@ export const JOB_POLL_MS = 3000;
           minWidth="880px"
         >
           @for (job of jobs(); track job.key) {
-            <button type="button" class="dba-tr bl-row" (click)="selectedKey.set(job.key)">
+            <button type="button" class="dba-tr bl-row" (click)="open(job.key)">
               <span class="dba-td cell">
                 <span class="cell__label">{{ 'task.job.' + job.key + '.name' | translate }}</span>
                 <span class="cell__muted">{{ 'task.job.' + job.key + '.schedule' | translate }}</span>
@@ -95,15 +99,31 @@ export const JOB_POLL_MS = 3000;
     </section>
 
     @if (selected(); as job) {
-      @if (confirming()) {
-        <dba-job-run-confirm
-          [job]="job"
-          [busy]="pending.key() === 'run'"
-          (submitted)="run(job.key, $event)"
-          (dismissed)="confirming.set(false)"
-        />
-      } @else {
-        <dba-job-detail [job]="job" (run)="confirming.set(true)" (dismissed)="selectedKey.set(null)" />
+      @switch (mode()) {
+        @case ('run') {
+          <dba-job-run-confirm
+            [job]="job"
+            [busy]="pending.key() === 'run'"
+            (submitted)="run(job.key, $event)"
+            (dismissed)="mode.set('detail')"
+          />
+        }
+        @case ('pause') {
+          <dba-job-pause-confirm
+            [job]="job"
+            [busy]="pending.key() === 'pause'"
+            (submitted)="togglePause(job, $event)"
+            (dismissed)="mode.set('detail')"
+          />
+        }
+        @default {
+          <dba-job-detail
+            [job]="job"
+            (run)="mode.set('run')"
+            (pausing)="mode.set('pause')"
+            (dismissed)="selectedKey.set(null)"
+          />
+        }
       }
     }
   `,
@@ -125,7 +145,7 @@ export class JobsComponent {
   protected readonly error = signal(false);
   protected readonly jobs = signal<JobView[]>([]);
   protected readonly selectedKey = signal<JobKey | null>(null);
-  protected readonly confirming = signal(false);
+  protected readonly mode = signal<JobMode>('detail');
   protected readonly selected = computed(
     () => this.jobs().find((job) => job.key === this.selectedKey()) ?? null,
   );
@@ -133,6 +153,11 @@ export class JobsComponent {
   constructor() {
     inject(DestroyRef).onDestroy(() => this.stopPolling());
     void this.load(true);
+  }
+
+  protected open(key: JobKey): void {
+    this.mode.set('detail');
+    this.selectedKey.set(key);
   }
 
   protected stateOf(job: JobView): JobStateView {
@@ -170,9 +195,28 @@ export class JobsComponent {
       } catch (error) {
         this.notify.error(this.translate.instant(runJobErrorKey(error)) as string);
       }
-      this.confirming.set(false);
+      this.mode.set('detail');
       await this.load(false);
       this.watch(key);
+    });
+  }
+
+  protected async togglePause(job: JobView, reason: string): Promise<void> {
+    if (this.pending.key()) return;
+    const resuming = !!job.pause;
+    await this.pending.run('pause', async () => {
+      try {
+        await firstValueFrom(
+          resuming ? this.api.resumeJob(job.key, reason) : this.api.pauseJob(job.key, reason),
+        );
+        this.notify.success(
+          this.translate.instant(resuming ? 'task.job.pause.resumed' : 'task.job.pause.paused') as string,
+        );
+      } catch (error) {
+        this.notify.error(this.translate.instant(pauseJobErrorKey(error)) as string);
+      }
+      this.mode.set('detail');
+      await this.load(false);
     });
   }
 

@@ -45,6 +45,7 @@ export interface JobMetricView {
 export const jobStateOf = (job: JobView): JobStateView => {
   if (job.running) return { state: 'trial', labelKey: 'task.job.state.running' };
   if (!job.enabled) return { state: 'closed', labelKey: 'task.job.state.off' };
+  if (job.pause) return { state: 'warning', labelKey: 'task.job.state.paused' };
   if (!job.last) return { state: 'closed', labelKey: 'task.job.state.never' };
   return { state: RESULT_STATES[job.last.result], labelKey: `task.job.state.${job.last.result}` };
 };

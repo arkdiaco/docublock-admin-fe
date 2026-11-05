@@ -605,6 +605,8 @@
     "tasks": {
       "retry": "reintentó un elemento de una cola",
       "run_job": "ejecutó un trabajo automático",
+      "pause_job": "pausó un trabajo automático",
+      "resume_job": "reanudó un trabajo automático",
       "rehearse": "ensayó una tarea de mantenimiento",
       "execute": "ejecutó una tarea de mantenimiento"
     },
@@ -4634,7 +4636,8 @@
         "failed": "Falló",
         "running": "En curso",
         "never": "Sin registro",
-        "off": "Apagado"
+        "off": "Apagado",
+        "paused": "En pausa"
       },
       "run": {
         "action": "Ejecutar ahora",
@@ -4644,7 +4647,27 @@
         "busy": "Este trabajo ya está corriendo. Espera a que termine.",
         "forbidden": "No tienes permiso para ejecutar trabajos.",
         "failed": "No pudimos ejecutar el trabajo. Inténtalo de nuevo.",
-        "offNotice": "Este trabajo está apagado en este ambiente: no corre en su horario, pero se puede ejecutar a mano."
+        "offNotice": "Este trabajo está apagado en este ambiente: no corre en su horario, pero se puede ejecutar a mano.",
+        "pausedNotice": "Este trabajo está en pausa: esto lo corre una sola vez y la pausa sigue."
+      },
+      "pause": {
+        "action": "Pausar",
+        "resumeAction": "Reanudar",
+        "title": "Pausar trabajo",
+        "resumeTitle": "Reanudar trabajo",
+        "confirm": "Pausar",
+        "resumeConfirm": "Reanudar",
+        "notice": "Deja de arrancar en su horario en todas las instancias. La corrida en curso termina y «Ejecutar ahora» sigue disponible.",
+        "critical": "De este trabajo depende la operación de los clientes: mientras esté en pausa, lo que hace queda detenido. Reanúdalo apenas se resuelva lo que te llevó a pausarlo.",
+        "resumeNotice": "Vuelve a arrancar en su próximo horario.",
+        "since": "En pausa desde",
+        "reason": "Motivo de la pausa",
+        "unknownAdmin": "Persona ya sin acceso",
+        "paused": "El trabajo quedó en pausa.",
+        "resumed": "El trabajo se reanudó.",
+        "stale": "Alguien cambió este trabajo mientras tanto. La lista ya está al día.",
+        "forbidden": "No tienes permiso para pausar trabajos.",
+        "failed": "No pudimos cambiar el trabajo. Inténtalo de nuevo."
       },
       "metric": {
         "processed": "Procesados",

@@ -2,6 +2,7 @@ import { formatDate } from '@angular/common';
 import { ChangeDetectionStrategy, Component, LOCALE_ID, computed, inject, input, output } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuthStore } from '../../../core/auth/auth.store';
+import { ButtonComponent } from '../../../shared/ui/button.component';
 import { ModalShellComponent } from '../../../shared/ui/modal-shell.component';
 import { OrgStateComponent } from '../../../shared/ui/org-state.component';
 import { durationOf, jobMetricsOf, jobStateOf } from '../data/job-view';
@@ -9,7 +10,7 @@ import type { JobView } from '../data/tasks.models';
 
 @Component({
   selector: 'dba-job-detail',
-  imports: [TranslatePipe, ModalShellComponent, OrgStateComponent],
+  imports: [TranslatePipe, ButtonComponent, ModalShellComponent, OrgStateComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <db-modal-shell
@@ -27,6 +28,14 @@ import type { JobView } from '../data/tasks.models';
       <dl class="item">
         <dt>{{ 'task.job.col.result' | translate }}</dt>
         <dd><dba-org-state [state]="state().state" [labelKey]="state().labelKey" variant="inline" /></dd>
+        @if (job().pause; as pause) {
+          <dt>{{ 'task.job.pause.since' | translate }}</dt>
+          <dd>
+            <span class="dba-mono">{{ when(pause.at) }}</span> · {{ pause.adminName || ('task.job.pause.unknownAdmin' | translate) }}
+          </dd>
+          <dt>{{ 'task.job.pause.reason' | translate }}</dt>
+          <dd>{{ pause.reason }}</dd>
+        }
         @if (job().running; as running) {
           <dt>{{ 'task.job.runningSince' | translate }}</dt>
           <dd class="dba-mono">{{ when(running.since) }}</dd>
@@ -60,6 +69,14 @@ import type { JobView } from '../data/tasks.models';
 
       @if (!job().manual) {
         <p class="dba-meta item__note">{{ 'task.job.noManual' | translate }}</p>
+      }
+
+      @if (canPause()) {
+        <div class="item__actions">
+          <button dba-button variant="secondary" (click)="pausing.emit()">
+            {{ (job().pause ? 'task.job.pause.resumeAction' : 'task.job.pause.action') | translate }}
+          </button>
+        </div>
       }
     </db-modal-shell>
   `,
@@ -99,6 +116,10 @@ import type { JobView } from '../data/tasks.models';
       margin: 14px 0 0;
     }
 
+    .item__actions {
+      margin-top: 18px;
+    }
+
     .item__error {
       margin: 0;
       padding: 12px;
@@ -117,11 +138,15 @@ export class JobDetailComponent {
   readonly job = input.required<JobView>();
   readonly dismissed = output<void>();
   readonly run = output<void>();
+  readonly pausing = output<void>();
 
   private readonly auth = inject(AuthStore);
   private readonly locale = inject(LOCALE_ID);
 
   protected readonly canRun = computed(() => this.job().manual && this.auth.canManage('operations'));
+  protected readonly canPause = computed(
+    () => this.auth.canManage('platform') && (this.job().enabled || !!this.job().pause),
+  );
   protected readonly state = computed(() => jobStateOf(this.job()));
   protected readonly metrics = computed(() => jobMetricsOf(this.job().last?.metrics ?? {}));
 

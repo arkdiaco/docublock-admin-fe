@@ -6,6 +6,7 @@ import { errorCodeOf, errorStatusOf } from '../../../shared/http/error-code';
 import { toParams } from '../../../shared/http/query-params';
 import type {
   JobKey,
+  JobPauseResult,
   JobView,
   MaintenanceRun,
   MaintenanceRunsPage,
@@ -35,6 +36,13 @@ export const runJobErrorKey = (error: unknown): string => {
   if (status === 409) return 'task.job.run.busy';
   if (status === 403) return 'task.job.run.forbidden';
   return 'task.job.run.failed';
+};
+
+export const pauseJobErrorKey = (error: unknown): string => {
+  const status = errorStatusOf(error);
+  if (status === 409) return 'task.job.pause.stale';
+  if (status === 403) return 'task.job.pause.forbidden';
+  return 'task.job.pause.failed';
 };
 
 export const maintenanceErrorKey = (error: unknown): string => {
@@ -78,6 +86,14 @@ export class TasksApi {
       { reason },
       { context: silent() },
     );
+  }
+
+  pauseJob(key: JobKey, reason: string): Observable<JobPauseResult> {
+    return this.http.post<JobPauseResult>(`${JOBS}/${key}/pause`, { reason }, { context: silent() });
+  }
+
+  resumeJob(key: JobKey, reason: string): Observable<JobPauseResult> {
+    return this.http.post<JobPauseResult>(`${JOBS}/${key}/resume`, { reason }, { context: silent() });
   }
 
   maintenanceTasks(): Observable<{ tasks: MaintenanceTaskView[] }> {

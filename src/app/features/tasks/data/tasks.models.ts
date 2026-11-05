@@ -79,6 +79,17 @@ export interface FinishedJobRun {
   error: string | null;
 }
 
+export interface JobPause {
+  at: string;
+  adminName: string | null;
+  reason: string;
+}
+
+export interface JobPauseResult {
+  key: JobKey;
+  paused: boolean;
+}
+
 export interface JobView {
   key: JobKey;
   enabled: boolean;
@@ -86,6 +97,7 @@ export interface JobView {
   running: { since: string; trigger: JobTrigger } | null;
   last: FinishedJobRun | null;
   lastFailure: { at: string; error: string } | null;
+  pause: JobPause | null;
 }
 
 export const MAINTENANCE_TASK_KEYS = [

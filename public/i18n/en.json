@@ -605,6 +605,8 @@
     "tasks": {
       "retry": "retried a queue item",
       "run_job": "ran a scheduled job",
+      "pause_job": "paused a scheduled job",
+      "resume_job": "resumed a scheduled job",
       "rehearse": "rehearsed a maintenance task",
       "execute": "executed a maintenance task"
     },
@@ -4634,7 +4636,8 @@
         "failed": "Failed",
         "running": "Running",
         "never": "No record",
-        "off": "Off"
+        "off": "Off",
+        "paused": "Paused"
       },
       "run": {
         "action": "Run now",
@@ -4644,7 +4647,27 @@
         "busy": "This job is already running. Wait for it to end.",
         "forbidden": "You don't have permission to run jobs.",
         "failed": "We couldn't run the job. Try again.",
-        "offNotice": "This job is off in this environment: it does not run on schedule, but it can be run by hand."
+        "offNotice": "This job is off in this environment: it does not run on schedule, but it can be run by hand.",
+        "pausedNotice": "This job is paused: this runs it once and the pause stays."
+      },
+      "pause": {
+        "action": "Pause",
+        "resumeAction": "Resume",
+        "title": "Pause job",
+        "resumeTitle": "Resume job",
+        "confirm": "Pause",
+        "resumeConfirm": "Resume",
+        "notice": "It stops starting on its schedule in every instance. The run in progress finishes and “Run now” stays available.",
+        "critical": "Customer operations depend on this job: while it is paused, what it does stays on hold. Resume it as soon as the reason for pausing is solved.",
+        "resumeNotice": "It starts again at its next scheduled time.",
+        "since": "Paused since",
+        "reason": "Pause reason",
+        "unknownAdmin": "Person no longer has access",
+        "paused": "The job is paused.",
+        "resumed": "The job was resumed.",
+        "stale": "Someone changed this job in the meantime. The list is up to date.",
+        "forbidden": "You do not have permission to pause jobs.",
+        "failed": "We could not change the job. Try again."
       },
       "metric": {
         "processed": "Processed",
