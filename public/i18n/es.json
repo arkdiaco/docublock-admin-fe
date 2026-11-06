@@ -418,7 +418,11 @@
       "version_detach": "separó una versión de un documento",
       "cancel": "anuló un documento",
       "regenerate": "regeneró el PDF de un documento",
-      "signer_resend": "reenvió la invitación a un firmante"
+      "signer_resend": "reenvió la invitación a un firmante",
+      "attachment_view": "vio un adjunto de un documento",
+      "bundle_download": "descargó el expediente de un documento",
+      "certificate_view": "vio el certificado de un documento",
+      "raw_view": "vio los datos completos de un documento"
     },
     "invoices": {
       "create": "creó una factura",
@@ -2079,7 +2083,8 @@
       "signers": "Firmas",
       "status": "Estado",
       "chain": "Blockchain",
-      "created": "Creado"
+      "created": "Creado",
+      "origin": "Origen"
     },
     "status": {
       "cancelled": "Anulado",
@@ -2119,7 +2124,9 @@
         "updated": "Última actualización",
         "signers": "Firmas",
         "versions": "Versiones",
-        "status": "Estado"
+        "status": "Estado",
+        "origin": "Origen",
+        "portal": "Portal"
       },
       "chainTitle": "Blockchain",
       "chainNone": "No aplica: el documento no está firmado.",
@@ -2134,7 +2141,8 @@
       "certIssued": "Emitido",
       "certNone": "Sin certificado emitido.",
       "signedOf": "{{signed}} de {{total}}",
-      "menu": "Acciones del documento"
+      "menu": "Acciones del documento",
+      "bundle": "Expediente"
     },
     "signer": {
       "col": {
@@ -2186,7 +2194,6 @@
         "index": "Versión",
         "created": "Fecha",
         "state": "Estado",
-        "expires": "Vence la firma",
         "checksum": "Checksum"
       },
       "current": "Actual",
@@ -2438,7 +2445,9 @@
         "message": "La versión no se borra: el documento pasa a apuntar a la versión anterior más reciente.",
         "done": "Versión separada"
       },
-      "pdfError": "No se pudo abrir el PDF"
+      "pdfError": "No se pudo abrir el PDF",
+      "fileError": "No se pudo abrir el archivo",
+      "bundleError": "No se pudo descargar el expediente"
     },
     "error": {
       "YA_FINALIZADO": "El documento ya está finalizado.",
@@ -2459,6 +2468,10 @@
       "AVAL_PENDIENTE": "El documento espera un aval antes de este turno.",
       "FIRMANTE_INVALIDO": "El firmante no pertenece al documento.",
       "TRANSICION_INVALIDA": "El documento no se puede anular en su estado actual.",
+      "CERTIFICADO_NO_EMITIDO": "El documento no tiene certificado emitido.",
+      "ADJUNTO_NO_ENCONTRADO": "Ese adjunto ya no está en el documento.",
+      "ARCHIVO_NO_DISPONIBLE": "El archivo no está en el almacenamiento.",
+      "EXPEDIENTE_MUY_GRANDE": "El expediente es demasiado grande para descargarlo.",
       "generic": "No se pudo completar la acción. Inténtalo de nuevo."
     },
     "bulk": {
@@ -2494,6 +2507,66 @@
       "title": "Documentos de la organización",
       "lead": "La lista global de Documentos ya llega filtrada por esta organización.",
       "open": "Ver documentos"
+    },
+    "origin": {
+      "WEB": "Web",
+      "API": "API",
+      "BRIDGE": "Integración",
+      "TITLE": "Pagaré"
+    },
+    "sum": {
+      "placeTitle": "Plantilla y agrupación",
+      "template": "Plantilla",
+      "sources": "Plantillas de origen",
+      "directory": "Directorio",
+      "folder": "Envío conjunto",
+      "folderPrincipal": "Es el principal del envío",
+      "block": "Bloque",
+      "blockDocs": "{{count}} documentos",
+      "blockMode": {
+        "single": "Una firma para todos",
+        "independent": "Firma por documento"
+      },
+      "flow": "Flujo",
+      "flowProcess": "Proceso: {{name}}",
+      "signingTitle": "Proceso de firma",
+      "turn": "Turno",
+      "turnPending": "{{pending}} por firmar",
+      "turnEmpty": "Nadie por firmar en este turno",
+      "turnHeld": "En espera del aval",
+      "deadline": "Plazo de firma",
+      "deadlineNone": "Sin plazo",
+      "reminders": "Recordatorios",
+      "remindersRule": "Cada {{hours}} h · hasta {{max}}",
+      "remindersPlatform": "Los de la plataforma",
+      "attempts": "Intentos de firma",
+      "attemptsMax": "Hasta {{max}}",
+      "attemptsNone": "Sin tope",
+      "quota": "Cobro del cupo",
+      "quotaNone": "Sin cobro registrado",
+      "fieldsTitle": "Campos de la plantilla",
+      "fieldsNone": "El documento no tiene campos llenos.",
+      "infoTitle": "Datos de la integración",
+      "infoNone": "Sin datos de la integración.",
+      "filesTitle": "Adjuntos",
+      "filesNone": "El documento no tiene adjuntos.",
+      "fileMerged": "Se une al PDF",
+      "fileMissing": "Sin archivo",
+      "view": "Ver",
+      "certView": "Ver certificado"
+    },
+    "raw": {
+      "open": "Datos completos",
+      "title": "Datos completos",
+      "loading": "Cargando los datos completos…",
+      "error": "No pudimos cargar los datos completos.",
+      "hiddenTitle": "No se muestran",
+      "reason": {
+        "secret": "Secretos",
+        "html": "HTML de la plantilla",
+        "signers": "Firmantes (van en su pestaña)"
+      },
+      "audited": "Esta consulta queda en la auditoría de plataforma."
     }
   },
   "orgPicker": {

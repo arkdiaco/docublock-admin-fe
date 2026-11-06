@@ -1,5 +1,6 @@
 import type {
   DocumentVersion,
+  PlatformDocumentDetail,
   PlatformDocumentSummary,
   PlatformSigner,
   TraceEvent,
@@ -51,20 +52,14 @@ export const documentActionsOf = (
   };
 };
 
-export const currentTurn = (signers: readonly PlatformSigner[]): number | null => {
-  const pending = signers.filter((s) => !s.checked).map((s) => s.order);
-  return pending.length ? Math.min(...pending) : null;
-};
+export const awaitingSignatures = (doc: PlatformDocumentSummary): boolean =>
+  doc.status.state === 0 && (doc.status.progress === 1 || doc.status.progress === 2);
 
-export const canResend = (
-  doc: PlatformDocumentSummary,
-  signer: PlatformSigner,
-  signers: readonly PlatformSigner[],
-): boolean =>
-  doc.status.state === 0 &&
-  (doc.status.progress === 1 || doc.status.progress === 2) &&
-  !signer.checked &&
-  signer.order === currentTurn(signers);
+export const inOpenTurn = (doc: PlatformDocumentDetail, signer: PlatformSigner): boolean =>
+  !signer.checked && !doc.turn.onHold && signer.order === doc.turn.order;
+
+export const canResend = (doc: PlatformDocumentDetail, signer: PlatformSigner): boolean =>
+  awaitingSignatures(doc) && inOpenTurn(doc, signer);
 
 export type CheckState = 'passed' | 'failed' | 'waiting';
 

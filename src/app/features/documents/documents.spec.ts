@@ -4,15 +4,33 @@ import { DOCUMENT_ERRORS } from './data/document-errors';
 import {
   canResend,
   chainStateOf,
-  currentTurn,
   documentActionsOf,
   evidenceRowsOf,
+  inOpenTurn,
   shortHash,
   statusViewOf,
   traceKeyOf,
   traceReasonOf,
 } from './data/document-view';
-import type { PlatformDocumentSummary, PlatformSigner, TraceEvent } from './data/documents.models';
+import type {
+  DocumentTurn,
+  PlatformDocumentDetail,
+  PlatformDocumentSummary,
+  PlatformSigner,
+  TraceEvent,
+} from './data/documents.models';
+import {
+  BLOCK_MODES,
+  HIDDEN_REASONS,
+  ORIGINS,
+  blockModeKeyOf,
+  hiddenGroupsOf,
+  infoRowsOf,
+  originKeyOf,
+  portalText,
+  refText,
+  turnStateOf,
+} from './data/summary-view';
 import { TRACE_KEYS } from './data/trace-keys';
 import { traceReadingOf } from './data/trace-reading';
 
@@ -38,12 +56,29 @@ const summary = (
 ): PlatformDocumentSummary => ({
   id: 'd1',
   name: 'Contrato',
+  kind: 'WEB',
   organization: { id: 'o1' },
   status: { progress, state, label: '' },
   signedCount: 0,
   signerCount: 2,
   anchored: false,
   ...over,
+});
+
+const detailOf = (
+  progress: 0 | 1 | 2 | 3,
+  state: 0 | 1 | 4 | 5,
+  turn: DocumentTurn,
+  signers: PlatformSigner[],
+): PlatformDocumentDetail => ({
+  ...summary(progress, state),
+  signers,
+  versions: [],
+  turn,
+  fields: [],
+  attachments: [],
+  principalFolder: false,
+  sourceTemplates: [],
 });
 
 const signer = (
@@ -131,20 +166,88 @@ describe('Documentos: acciones permitidas', () => {
     expect(documentActionsOf(summary(2), []).register).toBe(false);
   });
 
-  it('reenviar solo al firmante pendiente del turno actual de un documento pendiente', () => {
+  it('reenviar solo al pendiente del turno del core, y nunca con el turno en espera del aval', () => {
     const signers = [
       signer('a', 1, true),
       signer('b', 2, false),
       signer('c', 2, false),
       signer('d', 3, false),
     ];
-    expect(currentTurn(signers)).toBe(2);
-    expect(canResend(summary(2), signers[1], signers)).toBe(true);
-    expect(canResend(summary(2), signers[2], signers)).toBe(true);
-    expect(canResend(summary(2), signers[3], signers)).toBe(false);
-    expect(canResend(summary(2), signers[0], signers)).toBe(false);
-    expect(canResend(summary(2, 4), signers[1], signers)).toBe(false);
-    expect(canResend(summary(3), signers[1], signers)).toBe(false);
+    const turn = { order: 2, onHold: false, pending: 2 };
+    const doc = detailOf(2, 0, turn, signers);
+    expect(canResend(doc, signers[1])).toBe(true);
+    expect(canResend(doc, signers[2])).toBe(true);
+    expect(canResend(doc, signers[3])).toBe(false);
+    expect(canResend(doc, signers[0])).toBe(false);
+    expect(canResend(detailOf(2, 4, turn, signers), signers[1])).toBe(false);
+    expect(canResend(detailOf(3, 0, turn, signers), signers[1])).toBe(false);
+    expect(canResend(detailOf(2, 0, { ...turn, onHold: true }, signers), signers[1])).toBe(false);
+  });
+
+  it('con el turno del core sin pendientes, nadie del turno siguiente queda «en turno»', () => {
+    const signers = [signer('a', 1, true), signer('b', 2, false)];
+    const stuck = detailOf(2, 0, { order: 1, onHold: false, pending: 0 }, signers);
+    expect(inOpenTurn(stuck, signers[1])).toBe(false);
+    expect(canResend(stuck, signers[1])).toBe(false);
+    expect(turnStateOf(stuck)).toBe('empty');
+  });
+});
+
+describe('Documentos: resumen del documento', () => {
+  it('el turno dice si está abierto, sin pendientes, en espera del aval o cerrado', () => {
+    const signers = [signer('a', 1, false)];
+    const turn = (pending: number, onHold = false) => ({ order: 1, onHold, pending });
+    expect(turnStateOf(detailOf(1, 0, turn(1), signers))).toBe('open');
+    expect(turnStateOf(detailOf(1, 0, turn(0), signers))).toBe('empty');
+    expect(turnStateOf(detailOf(1, 0, turn(1, true), signers))).toBe('held');
+    expect(turnStateOf(detailOf(3, 0, turn(0), signers))).toBe('closed');
+    expect(turnStateOf(detailOf(1, 4, turn(1), signers))).toBe('closed');
+  });
+
+  it('origen, portal, modo del bloque y referencias con nombre o con su id', () => {
+    expect(originKeyOf('BRIDGE')).toBe('docs.origin.BRIDGE');
+    expect(originKeyOf('OTRO')).toBeNull();
+    expect(blockModeKeyOf('single')).toBe('docs.sum.blockMode.single');
+    expect(blockModeKeyOf('raro')).toBeNull();
+    expect(blockModeKeyOf(undefined)).toBeNull();
+    expect(portalText('arkdia')).toBe('Arkdia');
+    expect(portalText(undefined)).toBe('—');
+    expect(refText({ id: 't1', name: 'Arriendo', code: 'AR' })).toBe('Arriendo · AR');
+    expect(refText({ id: 't1' })).toBe('t1');
+  });
+
+  it('los datos de la integración salen como texto y lo oculto se agrupa por razón', () => {
+    expect(
+      infoRowsOf({ externalRef: 'R-1', massiveRow: 4, editado: true, vacio: '', otro: { a: 1 } }),
+    ).toEqual([
+      { key: 'externalRef', value: 'R-1' },
+      { key: 'massiveRow', value: '4' },
+      { key: 'editado', value: 'true' },
+      { key: 'vacio', value: '—' },
+      { key: 'otro', value: '{"a":1}' },
+    ]);
+    expect(infoRowsOf(undefined)).toEqual([]);
+    expect(
+      hiddenGroupsOf([
+        { path: 'pattern', reason: 'html' },
+        { path: 'token', reason: 'secret' },
+        { path: 'relatedInfo.apiKey', reason: 'secret' },
+      ]),
+    ).toEqual([
+      { reason: 'secret', paths: ['token', 'relatedInfo.apiKey'] },
+      { reason: 'html', paths: ['pattern'] },
+    ]);
+  });
+
+  it('cada origen, modo de bloque y razón de ocultar tiene frase en los dos idiomas', () => {
+    for (const key of [
+      ...ORIGINS.map((origin) => `docs.origin.${origin}`),
+      ...BLOCK_MODES.map((mode) => `docs.sum.blockMode.${mode}`),
+      ...HIDDEN_REASONS.map((reason) => `docs.raw.reason.${reason}`),
+    ]) {
+      expect(typeof leaf(es, key), key).toBe('string');
+      expect(typeof leaf(en, key), key).toBe('string');
+    }
   });
 });
 

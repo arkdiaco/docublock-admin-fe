@@ -28,6 +28,8 @@ const detail = (over: Partial<PlatformDocumentDetail> = {}): PlatformDocumentDet
   id: 'd1',
   name: 'Contrato de arriendo',
   code: 'CA-0001',
+  kind: 'WEB',
+  portal: 'docublock',
   organization: { id: 'o1', businessName: 'Notaría 14' },
   owner: { id: 'u1', names: 'Marta Vidal' },
   status: { progress: 2, state: 0, label: 'parcialmente firmado' },
@@ -73,8 +75,24 @@ const detail = (over: Partial<PlatformDocumentDetail> = {}): PlatformDocumentDet
       createdAt: '2026-10-21T10:00:00.000Z',
     },
   ],
+  turn: { order: 2, onHold: false, pending: 0 },
+  fields: [],
+  attachments: [],
+  principalFolder: false,
+  sourceTemplates: [],
   ...over,
 });
+
+const stubObjectUrls = () => {
+  const urls = URL as unknown as Record<string, unknown>;
+  const before = { create: urls['createObjectURL'], revoke: urls['revokeObjectURL'] };
+  urls['createObjectURL'] = vi.fn(() => 'blob:prueba');
+  urls['revokeObjectURL'] = vi.fn();
+  return () => {
+    urls['createObjectURL'] = before.create;
+    urls['revokeObjectURL'] = before.revoke;
+  };
+};
 
 const events: TraceEvent[] = [
   {
@@ -111,7 +129,10 @@ describe('Operación › Documentos › ficha', () => {
     http = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => http.verify());
+  afterEach(() => {
+    http.verify();
+    vi.restoreAllMocks();
+  });
 
   const conPermisos = (permisos: string[]) =>
     TestBed.inject(AuthStore).setProfile({
@@ -153,16 +174,165 @@ describe('Operación › Documentos › ficha', () => {
       t.textContent?.includes(label),
     )!;
 
+  const boton = (host: HTMLElement, label: string) =>
+    [...host.querySelectorAll<HTMLButtonElement>('button')].find((b) =>
+      b.textContent?.includes(label),
+    )!;
+
   it('cabecera, resumen y pestañas con conteos; solo lectura no ofrece acciones', async () => {
     conPermisos(['platform:operations']);
     const { host } = await montar();
     expect(host.querySelector('.rec__name')?.textContent?.trim()).toBe('Contrato de arriendo');
     expect(host.querySelector('.rec__card')?.textContent).toContain('En progreso');
     expect(host.querySelector('.rec__meta')?.textContent).toContain('CA-0001');
-    expect(host.querySelector('.dd__dl')?.textContent).toContain('Marta Vidal');
+    expect(host.querySelector('.sm__dl')?.textContent).toContain('Marta Vidal');
     expect(host.querySelector('db-underline-tabs')?.textContent).toContain('Firmantes2');
-    expect(host.querySelector('.dd__actions button')).toBeNull();
+    const acciones = host.querySelector('.dd__actions')?.textContent ?? '';
+    expect(acciones).toContain('Datos completos');
+    expect(acciones).toContain('Expediente');
+    expect(acciones).not.toContain('Acciones del documento');
     expect(host.textContent).not.toMatch(/\b(docs|nav|common)\.[a-zA-Z]/);
+  });
+
+  it('el resumen dice origen, plantilla, agrupación, turno del core, plazo, campos, integración y adjuntos', async () => {
+    conPermisos(['platform:operations']);
+    const { host } = await montar(
+      detail({
+        kind: 'API',
+        portal: 'arkdia',
+        template: { id: 't1', name: 'Arriendo', code: 'AR' },
+        directory: { id: 'dir', name: 'Comercial' },
+        folder: { id: 'd0', name: 'Contrato', code: 'CA-0000' },
+        block: { id: 'b1', name: 'Paquete', signatureMode: 'independent', documents: 3 },
+        flow: { flowId: 'f1', flowName: 'Vinculación', processId: 'p1', processName: 'Proceso 12' },
+        turn: { order: 1, onHold: false, pending: 0 },
+        signing: { deadline: '2026-12-31T00:00:00.000Z', reminders: { everyHours: 24, max: 3 } },
+        quotaConsumedAt: '2026-10-22T10:00:00.000Z',
+        fields: [{ name: 'ciudad', value: 'Cali' }],
+        relatedInfo: { externalRef: 'PO-1' },
+        attachments: [
+          { index: 0, name: 'Anexo técnico', merge: true, available: true },
+          { index: 1, name: 'Foto', merge: false, available: false },
+        ],
+      }),
+    );
+    const text = host.querySelector('dba-document-summary')?.textContent ?? '';
+    for (const part of [
+      'API',
+      'Arkdia',
+      'Arriendo · AR',
+      'Comercial',
+      'Contrato · CA-0000',
+      'Paquete',
+      'Firma por documento · 3 documentos',
+      'Vinculación',
+      'Proceso: Proceso 12',
+      'Nadie por firmar en este turno',
+      'Cada 24 h · hasta 3',
+      'Sin tope',
+      'ciudad',
+      'Cali',
+      'externalRef',
+      'PO-1',
+      'Anexo técnico',
+      'Se une al PDF',
+      'Sin archivo',
+    ]) {
+      expect(text, part).toContain(part);
+    }
+    expect(
+      host.querySelector('dba-document-summary a[href="/operacion/documentos/d0"]'),
+    ).not.toBeNull();
+    expect(text).not.toMatch(/\b(docs|nav|common)\.[a-zA-Z]/);
+  });
+
+  it('sin política de firma ni datos dice qué aplica en vez de quedar en blanco', async () => {
+    conPermisos(['platform:operations']);
+    const { host } = await montar();
+    const text = host.querySelector('dba-document-summary')?.textContent ?? '';
+    for (const part of [
+      'Web',
+      'Docublock',
+      'Sin plazo',
+      'Los de la plataforma',
+      'Sin tope',
+      'Sin cobro registrado',
+      'El documento no tiene campos llenos.',
+      'Sin datos de la integración.',
+      'El documento no tiene adjuntos.',
+    ]) {
+      expect(text, part).toContain(part);
+    }
+  });
+
+  it('«Datos completos» muestra lo guardado sin secretos y dice qué se ocultó', async () => {
+    conPermisos(['platform:operations']);
+    const { fixture, host } = await montar();
+    boton(host, 'Datos completos').click();
+    fixture.detectChanges();
+    http.expectOne('/platform/documents/d1/raw').flush({
+      id: 'd1',
+      data: { code: 'CA-0001', relatedInfo: { externalRef: 'R-1' } },
+      hidden: [
+        { path: 'token', reason: 'secret' },
+        { path: 'pattern', reason: 'html' },
+      ],
+    });
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(host.querySelector('.raw__code')?.textContent).toContain('"externalRef": "R-1"');
+    });
+    const ocultos = host.querySelector('.raw__hidden')?.textContent ?? '';
+    expect(ocultos).toContain('Secretos');
+    expect(ocultos).toContain('token');
+    expect(ocultos).toContain('HTML de la plantilla');
+    expect(host.textContent).not.toMatch(/\b(docs|nav|common)\.[a-zA-Z]/);
+  });
+
+  it('el certificado se abre en otra pestaña, y un archivo perdido dice por qué', async () => {
+    conPermisos(['platform:operations']);
+    const { fixture, host } = await montar(
+      detail({ certificate: { sha256: 'c'.repeat(64), issuedAt: '2026-10-22T10:00:00.000Z' } }),
+    );
+    const restore = stubObjectUrls();
+    const pestana = { location: { href: '' }, close: vi.fn() };
+    vi.spyOn(window, 'open').mockReturnValue(pestana as unknown as Window);
+    boton(host, 'Ver certificado').click();
+    http.expectOne('/platform/documents/d1/certificate/file').flush(new Blob(['%PDF']));
+    await vi.waitFor(() => expect(pestana.location.href).toBe('blob:prueba'));
+    const mal = vi.spyOn(TestBed.inject(NotificationService), 'error');
+    fixture.detectChanges();
+    boton(host, 'Ver certificado').click();
+    http
+      .expectOne('/platform/documents/d1/certificate/file')
+      .flush(new Blob([JSON.stringify({ code: 'ARCHIVO_NO_DISPONIBLE' })]), {
+        status: 404,
+        statusText: 'Not Found',
+      });
+    await vi.waitFor(() =>
+      expect(mal).toHaveBeenCalledWith('El archivo no está en el almacenamiento.'),
+    );
+    expect(pestana.close).toHaveBeenCalled();
+    restore();
+  });
+
+  it('el expediente se descarga con el nombre que manda el core', async () => {
+    conPermisos(['platform:operations']);
+    const { host } = await montar();
+    const restore = stubObjectUrls();
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
+    const agregado = vi.spyOn(document.body, 'appendChild');
+    boton(host, 'Expediente').click();
+    http.expectOne('/platform/documents/d1/bundle').flush(new Blob(['zip']), {
+      headers: { 'content-disposition': 'attachment; filename="expediente-CA-0001.zip"' },
+    });
+    await vi.waitFor(() => {
+      const enlace = agregado.mock.calls
+        .map(([node]) => node)
+        .find((node): node is HTMLAnchorElement => node instanceof HTMLAnchorElement);
+      expect(enlace?.download).toBe('expediente-CA-0001.zip');
+    });
+    restore();
   });
 
   it('documento inexistente muestra su estado y vuelve a la lista', async () => {
@@ -287,6 +457,7 @@ describe('Operación › Documentos › ficha', () => {
     expect(rows[1].textContent).not.toContain('Actual');
     expect(host.querySelector('[aria-label="Separar"]')).toBeNull();
     expect(host.textContent).toContain('Ver PDF');
+    expect(host.querySelector('dba-document-versions')?.textContent).not.toContain('Vence');
   });
 
   it('la trazabilidad usa la etiqueta conocida, cae al código y muestra la razón', async () => {

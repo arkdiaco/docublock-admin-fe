@@ -22,7 +22,7 @@ import {
   type PlatformSigner,
   type RetryableEvidence,
 } from '../data/documents.models';
-import { canResend, currentTurn, evidenceRowsOf, type EvidenceRow } from '../data/document-view';
+import { canResend, evidenceRowsOf, inOpenTurn, type EvidenceRow } from '../data/document-view';
 
 export type SignerActionKind = 'unblock' | 'resend' | 'retry';
 
@@ -289,7 +289,6 @@ export class DocumentSignersComponent {
 
   protected readonly views = computed<SignerView[]>(() => {
     const doc = this.document();
-    const turn = currentTurn(doc.signers);
     return [...doc.signers]
       .sort((a, b) => a.order - b.order)
       .map((signer) => ({
@@ -301,11 +300,7 @@ export class DocumentSignersComponent {
             ? `✓ ${formatDate(signer.signedAt, 'd/MM/y HH:mm', this.locale)}`
             : '✓'
           : '—',
-        state: signer.blocked
-          ? 'blocked'
-          : !signer.checked && signer.order === turn
-            ? 'turn'
-            : 'enabled',
+        state: signer.blocked ? 'blocked' : inOpenTurn(doc, signer) ? 'turn' : 'enabled',
         evidence: evidenceRowsOf(signer.evidence),
         actions: this.canManage() ? this.actionsFor(doc, signer) : [],
       }));
@@ -338,8 +333,7 @@ export class DocumentSignersComponent {
   private actionsFor(doc: PlatformDocumentDetail, signer: PlatformSigner): ActionMenuItem[] {
     if (doc.status.state === 4 || signer.checked) return [];
     const items: ActionMenuItem[] = [];
-    if (canResend(doc, signer, doc.signers))
-      items.push({ key: 'resend', labelKey: 'docs.signer.resend' });
+    if (canResend(doc, signer)) items.push({ key: 'resend', labelKey: 'docs.signer.resend' });
     if (signer.blocked) items.push({ key: 'unblock', labelKey: 'docs.signer.unblock' });
     RETRYABLE_EVIDENCE.forEach((type, index) =>
       items.push({

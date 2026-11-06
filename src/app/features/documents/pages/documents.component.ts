@@ -46,6 +46,7 @@ import {
   type ListView,
   type StatusView,
 } from '../data/document-view';
+import { originKeyOf } from '../data/summary-view';
 
 const LIMIT = 20;
 const DEBOUNCE_MS = 350;
@@ -56,6 +57,7 @@ const CHAINS: readonly BlockchainFilter[] = ['registered', 'pending'];
 
 const COLUMNS: readonly DataColumn[] = [
   { key: 'doc', labelKey: 'docs.col.doc', width: 'minmax(0, 1.6fr)' },
+  { key: 'origin', labelKey: 'docs.col.origin', width: '100px' },
   { key: 'org', labelKey: 'docs.col.org', width: 'minmax(0, 1.1fr)' },
   { key: 'owner', labelKey: 'docs.col.owner', width: 'minmax(0, 0.9fr)' },
   { key: 'signers', labelKey: 'docs.col.signers', width: '80px' },
@@ -73,6 +75,7 @@ const EMPTY_ISSUES: DocumentIssues = {
 interface RowView extends PlatformDocumentSummary {
   statusView: StatusView;
   chain: ChainState;
+  originKey: string | null;
   ownerText: string;
   createdText: string;
 }
@@ -191,7 +194,7 @@ const isIssueView = (value: string | null): value is IssueView =>
           [columns]="columns"
           [label]="'nav.documents' | translate"
           [dense]="density.compact()"
-          minWidth="1000px"
+          minWidth="1100px"
           [total]="shownTotal()"
           [from]="from()"
           [to]="to()"
@@ -204,6 +207,11 @@ const isIssueView = (value: string | null): value is IssueView =>
               <span class="dba-td cell">
                 <span class="cell__label">{{ row.name }}</span>
                 <span class="cell__meta">{{ row.code || '—' }}</span>
+              </span>
+              <span class="dba-td cell">
+                <span class="cell__text">{{
+                  row.originKey ? (row.originKey | translate) : row.kind || '—'
+                }}</span>
               </span>
               <span class="dba-td cell">
                 <span class="cell__label">{{ row.organization.businessName || '—' }}</span>
@@ -561,6 +569,7 @@ export class DocumentsComponent {
       ...doc,
       statusView: statusViewOf(doc.status),
       chain: chainStateOf(doc),
+      originKey: originKeyOf(doc.kind),
       ownerText: doc.owner?.names || doc.owner?.email || '—',
       createdText: doc.createdAt ? formatDate(doc.createdAt, 'd/MM/y', this.locale) : '—',
     };

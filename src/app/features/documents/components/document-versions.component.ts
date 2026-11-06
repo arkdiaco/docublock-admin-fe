@@ -21,7 +21,6 @@ const COLUMNS: readonly DataColumn[] = [
   { key: 'index', labelKey: 'docs.version.col.index', width: '120px' },
   { key: 'created', labelKey: 'docs.version.col.created', width: 'minmax(0, 1fr)' },
   { key: 'state', labelKey: 'docs.version.col.state', width: 'minmax(0, 1fr)' },
-  { key: 'expires', labelKey: 'docs.version.col.expires', width: 'minmax(0, 1fr)' },
   { key: 'checksum', labelKey: 'docs.version.col.checksum', width: '180px' },
   { key: 'tools', width: '190px', align: 'end' },
 ];
@@ -31,7 +30,6 @@ const STATES = ['0', '1', '2', '3'];
 interface VersionView extends DocumentVersion {
   current: boolean;
   createdText: string;
-  expiresText: string;
   stateKey: string | null;
   hash: string;
 }
@@ -64,7 +62,7 @@ interface CommentView {
       <dba-data-table
         [columns]="columns"
         [label]="'docs.d.tab.versions' | translate"
-        minWidth="820px"
+        minWidth="700px"
       >
         @for (view of views(); track view.id) {
           <div class="dba-tr vs__row">
@@ -76,7 +74,6 @@ interface CommentView {
             </span>
             <span class="dba-td dba-td--mono">{{ view.createdText }}</span>
             <span class="dba-td">{{ view.stateKey ? (view.stateKey | translate) : '—' }}</span>
-            <span class="dba-td dba-td--mono">{{ view.expiresText }}</span>
             <span class="dba-td dba-td--mono" [attr.title]="view.checksum || null">{{
               view.hash
             }}</span>
@@ -193,7 +190,6 @@ export class DocumentVersionsComponent {
         ...version,
         current: version.id === current,
         createdText: this.stamp(version.createdAt),
-        expiresText: this.stamp(version.expirationSign),
         stateKey:
           version.signatureProgress && STATES.includes(version.signatureProgress)
             ? `docs.version.progress.${version.signatureProgress}`

@@ -27,6 +27,7 @@ const doc = (id: string): PlatformDocumentSummary => ({
   id,
   name: `Contrato ${id}`,
   code: `CT-${id}`,
+  kind: 'WEB',
   organization: { id: 'o1', businessName: 'Notaría 14' },
   status: { progress: 3, state: 0, label: '' },
   signedCount: 1,

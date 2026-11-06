@@ -1,7 +1,8 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import type { Observable } from 'rxjs';
+import { map, type Observable } from 'rxjs';
 import { SILENT_ERRORS } from '../../../core/http/http.interceptors';
+import { exportedFileOf, type ExportedFile } from '../../../shared/http/exported-file';
 import { toParams } from '../../../shared/http/query-params';
 import type {
   BlockchainRegistration,
@@ -12,6 +13,7 @@ import type {
   DocumentTrace,
   InvitationOutcome,
   PlatformDocumentDetail,
+  RawDocument,
   RetryableEvidence,
 } from './documents.models';
 
@@ -44,6 +46,30 @@ export class DocumentsApi {
       responseType: 'blob',
       context: silent(),
     });
+  }
+
+  raw(id: string): Observable<RawDocument> {
+    return this.http.get<RawDocument>(`${BASE}/${id}/raw`, { context: silent() });
+  }
+
+  certificateFile(id: string): Observable<Blob> {
+    return this.http.get(`${BASE}/${id}/certificate/file`, {
+      responseType: 'blob',
+      context: silent(),
+    });
+  }
+
+  attachmentFile(id: string, index: number): Observable<Blob> {
+    return this.http.get(`${BASE}/${id}/attachments/${index}/file`, {
+      responseType: 'blob',
+      context: silent(),
+    });
+  }
+
+  bundle(id: string): Observable<ExportedFile> {
+    return this.http
+      .get(`${BASE}/${id}/bundle`, { responseType: 'blob', observe: 'response', context: silent() })
+      .pipe(map((response) => exportedFileOf(response, 'expediente.zip')));
   }
 
   finalize(id: string, reason: string): Observable<unknown> {

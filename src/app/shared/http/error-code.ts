@@ -5,6 +5,18 @@ export const errorCodeOf = (error: unknown): string | null => {
   return body && typeof body.code === 'string' ? body.code : null;
 };
 
+export const fileErrorCodeOf = async (error: unknown): Promise<string | null> => {
+  if (!(error instanceof HttpErrorResponse) || !(error.error instanceof Blob)) {
+    return errorCodeOf(error);
+  }
+  try {
+    const body = JSON.parse(await error.error.text()) as { code?: unknown } | null;
+    return typeof body?.code === 'string' ? body.code : null;
+  } catch {
+    return null;
+  }
+};
+
 export const errorStatusOf = (error: unknown): number | null =>
   error instanceof HttpErrorResponse ? error.status : null;
 

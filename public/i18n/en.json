@@ -418,7 +418,11 @@
       "version_detach": "detached a document version",
       "cancel": "cancelled a document",
       "regenerate": "regenerated a document's PDF",
-      "signer_resend": "resent the invitation to a signer"
+      "signer_resend": "resent the invitation to a signer",
+      "attachment_view": "viewed a document's attachment",
+      "bundle_download": "downloaded a document's evidence file",
+      "certificate_view": "viewed a document's certificate",
+      "raw_view": "viewed a document's full data"
     },
     "invoices": {
       "create": "created an invoice",
@@ -2079,7 +2083,8 @@
       "signers": "Signatures",
       "status": "Status",
       "chain": "Blockchain",
-      "created": "Created"
+      "created": "Created",
+      "origin": "Origin"
     },
     "status": {
       "cancelled": "Cancelled",
@@ -2119,7 +2124,9 @@
         "updated": "Last updated",
         "signers": "Signatures",
         "versions": "Versions",
-        "status": "Status"
+        "status": "Status",
+        "origin": "Origin",
+        "portal": "Portal"
       },
       "chainTitle": "Blockchain",
       "chainNone": "Not applicable: the document is not signed.",
@@ -2134,7 +2141,8 @@
       "certIssued": "Issued",
       "certNone": "No certificate issued.",
       "signedOf": "{{signed}} of {{total}}",
-      "menu": "Document actions"
+      "menu": "Document actions",
+      "bundle": "Evidence file"
     },
     "signer": {
       "col": {
@@ -2186,7 +2194,6 @@
         "index": "Version",
         "created": "Date",
         "state": "State",
-        "expires": "Signing deadline",
         "checksum": "Checksum"
       },
       "current": "Current",
@@ -2438,7 +2445,9 @@
         "message": "The version is not deleted: the document points to the most recent previous version.",
         "done": "Version detached"
       },
-      "pdfError": "The PDF could not be opened"
+      "pdfError": "The PDF could not be opened",
+      "fileError": "The file could not be opened",
+      "bundleError": "The evidence file could not be downloaded"
     },
     "error": {
       "YA_FINALIZADO": "The document is already finalized.",
@@ -2459,6 +2468,10 @@
       "AVAL_PENDIENTE": "The document is waiting for an endorsement before this turn.",
       "FIRMANTE_INVALIDO": "The signer does not belong to the document.",
       "TRANSICION_INVALIDA": "The document can't be cancelled in its current state.",
+      "CERTIFICADO_NO_EMITIDO": "The document has no issued certificate.",
+      "ADJUNTO_NO_ENCONTRADO": "That attachment is no longer on the document.",
+      "ARCHIVO_NO_DISPONIBLE": "The file is not in storage.",
+      "EXPEDIENTE_MUY_GRANDE": "The evidence file is too large to download.",
       "generic": "The action couldn't be completed. Try again."
     },
     "bulk": {
@@ -2494,6 +2507,66 @@
       "title": "Organization documents",
       "lead": "The global Documents list opens filtered by this organization.",
       "open": "View documents"
+    },
+    "origin": {
+      "WEB": "Web",
+      "API": "API",
+      "BRIDGE": "Integration",
+      "TITLE": "Promissory note"
+    },
+    "sum": {
+      "placeTitle": "Template and grouping",
+      "template": "Template",
+      "sources": "Source templates",
+      "directory": "Directory",
+      "folder": "Joint send",
+      "folderPrincipal": "Main document of the send",
+      "block": "Block",
+      "blockDocs": "{{count}} documents",
+      "blockMode": {
+        "single": "One signature for all",
+        "independent": "Signature per document"
+      },
+      "flow": "Flow",
+      "flowProcess": "Process: {{name}}",
+      "signingTitle": "Signing process",
+      "turn": "Turn",
+      "turnPending": "{{pending}} left to sign",
+      "turnEmpty": "Nobody left to sign in this turn",
+      "turnHeld": "Waiting for the endorsement",
+      "deadline": "Signing deadline",
+      "deadlineNone": "No deadline",
+      "reminders": "Reminders",
+      "remindersRule": "Every {{hours}} h · up to {{max}}",
+      "remindersPlatform": "The platform ones",
+      "attempts": "Signing attempts",
+      "attemptsMax": "Up to {{max}}",
+      "attemptsNone": "No limit",
+      "quota": "Quota charge",
+      "quotaNone": "No charge recorded",
+      "fieldsTitle": "Template fields",
+      "fieldsNone": "The document has no filled fields.",
+      "infoTitle": "Integration data",
+      "infoNone": "No integration data.",
+      "filesTitle": "Attachments",
+      "filesNone": "The document has no attachments.",
+      "fileMerged": "Merged into the PDF",
+      "fileMissing": "No file",
+      "view": "View",
+      "certView": "View certificate"
+    },
+    "raw": {
+      "open": "Full data",
+      "title": "Full data",
+      "loading": "Loading the full data…",
+      "error": "We could not load the full data.",
+      "hiddenTitle": "Not shown",
+      "reason": {
+        "secret": "Secrets",
+        "html": "Template HTML",
+        "signers": "Signers (in their tab)"
+      },
+      "audited": "This lookup is recorded in the platform audit."
     }
   },
   "orgPicker": {

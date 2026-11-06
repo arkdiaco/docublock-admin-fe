@@ -17,8 +17,9 @@ import { sectionPath } from '../../../core/layout/console-nav';
 import { DialogService } from '../../../core/ui/dialog.service';
 import { NotificationService } from '../../../core/ui/notification.service';
 import { PendingAction } from '../../../shared/domain/pending-action';
-import { errorCodeOf, errorStatusOf } from '../../../shared/http/error-code';
+import { errorCodeOf, errorStatusOf, fileErrorCodeOf } from '../../../shared/http/error-code';
 import { LatestRequest } from '../../../shared/http/latest-request';
+import { saveBlob } from '../../../shared/http/save-blob';
 import { ActionMenuComponent, type ActionMenuItem } from '../../../shared/ui/action-menu.component';
 import { ButtonComponent } from '../../../shared/ui/button.component';
 import type { DialogReason } from '../../../shared/ui/dialog.component';
@@ -34,15 +35,27 @@ import {
   DocumentSignersComponent,
   type SignerAction,
 } from '../components/document-signers.component';
+import { DocumentSummaryComponent } from '../components/document-summary.component';
 import { DocumentTraceComponent } from '../components/document-trace.component';
 import { DocumentVersionsComponent } from '../components/document-versions.component';
+import { RawDataComponent } from '../components/raw-data.component';
 import { DocumentsApi } from '../data/documents.api';
 import { DOCUMENT_ERRORS } from '../data/document-errors';
-import type { DocumentVersion, PlatformDocumentDetail, TraceEvent } from '../data/documents.models';
-import { documentActionsOf, shortHash, statusViewOf } from '../data/document-view';
+import type {
+  DocumentVersion,
+  IntegrationAttachment,
+  PlatformDocumentDetail,
+  RawDocument,
+  TraceEvent,
+} from '../data/documents.models';
+import { documentActionsOf, statusViewOf } from '../data/document-view';
 import { initialsOf } from '../../../shared/domain/initials';
 
 const TAB_KEYS = ['summary', 'signers', 'versions', 'trace'] as const;
+
+const MENU_KEYS: readonly string[] = ['finalize', 'cancel', 'regenerate', 'register'];
+
+const REVOKE_AFTER_MS = 60_000;
 
 const REASON: DialogReason = {
   labelKey: 'docs.act.reasonLabel',
@@ -64,9 +77,11 @@ const REASON: DialogReason = {
     IconComponent,
     EmptyStateComponent,
     SectionLoaderComponent,
+    DocumentSummaryComponent,
     DocumentSignersComponent,
     DocumentVersionsComponent,
     DocumentTraceComponent,
+    RawDataComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -96,11 +111,24 @@ const REASON: DialogReason = {
           [meta]="meta()"
         >
           <div actions class="dd__actions">
+            <button dba-button variant="secondary" (click)="openRaw()">
+              <db-icon name="listBullets" [size]="15" />
+              {{ 'docs.raw.open' | translate }}
+            </button>
+            <button
+              dba-button
+              variant="secondary"
+              [busy]="pending.key() === 'bundle'"
+              (click)="downloadBundle()"
+            >
+              <db-icon name="download" [size]="15" />
+              {{ 'docs.d.bundle' | translate }}
+            </button>
             @if (menuItems().length) {
               <button
                 dba-button
                 variant="secondary"
-                [busy]="!!pending.key()"
+                [busy]="menuBusy()"
                 (click)="docMenu.toggle($event)"
               >
                 {{ 'docs.d.menu' | translate }}
@@ -120,90 +148,13 @@ const REASON: DialogReason = {
 
         @switch (tab()) {
           @case ('summary') {
-            <div class="dd__cols">
-              <section class="dd__card">
-                <h2 class="dba-panel">{{ 'docs.d.general' | translate }}</h2>
-                <dl class="dd__dl">
-                  <dt>{{ 'docs.d.f.code' | translate }}</dt>
-                  <dd class="dba-mono">{{ doc.code || '—' }}</dd>
-                  <dt>{{ 'docs.d.f.org' | translate }}</dt>
-                  <dd>
-                    @if (canOpenOrg()) {
-                      <a class="dd__link" [routerLink]="[orgsPath, doc.organization.id]">{{
-                        doc.organization.businessName || doc.organization.id
-                      }}</a>
-                    } @else {
-                      {{ doc.organization.businessName || '—' }}
-                    }
-                  </dd>
-                  <dt>{{ 'docs.d.f.owner' | translate }}</dt>
-                  <dd>{{ owner() }}</dd>
-                  <dt>{{ 'docs.d.f.status' | translate }}</dt>
-                  <dd>{{ status().labelKey | translate }}</dd>
-                  <dt>{{ 'docs.d.f.signers' | translate }}</dt>
-                  <dd class="dba-mono">
-                    {{
-                      'docs.d.signedOf'
-                        | translate: { signed: doc.signedCount, total: doc.signerCount }
-                    }}
-                  </dd>
-                  <dt>{{ 'docs.d.f.versions' | translate }}</dt>
-                  <dd class="dba-mono">{{ doc.versions.length }}</dd>
-                  <dt>{{ 'docs.d.f.created' | translate }}</dt>
-                  <dd class="dba-mono">{{ stamp(doc.createdAt) }}</dd>
-                  <dt>{{ 'docs.d.f.updated' | translate }}</dt>
-                  <dd class="dba-mono">{{ stamp(doc.updatedAt) }}</dd>
-                </dl>
-              </section>
-
-              <div class="dd__side">
-                <section class="dd__card">
-                  <h2 class="dba-panel">{{ 'docs.d.chainTitle' | translate }}</h2>
-                  @if (doc.anchor; as anchor) {
-                    <dl class="dd__dl">
-                      <dt>{{ 'docs.d.ledger' | translate }}</dt>
-                      <dd>{{ anchor.ledger }}</dd>
-                      @if (anchor.blockNumber !== undefined) {
-                        <dt>{{ 'docs.d.block' | translate }}</dt>
-                        <dd class="dba-mono">{{ anchor.blockNumber }}</dd>
-                      }
-                      <dt>{{ 'docs.d.commitment' | translate }}</dt>
-                      <dd class="dba-mono" [attr.title]="anchor.commitmentHash">
-                        {{ hash(anchor.commitmentHash) }}
-                      </dd>
-                      <dt>{{ 'docs.d.anchoredAt' | translate }}</dt>
-                      <dd class="dba-mono">{{ stamp(anchor.anchoredAt) }}</dd>
-                    </dl>
-                  } @else if (doc.anchored) {
-                    <p class="dba-body dd__note">{{ 'docs.chain.registered' | translate }}</p>
-                  } @else if (doc.status.progress === 3) {
-                    <p class="dba-body dd__note">{{ 'docs.d.chainPending' | translate }}</p>
-                  } @else {
-                    <p class="dba-body dd__note">{{ 'docs.d.chainNone' | translate }}</p>
-                  }
-                  @if (chainUrl(); as url) {
-                    <a class="dd__link" [href]="url" target="_blank" rel="noopener">
-                      {{ 'docs.d.openChain' | translate }}
-                      <db-icon name="externalLink" [size]="13" />
-                    </a>
-                  }
-                </section>
-
-                <section class="dd__card">
-                  <h2 class="dba-panel">{{ 'docs.d.certTitle' | translate }}</h2>
-                  @if (doc.certificate; as cert) {
-                    <dl class="dd__dl">
-                      <dt>{{ 'docs.d.certSha' | translate }}</dt>
-                      <dd class="dba-mono" [attr.title]="cert.sha256">{{ hash(cert.sha256) }}</dd>
-                      <dt>{{ 'docs.d.certIssued' | translate }}</dt>
-                      <dd class="dba-mono">{{ stamp(cert.issuedAt) }}</dd>
-                    </dl>
-                  } @else {
-                    <p class="dba-body dd__note">{{ 'docs.d.certNone' | translate }}</p>
-                  }
-                </section>
-              </div>
-            </div>
+            <dba-document-summary
+              [document]="doc"
+              [canOpenOrg]="canOpenOrg()"
+              [busy]="pending.key()"
+              (certificate)="viewCertificate()"
+              (attachment)="viewAttachment($event)"
+            />
           }
           @case ('signers') {
             <dba-document-signers
@@ -235,6 +186,14 @@ const REASON: DialogReason = {
           }
         }
       </div>
+      @if (rawOpen()) {
+        <dba-raw-data
+          [subtitle]="doc.name"
+          [view]="raw()"
+          [failed]="rawFailed()"
+          (dismissed)="rawOpen.set(false)"
+        />
+      }
     }
   `,
   styles: `
@@ -247,6 +206,7 @@ const REASON: DialogReason = {
     .dd__actions {
       display: flex;
       align-items: center;
+      flex-wrap: wrap;
       gap: 8px;
     }
 
@@ -259,89 +219,6 @@ const REASON: DialogReason = {
       border: 1px solid var(--dba-border-card);
       border-radius: var(--dba-radius-panel);
       background: var(--dba-surface);
-    }
-
-    .dd__cols {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-      gap: var(--dba-grid-gap);
-      align-items: start;
-    }
-
-    .dd__side {
-      display: flex;
-      flex-direction: column;
-      gap: var(--dba-grid-gap);
-      min-width: 0;
-    }
-
-    .dd__card {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      padding: 18px 20px;
-      border: 1px solid var(--dba-border-card);
-      border-radius: var(--dba-radius-panel);
-      background: var(--dba-surface);
-    }
-
-    .dd__card h2 {
-      margin: 0;
-    }
-
-    .dd__dl {
-      display: grid;
-      grid-template-columns: 160px minmax(0, 1fr);
-      gap: 10px 16px;
-      margin: 0;
-    }
-
-    .dd__dl dt {
-      font-size: var(--dba-text-label);
-      color: var(--dba-text-muted);
-    }
-
-    .dd__dl dd {
-      margin: 0;
-      font-size: var(--dba-text-cell);
-      color: var(--dba-ink);
-      overflow-wrap: anywhere;
-    }
-
-    .dd__note {
-      margin: 0;
-      color: var(--dba-text-soft);
-    }
-
-    .dd__link {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: var(--dba-text-label);
-      font-weight: 600;
-      color: var(--dba-violet-700);
-      text-decoration: none;
-    }
-
-    .dd__link:hover {
-      text-decoration: underline;
-    }
-
-    @media (max-width: 960px) {
-      .dd__cols {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 520px) {
-      .dd__dl {
-        grid-template-columns: 1fr;
-        gap: 2px;
-      }
-
-      .dd__dl dd {
-        margin-bottom: 8px;
-      }
     }
   `,
 })
@@ -357,7 +234,6 @@ export class DocumentDetailComponent {
   private readonly latest = new LatestRequest();
 
   protected readonly docsPath = sectionPath('documents');
-  protected readonly orgsPath = sectionPath('organizations');
   protected readonly pending = new PendingAction();
   protected readonly canManage = computed(() => this.auth.canManage('operations'));
   protected readonly canOpenOrg = computed(() => this.auth.canRead('clients'));
@@ -369,19 +245,15 @@ export class DocumentDetailComponent {
   protected readonly detail = signal<PlatformDocumentDetail | null>(null);
   protected readonly events = signal<TraceEvent[]>([]);
   protected readonly tab = signal<string>('summary');
+  protected readonly rawOpen = signal(false);
+  protected readonly raw = signal<RawDocument | null>(null);
+  protected readonly rawFailed = signal(false);
 
   protected readonly status = computed(() =>
     statusViewOf(this.detail()?.status ?? { progress: 1, state: 0, label: '' }),
   );
   protected readonly initials = computed(() => initialsOf(this.detail()?.name ?? ''));
-  protected readonly owner = computed(() => {
-    const owner = this.detail()?.owner;
-    return owner?.names || owner?.email || '—';
-  });
-  protected readonly chainUrl = computed(() => {
-    const doc = this.detail();
-    return doc?.anchor?.url || doc?.blockchainUrl || null;
-  });
+  protected readonly menuBusy = computed(() => MENU_KEYS.includes(this.pending.key() ?? ''));
   protected readonly meta = computed(() => {
     const doc = this.detail();
     if (!doc) return '';
@@ -445,8 +317,46 @@ export class DocumentDetailComponent {
     return value ? formatDate(value, 'd/MM/y HH:mm', this.locale) : '—';
   }
 
-  protected hash(value?: string): string {
-    return shortHash(value);
+  protected async openRaw(): Promise<void> {
+    const doc = this.detail();
+    if (!doc) return;
+    this.raw.set(null);
+    this.rawFailed.set(false);
+    this.rawOpen.set(true);
+    try {
+      this.raw.set(await firstValueFrom(this.api.raw(doc.id)));
+    } catch {
+      this.rawFailed.set(true);
+    }
+  }
+
+  protected async downloadBundle(): Promise<void> {
+    const doc = this.detail();
+    if (!doc) return;
+    await this.pending.run('bundle', async () => {
+      try {
+        const file = await firstValueFrom(this.api.bundle(doc.id));
+        saveBlob(file.blob, file.filename);
+      } catch (error) {
+        await this.failFile(error, 'docs.act.bundleError');
+      }
+    });
+  }
+
+  protected viewCertificate(): Promise<void> {
+    const doc = this.detail();
+    if (!doc) return Promise.resolve();
+    return this.openFile('cert', this.api.certificateFile(doc.id), 'docs.act.pdfError');
+  }
+
+  protected viewAttachment(file: IntegrationAttachment): Promise<void> {
+    const doc = this.detail();
+    if (!doc) return Promise.resolve();
+    return this.openFile(
+      `att:${file.index}`,
+      this.api.attachmentFile(doc.id, file.index),
+      'docs.act.fileError',
+    );
   }
 
   protected async runDocument(key: string): Promise<void> {
@@ -537,22 +447,14 @@ export class DocumentDetailComponent {
     });
   }
 
-  protected async viewVersion(version: DocumentVersion): Promise<void> {
+  protected viewVersion(version: DocumentVersion): Promise<void> {
     const doc = this.detail();
-    if (!doc) return;
-    const tab = window.open('', '_blank');
-    await this.pending.run(`view:${version.id}`, async () => {
-      try {
-        const blob = await firstValueFrom(this.api.versionFile(doc.id, version.id));
-        const url = URL.createObjectURL(blob);
-        if (tab) tab.location.href = url;
-        else window.open(url, '_blank');
-        setTimeout(() => URL.revokeObjectURL(url), 60_000);
-      } catch {
-        tab?.close();
-        this.notify.error(this.label('docs.act.pdfError'));
-      }
-    });
+    if (!doc) return Promise.resolve();
+    return this.openFile(
+      `view:${version.id}`,
+      this.api.versionFile(doc.id, version.id),
+      'docs.act.pdfError',
+    );
   }
 
   protected async detach(version: DocumentVersion): Promise<void> {
@@ -640,6 +542,27 @@ export class DocumentDetailComponent {
         this.fail(error);
       }
     });
+  }
+
+  private async openFile(key: string, request: Observable<Blob>, fallback: string): Promise<void> {
+    const tab = window.open('', '_blank');
+    await this.pending.run(key, async () => {
+      try {
+        const url = URL.createObjectURL(await firstValueFrom(request));
+        if (tab) tab.location.href = url;
+        else window.open(url, '_blank');
+        setTimeout(() => URL.revokeObjectURL(url), REVOKE_AFTER_MS);
+      } catch (error) {
+        tab?.close();
+        await this.failFile(error, fallback);
+      }
+    });
+  }
+
+  private async failFile(error: unknown, fallback: string): Promise<void> {
+    const code = await fileErrorCodeOf(error);
+    const known = code !== null && DOCUMENT_ERRORS.includes(code);
+    this.notify.error(this.label(known ? `docs.error.${code}` : fallback));
   }
 
   private fail(error: unknown): void {

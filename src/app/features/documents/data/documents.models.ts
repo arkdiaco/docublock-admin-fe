@@ -23,6 +23,8 @@ export interface PlatformDocumentSummary {
   id: string;
   name: string;
   code?: string;
+  kind: string;
+  portal?: string;
   organization: { id: string; businessName?: string };
   owner?: { id: string; names?: string; email?: string };
   status: DocumentStatus;
@@ -85,7 +87,6 @@ export interface DocumentVersion {
   index: number;
   checksum?: string;
   signatureProgress?: string;
-  expirationSign?: string;
   createdAt?: string;
   comments?: VersionComment[];
 }
@@ -103,11 +104,84 @@ export interface DocumentCertificate {
   issuedAt: string;
 }
 
+export interface DocumentTurn {
+  order: number;
+  onHold: boolean;
+  pending: number;
+}
+
+export interface ReminderRule {
+  everyHours: number;
+  max: number;
+}
+
+export interface SigningPolicy {
+  deadline?: string;
+  reminders?: ReminderRule;
+  maxAttempts?: number;
+}
+
+export interface DocumentField {
+  name: string;
+  value: string;
+}
+
+export interface IntegrationAttachment {
+  index: number;
+  name: string;
+  merge: boolean;
+  available: boolean;
+}
+
+export interface LinkedRef {
+  id: string;
+  name?: string;
+  code?: string;
+}
+
+export interface LinkedBlock extends LinkedRef {
+  signatureMode?: string;
+  documents: number;
+}
+
+export interface LinkedFlow {
+  processId?: string;
+  processName?: string;
+  flowId?: string;
+  flowName?: string;
+}
+
 export interface PlatformDocumentDetail extends PlatformDocumentSummary {
   signers: PlatformSigner[];
   versions: DocumentVersion[];
   anchor?: DocumentAnchor;
   certificate?: DocumentCertificate;
+  turn: DocumentTurn;
+  signing?: SigningPolicy;
+  quotaConsumedAt?: string;
+  fields: DocumentField[];
+  relatedInfo?: Record<string, unknown>;
+  attachments: IntegrationAttachment[];
+  principalFolder: boolean;
+  template?: LinkedRef;
+  sourceTemplates: LinkedRef[];
+  directory?: LinkedRef;
+  folder?: LinkedRef;
+  block?: LinkedBlock;
+  flow?: LinkedFlow;
+}
+
+export type HiddenReason = 'secret' | 'html' | 'signers';
+
+export interface HiddenField {
+  path: string;
+  reason: HiddenReason;
+}
+
+export interface RawDocument {
+  id: string;
+  data: unknown;
+  hidden: HiddenField[];
 }
 
 export interface TraceActor {
