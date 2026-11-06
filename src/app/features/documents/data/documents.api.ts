@@ -15,7 +15,10 @@ import type {
   PlatformDocumentDetail,
   RawDocument,
   RawSigner,
-  RetryableEvidence,
+  ReactivationChoice,
+  ReactivationOutcome,
+  SignerChange,
+  SignerChangeOutcome,
   SignerFileKind,
 } from './documents.models';
 
@@ -135,15 +138,28 @@ export class DocumentsApi {
     );
   }
 
-  enableRetry(
+  reactivateValidations(
     id: string,
     identityId: string,
-    type: RetryableEvidence,
+    scope: ReactivationChoice,
     reason: string,
-  ): Observable<unknown> {
-    return this.http.post(
-      `${BASE}/${id}/signers/${identityId}/enable-retry`,
-      { reason, type },
+  ): Observable<ReactivationOutcome> {
+    return this.http.post<ReactivationOutcome>(
+      `${BASE}/${id}/signers/${identityId}/reactivate-validations`,
+      { reason, scope },
+      { context: silent() },
+    );
+  }
+
+  changeSigner(
+    id: string,
+    identityId: string,
+    change: SignerChange,
+    reason: string,
+  ): Observable<SignerChangeOutcome> {
+    return this.http.patch<SignerChangeOutcome>(
+      `${BASE}/${id}/signers/${identityId}`,
+      { reason, ...change },
       { context: silent() },
     );
   }

@@ -10,7 +10,7 @@ import {
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { deviceLabel } from '../../../shared/domain/device-label';
 import { OrgStateComponent } from '../../../shared/ui/org-state.component';
-import type { PlatformSigner } from '../data/documents.models';
+import { REACTIVATION_SCOPES, type PlatformSigner } from '../data/documents.models';
 import { shortHash } from '../data/document-view';
 import {
   ATTEMPT_KINDS,
@@ -350,6 +350,13 @@ import {
             </dd>
           }
         </dl>
+        <p class="dba-eyebrow sc__eyebrow">{{ 'docs.sp.attempts.reactivations' | translate }}</p>
+        <dl class="bd__dl">
+          @for (scope of scopes; track scope) {
+            <dt>{{ 'docs.react.scope.' + scope | translate }}</dt>
+            <dd class="dba-mono">{{ s.attempts.reactivations[scope] }}</dd>
+          }
+        </dl>
         <p class="dba-eyebrow sc__eyebrow">{{ 'docs.sp.attempts.credits' | translate }}</p>
         <dl class="bd__dl">
           <dt>{{ 'docs.sp.attempts.kind.biometric' | translate }}</dt>
@@ -453,6 +460,7 @@ export class SignerChecksComponent {
   protected readonly requirementKeys = REQUIREMENT_KEYS;
   protected readonly attemptKinds = ATTEMPT_KINDS;
   protected readonly retryKinds = ['document', 'biometric'] as const;
+  protected readonly scopes = REACTIVATION_SCOPES;
   protected readonly family = CHECK_FAMILY;
 
   protected readonly counted = computed(() => {

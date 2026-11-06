@@ -426,7 +426,9 @@
       "signer_attachment_view": "vio un adjunto de un firmante",
       "signer_file_view": "vio un archivo de un firmante",
       "signer_raw_view": "vio los datos completos de un firmante",
-      "signer_report_view": "vio el informe de validación de un firmante"
+      "signer_report_view": "vio el informe de validación de un firmante",
+      "signer_features_change": "cambió las características de un firmante",
+      "signer_validations_reactivate": "reactivó las validaciones de un firmante"
     },
     "invoices": {
       "create": "creó una factura",
@@ -2167,12 +2169,8 @@
       "empty": "El documento no tiene firmantes.",
       "unblock": "Desbloquear",
       "resend": "Reenviar invitación",
-      "retry": {
-        "liveness": "Nuevo intento de Liveness",
-        "faceCompare": "Nuevo intento de comparación facial",
-        "faceMatch": "Nuevo intento de coincidencia facial",
-        "documentCheck": "Nuevo intento de revisión del documento"
-      }
+      "reactivate": "Reactivar validaciones",
+      "features": "Cambiar características"
     },
     "evidence": {
       "liveness": "Liveness",
@@ -2293,7 +2291,8 @@
         "grantedOf": "{{granted}} de {{max}}",
         "credits": "Créditos cobrados",
         "charged": "Cobrado",
-        "notCharged": "Sin cobrar"
+        "notCharged": "Sin cobrar",
+        "reactivations": "Reactivaciones desde la consola"
       },
       "files": {
         "title": "Archivos",
@@ -2356,7 +2355,9 @@
       "history": {
         "title": "Historial de evidencias",
         "rejected": "Rechazada",
-        "none": "Sin evidencias rechazadas."
+        "none": "Sin evidencias anteriores.",
+        "reactivated": "Reactivada desde la consola",
+        "registry": "Consulta anterior a Registraduría: {{code}} · {{date}}"
       },
       "report": {
         "title": "Informe de validación",
@@ -2510,6 +2511,19 @@
           "reopened": "Resultado: el registro había agotado sus intentos y se reabrió",
           "queued": "Resultado: registro encolado"
         }
+      },
+      "registry": "Registraduría respondió {{code}}",
+      "name": "{{name}}",
+      "react": {
+        "scopes": "Se reactivó:",
+        "unblocked": "Se quitó el bloqueo de firma",
+        "attempts": "Intentos de firma que volvieron a cero: {{total}}"
+      },
+      "feat": {
+        "on": "Se encendió:",
+        "off": "Se apagó:",
+        "removed": "Adjuntos quitados:",
+        "optional": "Adjuntos que quedaron opcionales:"
       }
     },
     "trace": {
@@ -2607,7 +2621,9 @@
       "endorsement_closed": "Aval cerrado sin decisión",
       "document_bundle_downloaded": "Expediente descargado",
       "document_viewed_post_signature": "Documento visto tras la firma",
-      "consent_accepted": "Consentimiento aceptado"
+      "consent_accepted": "Consentimiento aceptado",
+      "admin_signer_features_changed": "Características del firmante cambiadas por administración",
+      "admin_validations_reactivated": "Validaciones reactivadas por administración"
     },
     "act": {
       "reasonLabel": "Razón (queda en la trazabilidad)",
@@ -2642,11 +2658,6 @@
         "title": "Desbloquear firmante",
         "message": "Solo se quita el bloqueo de {{name}}: no se habilitan intentos ni se tocan las validaciones.",
         "done": "Firmante desbloqueado"
-      },
-      "retry": {
-        "title": "Habilitar reintento",
-        "message": "La validación anterior de {{name}} queda como intento fallido y puede repetirla.",
-        "done": "Reintento habilitado ({{granted}} de {{max}})"
       },
       "resend": {
         "title": "Reenviar invitación",
@@ -2690,6 +2701,18 @@
       "EVIDENCIA_NO_ENCONTRADA": "El firmante no tiene ese archivo.",
       "INFORME_NO_EMITIDO": "El firmante no tiene informe de validación.",
       "TIPO_ARCHIVO_INVALIDO": "Ese tipo de archivo no existe.",
+      "VALIDACION_NO_APLICA": "El firmante no tiene esa validación.",
+      "SIN_VALIDACIONES": "El firmante no tiene validaciones que reactivar.",
+      "FIRMA_RETENIDA": "La firma está retenida: espera la aprobación del responsable del documento.",
+      "SIN_CAMBIOS": "No hay cambios para guardar.",
+      "VALIDACION_NO_HABILITADA": "La organización no tiene habilitada esa validación.",
+      "ADJUNTO_CAMBIO": "Los adjuntos del firmante cambiaron. Revisa la ficha e inténtalo de nuevo.",
+      "ADJUNTO_DE_INTEGRACION": "Ese adjunto lo entregó la integración; no se cambia desde la consola.",
+      "ADJUNTO_REPETIDO": "Un adjunto aparece dos veces en el cambio.",
+      "REGISTRADURIA_FALLIDA": "Registraduría no validó al firmante; no se cambió nada.",
+      "REGISTRADURIA_SIN_IDENTIFICACION": "El firmante no tiene identificación para consultar en Registraduría.",
+      "REGISTRO_IDENTIDAD_NO_DISPONIBLE": "Registraduría no admite el país o el tipo de documento del firmante.",
+      "VALIDACIONES_AGOTADAS": "A la organización no le quedan consultas a Registraduría.",
       "generic": "No se pudo completar la acción. Inténtalo de nuevo."
     },
     "bulk": {
@@ -2786,6 +2809,62 @@
         "files": "Archivos (se ven en el panel del firmante, con auditoría)"
       },
       "audited": "Esta consulta queda en la auditoría de plataforma."
+    },
+    "react": {
+      "title": "Reactivar validaciones",
+      "lead": "El firmante repite lo que elijas. Lo anterior pasa al historial de evidencias, la ventana de intentos vuelve a cero y lo ya cobrado no se cobra de nuevo.",
+      "scopeLabel": "Qué se reactiva",
+      "scope": {
+        "biometric": "Selfie y Liveness",
+        "document": "Documento de identidad",
+        "registry": "Registraduría",
+        "all": "Todo"
+      },
+      "orgRetries": "Reintentos de la organización: biometría {{biometric}} de {{biometricMax}}, documento {{document}} de {{documentMax}}. Reactivar no los gasta.",
+      "before": "Reactivaciones anteriores desde la consola: {{list}}",
+      "unblocks": "Se quita el bloqueo de firma y sus intentos vuelven a cero.",
+      "resets": "Los {{count}} intentos de firma vuelven a cero.",
+      "confirm": "Reactivar",
+      "done": "Validaciones reactivadas"
+    },
+    "feat": {
+      "title": "Características del firmante",
+      "lead": "Los cambios aplican la próxima vez que el firmante abra su enlace. El tipo ({{type}}) y la representación legal no se cambian aquí.",
+      "validations": "Validaciones",
+      "identity": "Identidad y correo",
+      "identityValid": "Validación contra documento",
+      "biometricValid": "Biometría avanzada",
+      "checkDataRegistry": "Consultar Registraduría",
+      "fullIdentity": "Identidad completa",
+      "reqDocument": "Fotos con el documento",
+      "skipEmail": "Correo de invitación",
+      "hint": {
+        "identityValid": "Fotos del documento, selfie y Liveness",
+        "biometricValid": "Selfie y Liveness contra el registro de identidad",
+        "checkDataRegistry": "Una consulta al padrón de identidad",
+        "fullIdentity": "Además de correo y celular, fechas y lugar de expedición",
+        "reqDocument": "Fotos del firmante con su documento",
+        "skipEmail": "La invitación también llega por correo"
+      },
+      "notEnabled": "La organización no la tiene habilitada",
+      "raises": "El firmante tendrá que completar lo que se encendió antes de poder firmar.",
+      "attachments": "Adjuntos que se le piden",
+      "noAttachments": "No se le piden adjuntos.",
+      "remove": "Quitar",
+      "makeOptional": "Volver opcional",
+      "undo": "Deshacer",
+      "willRemove": "Se quita",
+      "willOptional": "Queda opcional",
+      "removedFile": "Lo que el firmante ya subió queda en la trazabilidad.",
+      "confirm": "Guardar cambios",
+      "done": "Características guardadas"
+    },
+    "registryCheck": {
+      "plain": "Se consulta Registraduría ahora y se gasta una consulta de la organización. Si la consulta falla, no se cambia nada.",
+      "unlimited": "Se consulta Registraduría ahora; la organización tiene consultas sin límite. Si la consulta falla, no se cambia nada.",
+      "count": "Se consulta Registraduría ahora y se gasta una de las {{remaining}} consultas que le quedan a la organización. Si la consulta falla, no se cambia nada.",
+      "none": "A la organización no le quedan consultas a Registraduría; sin consultas el cambio no se guarda.",
+      "done": "{{done}}. Registraduría respondió {{code}}."
     }
   },
   "orgPicker": {

@@ -18,6 +18,7 @@ import { IconComponent } from '../../../shared/ui/icon.component';
 import { OrgStateComponent } from '../../../shared/ui/org-state.component';
 import type {
   PlatformSigner,
+  ReactivationScope,
   RequestedAttachment,
   SignerFile,
   SignerFileKind,
@@ -249,9 +250,25 @@ import {
             @for (entry of s.history; track entry.index) {
               <li class="sr__note">
                 <span class="sr__head">
-                  <span>{{ 'docs.sp.history.rejected' | translate }}</span>
-                  <span class="dba-mono sr__soft">{{ stamp(entry.rejectedAt) }}</span>
+                  <span>{{
+                    (entry.reactivatedAt
+                      ? 'docs.sp.history.reactivated'
+                      : 'docs.sp.history.rejected'
+                    ) | translate
+                  }}</span>
+                  <span class="dba-mono sr__soft">{{
+                    stamp(entry.reactivatedAt ?? entry.rejectedAt)
+                  }}</span>
                 </span>
+                @if (entry.scopes?.length) {
+                  <span class="sr__text">{{ scopesText(entry.scopes) }}</span>
+                }
+                @if (entry.registry; as registry) {
+                  <span class="sr__text">{{
+                    'docs.sp.history.registry'
+                      | translate: { code: registry.code ?? '—', date: stamp(registry.checkedAt) }
+                  }}</span>
+                }
                 @if (entry.approval; as decision) {
                   <span class="sr__text">
                     {{ decision.decidedBy?.name || decision.decidedBy?.id || '—' }}
@@ -585,6 +602,10 @@ export class SignerRecordComponent {
     ]
       .filter((part) => !!part)
       .join(' · ');
+  }
+
+  protected scopesText(scopes: readonly ReactivationScope[] = []): string {
+    return scopes.map((scope) => this.label(`docs.react.scope.${scope}`)).join(', ');
   }
 
   protected attachmentMeta(item: RequestedAttachment): string {

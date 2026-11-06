@@ -11,13 +11,29 @@ import {
   traceKeyOf,
   traceReasonOf,
 } from './data/document-view';
-import type {
-  DocumentTurn,
-  PlatformDocumentDetail,
-  PlatformDocumentSummary,
-  PlatformSigner,
-  TraceEvent,
+import {
+  REACTIVATION_SCOPES,
+  type AttachmentChangeKind,
+  type DocumentTurn,
+  type PlatformDocumentDetail,
+  type PlatformDocumentSummary,
+  type PlatformSigner,
+  type RequestedAttachment,
+  type TraceEvent,
 } from './data/documents.models';
+import {
+  IDENTITY_FEATURES,
+  VALIDATION_FEATURES,
+  attachmentChangesOf,
+  changedFeaturesOf,
+  featureValuesOf,
+  isLocked,
+  raisesRequirements,
+  reactivationChoicesOf,
+  registryCostOf,
+  scopesOfChoice,
+  signerChangeOf,
+} from './data/signer-changes';
 import {
   BLOCK_MODES,
   HIDDEN_REASONS,
@@ -88,6 +104,7 @@ const detailOf = (
   signers: PlatformSigner[],
 ): PlatformDocumentDetail => ({
   ...summary(progress, state),
+  enabledValidations: { identityValid: false, biometricValid: false, checkDataRegistry: false },
   signers,
   versions: [],
   turn,
@@ -338,6 +355,127 @@ describe('Documentos: panel del firmante', () => {
       ].map((kind) => `docs.evidence.${kind}`),
       ...Object.values(SIGNER_STATE_LABEL),
       'docs.sp.doc.skip.no_reader',
+    ]) {
+      expect(typeof leaf(es, key), key).toBe('string');
+      expect(typeof leaf(en, key), key).toBe('string');
+    }
+  });
+});
+
+describe('Documentos: reactivar y cambiar características', () => {
+  const attachment = (
+    index: number,
+    over: Partial<RequestedAttachment> = {},
+  ): RequestedAttachment => ({
+    index,
+    name: `Adjunto ${index}`,
+    info: '',
+    required: true,
+    includeInDocument: false,
+    provided: false,
+    ...over,
+  });
+
+  const file = {
+    originalName: 'rut.pdf',
+    mime: 'application/pdf',
+    size: 2048,
+    sha256: 'a'.repeat(64),
+  };
+
+  it('«Todo» solo sale con más de una validación y abarca todas', () => {
+    expect(reactivationChoicesOf([])).toEqual([]);
+    expect(reactivationChoicesOf(['registry'])).toEqual(['registry']);
+    expect(reactivationChoicesOf(['biometric', 'document', 'registry'])).toEqual([
+      'biometric',
+      'document',
+      'registry',
+      'all',
+    ]);
+    expect(scopesOfChoice('all', ['biometric', 'registry'])).toEqual(['biometric', 'registry']);
+    expect(scopesOfChoice('document', ['biometric', 'document'])).toEqual(['document']);
+    expect(scopesOfChoice('registry', ['biometric'])).toEqual([]);
+  });
+
+  it('la consulta a Registraduría dice lo que cuesta, también cuando no quedan consultas', () => {
+    expect(registryCostOf(undefined)).toEqual({ key: 'docs.registryCheck.plain' });
+    expect(registryCostOf({ unlimited: true, remaining: 0 })).toEqual({
+      key: 'docs.registryCheck.unlimited',
+    });
+    expect(registryCostOf({ unlimited: false, remaining: 7 })).toEqual({
+      key: 'docs.registryCheck.count',
+      params: { remaining: 7 },
+    });
+    expect(registryCostOf({ unlimited: false, remaining: 0 })).toEqual({
+      key: 'docs.registryCheck.none',
+    });
+  });
+
+  it('una validación que la organización no tiene no se enciende, pero la que ya tiene se apaga', () => {
+    const enabled = { identityValid: true, biometricValid: false, checkDataRegistry: false };
+    const before = featureValuesOf(
+      platformSigner({
+        requirements: { ...platformSigner().requirements, checkDataRegistry: true },
+      }),
+    );
+    expect(isLocked('identityValid', before, enabled)).toBe(false);
+    expect(isLocked('biometricValid', before, enabled)).toBe(true);
+    expect(isLocked('checkDataRegistry', before, enabled)).toBe(false);
+    for (const feature of IDENTITY_FEATURES) {
+      expect(isLocked(feature, before, enabled), feature).toBe(false);
+    }
+  });
+
+  it('solo se manda lo que cambió, y encender validaciones avisa que el firmante las completa', () => {
+    const before = featureValuesOf(platformSigner());
+    const changes = changedFeaturesOf(before, { ...before, identityValid: true, skipEmail: true });
+    expect(changes).toEqual({ identityValid: true, skipEmail: true });
+    expect(raisesRequirements(changes)).toBe(true);
+    expect(
+      raisesRequirements({ skipEmail: true, checkDataRegistry: true, identityValid: false }),
+    ).toBe(false);
+    expect(changedFeaturesOf(before, { ...before })).toEqual({});
+  });
+
+  it('lo que entregó la integración no se toca y volver opcional lo opcional no cuenta', () => {
+    const items = [
+      attachment(0, { provided: true, file }),
+      attachment(1),
+      attachment(2, { required: false }),
+      attachment(3, { required: false, file }),
+    ];
+    const marks = new Map<number, AttachmentChangeKind>([
+      [0, 'remove'],
+      [1, 'optional'],
+      [2, 'optional'],
+      [3, 'remove'],
+    ]);
+    const changes = attachmentChangesOf(items, marks);
+    expect(changes).toEqual([
+      { index: 1, name: 'Adjunto 1', change: 'optional' },
+      { index: 3, name: 'Adjunto 3', change: 'remove' },
+    ]);
+    expect(signerChangeOf({ reqDocument: true }, changes)).toEqual({
+      reqDocument: true,
+      attachments: changes,
+    });
+    expect(signerChangeOf({ reqDocument: true }, [])).toEqual({ reqDocument: true });
+    expect(signerChangeOf({}, [])).toEqual({});
+  });
+
+  it('cada opción, característica y aviso tiene frase en los dos idiomas', () => {
+    for (const key of [
+      ...[...REACTIVATION_SCOPES, 'all'].map((scope) => `docs.react.scope.${scope}`),
+      ...[...VALIDATION_FEATURES, ...IDENTITY_FEATURES].flatMap((feature) => [
+        `docs.feat.${feature}`,
+        `docs.feat.hint.${feature}`,
+      ]),
+      ...['plain', 'unlimited', 'count', 'none', 'done'].map((k) => `docs.registryCheck.${k}`),
+      'docs.signer.reactivate',
+      'docs.signer.features',
+      'docs.sp.attempts.reactivations',
+      'docs.sp.history.reactivated',
+      'docs.sp.history.registry',
     ]) {
       expect(typeof leaf(es, key), key).toBe('string');
       expect(typeof leaf(en, key), key).toBe('string');
@@ -646,6 +784,86 @@ describe('Documentos: lo que dice cada evento', () => {
     expect(reabierto.failed).toBe(false);
   });
 
+  it('la reactivación dice qué se reactivó, el desbloqueo, los intentos y la respuesta de Registraduría', () => {
+    expect(
+      traceReadingOf(
+        event('admin.validations_reactivated', {
+          reason: 'la cámara falló',
+          identityId: 'i1',
+          scopes: ['biometric', 'registry', 'otra'],
+          moved: ['selfie', 'liveness'],
+          previousAttempts: 3,
+          wasBlocked: true,
+          registry: { ok: true, code: 'VIGENTE' },
+        }),
+      ),
+    ).toEqual({
+      titleKey: null,
+      lines: [
+        { key: 'docs.traceUi.reason', params: { reason: 'la cámara falló' }, failed: false },
+        {
+          key: 'docs.traceUi.react.scopes',
+          terms: [{ key: 'docs.react.scope.biometric' }, { key: 'docs.react.scope.registry' }],
+        },
+        { key: 'docs.traceUi.react.unblocked' },
+        { key: 'docs.traceUi.react.attempts', params: { total: 3 } },
+        { key: 'docs.traceUi.registry', params: { code: 'VIGENTE' } },
+      ],
+      failed: false,
+    });
+    expect(
+      keys(
+        traceReadingOf(
+          event('admin.validations_reactivated', {
+            scopes: ['document'],
+            previousAttempts: 0,
+            wasBlocked: false,
+          }),
+        ),
+      ),
+    ).toEqual(['docs.traceUi.react.scopes']);
+  });
+
+  it('el cambio de características dice qué se encendió y qué se apagó, con el correo al derecho, y qué adjuntos cambiaron', () => {
+    const reading = traceReadingOf(
+      event('admin.signer_features_changed', {
+        changes: {
+          identityValid: { from: false, to: true },
+          skipEmail: { from: false, to: true },
+          checkDataRegistry: { from: false, to: true },
+          reqDocument: { from: true, to: false },
+          desconocida: { from: false, to: true },
+        },
+        removedAttachments: [
+          { name: 'Carta', required: false, file: { originalName: 'carta.pdf' } },
+          { required: true },
+        ],
+        optionalAttachments: ['RUT'],
+        registry: { ok: true, code: 'VIGENTE' },
+      }),
+    );
+    expect(reading.lines).toEqual([
+      {
+        key: 'docs.traceUi.feat.on',
+        terms: [{ key: 'docs.feat.identityValid' }, { key: 'docs.feat.checkDataRegistry' }],
+      },
+      {
+        key: 'docs.traceUi.feat.off',
+        terms: [{ key: 'docs.feat.skipEmail' }, { key: 'docs.feat.reqDocument' }],
+      },
+      {
+        key: 'docs.traceUi.feat.removed',
+        terms: [{ key: 'docs.traceUi.name', params: { name: 'Carta' } }],
+      },
+      {
+        key: 'docs.traceUi.feat.optional',
+        terms: [{ key: 'docs.traceUi.name', params: { name: 'RUT' } }],
+      },
+      { key: 'docs.traceUi.registry', params: { code: 'VIGENTE' } },
+    ]);
+    expect(reading.failed).toBe(false);
+  });
+
   it('un evento sin falla con razón no cuenta para «Solo lo que falló»', () => {
     const reading = traceReadingOf(event('admin.document_finalized', { reason: 'pedido' }));
     expect(reading).toEqual({
@@ -715,6 +933,25 @@ describe('Documentos: lo que dice cada evento', () => {
       event('document.close_failed', { error: 'x', reason: 'y' }),
       event('evidence.face_compared', { passed: false, score: 0.5, captureSuspected: true }),
       event('evidence.liveness_checked', { passed: false, confidence: 40 }),
+      event('admin.validations_reactivated', {
+        scopes: [...REACTIVATION_SCOPES],
+        wasBlocked: true,
+        previousAttempts: 2,
+        registry: { code: 'VIGENTE' },
+      }),
+      ...[true, false].map((to) =>
+        event('admin.signer_features_changed', {
+          changes: Object.fromEntries(
+            [...VALIDATION_FEATURES, ...IDENTITY_FEATURES].map((feature) => [
+              feature,
+              { from: !to, to },
+            ]),
+          ),
+          removedAttachments: [{ name: 'Carta' }],
+          optionalAttachments: ['RUT'],
+          registry: { code: 'VIGENTE' },
+        }),
+      ),
     ];
     const usadas = new Set<string>();
     for (const muestra of muestras) {

@@ -20,12 +20,7 @@ import { DataTableComponent, type DataColumn } from '../../../shared/ui/data-tab
 import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
 import { IconComponent } from '../../../shared/ui/icon.component';
 import { OrgStateComponent } from '../../../shared/ui/org-state.component';
-import {
-  RETRYABLE_EVIDENCE,
-  type PlatformDocumentDetail,
-  type PlatformSigner,
-  type RetryableEvidence,
-} from '../data/documents.models';
+import type { PlatformDocumentDetail, PlatformSigner } from '../data/documents.models';
 import { canResend } from '../data/document-view';
 import {
   SIGNER_STATE_FAMILY,
@@ -36,12 +31,13 @@ import {
 } from '../data/signer-view';
 import { SignerPanelComponent } from './signer-panel.component';
 
-export type SignerActionKind = 'unblock' | 'resend' | 'retry';
+export type SignerActionKind = 'unblock' | 'resend' | 'reactivate' | 'features';
+
+const ACTION_KINDS: readonly SignerActionKind[] = ['unblock', 'resend', 'reactivate', 'features'];
 
 export interface SignerAction {
   kind: SignerActionKind;
   signer: PlatformSigner;
-  type?: RetryableEvidence;
 }
 
 export interface SignerPanelEvent {
@@ -289,13 +285,8 @@ export class DocumentSignersComponent {
 
   protected choose(key: string): void {
     const view = this.target();
-    if (!view) return;
-    if (key === 'unblock' || key === 'resend') {
-      this.action.emit({ kind: key, signer: view.signer });
-      return;
-    }
-    const type = key.replace('retry:', '') as RetryableEvidence;
-    this.action.emit({ kind: 'retry', signer: view.signer, type });
+    const kind = ACTION_KINDS.find((option) => option === key);
+    if (view && kind) this.action.emit({ kind, signer: view.signer });
   }
 
   private actionsFor(doc: PlatformDocumentDetail, signer: PlatformSigner): ActionMenuItem[] {
@@ -303,13 +294,15 @@ export class DocumentSignersComponent {
     const items: ActionMenuItem[] = [];
     if (canResend(doc, signer)) items.push({ key: 'resend', labelKey: 'docs.signer.resend' });
     if (signer.blocked) items.push({ key: 'unblock', labelKey: 'docs.signer.unblock' });
-    RETRYABLE_EVIDENCE.forEach((type, index) =>
-      items.push({
-        key: `retry:${type}`,
-        labelKey: `docs.signer.retry.${type}`,
-        separated: index === 0 && items.length > 0,
-      }),
-    );
+    if (signer.editBlock) return items;
+    const separated = items.length > 0;
+    if (signer.reactivationScopes.length > 0)
+      items.push({ key: 'reactivate', labelKey: 'docs.signer.reactivate', separated });
+    items.push({
+      key: 'features',
+      labelKey: 'docs.signer.features',
+      separated: separated && signer.reactivationScopes.length === 0,
+    });
     return items;
   }
 }

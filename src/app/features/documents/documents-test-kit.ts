@@ -32,6 +32,7 @@ export const platformSigner = (over: Partial<PlatformSigner> = {}): PlatformSign
     },
     counted: {},
     retries: { biometric: { granted: 0, max: 2 }, document: { granted: 0, max: 5 } },
+    reactivations: { biometric: 0, document: 0, registry: 0 },
     credits: { biometric: false, identity: false },
   },
   files: [],
@@ -39,5 +40,6 @@ export const platformSigner = (over: Partial<PlatformSigner> = {}): PlatformSign
   attachments: [],
   notices: { remindersSent: 0 },
   link: { state: 'none', issued: 0 },
+  reactivationScopes: [],
   ...over,
 });

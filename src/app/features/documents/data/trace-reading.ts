@@ -74,7 +74,26 @@ const ANCHOR_OUTCOMES: ReadonlySet<string> = new Set([
   'queued',
 ]);
 
+const REACTIVATION_SCOPES: ReadonlySet<string> = new Set(['biometric', 'document', 'registry']);
+
+const SIGNER_FEATURES: ReadonlySet<string> = new Set([
+  'identityValid',
+  'biometricValid',
+  'checkDataRegistry',
+  'fullIdentity',
+  'reqDocument',
+  'skipEmail',
+]);
+
+const INVERTED_FEATURES: ReadonlySet<string> = new Set(['skipEmail']);
+
 const text = (value: unknown): string => (typeof value === 'string' ? value.trim() : '');
+
+const record = (value: unknown): Details | null =>
+  typeof value === 'object' && value !== null && !Array.isArray(value) ? (value as Details) : null;
+
+const texts = (value: unknown): string[] =>
+  Array.isArray(value) ? value.map(text).filter((item) => item !== '') : [];
 
 const amount = (value: unknown): number | null =>
   typeof value === 'number' && Number.isFinite(value) ? value : null;
@@ -278,6 +297,64 @@ const anchorRequested = (details: Details): Part => {
   };
 };
 
+const registryLine = (details: Details): Entry => {
+  const code = text(record(details['registry'])?.['code']);
+  return code ? { key: 'docs.traceUi.registry', params: { code } } : null;
+};
+
+const nameTerm = (name: string): TraceText => ({ key: 'docs.traceUi.name', params: { name } });
+
+const reactivated = (details: Details): Part => {
+  const scopes = texts(details['scopes']).filter((scope) => REACTIVATION_SCOPES.has(scope));
+  const attempts = amount(details['previousAttempts']);
+  return {
+    lines: [
+      scopes.length > 0
+        ? {
+            key: 'docs.traceUi.react.scopes',
+            terms: scopes.map((scope) => ({ key: `docs.react.scope.${scope}` })),
+          }
+        : null,
+      details['wasBlocked'] === true ? { key: 'docs.traceUi.react.unblocked' } : null,
+      attempts ? { key: 'docs.traceUi.react.attempts', params: { total: attempts } } : null,
+      registryLine(details),
+    ],
+  };
+};
+
+const featuresTurned = (changes: Details, on: boolean): TraceText[] =>
+  Object.entries(changes).flatMap(([feature, change]) => {
+    const to = record(change)?.['to'];
+    if (!SIGNER_FEATURES.has(feature) || typeof to !== 'boolean') return [];
+    const shown = INVERTED_FEATURES.has(feature) ? !to : to;
+    return shown === on ? [{ key: `docs.feat.${feature}` }] : [];
+  });
+
+const featuresChanged = (details: Details): Part => {
+  const changes = record(details['changes']) ?? {};
+  const on = featuresTurned(changes, true);
+  const off = featuresTurned(changes, false);
+  const removed = (
+    Array.isArray(details['removedAttachments']) ? details['removedAttachments'] : []
+  )
+    .map((item) => text(record(item)?.['name']))
+    .filter((name) => name !== '');
+  const optional = texts(details['optionalAttachments']);
+  return {
+    lines: [
+      on.length > 0 ? { key: 'docs.traceUi.feat.on', terms: on } : null,
+      off.length > 0 ? { key: 'docs.traceUi.feat.off', terms: off } : null,
+      removed.length > 0
+        ? { key: 'docs.traceUi.feat.removed', terms: removed.map(nameTerm) }
+        : null,
+      optional.length > 0
+        ? { key: 'docs.traceUi.feat.optional', terms: optional.map(nameTerm) }
+        : null,
+      registryLine(details),
+    ],
+  };
+};
+
 const READERS: ReadonlyMap<string, (details: Details) => Part> = new Map([
   ['notification.sent', (details: Details) => invitation(details, false)],
   ['notification.resent', (details: Details) => invitation(details, true)],
@@ -290,6 +367,8 @@ const READERS: ReadonlyMap<string, (details: Details) => Part> = new Map([
   ['blockchain.queued', anchorQueued],
   ['blockchain.failed', anchorFailed],
   ['admin.blockchain_register_requested', anchorRequested],
+  ['admin.validations_reactivated', reactivated],
+  ['admin.signer_features_changed', featuresChanged],
 ]);
 
 export const traceReadingOf = (event: TraceEvent): TraceReading => {

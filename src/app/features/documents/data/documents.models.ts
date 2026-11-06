@@ -4,14 +4,37 @@ export type DocumentState = 0 | 1 | 4 | 5;
 
 export type BlockchainFilter = 'registered' | 'pending';
 
-export type RetryableEvidence = 'liveness' | 'faceCompare' | 'faceMatch' | 'documentCheck';
+export type ReactivationScope = 'biometric' | 'document' | 'registry';
 
-export const RETRYABLE_EVIDENCE: readonly RetryableEvidence[] = [
-  'liveness',
-  'faceCompare',
-  'faceMatch',
-  'documentCheck',
+export const REACTIVATION_SCOPES: readonly ReactivationScope[] = [
+  'biometric',
+  'document',
+  'registry',
 ];
+
+export type ReactivationChoice = ReactivationScope | 'all';
+
+export type EditBlock = 'DOCUMENTO_NO_PENDIENTE' | 'FIRMANTE_YA_FIRMO' | 'FIRMA_RETENIDA';
+
+export type SignerFeature =
+  | 'identityValid'
+  | 'biometricValid'
+  | 'checkDataRegistry'
+  | 'fullIdentity'
+  | 'reqDocument'
+  | 'skipEmail';
+
+export type AttachmentChangeKind = 'remove' | 'optional';
+
+export interface AttachmentChange {
+  index: number;
+  name: string;
+  change: AttachmentChangeKind;
+}
+
+export type SignerChange = Partial<Record<SignerFeature, boolean>> & {
+  attachments?: AttachmentChange[];
+};
 
 export interface DocumentStatus {
   progress: SignatureProgress;
@@ -190,6 +213,7 @@ export interface SignerAttempts {
   window: Record<AttemptKind, AttemptWindow>;
   counted: Partial<Record<RetryKind, number>>;
   retries: Record<RetryKind, RetryCounter>;
+  reactivations: Record<ReactivationScope, number>;
   credits: { biometric: boolean; identity: boolean };
 }
 
@@ -232,7 +256,10 @@ export interface LegacyApproval {
 export interface EvidenceHistoryEntry {
   index: number;
   rejectedAt?: string;
+  reactivatedAt?: string;
+  scopes?: ReactivationScope[];
   approval?: ApprovalDecision;
+  registry?: RegistryCheck;
   files: EvidenceKind[];
 }
 
@@ -332,6 +359,8 @@ export interface PlatformSigner {
   attachments: RequestedAttachment[];
   notices: SignerNotices;
   link: SignerLink;
+  editBlock?: EditBlock;
+  reactivationScopes: ReactivationScope[];
 }
 
 export interface VersionComment {
@@ -410,7 +439,20 @@ export interface LinkedFlow {
   flowName?: string;
 }
 
+export interface RegistryCredits {
+  unlimited: boolean;
+  remaining: number;
+}
+
+export interface EnabledValidations {
+  identityValid: boolean;
+  biometricValid: boolean;
+  checkDataRegistry: boolean;
+  registryCredits?: RegistryCredits;
+}
+
 export interface PlatformDocumentDetail extends PlatformDocumentSummary {
+  enabledValidations: EnabledValidations;
   signers: PlatformSigner[];
   versions: DocumentVersion[];
   anchor?: DocumentAnchor;
@@ -478,6 +520,20 @@ export interface BlockchainRegistration {
 export interface InvitationOutcome {
   sent: boolean;
   email: string | null;
+}
+
+export interface ReactivationOutcome {
+  identityId: string;
+  scopes: ReactivationScope[];
+  reactivations: Record<ReactivationScope, number>;
+  registry?: RegistryCheck;
+}
+
+export interface SignerChangeOutcome {
+  identityId: string;
+  changed: SignerFeature[];
+  attachments: { removed: number; optional: number };
+  registry?: RegistryCheck;
 }
 
 export type BulkStatus = 'ok' | 'skipped' | 'error';

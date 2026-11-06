@@ -1,6 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import { TestBed, type ComponentFixture } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import {
   provideTranslateService,
@@ -16,7 +17,13 @@ import { API_BASE_URL } from '../../../core/config/api.tokens';
 import { sectionPath } from '../../../core/layout/console-nav';
 import { DialogService } from '../../../core/ui/dialog.service';
 import { NotificationService } from '../../../core/ui/notification.service';
-import type { PlatformDocumentDetail, PlatformSigner, TraceEvent } from '../data/documents.models';
+import { DocumentSignersComponent } from '../components/document-signers.component';
+import type {
+  PlatformDocumentDetail,
+  PlatformSigner,
+  RequestedAttachment,
+  TraceEvent,
+} from '../data/documents.models';
 import { platformSigner } from '../documents-test-kit';
 import { DocumentDetailComponent } from './document-detail.component';
 
@@ -39,6 +46,12 @@ const detail = (over: Partial<PlatformDocumentDetail> = {}): PlatformDocumentDet
   signerCount: 2,
   anchored: false,
   createdAt: '2026-10-20T10:00:00.000Z',
+  enabledValidations: {
+    identityValid: true,
+    biometricValid: false,
+    checkDataRegistry: true,
+    registryCredits: { unlimited: false, remaining: 7 },
+  },
   signers: [
     platformSigner({ identityId: 'i1', name: 'Ana Ruiz', email: 'ana@x.co', checked: true }),
     platformSigner({
@@ -607,6 +620,365 @@ describe('Operación › Documentos › ficha', () => {
     expect(host.querySelector('.sg__row')?.textContent).toContain('Por aprobar');
     expect(panel.textContent).toContain('Firma retenida desde');
     expect(panel.textContent).toContain('Por aprobar');
+  });
+
+  const menusOf = (fixture: ComponentFixture<DocumentDetailComponent>) =>
+    (
+      fixture.debugElement.query(By.directive(DocumentSignersComponent))
+        .componentInstance as unknown as {
+        views: () => { signer: PlatformSigner; actions: { key: string; separated?: boolean }[] }[];
+      }
+    )
+      .views()
+      .map((view) => [
+        view.signer.identityId,
+        view.actions.map((item) => (item.separated ? `| ${item.key}` : item.key)),
+      ]);
+
+  const editar = (
+    fixture: ComponentFixture<DocumentDetailComponent>,
+    kind: 'reactivate' | 'features',
+    signer: PlatformSigner,
+  ) => {
+    void (
+      fixture.componentInstance as unknown as { runSigner: (a: unknown) => Promise<void> }
+    ).runSigner({ kind, signer });
+    fixture.detectChanges();
+  };
+
+  const escribir = (scope: HTMLElement, value: string) => {
+    const input = scope.querySelector<HTMLInputElement>('dba-field input')!;
+    input.value = value;
+    input.dispatchEvent(new Event('input'));
+  };
+
+  const recargar = async () => {
+    await vi.waitFor(() => http.expectOne('/platform/documents/d1').flush(detail()));
+    http
+      .expectOne('/platform/documents/d1/traceability')
+      .flush({ documentId: 'd1', total: 0, events: [] });
+  };
+
+  const sinLlaves = (host: HTMLElement) =>
+    expect(host.textContent).not.toMatch(/\b(docs|nav|common)\.[a-zA-Z]/);
+
+  it('el menú del firmante ofrece reactivar y cambiar características solo donde se puede', async () => {
+    conPermisos(['platform:operations', 'platform:operations:manage']);
+    const { fixture, host } = await montar(
+      detail({
+        turn: { order: 2, onHold: false, pending: 1 },
+        signers: [
+          platformSigner({
+            identityId: 'a',
+            order: 1,
+            checked: true,
+            editBlock: 'FIRMANTE_YA_FIRMO',
+          }),
+          platformSigner({
+            identityId: 'b',
+            order: 2,
+            blocked: true,
+            reactivationScopes: ['biometric', 'document'],
+          }),
+          platformSigner({ identityId: 'c', order: 3 }),
+          platformSigner({ identityId: 'd', order: 4, editBlock: 'FIRMA_RETENIDA' }),
+          platformSigner({ identityId: 'e', order: 5, blocked: true }),
+        ],
+      }),
+    );
+    tab(host, 'Firmantes').click();
+    fixture.detectChanges();
+    expect(menusOf(fixture)).toEqual([
+      ['a', []],
+      ['b', ['resend', 'unblock', '| reactivate', 'features']],
+      ['c', ['features']],
+      ['d', []],
+      ['e', ['unblock', '| features']],
+    ]);
+    conPermisos(['platform:operations']);
+    fixture.detectChanges();
+    expect(menusOf(fixture).every(([, actions]) => actions.length === 0)).toBe(true);
+  });
+
+  it('reactivar validaciones elige qué se repite, avisa lo que cuesta Registraduría, manda la razón y recarga', async () => {
+    conPermisos(['platform:operations', 'platform:operations:manage']);
+    const base = platformSigner();
+    const luis = platformSigner({
+      identityId: 'i2',
+      name: 'Luis Mora',
+      order: 2,
+      blocked: true,
+      signingAttempts: 3,
+      reactivationScopes: ['biometric', 'document', 'registry'],
+      attempts: {
+        ...base.attempts,
+        retries: { biometric: { granted: 1, max: 2 }, document: { granted: 0, max: 5 } },
+        reactivations: { biometric: 1, document: 0, registry: 2 },
+      },
+    });
+    const { fixture, host } = await montar(detail({ signers: [luis] }));
+    const ok = vi.spyOn(TestBed.inject(NotificationService), 'success');
+    editar(fixture, 'reactivate', luis);
+    const modal = host.querySelector<HTMLElement>('dba-signer-reactivate-form')!;
+    expect(modal.querySelector('.head__title')?.textContent).toContain('Reactivar validaciones');
+    expect(modal.querySelector('.head__sub')?.textContent).toContain('Luis Mora');
+    const pills = () => [...modal.querySelectorAll<HTMLButtonElement>('db-filter-pills .pill')];
+    expect(pills().map((pill) => pill.textContent?.trim())).toEqual([
+      'Selfie y Liveness',
+      'Documento de identidad',
+      'Registraduría',
+      'Todo',
+    ]);
+    expect(pills()[3].getAttribute('aria-pressed')).toBe('true');
+    const text = () => modal.textContent?.replace(/\s+/g, ' ') ?? '';
+    for (const part of [
+      'Reintentos de la organización: biometría 1 de 2, documento 0 de 5. Reactivar no los gasta.',
+      'Reactivaciones anteriores desde la consola: Selfie y Liveness 1 · Documento de identidad 0 · Registraduría 2',
+      'Se quita el bloqueo de firma y sus intentos vuelven a cero.',
+      'se gasta una de las 7 consultas que le quedan a la organización',
+    ]) {
+      expect(text(), part).toContain(part);
+    }
+    sinLlaves(host);
+    const confirmar = () => modal.querySelector<HTMLButtonElement>('.foot__go')!;
+    expect(confirmar().disabled).toBe(true);
+
+    pills()[0].click();
+    escribir(modal, '  la cámara del firmante falló  ');
+    fixture.detectChanges();
+    expect(text()).not.toContain('Registraduría ahora');
+    expect(confirmar().disabled).toBe(false);
+    confirmar().click();
+
+    let req!: ReturnType<HttpTestingController['expectOne']>;
+    await vi.waitFor(() => {
+      req = http.expectOne(
+        (r) =>
+          r.method === 'POST' &&
+          r.url === '/platform/documents/d1/signers/i2/reactivate-validations',
+      );
+    });
+    expect(req.request.body).toEqual({
+      reason: 'la cámara del firmante falló',
+      scope: 'biometric',
+    });
+    req.flush({
+      identityId: 'i2',
+      scopes: ['biometric'],
+      reactivations: { biometric: 2, document: 0, registry: 2 },
+    });
+    await recargar();
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(host.querySelector('dba-signer-reactivate-form')).toBeNull();
+    });
+    expect(ok).toHaveBeenCalledWith('Validaciones reactivadas');
+  });
+
+  it('si el core no deja reactivar, dice por qué, cierra el modal y recarga la ficha', async () => {
+    conPermisos(['platform:operations', 'platform:operations:manage']);
+    const luis = platformSigner({
+      identityId: 'i2',
+      name: 'Luis Mora',
+      order: 2,
+      reactivationScopes: ['biometric', 'registry'],
+    });
+    const { fixture, host } = await montar(
+      detail({
+        signers: [luis],
+        enabledValidations: {
+          identityValid: true,
+          biometricValid: true,
+          checkDataRegistry: true,
+          registryCredits: { unlimited: false, remaining: 0 },
+        },
+      }),
+    );
+    const mal = vi.spyOn(TestBed.inject(NotificationService), 'error');
+    editar(fixture, 'reactivate', luis);
+    const modal = host.querySelector<HTMLElement>('dba-signer-reactivate-form')!;
+    expect(modal.querySelector('.notice')?.textContent).toContain(
+      'A la organización no le quedan consultas a Registraduría',
+    );
+    escribir(modal, 'pedido del cliente');
+    fixture.detectChanges();
+    modal.querySelector<HTMLButtonElement>('.foot__go')!.click();
+    let req!: ReturnType<HttpTestingController['expectOne']>;
+    await vi.waitFor(() => {
+      req = http.expectOne((r) => r.url.endsWith('/signers/i2/reactivate-validations'));
+    });
+    expect(req.request.body).toEqual({ reason: 'pedido del cliente', scope: 'all' });
+    req.flush({ code: 'VALIDACIONES_AGOTADAS' }, { status: 402, statusText: 'Payment Required' });
+    await recargar();
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(host.querySelector('dba-signer-reactivate-form')).toBeNull();
+    });
+    expect(mal).toHaveBeenCalledWith('A la organización no le quedan consultas a Registraduría.');
+  });
+
+  it('cambiar características: lo no habilitado no se enciende, el correo va al derecho y lo de la integración no se toca', async () => {
+    conPermisos(['platform:operations', 'platform:operations:manage']);
+    const file = {
+      originalName: 'archivo.pdf',
+      mime: 'application/pdf',
+      size: 2048,
+      sha256: 'c'.repeat(64),
+    };
+    const adjunto = (index: number, name: string, over: Partial<RequestedAttachment> = {}) => ({
+      index,
+      name,
+      info: '',
+      required: true,
+      includeInDocument: false,
+      provided: false,
+      ...over,
+    });
+    const luis = platformSigner({
+      identityId: 'i2',
+      name: 'Luis Mora',
+      order: 2,
+      type: 'guarantor',
+      requirements: { ...platformSigner().requirements, reqDocument: true },
+      attachments: [
+        adjunto(0, 'Cámara de comercio', { provided: true, file }),
+        adjunto(1, 'RUT'),
+        adjunto(2, 'Carta', { required: false, file }),
+      ],
+    });
+    const { fixture, host } = await montar(detail({ signers: [luis] }));
+    const ok = vi.spyOn(TestBed.inject(NotificationService), 'success');
+    editar(fixture, 'features', luis);
+    const modal = host.querySelector<HTMLElement>('dba-signer-features-form')!;
+    const text = () => modal.textContent?.replace(/\s+/g, ' ') ?? '';
+    const interruptor = (feature: string) =>
+      modal.querySelector<HTMLInputElement>(`#feat-${feature}`)!;
+    const fila = (feature: string) => interruptor(feature).closest<HTMLElement>('.form__switch')!;
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(interruptor('skipEmail').checked).toBe(true);
+    });
+    expect(text()).toContain('El tipo (Avalador)');
+    expect(interruptor('biometricValid').hasAttribute('disabled')).toBe(true);
+    expect(fila('biometricValid').textContent).toContain('La organización no la tiene habilitada');
+    expect(interruptor('identityValid').hasAttribute('disabled')).toBe(false);
+    expect(interruptor('reqDocument').checked).toBe(true);
+
+    const items = () => [...modal.querySelectorAll<HTMLElement>('.ft__item')];
+    const botones = (item: HTMLElement) =>
+      [...item.querySelectorAll('button')].map((b) => b.textContent?.trim());
+    expect(items()[0].textContent).toContain('Lo entregó la integración');
+    expect(botones(items()[0])).toEqual([]);
+    expect(botones(items()[1])).toEqual(['Volver opcional', 'Quitar']);
+    expect(botones(items()[2])).toEqual(['Quitar']);
+    const confirmar = () => modal.querySelector<HTMLButtonElement>('.foot__go')!;
+    expect(confirmar().disabled).toBe(true);
+    sinLlaves(host);
+
+    for (const feature of ['identityValid', 'checkDataRegistry', 'reqDocument', 'skipEmail']) {
+      fila(feature).querySelector<HTMLElement>('p-toggleswitch')!.click();
+    }
+    fila('biometricValid').querySelector<HTMLElement>('p-toggleswitch')!.click();
+    items()[1].querySelector<HTMLButtonElement>('button')!.click();
+    fixture.detectChanges();
+    items()[2].querySelector<HTMLButtonElement>('button')!.click();
+    fixture.detectChanges();
+    expect(items()[1].textContent).toContain('Queda opcional');
+    expect(botones(items()[1])).toEqual(['Deshacer']);
+    expect(items()[2].textContent).toContain('Se quita');
+    for (const part of [
+      'El firmante tendrá que completar lo que se encendió antes de poder firmar.',
+      'se gasta una de las 7 consultas que le quedan a la organización',
+      'Lo que el firmante ya subió queda en la trazabilidad.',
+    ]) {
+      expect(text(), part).toContain(part);
+    }
+    expect(confirmar().disabled).toBe(true);
+    escribir(modal, 'lo pidió el cliente');
+    fixture.detectChanges();
+    confirmar().click();
+
+    let req!: ReturnType<HttpTestingController['expectOne']>;
+    await vi.waitFor(() => {
+      req = http.expectOne(
+        (r) => r.method === 'PATCH' && r.url === '/platform/documents/d1/signers/i2',
+      );
+    });
+    expect(req.request.body).toEqual({
+      reason: 'lo pidió el cliente',
+      identityValid: true,
+      checkDataRegistry: true,
+      reqDocument: false,
+      skipEmail: true,
+      attachments: [
+        { index: 1, name: 'RUT', change: 'optional' },
+        { index: 2, name: 'Carta', change: 'remove' },
+      ],
+    });
+    req.flush({
+      identityId: 'i2',
+      changed: ['identityValid', 'checkDataRegistry', 'reqDocument', 'skipEmail'],
+      attachments: { removed: 1, optional: 1 },
+      registry: { ok: true, code: 'VIGENTE', checkedAt: '2026-11-06T10:00:00.000Z' },
+    });
+    await recargar();
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(host.querySelector('dba-signer-features-form')).toBeNull();
+    });
+    expect(ok).toHaveBeenCalledWith('Características guardadas. Registraduría respondió VIGENTE.');
+  });
+
+  it('cerrar el modal no manda nada', async () => {
+    conPermisos(['platform:operations', 'platform:operations:manage']);
+    const { fixture, host } = await montar(detail({ signers: [platformSigner({ order: 2 })] }));
+    editar(fixture, 'features', platformSigner({ order: 2 }));
+    host.querySelector<HTMLButtonElement>('dba-signer-features-form .head__close')!.click();
+    fixture.detectChanges();
+    expect(host.querySelector('dba-signer-features-form')).toBeNull();
+  });
+
+  it('el panel cuenta las reactivaciones y el historial dice qué se reactivó y qué respondió Registraduría', async () => {
+    conPermisos(['platform:operations']);
+    const base = completo();
+    const { fixture, host } = await montar(
+      detail({
+        signers: [
+          completo({
+            attempts: {
+              ...base.attempts,
+              reactivations: { biometric: 2, document: 1, registry: 0 },
+            },
+            history: [
+              {
+                index: 0,
+                rejectedAt: '2026-10-21T09:00:00.000Z',
+                reactivatedAt: '2026-10-22T09:00:00.000Z',
+                scopes: ['biometric', 'registry'],
+                registry: { ok: true, code: 'VIGENTE', checkedAt: '2026-10-21T10:04:00.000Z' },
+                files: ['selfie'],
+              },
+            ],
+          }),
+        ],
+      }),
+    );
+    const panel = abrirPanel(fixture, host);
+    const eyebrow = [...panel.querySelectorAll('.sc__eyebrow')].find((p) =>
+      p.textContent?.includes('Reactivaciones desde la consola'),
+    )!;
+    expect(
+      [...eyebrow.nextElementSibling!.querySelectorAll('dt')].map(
+        (dt) => `${dt.textContent?.trim()} ${dt.nextElementSibling?.textContent?.trim()}`,
+      ),
+    ).toEqual(['Selfie y Liveness 2', 'Documento de identidad 1', 'Registraduría 0']);
+    const entrada = panel.querySelector('dba-signer-record .sr__note')?.textContent ?? '';
+    const limpio = entrada.replace(/\s+/g, ' ');
+    expect(limpio).toContain('Reactivada desde la consola');
+    expect(limpio).not.toContain('Rechazada');
+    expect(limpio).toContain('Selfie y Liveness, Registraduría');
+    expect(limpio).toContain('Consulta anterior a Registraduría: VIGENTE ·');
+    sinLlaves(host);
   });
 
   it('versiones de la más nueva a la vieja con la actual marcada y separar solo con permiso', async () => {

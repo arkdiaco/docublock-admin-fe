@@ -40,12 +40,21 @@ import { DocumentSummaryComponent } from '../components/document-summary.compone
 import { DocumentTraceComponent } from '../components/document-trace.component';
 import { DocumentVersionsComponent } from '../components/document-versions.component';
 import { RawDataComponent } from '../components/raw-data.component';
+import {
+  SignerFeaturesFormComponent,
+  type SignerChangeRequest,
+} from '../components/signer-features-form.component';
+import {
+  SignerReactivateFormComponent,
+  type ReactivationRequest,
+} from '../components/signer-reactivate-form.component';
 import { DocumentsApi } from '../data/documents.api';
 import { DOCUMENT_ERRORS } from '../data/document-errors';
 import type {
   DocumentVersion,
   IntegrationAttachment,
   PlatformDocumentDetail,
+  PlatformSigner,
   RawDocument,
   TraceEvent,
 } from '../data/documents.models';
@@ -57,6 +66,8 @@ const TAB_KEYS = ['summary', 'signers', 'versions', 'trace'] as const;
 const MENU_KEYS: readonly string[] = ['finalize', 'cancel', 'regenerate', 'register'];
 
 const REVOKE_AFTER_MS = 60_000;
+
+type SignerForm = 'reactivate' | 'features';
 
 const REASON: DialogReason = {
   labelKey: 'docs.act.reasonLabel',
@@ -83,6 +94,8 @@ const REASON: DialogReason = {
     DocumentVersionsComponent,
     DocumentTraceComponent,
     RawDataComponent,
+    SignerFeaturesFormComponent,
+    SignerReactivateFormComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -198,6 +211,25 @@ const REASON: DialogReason = {
           (dismissed)="rawOpen.set(false)"
         />
       }
+      @if (editing(); as edit) {
+        @if (edit.form === 'reactivate') {
+          <dba-signer-reactivate-form
+            [signer]="edit.signer"
+            [enabled]="doc.enabledValidations"
+            [busy]="signerBusy() === edit.signer.identityId"
+            (submitted)="reactivate(edit.signer, $event)"
+            (dismissed)="editing.set(null)"
+          />
+        } @else {
+          <dba-signer-features-form
+            [signer]="edit.signer"
+            [enabled]="doc.enabledValidations"
+            [busy]="signerBusy() === edit.signer.identityId"
+            (submitted)="changeSigner(edit.signer, $event)"
+            (dismissed)="editing.set(null)"
+          />
+        }
+      }
     }
   `,
   styles: `
@@ -253,6 +285,7 @@ export class DocumentDetailComponent {
   protected readonly raw = signal<RawDocument | null>(null);
   protected readonly rawFailed = signal(false);
   protected readonly rawSubtitle = signal('');
+  protected readonly editing = signal<{ form: SignerForm; signer: PlatformSigner } | null>(null);
 
   protected readonly status = computed(() =>
     statusViewOf(this.detail()?.status ?? { progress: 1, state: 0, label: '' }),
@@ -426,29 +459,8 @@ export class DocumentDetailComponent {
         { name: signer.name },
       );
     }
-    if (action.kind === 'retry' && action.type) {
-      const type = action.type;
-      const answer = await this.dialogs.open({
-        intent: 'primary',
-        icon: 'rotate',
-        title: 'docs.act.retry.title',
-        message: 'docs.act.retry.message',
-        params: { name: signer.name },
-        confirmLabel: `docs.signer.retry.${type}`,
-        reason: REASON,
-      });
-      if (answer.answer !== 'confirm' || !answer.reason) return;
-      await this.act(
-        key,
-        this.api.enableRetry(doc.id, signer.identityId, type, answer.reason),
-        (result) => {
-          const granted = (result as { granted?: number; max?: number } | null) ?? {};
-          return this.label('docs.act.retry.done', {
-            granted: granted.granted ?? 1,
-            max: granted.max ?? 1,
-          });
-        },
-      );
+    if (action.kind === 'reactivate' || action.kind === 'features') {
+      this.editing.set({ form: action.kind, signer });
       return;
     }
     const confirmed = await this.dialogs.confirm({
@@ -470,6 +482,32 @@ export class DocumentDetailComponent {
         this.fail(error);
       }
     });
+  }
+
+  protected reactivate(
+    signer: PlatformSigner,
+    { scope, reason }: ReactivationRequest,
+  ): Promise<void> {
+    const doc = this.detail();
+    if (!doc) return Promise.resolve();
+    return this.saveSigner(
+      signer,
+      this.api.reactivateValidations(doc.id, signer.identityId, scope, reason),
+      'docs.react.done',
+    );
+  }
+
+  protected changeSigner(
+    signer: PlatformSigner,
+    { change, reason }: SignerChangeRequest,
+  ): Promise<void> {
+    const doc = this.detail();
+    if (!doc) return Promise.resolve();
+    return this.saveSigner(
+      signer,
+      this.api.changeSigner(doc.id, signer.identityId, change, reason),
+      'docs.feat.done',
+    );
   }
 
   protected viewVersion(version: DocumentVersion): Promise<void> {
@@ -563,6 +601,29 @@ export class DocumentDetailComponent {
     });
     if (answer.answer !== 'confirm' || !answer.reason) return;
     await this.act(key, request(answer.reason.trim()), () => this.label(`${base}.done`));
+  }
+
+  private async saveSigner(
+    signer: PlatformSigner,
+    request: Observable<{ registry?: { code?: string } }>,
+    done: string,
+  ): Promise<void> {
+    if (this.pending.key()) return;
+    await this.pending.run(`signer:${signer.identityId}`, async () => {
+      try {
+        const result = await firstValueFrom(request);
+        const code = result.registry?.code;
+        this.notify.success(
+          code
+            ? this.label('docs.registryCheck.done', { done: this.label(done), code })
+            : this.label(done),
+        );
+      } catch (error) {
+        this.fail(error);
+      }
+      this.editing.set(null);
+      await this.load(this.id(), false);
+    });
   }
 
   private async act(

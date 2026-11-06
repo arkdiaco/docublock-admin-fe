@@ -426,7 +426,9 @@
       "signer_attachment_view": "viewed a signer's attachment",
       "signer_file_view": "viewed a signer's file",
       "signer_raw_view": "viewed a signer's full data",
-      "signer_report_view": "viewed a signer's validation report"
+      "signer_report_view": "viewed a signer's validation report",
+      "signer_features_change": "changed a signer's features",
+      "signer_validations_reactivate": "reactivated a signer's validations"
     },
     "invoices": {
       "create": "created an invoice",
@@ -2167,12 +2169,8 @@
       "empty": "The document has no signers.",
       "unblock": "Unblock",
       "resend": "Resend invitation",
-      "retry": {
-        "liveness": "New liveness attempt",
-        "faceCompare": "New face comparison attempt",
-        "faceMatch": "New face match attempt",
-        "documentCheck": "New ID document check attempt"
-      }
+      "reactivate": "Reactivate validations",
+      "features": "Change features"
     },
     "evidence": {
       "liveness": "Liveness",
@@ -2293,7 +2291,8 @@
         "grantedOf": "{{granted}} of {{max}}",
         "credits": "Credits charged",
         "charged": "Charged",
-        "notCharged": "Not charged"
+        "notCharged": "Not charged",
+        "reactivations": "Reactivations from the console"
       },
       "files": {
         "title": "Files",
@@ -2356,7 +2355,9 @@
       "history": {
         "title": "Evidence history",
         "rejected": "Rejected",
-        "none": "No rejected evidence."
+        "none": "No earlier evidence.",
+        "reactivated": "Reactivated from the console",
+        "registry": "Earlier registry lookup: {{code}} · {{date}}"
       },
       "report": {
         "title": "Validation report",
@@ -2510,6 +2511,19 @@
           "reopened": "Result: the registration had run out of attempts and was reopened",
           "queued": "Result: registration queued"
         }
+      },
+      "registry": "The registry answered {{code}}",
+      "name": "{{name}}",
+      "react": {
+        "scopes": "Reactivated:",
+        "unblocked": "The signing block was lifted",
+        "attempts": "Signing attempts that started over: {{total}}"
+      },
+      "feat": {
+        "on": "Turned on:",
+        "off": "Turned off:",
+        "removed": "Attachments removed:",
+        "optional": "Attachments made optional:"
       }
     },
     "trace": {
@@ -2607,7 +2621,9 @@
       "endorsement_closed": "Endorsement closed without a decision",
       "document_bundle_downloaded": "Case file downloaded",
       "document_viewed_post_signature": "Document viewed after signing",
-      "consent_accepted": "Consent accepted"
+      "consent_accepted": "Consent accepted",
+      "admin_signer_features_changed": "Signer features changed by admin",
+      "admin_validations_reactivated": "Validations reactivated by admin"
     },
     "act": {
       "reasonLabel": "Reason (kept in the traceability)",
@@ -2642,11 +2658,6 @@
         "title": "Unblock signer",
         "message": "Only the block on {{name}} is lifted: no attempts are enabled and validations stay as they are.",
         "done": "Signer unblocked"
-      },
-      "retry": {
-        "title": "Enable retry",
-        "message": "The previous validation of {{name}} is kept as a failed attempt and can be repeated.",
-        "done": "Retry enabled ({{granted}} of {{max}})"
       },
       "resend": {
         "title": "Resend invitation",
@@ -2690,6 +2701,18 @@
       "EVIDENCIA_NO_ENCONTRADA": "The signer doesn't have that file.",
       "INFORME_NO_EMITIDO": "The signer has no validation report.",
       "TIPO_ARCHIVO_INVALIDO": "That file type does not exist.",
+      "VALIDACION_NO_APLICA": "The signer does not have that validation.",
+      "SIN_VALIDACIONES": "The signer has no validations to reactivate.",
+      "FIRMA_RETENIDA": "The signature is on hold: it awaits approval from the document owner.",
+      "SIN_CAMBIOS": "There are no changes to save.",
+      "VALIDACION_NO_HABILITADA": "The organization does not have that validation enabled.",
+      "ADJUNTO_CAMBIO": "The signer's attachments changed. Check the record and try again.",
+      "ADJUNTO_DE_INTEGRACION": "That attachment was provided by the integration; it is not changed from the console.",
+      "ADJUNTO_REPETIDO": "An attachment appears twice in the change.",
+      "REGISTRADURIA_FALLIDA": "The registry did not validate the signer; nothing was changed.",
+      "REGISTRADURIA_SIN_IDENTIFICACION": "The signer has no ID number to look up in the registry.",
+      "REGISTRO_IDENTIDAD_NO_DISPONIBLE": "The registry does not accept the signer's country or ID type.",
+      "VALIDACIONES_AGOTADAS": "The organization has no registry lookups left.",
       "generic": "The action couldn't be completed. Try again."
     },
     "bulk": {
@@ -2786,6 +2809,62 @@
         "files": "Files (in the signer panel, audited)"
       },
       "audited": "This lookup is recorded in the platform audit."
+    },
+    "react": {
+      "title": "Reactivate validations",
+      "lead": "The signer repeats what you pick. What was there moves to the evidence history, the attempt window starts over and what was already charged is not charged again.",
+      "scopeLabel": "What is reactivated",
+      "scope": {
+        "biometric": "Selfie and liveness",
+        "document": "ID document",
+        "registry": "Registry",
+        "all": "Everything"
+      },
+      "orgRetries": "Organization retries: biometrics {{biometric}} of {{biometricMax}}, document {{document}} of {{documentMax}}. Reactivating does not use them.",
+      "before": "Earlier reactivations from the console: {{list}}",
+      "unblocks": "The signing block is lifted and its attempts start over.",
+      "resets": "The {{count}} signing attempts start over.",
+      "confirm": "Reactivate",
+      "done": "Validations reactivated"
+    },
+    "feat": {
+      "title": "Signer features",
+      "lead": "Changes apply the next time the signer opens their link. The type ({{type}}) and the legal representation are not changed here.",
+      "validations": "Validations",
+      "identity": "Identity and email",
+      "identityValid": "Check against ID",
+      "biometricValid": "Advanced biometrics",
+      "checkDataRegistry": "Registry lookup",
+      "fullIdentity": "Full identity",
+      "reqDocument": "Photos with the ID",
+      "skipEmail": "Invitation email",
+      "hint": {
+        "identityValid": "ID photos, selfie and liveness",
+        "biometricValid": "Selfie and liveness against the identity registry",
+        "checkDataRegistry": "One query to the identity registry",
+        "fullIdentity": "Besides email and mobile, issue dates and place",
+        "reqDocument": "Photos of the signer holding their ID",
+        "skipEmail": "The invitation also arrives by email"
+      },
+      "notEnabled": "The organization does not have it enabled",
+      "raises": "The signer will have to complete what was turned on before signing.",
+      "attachments": "Requested attachments",
+      "noAttachments": "No attachments are requested.",
+      "remove": "Remove",
+      "makeOptional": "Make optional",
+      "undo": "Undo",
+      "willRemove": "Will be removed",
+      "willOptional": "Will be optional",
+      "removedFile": "What the signer already uploaded stays in the traceability.",
+      "confirm": "Save changes",
+      "done": "Features saved"
+    },
+    "registryCheck": {
+      "plain": "The registry is queried now and one of the organization's queries is used. If the query fails, nothing changes.",
+      "unlimited": "The registry is queried now; the organization has unlimited queries. If the query fails, nothing changes.",
+      "count": "The registry is queried now and one of the organization's {{remaining}} remaining queries is used. If the query fails, nothing changes.",
+      "none": "The organization has no registry queries left; without one the change is not saved.",
+      "done": "{{done}}. The registry answered {{code}}."
     }
   },
   "orgPicker": {
