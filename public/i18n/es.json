@@ -41,7 +41,8 @@
       "write": "Escribe",
       "toDo": "para {{action}}",
       "aria": "Escribe {{id}} para confirmar"
-    }
+    },
+    "reasonMin": "Mínimo {{min}} caracteres."
   },
   "nav": {
     "noAccess": "Tu rol no tiene acceso a esa sección.",
@@ -428,7 +429,10 @@
       "signer_raw_view": "vio los datos completos de un firmante",
       "signer_report_view": "vio el informe de validación de un firmante",
       "signer_features_change": "cambió las características de un firmante",
-      "signer_validations_reactivate": "reactivó las validaciones de un firmante"
+      "signer_validations_reactivate": "reactivó las validaciones de un firmante",
+      "signer_remove": "quitó a un firmante de un documento",
+      "signer_links_revoke": "revocó los enlaces de un firmante",
+      "turn_fix": "corrigió el turno de un documento"
     },
     "invoices": {
       "create": "creó una factura",
@@ -2170,7 +2174,9 @@
       "unblock": "Desbloquear",
       "resend": "Reenviar invitación",
       "reactivate": "Reactivar validaciones",
-      "features": "Cambiar características"
+      "features": "Cambiar características",
+      "remove": "Quitar del documento",
+      "revokeLinks": "Revocar enlaces"
     },
     "evidence": {
       "liveness": "Liveness",
@@ -2397,7 +2403,8 @@
         "last": "Último emitido",
         "expires": "Vence",
         "revoked": "Revocado",
-        "hidden": "El enlace no se muestra."
+        "hidden": "El enlace no se muestra.",
+        "live": "Vivos"
       },
       "channel": {
         "email": "Correo",
@@ -2457,7 +2464,7 @@
         "failed": "WhatsApp no enviado: {{error}}",
         "noCause": "WhatsApp no enviado; no quedó registrada la causa"
       },
-      "block": "Una sola invitación para los {{total}} documentos del block",
+      "block": "Una sola invitación para los {{total}} documentos del bloque",
       "attempt": "Intento {{attempts}}",
       "attemptOf": "Intento {{attempts}} de {{max}}",
       "identity": {
@@ -2524,6 +2531,21 @@
         "off": "Se apagó:",
         "removed": "Adjuntos quitados:",
         "optional": "Adjuntos que quedaron opcionales:"
+      },
+      "access": "Enlaces revocados: {{links}} · Sesiones cerradas: {{sessions}} · Pasos al celular cerrados: {{handoffs}}",
+      "turn": {
+        "moved": "El turno abierto pasó del {{from}} al {{to}}",
+        "pending": "Pendientes en el turno nuevo: {{total}}"
+      },
+      "removal": {
+        "signer": "Firmante: {{who}}",
+        "nobody": "No quedó nadie por firmar",
+        "form": "Su parte del formulario quedó sin llenar",
+        "accessFailed": "No se pudo cortar su acceso",
+        "copy": "Ver la copia guardada"
+      },
+      "revoke": {
+        "documents": "Documentos del conjunto: {{total}}"
       }
     },
     "trace": {
@@ -2623,7 +2645,10 @@
       "document_viewed_post_signature": "Documento visto tras la firma",
       "consent_accepted": "Consentimiento aceptado",
       "admin_signer_features_changed": "Características del firmante cambiadas por administración",
-      "admin_validations_reactivated": "Validaciones reactivadas por administración"
+      "admin_validations_reactivated": "Validaciones reactivadas por administración",
+      "admin_signer_removed": "Firmante quitado por administración",
+      "admin_signer_links_revoked": "Enlaces del firmante revocados por administración",
+      "admin_turn_fixed": "Turno corregido por administración"
     },
     "act": {
       "reasonLabel": "Razón (queda en la trazabilidad)",
@@ -2673,7 +2698,12 @@
       },
       "pdfError": "No se pudo abrir el PDF",
       "fileError": "No se pudo abrir el archivo",
-      "bundleError": "No se pudo descargar el expediente"
+      "bundleError": "No se pudo descargar el expediente",
+      "fixTurn": {
+        "label": "Corregir turno"
+      },
+      "reasonMin": "Mínimo 3 caracteres.",
+      "waiting": "Espera a que termine la acción que está en curso."
     },
     "error": {
       "YA_FINALIZADO": "El documento ya está finalizado.",
@@ -2713,7 +2743,16 @@
       "REGISTRADURIA_SIN_IDENTIFICACION": "El firmante no tiene identificación para consultar en Registraduría.",
       "REGISTRO_IDENTIDAD_NO_DISPONIBLE": "Registraduría no admite el país o el tipo de documento del firmante.",
       "VALIDACIONES_AGOTADAS": "A la organización no le quedan consultas a Registraduría.",
-      "generic": "No se pudo completar la acción. Inténtalo de nuevo."
+      "generic": "No se pudo completar la acción. Inténtalo de nuevo.",
+      "UNICO_FIRMANTE": "El documento quedaría sin firmantes; los avalistas no cuentan.",
+      "DOCUMENTO_EN_BLOQUE": "El documento es parte de un bloque: sus firmantes se manejan con el bloque.",
+      "DOCUMENTO_EN_FLUJO": "El documento es parte de un flujo: sus firmantes los define el flujo.",
+      "DOCUMENTO_PAGARE": "Es un pagaré: sus firmantes no se cambian desde la consola.",
+      "DOCUMENTO_CON_AVALES": "El documento tiene avales pendientes: espera a que se resuelvan.",
+      "TURNO_CORRECTO": "El turno abierto ya tiene firmantes pendientes.",
+      "SIN_FIRMANTES_PENDIENTES": "Nadie tiene firmas pendientes: el documento está para finalizar.",
+      "DOCUMENTO_CAMBIO": "El documento cambió mientras tanto. Revisa la ficha e inténtalo de nuevo.",
+      "COPIA_NO_ENCONTRADA": "No hay copia guardada de ese firmante."
     },
     "bulk": {
       "lead": "Solo documentos firmados. Se rehace el PDF con la hoja de firmas y se vuelve a registrar en blockchain. No se avisa a los firmantes ni se descuenta del plan.",
@@ -2806,7 +2845,8 @@
         "secret": "Secretos",
         "html": "HTML de la plantilla",
         "signers": "Firmantes (van en su pestaña)",
-        "files": "Archivos (se ven en el panel del firmante, con auditoría)"
+        "files": "Archivos (se ven en el panel del firmante, con auditoría)",
+        "removed": "Archivos (la consola ya no los abre: la persona salió del documento)"
       },
       "audited": "Esta consulta queda en la auditoría de plataforma."
     },
@@ -2865,6 +2905,79 @@
       "count": "Se consulta Registraduría ahora y se gasta una de las {{remaining}} consultas que le quedan a la organización. Si la consulta falla, no se cambia nada.",
       "none": "A la organización no le quedan consultas a Registraduría; sin consultas el cambio no se guarda.",
       "done": "{{done}}. Registraduría respondió {{code}}."
+    },
+    "remove": {
+      "title": "Quitar firmante",
+      "lead": "{{name}} sale del documento con todas sus entradas. Lo que ya firmaron los demás no cambia.",
+      "turnMoves": "El turno abierto pasa del {{from}} al {{to}}.",
+      "turnStays": "El turno abierto sigue en el {{order}}.",
+      "nobodyPending": "No queda nadie por firmar: el documento queda listo para «Finalizar». No se cierra solo; si vence el plazo, caduca.",
+      "access": "Se cortan sus enlaces, sesiones de firma y pasos al celular.",
+      "warn": {
+        "integration": "Es un documento de integración: el sistema del cliente no recibe aviso del retiro y sigue conociendo la lista original.",
+        "attachments": "Los adjuntos que entregó para el documento final salen del PDF final: {{names}}.",
+        "charged": "Sus validaciones ya cobradas salen del informe de cobro de la organización; no se devuelven.",
+        "form": "Debía llenar su parte del formulario: queda sin llenar y los demás de su turno dejan de esperarla.",
+        "evidence": "Después de quitarlo, la consola ya no abre sus fotos ni archivos; en la traza queda la copia de sus datos con la huella de cada archivo. Si los necesitas, ábrelos y guárdalos antes desde el panel del firmante (la flecha al final de su fila).",
+        "gap": "Turnos que quedan vacíos: {{orders}}. El turno salta los vacíos; si el documento se queda quieto, usa «Corregir turno»."
+      },
+      "confirm": "Quitar del documento",
+      "done": "{{name}} salió del documento.",
+      "doneTurn": "{{name}} salió del documento. El turno pasó al {{to}}.",
+      "doneNobody": "{{name}} salió del documento. No queda nadie por firmar: ya se puede finalizar.",
+      "accessFailed": {
+        "title": "No se cortó el acceso",
+        "message": "{{name}} ya no está en el documento, pero sus enlaces pueden seguir vivos. Reintenta para cortarlos.",
+        "retry": "Reintentar"
+      }
+    },
+    "turnNotice": {
+      "label": "Avisar a quien queda libre",
+      "hint": "Se invita a {{names}} con la invitación normal: correo, WhatsApp y enlace nuevo.",
+      "warn": {
+        "autoSign": "Con firma automática: {{names}}. Al avisar, el sistema firma en su nombre y el documento puede cerrarse.",
+        "blocked": "Firma bloqueada por intentos: {{names}}. Al avisar se desbloquea y los intentos vuelven a cero.",
+        "again": "Con invitación anterior: {{names}}. Sale una nueva y el enlace anterior deja de servir.",
+        "integration": "Es un documento de integración: el sistema del cliente recibe la invitación por webhook, con el enlace nuevo.",
+        "deadline": "El plazo para firmar venció el {{date}}: la invitación sale igual, pero no salen recordatorios.",
+        "uninvited": "Sin invitación todavía: {{names}}. Sin «Avisar a quien queda libre» no salen la invitación ni los recordatorios; puedes invitar después con «Reenviar invitación».",
+        "reminders": "Con invitación anterior: {{names}}. Desde ahora salen los recordatorios automáticos del turno abierto.",
+        "noReminders": {
+          "deadline": "El plazo para firmar venció el {{date}}: no salen recordatorios, ni a quienes ya tenían invitación.",
+          "blocked": "Firma bloqueada por intentos: {{names}}. No le salen recordatorios ni puede firmar hasta que se desbloquee con «Desbloquear» o se le avise con «Avisar a quien queda libre».",
+          "noEmail": "Sin correo para recordatorios: {{names}}. No le salen recordatorios; avísale con «Avisar a quien queda libre» o con «Reenviar invitación».",
+          "cap": "Ya recibió el máximo de {{max}} recordatorios: {{names}}. No le salen más; avísale con «Avisar a quien queda libre» o con «Reenviar invitación»."
+        }
+      },
+      "sent": "Invitaciones: {{invited}} · por correo: {{mailed}} · por WhatsApp: {{whatsapp}}",
+      "autoSigned": "Firmas automáticas: {{count}}",
+      "failed": "La invitación no salió.",
+      "noCredits": "A la organización no le alcanzan los créditos de validación.",
+      "later": "Puedes invitar después con «Reenviar invitación».",
+      "none": "No había a quién invitar.",
+      "partial": "Después algo falló y no todo salió."
+    },
+    "turnFix": {
+      "title": "Corregir turno",
+      "lead": "El turno abierto pasa del {{from}} al {{to}}, el primero con firmantes pendientes.",
+      "pending": "Pendientes en el turno {{to}}: {{names}}",
+      "confirm": "Corregir turno",
+      "done": "El turno pasó al {{to}}."
+    },
+    "revoke": {
+      "title": "Revocar enlaces",
+      "message": "Se cortan sus enlaces, sus sesiones de firma y sus pasos al celular. Puede volver a entrar si se le reenvía la invitación.",
+      "live": "Enlaces vivos: {{live}}",
+      "warn": {
+        "block": "El documento es parte de un bloque: se revocan sus enlaces en todos los documentos del bloque.",
+        "flow": "El documento es parte de un flujo: se revocan sus enlaces en todos los documentos del flujo.",
+        "reminder": "Sigue en el turno abierto: el próximo recordatorio automático le envía un enlace nuevo. Un reenvío o una aprobación también."
+      },
+      "confirm": "Revocar enlaces",
+      "done": "Enlaces revocados: {{links}} · Sesiones cerradas: {{sessions}} · Pasos al celular cerrados: {{handoffs}}",
+      "doneSet": "Documentos: {{documents}} · Enlaces revocados: {{links}} · Sesiones cerradas: {{sessions}} · Pasos al celular cerrados: {{handoffs}}",
+      "none": "No tenía enlaces, sesiones ni pasos al celular vigentes.",
+      "removedMessage": "{{name}} ya no está en el documento: se cortan los enlaces, sesiones y pasos al celular que le quedaron vivos."
     }
   },
   "orgPicker": {

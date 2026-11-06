@@ -16,6 +16,29 @@ export type ReactivationChoice = ReactivationScope | 'all';
 
 export type EditBlock = 'DOCUMENTO_NO_PENDIENTE' | 'FIRMANTE_YA_FIRMO' | 'FIRMA_RETENIDA';
 
+export type OutOfScope =
+  'DOCUMENTO_EN_BLOQUE' | 'DOCUMENTO_EN_FLUJO' | 'DOCUMENTO_PAGARE' | 'DOCUMENTO_CON_AVALES';
+
+export type RemovalBlock = EditBlock | OutOfScope | 'UNICO_FIRMANTE';
+
+export type TurnFixBlock = 'DOCUMENTO_NO_PENDIENTE' | OutOfScope;
+
+export interface TurnMove {
+  from: number;
+  to: number;
+}
+
+export interface TurnFix extends TurnMove {
+  invitable: string[];
+}
+
+export interface RemovalEffect {
+  turn?: TurnMove;
+  nobodyPending: boolean;
+  invitable?: string[];
+  formLeftPending?: boolean;
+}
+
 export type SignerFeature =
   | 'identityValid'
   | 'biometricValid'
@@ -325,6 +348,8 @@ export interface SignerNotices {
 export interface SignerLink {
   state: LinkState;
   issued: number;
+  live: number;
+  liveInSet?: number;
   lastIssuedAt?: string;
   expiresAt?: string;
   revokedAt?: string;
@@ -361,6 +386,9 @@ export interface PlatformSigner {
   link: SignerLink;
   editBlock?: EditBlock;
   reactivationScopes: ReactivationScope[];
+  removal?: RemovalEffect;
+  removalBlock?: RemovalBlock;
+  autoSign?: boolean;
 }
 
 export interface VersionComment {
@@ -396,6 +424,8 @@ export interface DocumentTurn {
   order: number;
   onHold: boolean;
   pending: number;
+  fix?: TurnFix;
+  fixBlock?: TurnFixBlock;
 }
 
 export interface ReminderRule {
@@ -459,6 +489,7 @@ export interface PlatformDocumentDetail extends PlatformDocumentSummary {
   certificate?: DocumentCertificate;
   turn: DocumentTurn;
   signing?: SigningPolicy;
+  reminderBaseline?: ReminderRule;
   quotaConsumedAt?: string;
   fields: DocumentField[];
   relatedInfo?: Record<string, unknown>;
@@ -472,7 +503,7 @@ export interface PlatformDocumentDetail extends PlatformDocumentSummary {
   flow?: LinkedFlow;
 }
 
-export type HiddenReason = 'secret' | 'html' | 'signers' | 'files';
+export type HiddenReason = 'secret' | 'html' | 'signers' | 'files' | 'removed';
 
 export interface HiddenField {
   path: string;
@@ -534,6 +565,39 @@ export interface SignerChangeOutcome {
   changed: SignerFeature[];
   attachments: { removed: number; optional: number };
   registry?: RegistryCheck;
+}
+
+export interface SignerAccessCut {
+  links: number;
+  sessions: number;
+  handoffs: number;
+}
+
+export interface TurnNotice {
+  invited: number;
+  mailed: number;
+  whatsapp: number;
+  autoSigned: number;
+  error?: { reason: string; code?: string };
+}
+
+export interface SignerRemovalOutcome extends RemovalEffect {
+  identityId: string;
+  orders: number[];
+  access?: SignerAccessCut;
+  notice?: TurnNotice;
+}
+
+export interface LinksRevocationOutcome {
+  identityId: string;
+  documents: number;
+  access: SignerAccessCut;
+}
+
+export interface TurnFixOutcome {
+  turn: TurnMove;
+  invitable: string[];
+  notice?: TurnNotice;
 }
 
 export type BulkStatus = 'ok' | 'skipped' | 'error';

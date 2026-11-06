@@ -10,7 +10,13 @@ export const ORIGINS = ['WEB', 'API', 'BRIDGE', 'TITLE'] as const;
 
 export const BLOCK_MODES = ['single', 'independent'] as const;
 
-export const HIDDEN_REASONS: readonly HiddenReason[] = ['secret', 'html', 'signers', 'files'];
+export const HIDDEN_REASONS: readonly HiddenReason[] = [
+  'secret',
+  'html',
+  'signers',
+  'files',
+  'removed',
+];
 
 export const originKeyOf = (kind: string): string | null =>
   (ORIGINS as readonly string[]).includes(kind) ? `docs.origin.${kind}` : null;

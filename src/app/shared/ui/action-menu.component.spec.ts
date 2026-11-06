@@ -67,4 +67,38 @@ describe('ActionMenuComponent', () => {
     botones()[1].click();
     expect(fixture.componentInstance.elegido()).toBe('remove');
   });
+
+  it('una acción deshabilitada dice por qué debajo de su nombre y no se elige', async () => {
+    const fixture = TestBed.createComponent(Anfitrion);
+    fixture.componentInstance.items.push({
+      key: 'quitar',
+      labelKey: 'docs.signer.remove',
+      danger: true,
+      disabled: true,
+      hintKey: 'docs.error.UNICO_FIRMANTE',
+    });
+    fixture.detectChanges();
+    (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.abrir')!.click();
+    fixture.detectChanges();
+    const quitar = await vi.waitFor(() => {
+      const found = [
+        ...document.querySelectorAll<HTMLButtonElement>('.p-popover button.item'),
+      ].find((button) => button.textContent?.includes('Quitar del documento'));
+      expect(found).toBeDefined();
+      return found!;
+    });
+    expect(quitar.disabled).toBe(true);
+    expect(quitar.classList).toContain('item--hinted');
+    expect(quitar.querySelector('.item__hint')?.textContent?.trim()).toBe(
+      es.docs.error.UNICO_FIRMANTE,
+    );
+    const rol = [...document.querySelectorAll<HTMLButtonElement>('.p-popover button.item')].find(
+      (button) => button.textContent?.includes('Cambiar rol'),
+    )!;
+    expect(rol.disabled).toBe(false);
+    expect(rol.querySelector('.item__hint')).toBeNull();
+    quitar.click();
+    quitar.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(fixture.componentInstance.elegido()).toBe('');
+  });
 });

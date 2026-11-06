@@ -41,7 +41,8 @@
       "write": "Type",
       "toDo": "to {{action}}",
       "aria": "Type {{id}} to confirm"
-    }
+    },
+    "reasonMin": "At least {{min}} characters."
   },
   "nav": {
     "noAccess": "Your role doesn't have access to that section.",
@@ -428,7 +429,10 @@
       "signer_raw_view": "viewed a signer's full data",
       "signer_report_view": "viewed a signer's validation report",
       "signer_features_change": "changed a signer's features",
-      "signer_validations_reactivate": "reactivated a signer's validations"
+      "signer_validations_reactivate": "reactivated a signer's validations",
+      "signer_remove": "removed a signer from a document",
+      "signer_links_revoke": "revoked a signer's links",
+      "turn_fix": "fixed a document's turn"
     },
     "invoices": {
       "create": "created an invoice",
@@ -2170,7 +2174,9 @@
       "unblock": "Unblock",
       "resend": "Resend invitation",
       "reactivate": "Reactivate validations",
-      "features": "Change features"
+      "features": "Change features",
+      "remove": "Remove from document",
+      "revokeLinks": "Revoke links"
     },
     "evidence": {
       "liveness": "Liveness",
@@ -2397,7 +2403,8 @@
         "last": "Last issued",
         "expires": "Expires",
         "revoked": "Revoked",
-        "hidden": "The link is not shown."
+        "hidden": "The link is not shown.",
+        "live": "Live"
       },
       "channel": {
         "email": "Email",
@@ -2524,6 +2531,21 @@
         "off": "Turned off:",
         "removed": "Attachments removed:",
         "optional": "Attachments made optional:"
+      },
+      "access": "Links revoked: {{links}} · Sessions closed: {{sessions}} · Phone handoffs closed: {{handoffs}}",
+      "turn": {
+        "moved": "The open turn moved from {{from}} to {{to}}",
+        "pending": "Pending in the new turn: {{total}}"
+      },
+      "removal": {
+        "signer": "Signer: {{who}}",
+        "nobody": "Nobody was left to sign",
+        "form": "Their part of the form was left unfilled",
+        "accessFailed": "Their access couldn't be cut",
+        "copy": "View the saved copy"
+      },
+      "revoke": {
+        "documents": "Documents in the set: {{total}}"
       }
     },
     "trace": {
@@ -2623,7 +2645,10 @@
       "document_viewed_post_signature": "Document viewed after signing",
       "consent_accepted": "Consent accepted",
       "admin_signer_features_changed": "Signer features changed by admin",
-      "admin_validations_reactivated": "Validations reactivated by admin"
+      "admin_validations_reactivated": "Validations reactivated by admin",
+      "admin_signer_removed": "Signer removed by admin",
+      "admin_signer_links_revoked": "Signer links revoked by admin",
+      "admin_turn_fixed": "Turn fixed by admin"
     },
     "act": {
       "reasonLabel": "Reason (kept in the traceability)",
@@ -2673,7 +2698,12 @@
       },
       "pdfError": "The PDF could not be opened",
       "fileError": "The file could not be opened",
-      "bundleError": "The evidence file could not be downloaded"
+      "bundleError": "The evidence file could not be downloaded",
+      "fixTurn": {
+        "label": "Fix turn"
+      },
+      "reasonMin": "At least 3 characters.",
+      "waiting": "Wait for the action in progress to finish."
     },
     "error": {
       "YA_FINALIZADO": "The document is already finalized.",
@@ -2713,7 +2743,16 @@
       "REGISTRADURIA_SIN_IDENTIFICACION": "The signer has no ID number to look up in the registry.",
       "REGISTRO_IDENTIDAD_NO_DISPONIBLE": "The registry does not accept the signer's country or ID type.",
       "VALIDACIONES_AGOTADAS": "The organization has no registry lookups left.",
-      "generic": "The action couldn't be completed. Try again."
+      "generic": "The action couldn't be completed. Try again.",
+      "UNICO_FIRMANTE": "The document would be left without signers; guarantors don't count.",
+      "DOCUMENTO_EN_BLOQUE": "The document belongs to a block: its signers are managed with the block.",
+      "DOCUMENTO_EN_FLUJO": "The document belongs to a flow: the flow defines its signers.",
+      "DOCUMENTO_PAGARE": "It's a promissory note: its signers aren't changed from the console.",
+      "DOCUMENTO_CON_AVALES": "The document has pending endorsements: wait until they're resolved.",
+      "TURNO_CORRECTO": "The open turn already has pending signers.",
+      "SIN_FIRMANTES_PENDIENTES": "Nobody has pending signatures: the document is ready to finalize.",
+      "DOCUMENTO_CAMBIO": "The document changed in the meantime. Check the record and try again.",
+      "COPIA_NO_ENCONTRADA": "There's no saved copy of that signer."
     },
     "bulk": {
       "lead": "Signed documents only. The PDF is rebuilt with the signature sheet and registered on blockchain again. Signers are not notified and nothing is counted against the plan.",
@@ -2806,7 +2845,8 @@
         "secret": "Secrets",
         "html": "Template HTML",
         "signers": "Signers (in their tab)",
-        "files": "Files (in the signer panel, audited)"
+        "files": "Files (in the signer panel, audited)",
+        "removed": "Files (the console no longer opens them: the person left the document)"
       },
       "audited": "This lookup is recorded in the platform audit."
     },
@@ -2865,6 +2905,79 @@
       "count": "The registry is queried now and one of the organization's {{remaining}} remaining queries is used. If the query fails, nothing changes.",
       "none": "The organization has no registry queries left; without one the change is not saved.",
       "done": "{{done}}. The registry answered {{code}}."
+    },
+    "remove": {
+      "title": "Remove signer",
+      "lead": "{{name}} leaves the document with all their entries. What the others already signed doesn't change.",
+      "turnMoves": "The open turn moves from {{from}} to {{to}}.",
+      "turnStays": "The open turn stays at {{order}}.",
+      "nobodyPending": "Nobody is left to sign: the document is ready for “Finalize”. It doesn't close by itself; if the deadline passes, it lapses.",
+      "access": "Their links, signing sessions and phone handoffs are cut.",
+      "warn": {
+        "integration": "It's an integration document: the client's system gets no notice of the removal and keeps the original list.",
+        "attachments": "The attachments they provided for the final document leave the final PDF: {{names}}.",
+        "charged": "Their already charged validations leave the organization's billing report; they aren't refunded.",
+        "form": "They had to fill their part of the form: it stays unfilled and the others in their turn stop waiting for it.",
+        "evidence": "After removal, the console no longer opens their photos or files; the trace keeps a copy of their data with each file’s fingerprint. If you need them, open and save them first from the signer panel (the arrow at the end of their row).",
+        "gap": "Turns left empty: {{orders}}. The turn skips empty ones; if the document gets stuck, use “Fix turn”."
+      },
+      "confirm": "Remove from document",
+      "done": "{{name}} left the document.",
+      "doneTurn": "{{name}} left the document. The turn moved to {{to}}.",
+      "doneNobody": "{{name}} left the document. Nobody is left to sign: it can be finalized now.",
+      "accessFailed": {
+        "title": "Access wasn't cut",
+        "message": "{{name}} is no longer in the document, but their links may still be live. Retry to cut them.",
+        "retry": "Retry"
+      }
+    },
+    "turnNotice": {
+      "label": "Notify whoever is freed",
+      "hint": "{{names}} get the regular invitation: email, WhatsApp and a new link.",
+      "warn": {
+        "autoSign": "With automatic signature: {{names}}. When notified, the system signs on their behalf and the document may close.",
+        "blocked": "Signing blocked by attempts: {{names}}. Notifying unblocks it and resets the attempts.",
+        "again": "Previously invited: {{names}}. A new invitation goes out and the old link stops working.",
+        "integration": "It's an integration document: the client's system receives the invitation by webhook, with the new link.",
+        "deadline": "The signing deadline passed on {{date}}: the invitation goes out anyway, but no reminders are sent.",
+        "uninvited": "Not invited yet: {{names}}. Without “Notify whoever is freed” neither the invitation nor the reminders go out; you can invite later with “Resend invitation”.",
+        "reminders": "Previously invited: {{names}}. From now on the open turn's automatic reminders go out.",
+        "noReminders": {
+          "deadline": "The signing deadline passed on {{date}}: no reminders go out, not even to those already invited.",
+          "blocked": "Signing blocked by attempts: {{names}}. They get no reminders and can’t sign until unblocked with “Unblock” or notified with “Notify whoever is freed”.",
+          "noEmail": "No email for reminders: {{names}}. They get no reminders; notify them with “Notify whoever is freed” or “Resend invitation”.",
+          "cap": "Already got the maximum of {{max}} reminders: {{names}}. No more go out; notify them with “Notify whoever is freed” or “Resend invitation”."
+        }
+      },
+      "sent": "Invitations: {{invited}} · by email: {{mailed}} · by WhatsApp: {{whatsapp}}",
+      "autoSigned": "Automatic signatures: {{count}}",
+      "failed": "The invitation didn't go out.",
+      "noCredits": "The organization doesn't have enough validation credits.",
+      "later": "You can invite later with “Resend invitation”.",
+      "none": "There was nobody to invite.",
+      "partial": "Then something failed and not everything went out."
+    },
+    "turnFix": {
+      "title": "Fix turn",
+      "lead": "The open turn moves from {{from}} to {{to}}, the first one with pending signers.",
+      "pending": "Pending in turn {{to}}: {{names}}",
+      "confirm": "Fix turn",
+      "done": "The turn moved to {{to}}."
+    },
+    "revoke": {
+      "title": "Revoke links",
+      "message": "Their links, signing sessions and phone handoffs are cut. They can get back in if the invitation is resent.",
+      "live": "Live links: {{live}}",
+      "warn": {
+        "block": "The document belongs to a block: their links are revoked in every document of the block.",
+        "flow": "The document belongs to a flow: their links are revoked in every document of the flow.",
+        "reminder": "They're still in the open turn: the next automatic reminder sends them a new link. So does a resend or an approval."
+      },
+      "confirm": "Revoke links",
+      "done": "Links revoked: {{links}} · Sessions closed: {{sessions}} · Phone handoffs closed: {{handoffs}}",
+      "doneSet": "Documents: {{documents}} · Links revoked: {{links}} · Sessions closed: {{sessions}} · Phone handoffs closed: {{handoffs}}",
+      "none": "They had no live links, sessions or phone handoffs.",
+      "removedMessage": "{{name}} is no longer in the document: the links, signing sessions and phone handoffs they still had are cut."
     }
   },
   "orgPicker": {

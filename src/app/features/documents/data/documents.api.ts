@@ -12,6 +12,7 @@ import type {
   DocumentsQuery,
   DocumentTrace,
   InvitationOutcome,
+  LinksRevocationOutcome,
   PlatformDocumentDetail,
   RawDocument,
   RawSigner,
@@ -20,6 +21,8 @@ import type {
   SignerChange,
   SignerChangeOutcome,
   SignerFileKind,
+  SignerRemovalOutcome,
+  TurnFixOutcome,
 } from './documents.models';
 
 const BASE = '/platform/documents';
@@ -73,6 +76,12 @@ export class DocumentsApi {
 
   signerRaw(id: string, identityId: string): Observable<RawSigner> {
     return this.http.get<RawSigner>(`${BASE}/${id}/signers/${identityId}/raw`, {
+      context: silent(),
+    });
+  }
+
+  removedSignerCopy(id: string, identityId: string): Observable<RawSigner> {
+    return this.http.get<RawSigner>(`${BASE}/${id}/signers/${identityId}/removed-copy`, {
       context: silent(),
     });
   }
@@ -160,6 +169,35 @@ export class DocumentsApi {
     return this.http.patch<SignerChangeOutcome>(
       `${BASE}/${id}/signers/${identityId}`,
       { reason, ...change },
+      { context: silent() },
+    );
+  }
+
+  removeSigner(
+    id: string,
+    identityId: string,
+    reason: string,
+    notify: boolean,
+  ): Observable<SignerRemovalOutcome> {
+    return this.http.post<SignerRemovalOutcome>(
+      `${BASE}/${id}/signers/${identityId}/remove`,
+      { reason, notify },
+      { context: silent() },
+    );
+  }
+
+  revokeLinks(id: string, identityId: string, reason: string): Observable<LinksRevocationOutcome> {
+    return this.http.post<LinksRevocationOutcome>(
+      `${BASE}/${id}/signers/${identityId}/revoke-links`,
+      { reason },
+      { context: silent() },
+    );
+  }
+
+  fixTurn(id: string, reason: string, notify: boolean): Observable<TurnFixOutcome> {
+    return this.http.post<TurnFixOutcome>(
+      `${BASE}/${id}/turn/fix`,
+      { reason, notify },
       { context: silent() },
     );
   }

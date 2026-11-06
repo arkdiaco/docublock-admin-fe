@@ -17,6 +17,7 @@ import type {
   PlatformSigner,
   ReactivationChoice,
 } from '../data/documents.models';
+import { reasonReady } from '../data/reason';
 import {
   reactivationChoicesOf,
   registryCostOf,
@@ -39,8 +40,9 @@ export interface ReactivationRequest {
       [title]="'docs.react.title' | translate"
       [subtitle]="signer().name"
       confirmLabel="docs.react.confirm"
-      [confirmDisabled]="!valid()"
+      [confirmDisabled]="!valid() || waiting()"
       [busy]="busy()"
+      [note]="waiting() && !busy() ? 'docs.act.waiting' : ''"
       [maxWidth]="520"
       (confirmed)="submit()"
       (dismissed)="dismissed.emit()"
@@ -67,6 +69,7 @@ export interface ReactivationRequest {
         <dba-field
           label="docs.act.reasonLabel"
           placeholder="docs.act.reasonPlaceholder"
+          hint="docs.act.reasonMin"
           [maxlength]="500"
           [(value)]="reason"
         />
@@ -81,6 +84,7 @@ export class SignerReactivateFormComponent implements OnInit {
   readonly signer = input.required<PlatformSigner>();
   readonly enabled = input.required<EnabledValidations>();
   readonly busy = input(false);
+  readonly waiting = input(false);
   readonly submitted = output<ReactivationRequest>();
   readonly dismissed = output<void>();
 
@@ -130,7 +134,7 @@ export class SignerReactivateFormComponent implements OnInit {
   );
 
   protected readonly valid = computed(
-    () => this.choices().includes(this.choice()) && !!this.reason().trim(),
+    () => this.choices().includes(this.choice()) && reasonReady(this.reason()),
   );
 
   ngOnInit(): void {
@@ -144,7 +148,8 @@ export class SignerReactivateFormComponent implements OnInit {
 
   protected submit(): void {
     const reason = this.reason().trim();
-    if (this.valid() && !this.busy()) this.submitted.emit({ scope: this.choice(), reason });
+    if (this.valid() && !this.busy() && !this.waiting())
+      this.submitted.emit({ scope: this.choice(), reason });
   }
 
   private label(key: string): string {

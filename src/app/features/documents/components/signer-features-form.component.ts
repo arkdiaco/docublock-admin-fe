@@ -21,6 +21,7 @@ import type {
   SignerChange,
   SignerFeature,
 } from '../data/documents.models';
+import { reasonReady } from '../data/reason';
 import {
   IDENTITY_FEATURES,
   VALIDATION_FEATURES,
@@ -73,8 +74,9 @@ const INVERTED: ReadonlySet<SignerFeature> = new Set(['skipEmail']);
       [title]="'docs.feat.title' | translate"
       [subtitle]="signer().name"
       confirmLabel="docs.feat.confirm"
-      [confirmDisabled]="!valid()"
+      [confirmDisabled]="!valid() || waiting()"
       [busy]="busy()"
+      [note]="waiting() && !busy() ? 'docs.act.waiting' : ''"
       [maxWidth]="560"
       (confirmed)="submit()"
       (dismissed)="dismissed.emit()"
@@ -163,6 +165,7 @@ const INVERTED: ReadonlySet<SignerFeature> = new Set(['skipEmail']);
         <dba-field
           label="docs.act.reasonLabel"
           placeholder="docs.act.reasonPlaceholder"
+          hint="docs.act.reasonMin"
           [maxlength]="500"
           [(value)]="reason"
         />
@@ -216,6 +219,7 @@ export class SignerFeaturesFormComponent implements OnInit {
   readonly signer = input.required<PlatformSigner>();
   readonly enabled = input.required<EnabledValidations>();
   readonly busy = input(false);
+  readonly waiting = input(false);
   readonly submitted = output<SignerChangeRequest>();
   readonly dismissed = output<void>();
 
@@ -260,7 +264,7 @@ export class SignerFeaturesFormComponent implements OnInit {
   );
 
   protected readonly valid = computed(
-    () => Object.keys(this.change()).length > 0 && !!this.reason().trim(),
+    () => Object.keys(this.change()).length > 0 && reasonReady(this.reason()),
   );
 
   ngOnInit(): void {
@@ -295,7 +299,8 @@ export class SignerFeaturesFormComponent implements OnInit {
 
   protected submit(): void {
     const reason = this.reason().trim();
-    if (this.valid() && !this.busy()) this.submitted.emit({ change: this.change(), reason });
+    if (this.valid() && !this.busy() && !this.waiting())
+      this.submitted.emit({ change: this.change(), reason });
   }
 
   private rowsOf(features: readonly SignerFeature[]): FeatureRow[] {

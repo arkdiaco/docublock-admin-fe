@@ -11,10 +11,17 @@ export interface TraceLine extends TraceText {
   terms?: readonly TraceText[];
 }
 
+export interface RemovedSigner {
+  identityId: string;
+  name: string;
+}
+
 export interface TraceReading {
   titleKey: string | null;
   lines: TraceLine[];
   failed: boolean;
+  copy?: RemovedSigner;
+  cut?: RemovedSigner;
 }
 
 type Details = Record<string, unknown>;
@@ -25,6 +32,8 @@ interface Part {
   lines: Entry[];
   failed?: boolean;
   ownsReason?: boolean;
+  copy?: RemovedSigner;
+  cut?: RemovedSigner;
 }
 
 const EMAIL_SKIPPED = 'correo omitido por el firmante';
@@ -355,6 +364,66 @@ const featuresChanged = (details: Details): Part => {
   };
 };
 
+const accessOf = (access: Details): TraceLine => ({
+  key: 'docs.traceUi.access',
+  params: {
+    links: amount(access['links']) ?? 0,
+    sessions: amount(access['sessions']) ?? 0,
+    handoffs: amount(access['handoffs']) ?? 0,
+  },
+});
+
+const turnLine = (details: Details): Entry => {
+  const from = amount(details['from']);
+  const to = amount(details['to']);
+  return from === null || to === null
+    ? null
+    : { key: 'docs.traceUi.turn.moved', params: { from, to } };
+};
+
+const signerRemoved = (details: Details): Part => {
+  const name = text(details['name']);
+  const identityId = text(details['identityId']);
+  const who = [name, text(details['identification']), text(details['email'])]
+    .filter((part) => part !== '')
+    .join(' · ');
+  const access = record(details['access']);
+  const person = identityId ? { identityId, name: name || identityId } : null;
+  return {
+    lines: [
+      who ? { key: 'docs.traceUi.removal.signer', params: { who } } : null,
+      turnLine(record(details['turn']) ?? {}),
+      details['nobodyPending'] === true ? { key: 'docs.traceUi.removal.nobody' } : null,
+      details['formLeftPending'] === true ? { key: 'docs.traceUi.removal.form' } : null,
+      access ? accessOf(access) : { key: 'docs.traceUi.removal.accessFailed', failed: true },
+    ],
+    ...(person && amount(details['copied']) ? { copy: person } : {}),
+    ...(person && !access ? { cut: person } : {}),
+  };
+};
+
+const linksRevoked = (details: Details): Part => {
+  const documents = amount(details['documents']);
+  return {
+    lines: [
+      accessOf(details),
+      documents !== null && documents > 1
+        ? { key: 'docs.traceUi.revoke.documents', params: { total: documents } }
+        : null,
+    ],
+  };
+};
+
+const turnFixed = (details: Details): Part => {
+  const pending = amount(details['pending']);
+  return {
+    lines: [
+      turnLine(details),
+      pending === null ? null : { key: 'docs.traceUi.turn.pending', params: { total: pending } },
+    ],
+  };
+};
+
 const READERS: ReadonlyMap<string, (details: Details) => Part> = new Map([
   ['notification.sent', (details: Details) => invitation(details, false)],
   ['notification.resent', (details: Details) => invitation(details, true)],
@@ -369,6 +438,9 @@ const READERS: ReadonlyMap<string, (details: Details) => Part> = new Map([
   ['admin.blockchain_register_requested', anchorRequested],
   ['admin.validations_reactivated', reactivated],
   ['admin.signer_features_changed', featuresChanged],
+  ['admin.signer_removed', signerRemoved],
+  ['admin.signer_links_revoked', linksRevoked],
+  ['admin.turn_fixed', turnFixed],
 ]);
 
 export const traceReadingOf = (event: TraceEvent): TraceReading => {
@@ -386,5 +458,7 @@ export const traceReadingOf = (event: TraceEvent): TraceReading => {
     titleKey: part.titleKey ?? null,
     lines,
     failed: failure || part.failed === true || lines.some((line) => line.failed === true),
+    ...(part.copy ? { copy: part.copy } : {}),
+    ...(part.cut ? { cut: part.cut } : {}),
   };
 };

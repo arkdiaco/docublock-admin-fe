@@ -62,8 +62,21 @@ import {
   sizeText,
   skipReasonKey,
 } from './data/signer-view';
+import { REASON_MIN, reasonReady } from './data/reason';
 import { TRACE_KEYS } from './data/trace-keys';
 import { traceReadingOf } from './data/trace-reading';
+import {
+  accessPhraseOf,
+  emptiedOrdersOf,
+  noticeReportOf,
+  noticeWarningsOf,
+  pendingNamesAt,
+  removalDoneOf,
+  removalSummaryOf,
+  removalWarningsOf,
+  revokeWarningsOf,
+  setWarningsOf,
+} from './data/turn-changes';
 import { platformSigner } from './documents-test-kit';
 
 const leaf = (catalog: unknown, key: string): unknown =>
@@ -541,6 +554,75 @@ describe('Documentos: lo que dice cada evento', () => {
   const keys = (reading: ReturnType<typeof traceReadingOf>) =>
     reading.lines.map((line) => line.key);
 
+  it('quitar a un firmante dice a quién, el turno, el formulario y el corte, y ofrece su copia', () => {
+    const reading = traceReadingOf(
+      event('admin.signer_removed', {
+        reason: 'se creó con el correo errado',
+        identityId: 'i9',
+        name: 'Pedro Gil',
+        identification: 'CC 10',
+        email: 'p@x.co',
+        orders: [2],
+        turn: { from: 2, to: 3 },
+        nobodyPending: false,
+        formLeftPending: true,
+        access: { links: 2, sessions: 1, handoffs: 0 },
+        copied: 1,
+      }),
+    );
+    expect(reading.lines).toEqual([
+      {
+        key: 'docs.traceUi.reason',
+        params: { reason: 'se creó con el correo errado' },
+        failed: false,
+      },
+      { key: 'docs.traceUi.removal.signer', params: { who: 'Pedro Gil · CC 10 · p@x.co' } },
+      { key: 'docs.traceUi.turn.moved', params: { from: 2, to: 3 } },
+      { key: 'docs.traceUi.removal.form' },
+      { key: 'docs.traceUi.access', params: { links: 2, sessions: 1, handoffs: 0 } },
+    ]);
+    expect(reading.failed).toBe(false);
+    expect(reading.copy).toEqual({ identityId: 'i9', name: 'Pedro Gil' });
+    expect(reading.cut).toBeUndefined();
+  });
+
+  it('un retiro sin corte de acceso ni copia lo marca como falla y ofrece cortar lo que quedó vivo', () => {
+    const reading = traceReadingOf(
+      event('admin.signer_removed', { identityId: 'i9', nobodyPending: true }),
+    );
+    expect(keys(reading)).toEqual([
+      'docs.traceUi.removal.nobody',
+      'docs.traceUi.removal.accessFailed',
+    ]);
+    expect(reading.failed).toBe(true);
+    expect(reading.copy).toBeUndefined();
+    expect(reading.cut).toEqual({ identityId: 'i9', name: 'i9' });
+    expect(
+      traceReadingOf(event('admin.signer_removed', { nobodyPending: true })).cut,
+    ).toBeUndefined();
+  });
+
+  it('revocar enlaces y corregir el turno dicen lo cortado y el turno nuevo', () => {
+    expect(
+      traceReadingOf(
+        event('admin.signer_links_revoked', { links: 0, sessions: 0, handoffs: 0, documents: 1 }),
+      ).lines,
+    ).toEqual([{ key: 'docs.traceUi.access', params: { links: 0, sessions: 0, handoffs: 0 } }]);
+    expect(
+      keys(
+        traceReadingOf(
+          event('admin.signer_links_revoked', { links: 3, sessions: 0, handoffs: 1, documents: 4 }),
+        ),
+      ),
+    ).toEqual(['docs.traceUi.access', 'docs.traceUi.revoke.documents']);
+    expect(traceReadingOf(event('admin.turn_fixed', { from: 1, to: 3, pending: 2 })).lines).toEqual(
+      [
+        { key: 'docs.traceUi.turn.moved', params: { from: 1, to: 3 } },
+        { key: 'docs.traceUi.turn.pending', params: { total: 2 } },
+      ],
+    );
+  });
+
   it('la invitación por correo con el WhatsApp caído dice qué salió y qué no', () => {
     const reading = traceReadingOf(
       event('notification.sent', {
@@ -952,6 +1034,18 @@ describe('Documentos: lo que dice cada evento', () => {
           registry: { code: 'VIGENTE' },
         }),
       ),
+      event('admin.signer_removed', {
+        identityId: 'i9',
+        name: 'Pedro Gil',
+        turn: { from: 2, to: 3 },
+        nobodyPending: true,
+        formLeftPending: true,
+        access: { links: 1, sessions: 0, handoffs: 0 },
+        copied: 1,
+      }),
+      event('admin.signer_removed', { identityId: 'i9' }),
+      event('admin.signer_links_revoked', { links: 1, sessions: 1, handoffs: 0, documents: 3 }),
+      event('admin.turn_fixed', { from: 1, to: 2, pending: 1 }),
     ];
     const usadas = new Set<string>();
     for (const muestra of muestras) {
@@ -966,6 +1060,568 @@ describe('Documentos: lo que dice cada evento', () => {
     for (const key of usadas) {
       expect(typeof leaf(es, key), key).toBe('string');
       expect(typeof leaf(en, key), key).toBe('string');
+    }
+  });
+});
+
+describe('Documentos: quitar firmante, revocar enlaces y corregir el turno', () => {
+  const turn = (order: number, over: Partial<DocumentTurn> = {}): DocumentTurn => ({
+    order,
+    onHold: false,
+    pending: 1,
+    ...over,
+  });
+
+  const evidence = { kind: 'selfie' as const, legacy: false };
+
+  const stamp = (iso: string) => `[${iso.slice(0, 10)}]`;
+
+  const now = new Date('2026-11-06T12:00:00.000Z');
+
+  const placeholders = (text: unknown): string[] =>
+    typeof text === 'string'
+      ? [...text.matchAll(/\{\{\s*(\w+)\s*\}\}/g)].map((match) => match[1] ?? '')
+      : [];
+
+  it('un turno queda vacío solo si estaba entre los turnos de los demás y nadie más lo tenía', () => {
+    const a = signer('a', 1, true);
+    const b = signer('b', 2, false);
+    const c = signer('c', 3, false);
+    const doc = detailOf(1, 0, turn(2), [a, b, c]);
+    expect(emptiedOrdersOf(doc, b)).toEqual([2]);
+    expect(emptiedOrdersOf(doc, a)).toEqual([]);
+    expect(emptiedOrdersOf(doc, c)).toEqual([]);
+    expect(emptiedOrdersOf(detailOf(1, 0, turn(2), [a, b, signer('d', 2, false), c]), b)).toEqual(
+      [],
+    );
+    expect(emptiedOrdersOf(detailOf(1, 0, turn(1), [b]), b)).toEqual([]);
+    expect(
+      emptiedOrdersOf(
+        detailOf(1, 0, turn(1), [a, b, signer('b', 4, false), signer('e', 5, false)]),
+        b,
+      ),
+    ).toEqual([2, 4]);
+  });
+
+  it('el resumen dice a dónde pasa el turno, si se queda o si no queda nadie, y el corte', () => {
+    const doc = detailOf(1, 0, turn(2), [signer('a', 1, true), signer('b', 2, false)]);
+    expect(removalSummaryOf(doc, signer('b', 2, false))).toEqual([]);
+    expect(
+      removalSummaryOf(
+        doc,
+        signer('b', 2, false, { removal: { turn: { from: 2, to: 3 }, nobodyPending: false } }),
+      ),
+    ).toEqual([
+      { key: 'docs.remove.turnMoves', params: { from: 2, to: 3 } },
+      { key: 'docs.remove.access' },
+    ]);
+    expect(
+      removalSummaryOf(doc, signer('b', 2, false, { removal: { nobodyPending: true } })),
+    ).toEqual([{ key: 'docs.remove.nobodyPending' }, { key: 'docs.remove.access' }]);
+    expect(
+      removalSummaryOf(doc, signer('c', 3, false, { removal: { nobodyPending: false } })),
+    ).toEqual([
+      { key: 'docs.remove.turnStays', params: { order: 2 } },
+      { key: 'docs.remove.access' },
+    ]);
+  });
+
+  it('quitar avisa la integración, los adjuntos del PDF, lo cobrado, el formulario, la evidencia y el hueco', () => {
+    const plain = signer('b', 2, false, { removal: { nobodyPending: false } });
+    const web = detailOf(1, 0, turn(2), [signer('a', 1, true), plain, signer('c', 3, false)]);
+    expect(removalWarningsOf({ ...web, signers: [signer('a', 1, true), plain] }, plain)).toEqual(
+      [],
+    );
+    const loaded = signer('b', 2, false, {
+      removal: { nobodyPending: false, formLeftPending: true },
+      attachments: [
+        {
+          index: 0,
+          name: 'RUT',
+          info: '',
+          required: true,
+          includeInDocument: true,
+          provided: true,
+        },
+        {
+          index: 1,
+          name: 'Carta',
+          info: '',
+          required: false,
+          includeInDocument: true,
+          provided: false,
+        },
+      ],
+      attempts: {
+        ...platformSigner().attempts,
+        credits: { biometric: true, identity: false },
+      },
+    });
+    expect(
+      removalWarningsOf(
+        { ...web, kind: 'API', signers: [signer('a', 1, true), loaded, signer('c', 3, false)] },
+        loaded,
+      ),
+    ).toEqual([
+      { key: 'docs.remove.warn.integration' },
+      { key: 'docs.remove.warn.attachments', params: { names: 'RUT' } },
+      { key: 'docs.remove.warn.charged' },
+      { key: 'docs.remove.warn.form' },
+      { key: 'docs.remove.warn.evidence' },
+      { key: 'docs.remove.warn.gap', params: { orders: '2' } },
+    ]);
+    const filed = signer('b', 2, false, { files: [evidence] });
+    expect(removalWarningsOf({ ...web, kind: 'BRIDGE', signers: [filed] }, filed)).toEqual([
+      { key: 'docs.remove.warn.integration' },
+      { key: 'docs.remove.warn.evidence' },
+    ]);
+    const historic = signer('b', 2, false, {
+      history: [{ index: 0, files: ['selfie'] }],
+      attempts: { ...platformSigner().attempts, credits: { biometric: false, identity: true } },
+    });
+    expect(removalWarningsOf({ ...web, signers: [historic] }, historic)).toEqual([
+      { key: 'docs.remove.warn.charged' },
+      { key: 'docs.remove.warn.evidence' },
+    ]);
+  });
+
+  it('lo cobrado cuenta la consulta al registro y las respuestas del proveedor, en todas sus entradas', () => {
+    const plain = signer('b', 2, false);
+    const registry = signer('b', 4, false, {
+      checks: { providerResponses: [], registry: { code: 'VIGENTE', checkedAt: '2026-11-01' } },
+    });
+    const provider = signer('b', 2, false, {
+      checks: { providerResponses: [{ type: 'liveness', data: {} }] },
+    });
+    const checked = signer('b', 2, false, {
+      checks: { providerResponses: [], faceCompare: { passed: true, at: '2026-11-01' } },
+    });
+    const twice = (one: PlatformSigner, two: PlatformSigner) =>
+      removalWarningsOf(detailOf(1, 0, turn(2), [signer('a', 1, true), one, two]), one);
+    expect(twice(plain, registry)).toEqual([{ key: 'docs.remove.warn.charged' }]);
+    expect(twice(provider, plain)).toEqual([{ key: 'docs.remove.warn.charged' }]);
+    expect(twice(plain, checked)).toEqual([{ key: 'docs.remove.warn.charged' }]);
+    expect(twice(plain, signer('b', 4, false))).toEqual([]);
+    const rut = {
+      index: 0,
+      name: 'RUT',
+      info: '',
+      required: true,
+      includeInDocument: true,
+      provided: true,
+    };
+    expect(
+      twice(
+        signer('b', 2, false, { attachments: [rut] }),
+        signer('b', 4, false, { attachments: [rut, { ...rut, index: 1, name: 'Carta' }] }),
+      ),
+    ).toEqual([
+      { key: 'docs.remove.warn.attachments', params: { names: 'RUT, Carta' } },
+      { key: 'docs.remove.warn.evidence' },
+    ]);
+  });
+
+  it('sin avisar dice quién no tiene invitación y a quién le empiezan los recordatorios', () => {
+    const nuevo = signer('n', 2, false, { name: 'Nora' });
+    const viejo = signer('v', 2, false, {
+      name: 'Vera',
+      email: 'vera@x.co',
+      notices: { remindersSent: 0, notifiedAt: '2026-11-01T10:00:00.000Z' },
+    });
+    const doc = detailOf(1, 0, turn(2), [signer('a', 1, true), nuevo, viejo]);
+    expect(noticeWarningsOf(doc, [], false, now, stamp)).toEqual([]);
+    expect(noticeWarningsOf(doc, ['nadie'], true, now, stamp)).toEqual([]);
+    expect(noticeWarningsOf(doc, ['n', 'v', 'n'], false, now, stamp)).toEqual([
+      { key: 'docs.turnNotice.warn.uninvited', params: { names: 'Nora' } },
+      { key: 'docs.turnNotice.warn.reminders', params: { names: 'Vera' } },
+    ]);
+    expect(noticeWarningsOf(doc, ['n'], false, now, stamp)).toEqual([
+      { key: 'docs.turnNotice.warn.uninvited', params: { names: 'Nora' } },
+    ]);
+    expect(noticeWarningsOf(doc, ['n'], true, now, stamp)).toEqual([]);
+  });
+
+  it('sin avisar dice por qué a alguien no le salen recordatorios: plazo, bloqueo, sin correo o tope', () => {
+    const invited = { remindersSent: 0, notifiedAt: '2026-11-01T10:00:00.000Z' };
+    const vera = signer('v', 2, false, { name: 'Vera', email: 'v@x.co', notices: invited });
+    const berta = signer('b', 2, false, {
+      name: 'Berta',
+      email: 'b@x.co',
+      blocked: true,
+      notices: invited,
+    });
+    const sara = signer('s', 2, false, { name: 'Sara', notices: invited });
+    const omar = signer('o', 2, false, {
+      name: 'Omar',
+      email: 'o@x.co',
+      requirements: { ...platformSigner().requirements, skipEmail: true },
+      notices: invited,
+    });
+    const tina = signer('t', 2, false, {
+      name: 'Tina',
+      email: 't@x.co',
+      notices: { ...invited, remindersSent: 3 },
+    });
+    const nora = signer('n', 2, false, { name: 'Nora' });
+    const doc: PlatformDocumentDetail = {
+      ...detailOf(1, 0, turn(2), [signer('a', 1, true), vera, berta, sara, omar, tina, nora]),
+      signing: { reminders: { everyHours: 24, max: 3 } },
+    };
+    expect(noticeWarningsOf(doc, ['v', 'b', 's', 'o', 't', 'n'], false, now, stamp)).toEqual([
+      { key: 'docs.turnNotice.warn.uninvited', params: { names: 'Nora' } },
+      { key: 'docs.turnNotice.warn.noReminders.blocked', params: { names: 'Berta' } },
+      { key: 'docs.turnNotice.warn.noReminders.noEmail', params: { names: 'Sara, Omar' } },
+      { key: 'docs.turnNotice.warn.noReminders.cap', params: { names: 'Tina', max: 3 } },
+      { key: 'docs.turnNotice.warn.reminders', params: { names: 'Vera' } },
+    ]);
+    expect(noticeWarningsOf({ ...doc, signing: undefined }, ['t'], false, now, stamp)).toEqual([
+      { key: 'docs.turnNotice.warn.reminders', params: { names: 'Tina' } },
+    ]);
+    expect(
+      noticeWarningsOf(
+        { ...doc, signing: undefined, reminderBaseline: { everyHours: 48, max: 3 } },
+        ['t', 'v'],
+        false,
+        now,
+        stamp,
+      ),
+    ).toEqual([
+      { key: 'docs.turnNotice.warn.noReminders.cap', params: { names: 'Tina', max: 3 } },
+      { key: 'docs.turnNotice.warn.reminders', params: { names: 'Vera' } },
+    ]);
+    expect(
+      noticeWarningsOf(
+        { ...doc, signing: { deadline: '2026-11-05T23:59:00.000Z' } },
+        ['v', 'b', 'n'],
+        false,
+        now,
+        stamp,
+      ),
+    ).toEqual([
+      { key: 'docs.turnNotice.warn.uninvited', params: { names: 'Nora' } },
+      { key: 'docs.turnNotice.warn.noReminders.deadline', params: { date: '[2026-11-05]' } },
+    ]);
+  });
+
+  it('al avisar dice la firma automática, el bloqueo, la invitación repetida, la integración y el plazo vencido', () => {
+    const auto = signer('f', 2, false, { name: 'Fabio', autoSign: true });
+    const blocked = signer('b', 2, false, { name: 'Berta', blocked: true });
+    const again = signer('g', 2, false, {
+      name: 'Gina',
+      notices: { remindersSent: 2, notifiedAt: '2026-11-01T10:00:00.000Z' },
+    });
+    const doc: PlatformDocumentDetail = {
+      ...detailOf(1, 0, turn(2), [auto, blocked, again]),
+      kind: 'BRIDGE',
+      signing: { deadline: '2026-11-05T23:59:00.000Z' },
+    };
+    expect(noticeWarningsOf(doc, ['f', 'b', 'g'], true, now, stamp)).toEqual([
+      { key: 'docs.turnNotice.warn.autoSign', params: { names: 'Fabio' } },
+      { key: 'docs.turnNotice.warn.blocked', params: { names: 'Berta' } },
+      { key: 'docs.turnNotice.warn.again', params: { names: 'Gina' } },
+      { key: 'docs.turnNotice.warn.integration' },
+      { key: 'docs.turnNotice.warn.deadline', params: { date: '[2026-11-05]' } },
+    ]);
+    expect(
+      noticeWarningsOf(
+        { ...doc, kind: 'WEB', signing: { deadline: '2026-11-30T23:59:00.000Z' } },
+        ['f', 'b'],
+        true,
+        now,
+        stamp,
+      ),
+    ).toEqual([
+      { key: 'docs.turnNotice.warn.autoSign', params: { names: 'Fabio' } },
+      { key: 'docs.turnNotice.warn.blocked', params: { names: 'Berta' } },
+    ]);
+  });
+
+  it('revocar avisa el bloque o el flujo, y el recordatorio que le daría un enlace nuevo', () => {
+    const invited = signer('b', 2, false, {
+      notices: { remindersSent: 0, notifiedAt: '2026-11-01T10:00:00.000Z' },
+    });
+    const doc = detailOf(1, 0, turn(2), [signer('a', 1, true), invited]);
+    expect(revokeWarningsOf(doc, signer('b', 2, false))).toEqual([]);
+    expect(revokeWarningsOf(doc, invited)).toEqual([{ key: 'docs.revoke.warn.reminder' }]);
+    expect(
+      revokeWarningsOf(
+        { ...doc, block: { id: 'k1', documents: 3 }, flow: { flowId: 'f1' } },
+        invited,
+      ),
+    ).toEqual([{ key: 'docs.revoke.warn.block' }, { key: 'docs.revoke.warn.reminder' }]);
+    expect(revokeWarningsOf({ ...doc, flow: { flowId: 'f1' } }, signer('b', 2, false))).toEqual([
+      { key: 'docs.revoke.warn.flow' },
+    ]);
+    expect(revokeWarningsOf({ ...doc, turn: turn(2, { onHold: true }) }, invited)).toEqual([]);
+    expect(revokeWarningsOf({ ...doc, turn: turn(3) }, invited)).toEqual([]);
+    expect(revokeWarningsOf(detailOf(3, 0, turn(2), doc.signers), invited)).toEqual([]);
+    expect(revokeWarningsOf(detailOf(1, 4, turn(2), doc.signers), invited)).toEqual([]);
+  });
+
+  it('cortar a quien ya salió solo avisa el bloque o el flujo', () => {
+    const doc = detailOf(1, 0, turn(2), [signer('a', 1, true)]);
+    expect(setWarningsOf(doc)).toEqual([]);
+    expect(setWarningsOf({ ...doc, block: { id: 'k1', documents: 3 } })).toEqual([
+      { key: 'docs.revoke.warn.block' },
+    ]);
+    expect(setWarningsOf({ ...doc, flow: { flowId: 'f1' } })).toEqual([
+      { key: 'docs.revoke.warn.flow' },
+    ]);
+  });
+
+  it('lo cortado se dice con el conjunto solo si fue más de un documento, y nada si no había', () => {
+    expect(accessPhraseOf({ links: 0, sessions: 0, handoffs: 0 })).toEqual({
+      key: 'docs.revoke.none',
+    });
+    expect(accessPhraseOf({ links: 0, sessions: 0, handoffs: 0 }, 4)).toEqual({
+      key: 'docs.revoke.none',
+    });
+    expect(accessPhraseOf({ links: 2, sessions: 1, handoffs: 0 })).toEqual({
+      key: 'docs.revoke.done',
+      params: { links: 2, sessions: 1, handoffs: 0, documents: 1 },
+    });
+    expect(accessPhraseOf({ links: 0, sessions: 0, handoffs: 1 }, 3)).toEqual({
+      key: 'docs.revoke.doneSet',
+      params: { links: 0, sessions: 0, handoffs: 1, documents: 3 },
+    });
+  });
+
+  it('el resultado de quitar dice a dónde pasó el turno o que ya se puede finalizar', () => {
+    const base = { identityId: 'b', orders: [2], nobodyPending: false };
+    expect(removalDoneOf('Luis', { ...base, turn: { from: 2, to: 3 } })).toEqual({
+      key: 'docs.remove.doneTurn',
+      params: { name: 'Luis', to: 3 },
+    });
+    expect(removalDoneOf('Luis', { ...base, nobodyPending: true })).toEqual({
+      key: 'docs.remove.doneNobody',
+      params: { name: 'Luis' },
+    });
+    expect(removalDoneOf('Luis', base)).toEqual({
+      key: 'docs.remove.done',
+      params: { name: 'Luis' },
+    });
+  });
+
+  it('la invitación dice lo que salió, y si falló, la causa que se conoce o cómo invitar después', () => {
+    const sent = { invited: 2, mailed: 2, whatsapp: 1, autoSigned: 0 };
+    expect(noticeReportOf(sent)).toEqual({
+      failed: false,
+      counts: [{ key: 'docs.turnNotice.sent', params: { invited: 2, mailed: 2, whatsapp: 1 } }],
+      problem: [],
+    });
+    expect(noticeReportOf({ ...sent, autoSigned: 1 }).counts).toEqual([
+      { key: 'docs.turnNotice.sent', params: { invited: 2, mailed: 2, whatsapp: 1 } },
+      { key: 'docs.turnNotice.autoSigned', params: { count: 1 } },
+    ]);
+    expect(noticeReportOf({ invited: 0, mailed: 0, whatsapp: 0, autoSigned: 0 })).toEqual({
+      failed: false,
+      counts: [{ key: 'docs.turnNotice.none' }],
+      problem: [],
+    });
+    expect(noticeReportOf({ ...sent, error: { reason: 'x' } })).toEqual({
+      failed: true,
+      counts: [{ key: 'docs.turnNotice.sent', params: { invited: 2, mailed: 2, whatsapp: 1 } }],
+      problem: [{ key: 'docs.turnNotice.partial' }, { key: 'docs.turnNotice.later' }],
+    });
+    const failed = (code?: string) =>
+      noticeReportOf({
+        invited: 0,
+        mailed: 0,
+        whatsapp: 0,
+        autoSigned: 0,
+        error: { reason: 'x', ...(code ? { code } : {}) },
+      });
+    expect(failed('VALIDACIONES_AGOTADAS')).toEqual({
+      failed: true,
+      counts: [],
+      problem: [{ key: 'docs.turnNotice.failed' }, { key: 'docs.turnNotice.noCredits' }],
+    });
+    expect(failed('DOCUMENTO_NO_PENDIENTE').problem[1]).toEqual({
+      key: 'docs.error.DOCUMENTO_NO_PENDIENTE',
+    });
+    expect(failed('ALGO_NUEVO').problem[1]).toEqual({ key: 'docs.turnNotice.later' });
+    expect(failed().problem[1]).toEqual({ key: 'docs.turnNotice.later' });
+  });
+
+  it('el motivo pide al menos tres letras sin contar los espacios', () => {
+    expect(REASON_MIN).toBe(3);
+    expect(reasonReady('')).toBe(false);
+    expect(reasonReady('  ab  ')).toBe(false);
+    expect(reasonReady(' abc ')).toBe(true);
+  });
+
+  it('los pendientes de un turno son los que no han firmado, sin repetir', () => {
+    const doc = detailOf(1, 0, turn(2), [
+      signer('a', 2, false, { name: 'Ana' }),
+      signer('b', 2, true, { name: 'Beto' }),
+      signer('c', 2, false, { name: 'Ciro' }),
+      signer('a', 3, false, { name: 'Ana' }),
+    ]);
+    expect(pendingNamesAt(doc, 2)).toBe('Ana, Ciro');
+    expect(pendingNamesAt(doc, 3)).toBe('Ana');
+    expect(pendingNamesAt(doc, 9)).toBe('');
+  });
+
+  it('cada frase existe en los dos idiomas y recibe todo lo que su texto pide', () => {
+    const everyone = [
+      signer('f', 2, false, { autoSign: true, blocked: true }),
+      signer('g', 2, false, { notices: { remindersSent: 0, notifiedAt: '2026-11-01T10:00:00Z' } }),
+    ];
+    const doc: PlatformDocumentDetail = {
+      ...detailOf(1, 0, turn(2), [signer('a', 1, true), ...everyone, signer('z', 3, false)]),
+      kind: 'API',
+      signing: { deadline: '2026-11-01T00:00:00.000Z' },
+      block: { id: 'k1', documents: 2 },
+    };
+    const loaded = signer('g', 2, false, {
+      removal: { nobodyPending: false, formLeftPending: true, turn: { from: 2, to: 3 } },
+      attachments: [
+        {
+          index: 0,
+          name: 'RUT',
+          info: '',
+          required: true,
+          includeInDocument: true,
+          provided: true,
+        },
+      ],
+      attempts: { ...platformSigner().attempts, credits: { biometric: true, identity: true } },
+      notices: { remindersSent: 0, notifiedAt: '2026-11-01T10:00:00Z' },
+    });
+    const base = { identityId: 'g', orders: [2], nobodyPending: false };
+    const noticeError = { invited: 0, mailed: 0, whatsapp: 0, autoSigned: 0 };
+    const phrases = [
+      ...removalSummaryOf(doc, loaded),
+      ...removalSummaryOf(doc, signer('g', 2, false, { removal: { nobodyPending: true } })),
+      ...removalSummaryOf(doc, signer('g', 2, false, { removal: { nobodyPending: false } })),
+      ...removalWarningsOf(
+        { ...doc, signers: [signer('a', 1, true), loaded, signer('z', 3, false)] },
+        loaded,
+      ),
+      ...noticeWarningsOf(doc, ['f', 'g'], true, now, stamp),
+      ...noticeWarningsOf(
+        { ...doc, signers: [signer('n', 2, false), loaded] },
+        ['n', 'g'],
+        false,
+        now,
+        stamp,
+      ),
+      ...noticeWarningsOf(
+        {
+          ...doc,
+          signing: { reminders: { everyHours: 24, max: 1 } },
+          signers: [
+            signer('b', 2, false, { blocked: true, notices: loaded.notices }),
+            signer('s', 2, false, { notices: loaded.notices }),
+            signer('t', 2, false, {
+              email: 't@x.co',
+              notices: { ...loaded.notices, remindersSent: 1 },
+            }),
+            signer('v', 2, false, { email: 'v@x.co', notices: loaded.notices }),
+          ],
+        },
+        ['b', 's', 't', 'v'],
+        false,
+        now,
+        stamp,
+      ),
+      ...setWarningsOf(doc),
+      ...revokeWarningsOf(doc, loaded),
+      ...revokeWarningsOf({ ...doc, block: undefined, flow: { flowId: 'f1' } }, loaded),
+      accessPhraseOf({ links: 0, sessions: 0, handoffs: 0 }),
+      accessPhraseOf({ links: 1, sessions: 0, handoffs: 0 }),
+      accessPhraseOf({ links: 1, sessions: 0, handoffs: 0 }, 2),
+      removalDoneOf('Luis', { ...base, turn: { from: 2, to: 3 } }),
+      removalDoneOf('Luis', { ...base, nobodyPending: true }),
+      removalDoneOf('Luis', base),
+      ...[
+        noticeReportOf({ invited: 1, mailed: 1, whatsapp: 1, autoSigned: 1 }),
+        noticeReportOf(noticeError),
+        noticeReportOf({ ...noticeError, error: { reason: 'x', code: 'VALIDACIONES_AGOTADAS' } }),
+        noticeReportOf({ ...noticeError, error: { reason: 'x' } }),
+        noticeReportOf({
+          invited: 1,
+          mailed: 1,
+          whatsapp: 0,
+          autoSigned: 0,
+          error: { reason: 'x' },
+        }),
+      ].flatMap((report) => [...report.counts, ...report.problem]),
+    ];
+    const fixed = [
+      { key: 'docs.remove.title' },
+      { key: 'docs.remove.lead', params: { name: 'Luis' } },
+      { key: 'docs.remove.confirm' },
+      { key: 'docs.remove.accessFailed.title' },
+      { key: 'docs.remove.accessFailed.message', params: { name: 'Luis' } },
+      { key: 'docs.remove.accessFailed.retry' },
+      { key: 'docs.turnNotice.label' },
+      { key: 'docs.turnNotice.hint', params: { names: 'Luis' } },
+      { key: 'docs.turnFix.title' },
+      { key: 'docs.turnFix.lead', params: { from: 1, to: 2 } },
+      { key: 'docs.turnFix.pending', params: { to: 2, names: 'Luis' } },
+      { key: 'docs.turnFix.confirm' },
+      { key: 'docs.turnFix.done', params: { to: 2 } },
+      { key: 'docs.revoke.title' },
+      { key: 'docs.revoke.message' },
+      { key: 'docs.revoke.removedMessage', params: { name: 'Luis' } },
+      { key: 'docs.revoke.live', params: { live: 1 } },
+      { key: 'docs.revoke.confirm' },
+      { key: 'docs.signer.remove' },
+      { key: 'docs.signer.revokeLinks' },
+      { key: 'docs.act.fixTurn.label' },
+      { key: 'docs.sp.link.live' },
+      { key: 'docs.act.reasonMin' },
+      { key: 'docs.act.waiting' },
+      { key: 'dialog.reasonMin', params: { min: 3 } },
+      { key: 'docs.traceUi.removal.copy' },
+    ];
+    const keys = new Set([...phrases, ...fixed].map((item) => item.key));
+    for (const key of [
+      'docs.remove.warn.integration',
+      'docs.remove.warn.attachments',
+      'docs.remove.warn.charged',
+      'docs.remove.warn.form',
+      'docs.remove.warn.evidence',
+      'docs.remove.warn.gap',
+      'docs.turnNotice.warn.autoSign',
+      'docs.turnNotice.warn.blocked',
+      'docs.turnNotice.warn.again',
+      'docs.turnNotice.warn.integration',
+      'docs.turnNotice.warn.deadline',
+      'docs.turnNotice.warn.uninvited',
+      'docs.turnNotice.warn.reminders',
+      'docs.turnNotice.warn.noReminders.deadline',
+      'docs.turnNotice.warn.noReminders.blocked',
+      'docs.turnNotice.warn.noReminders.noEmail',
+      'docs.turnNotice.warn.noReminders.cap',
+      'docs.revoke.warn.block',
+      'docs.revoke.warn.flow',
+      'docs.revoke.warn.reminder',
+      'docs.revoke.none',
+      'docs.revoke.done',
+      'docs.revoke.doneSet',
+      'docs.remove.done',
+      'docs.remove.doneTurn',
+      'docs.remove.doneNobody',
+      'docs.turnNotice.sent',
+      'docs.turnNotice.autoSigned',
+      'docs.turnNotice.none',
+      'docs.turnNotice.failed',
+      'docs.turnNotice.partial',
+      'docs.turnNotice.noCredits',
+      'docs.turnNotice.later',
+    ]) {
+      expect(keys.has(key), key).toBe(true);
+    }
+    for (const item of [...phrases, ...fixed]) {
+      const params = Object.keys('params' in item ? (item.params ?? {}) : {});
+      for (const catalog of [es, en]) {
+        const text = leaf(catalog, item.key);
+        expect(typeof text, item.key).toBe('string');
+        for (const name of placeholders(text))
+          expect(params, `${item.key} → ${name}`).toContain(name);
+      }
     }
   });
 });

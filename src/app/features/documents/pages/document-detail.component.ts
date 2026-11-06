@@ -48,6 +48,8 @@ import {
   SignerReactivateFormComponent,
   type ReactivationRequest,
 } from '../components/signer-reactivate-form.component';
+import { SignerRemoveFormComponent } from '../components/signer-remove-form.component';
+import { TurnFixFormComponent } from '../components/turn-fix-form.component';
 import { DocumentsApi } from '../data/documents.api';
 import { DOCUMENT_ERRORS } from '../data/document-errors';
 import type {
@@ -56,18 +58,36 @@ import type {
   PlatformDocumentDetail,
   PlatformSigner,
   RawDocument,
+  SignerRemovalOutcome,
   TraceEvent,
+  TurnNotice,
 } from '../data/documents.models';
 import { documentActionsOf, statusViewOf } from '../data/document-view';
+import type { Phrase } from '../data/signer-changes';
+import { REASON_MIN } from '../data/reason';
+import type { RemovedSigner } from '../data/trace-reading';
+import {
+  accessPhraseOf,
+  noticeReportOf,
+  removalDoneOf,
+  revokeWarningsOf,
+  setWarningsOf,
+  type NoticeRequest,
+} from '../data/turn-changes';
 import { initialsOf } from '../../../shared/domain/initials';
 
 const TAB_KEYS = ['summary', 'signers', 'versions', 'trace'] as const;
 
-const MENU_KEYS: readonly string[] = ['finalize', 'cancel', 'regenerate', 'register'];
+const MENU_KEYS: readonly string[] = ['finalize', 'cancel', 'regenerate', 'register', 'fixTurn'];
 
 const REVOKE_AFTER_MS = 60_000;
 
-type SignerForm = 'reactivate' | 'features';
+type SignerForm = 'reactivate' | 'features' | 'remove';
+
+interface SignerEdit {
+  form: SignerForm;
+  signer: PlatformSigner;
+}
 
 const REASON: DialogReason = {
   labelKey: 'docs.act.reasonLabel',
@@ -75,6 +95,7 @@ const REASON: DialogReason = {
   limit: 500,
   quick: [],
   required: true,
+  min: REASON_MIN,
 };
 
 @Component({
@@ -96,6 +117,8 @@ const REASON: DialogReason = {
     RawDataComponent,
     SignerFeaturesFormComponent,
     SignerReactivateFormComponent,
+    SignerRemoveFormComponent,
+    TurnFixFormComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -198,7 +221,13 @@ const REASON: DialogReason = {
                 <dba-empty-state titleKey="docs.traceUi.errorTitle" leadKey="docs.errorLead" />
               </div>
             } @else {
-              <dba-document-trace [events]="events()" />
+              <dba-document-trace
+                [events]="events()"
+                [canManage]="canManage()"
+                [pendingKey]="pending.key()"
+                (removedCopy)="openRemovedCopy($event)"
+                (revokeRemoved)="revokeRemoved($event)"
+              />
             }
           }
         }
@@ -212,23 +241,48 @@ const REASON: DialogReason = {
         />
       }
       @if (editing(); as edit) {
-        @if (edit.form === 'reactivate') {
-          <dba-signer-reactivate-form
-            [signer]="edit.signer"
-            [enabled]="doc.enabledValidations"
-            [busy]="signerBusy() === edit.signer.identityId"
-            (submitted)="reactivate(edit.signer, $event)"
-            (dismissed)="editing.set(null)"
-          />
-        } @else {
-          <dba-signer-features-form
-            [signer]="edit.signer"
-            [enabled]="doc.enabledValidations"
-            [busy]="signerBusy() === edit.signer.identityId"
-            (submitted)="changeSigner(edit.signer, $event)"
-            (dismissed)="editing.set(null)"
-          />
+        @switch (edit.form) {
+          @case ('reactivate') {
+            <dba-signer-reactivate-form
+              [signer]="edit.signer"
+              [enabled]="doc.enabledValidations"
+              [busy]="signerBusy() === edit.signer.identityId"
+              [waiting]="waitingFor('signer:' + edit.signer.identityId)"
+              (submitted)="reactivate(edit, $event)"
+              (dismissed)="closeEdit(edit)"
+            />
+          }
+          @case ('features') {
+            <dba-signer-features-form
+              [signer]="edit.signer"
+              [enabled]="doc.enabledValidations"
+              [busy]="signerBusy() === edit.signer.identityId"
+              [waiting]="waitingFor('signer:' + edit.signer.identityId)"
+              (submitted)="changeSigner(edit, $event)"
+              (dismissed)="closeEdit(edit)"
+            />
+          }
+          @case ('remove') {
+            <dba-signer-remove-form
+              [document]="doc"
+              [signer]="edit.signer"
+              [busy]="signerBusy() === edit.signer.identityId"
+              [waiting]="waitingFor('signer:' + edit.signer.identityId)"
+              (submitted)="removeSigner(edit, $event)"
+              (dismissed)="closeEdit(edit)"
+            />
+          }
         }
+      }
+      @if (fixingTurn() && doc.turn.fix; as fix) {
+        <dba-turn-fix-form
+          [document]="doc"
+          [fix]="fix"
+          [busy]="pending.key() === 'fixTurn'"
+          [waiting]="waitingFor('fixTurn')"
+          (submitted)="fixTurn($event)"
+          (dismissed)="closeTurnFix()"
+        />
       }
     }
   `,
@@ -268,6 +322,7 @@ export class DocumentDetailComponent {
   private readonly translate = inject(TranslateService);
   private readonly locale = inject(LOCALE_ID);
   private readonly latest = new LatestRequest();
+  private readonly rawLatest = new LatestRequest();
 
   protected readonly docsPath = sectionPath('documents');
   protected readonly pending = new PendingAction();
@@ -285,7 +340,8 @@ export class DocumentDetailComponent {
   protected readonly raw = signal<RawDocument | null>(null);
   protected readonly rawFailed = signal(false);
   protected readonly rawSubtitle = signal('');
-  protected readonly editing = signal<{ form: SignerForm; signer: PlatformSigner } | null>(null);
+  protected readonly editing = signal<SignerEdit | null>(null);
+  protected readonly fixingTurn = signal(false);
 
   protected readonly status = computed(() =>
     statusViewOf(this.detail()?.status ?? { progress: 1, state: 0, label: '' }),
@@ -323,6 +379,12 @@ export class DocumentDetailComponent {
     if (allowed.register) items.push({ key: 'register', labelKey: 'docs.act.register.label' });
     if (allowed.regenerate)
       items.push({ key: 'regenerate', labelKey: 'docs.act.regenerate.label' });
+    if (doc.turn.fix || doc.turn.fixBlock)
+      items.push({
+        key: 'fixTurn',
+        labelKey: 'docs.act.fixTurn.label',
+        ...(doc.turn.fix ? {} : { disabled: true, hintKey: `docs.error.${doc.turn.fixBlock}` }),
+      });
     if (allowed.cancel)
       items.push({
         key: 'cancel',
@@ -441,6 +503,9 @@ export class DocumentDetailComponent {
         return this.regenerate(doc);
       case 'register':
         return this.register(doc);
+      case 'fixTurn':
+        if (doc.turn.fix) this.fixingTurn.set(true);
+        return;
     }
   }
 
@@ -459,10 +524,11 @@ export class DocumentDetailComponent {
         { name: signer.name },
       );
     }
-    if (action.kind === 'reactivate' || action.kind === 'features') {
+    if (action.kind === 'reactivate' || action.kind === 'features' || action.kind === 'remove') {
       this.editing.set({ form: action.kind, signer });
       return;
     }
+    if (action.kind === 'revokeLinks') return this.revokeLinks(doc, signer);
     const confirmed = await this.dialogs.confirm({
       intent: 'primary',
       icon: 'send',
@@ -484,30 +550,100 @@ export class DocumentDetailComponent {
     });
   }
 
-  protected reactivate(
-    signer: PlatformSigner,
-    { scope, reason }: ReactivationRequest,
-  ): Promise<void> {
+  protected waitingFor(key: string): boolean {
+    const current = this.pending.key();
+    return current !== null && current !== key;
+  }
+
+  protected closeEdit(edit: SignerEdit): void {
+    if (this.signerBusy() !== edit.signer.identityId && this.editing() === edit)
+      this.editing.set(null);
+  }
+
+  protected closeTurnFix(): void {
+    if (this.pending.key() !== 'fixTurn') this.fixingTurn.set(false);
+  }
+
+  protected reactivate(edit: SignerEdit, { scope, reason }: ReactivationRequest): Promise<void> {
     const doc = this.detail();
     if (!doc) return Promise.resolve();
     return this.saveSigner(
-      signer,
-      this.api.reactivateValidations(doc.id, signer.identityId, scope, reason),
+      edit,
+      this.api.reactivateValidations(doc.id, edit.signer.identityId, scope, reason),
       'docs.react.done',
     );
   }
 
-  protected changeSigner(
-    signer: PlatformSigner,
-    { change, reason }: SignerChangeRequest,
-  ): Promise<void> {
+  protected changeSigner(edit: SignerEdit, { change, reason }: SignerChangeRequest): Promise<void> {
     const doc = this.detail();
     if (!doc) return Promise.resolve();
     return this.saveSigner(
-      signer,
-      this.api.changeSigner(doc.id, signer.identityId, change, reason),
+      edit,
+      this.api.changeSigner(doc.id, edit.signer.identityId, change, reason),
       'docs.feat.done',
     );
+  }
+
+  protected async removeSigner(edit: SignerEdit, { reason, notify }: NoticeRequest): Promise<void> {
+    const doc = this.detail();
+    if (!doc || this.pending.key()) return;
+    const { signer } = edit;
+    const outcome = await this.pending.run(`signer:${signer.identityId}`, async () => {
+      let result: SignerRemovalOutcome | null = null;
+      try {
+        result = await firstValueFrom(
+          this.api.removeSigner(doc.id, signer.identityId, reason, notify),
+        );
+        this.notify.success(this.phrase(removalDoneOf(signer.name, result)));
+        if (result.notice) this.report(result.notice);
+      } catch (error) {
+        this.fail(error);
+      }
+      await this.load(doc.id, false);
+      if (this.editing() === edit) this.editing.set(null);
+      return result;
+    });
+    if (outcome && !outcome.access && doc.id === this.id())
+      await this.retryCut(doc.id, signer, reason);
+  }
+
+  protected async fixTurn({ reason, notify }: NoticeRequest): Promise<void> {
+    const doc = this.detail();
+    if (!doc || this.pending.key()) return;
+    await this.pending.run('fixTurn', async () => {
+      try {
+        const result = await firstValueFrom(this.api.fixTurn(doc.id, reason, notify));
+        this.notify.success(this.label('docs.turnFix.done', { to: result.turn.to }));
+        if (result.notice) this.report(result.notice);
+      } catch (error) {
+        this.fail(error);
+      }
+      this.fixingTurn.set(false);
+      await this.load(doc.id, false);
+    });
+  }
+
+  protected async revokeRemoved({ identityId, name }: RemovedSigner): Promise<void> {
+    const doc = this.detail();
+    if (!doc || this.pending.key()) return;
+    const answer = await this.dialogs.open({
+      intent: 'primary',
+      icon: 'lock',
+      title: 'docs.revoke.title',
+      message: 'docs.revoke.removedMessage',
+      params: { name },
+      confirmLabel: 'docs.revoke.confirm',
+      reason: REASON,
+      warnings: setWarningsOf(doc).map((warning) => this.phrase(warning)),
+    });
+    if (answer.answer !== 'confirm' || !answer.reason) return;
+    await this.cut(doc.id, identityId, answer.reason.trim());
+  }
+
+  protected openRemovedCopy({ identityId, name }: RemovedSigner): Promise<void> {
+    const doc = this.detail();
+    if (!doc) return Promise.resolve();
+    return this.showRaw(name, this.api.removedSignerCopy(doc.id, identityId));
   }
 
   protected viewVersion(version: DocumentVersion): Promise<void> {
@@ -534,14 +670,16 @@ export class DocumentDetailComponent {
   }
 
   private async showRaw(subtitle: string, request: Observable<RawDocument>): Promise<void> {
+    const current = this.rawLatest.start();
     this.raw.set(null);
     this.rawFailed.set(false);
     this.rawSubtitle.set(subtitle);
     this.rawOpen.set(true);
     try {
-      this.raw.set(await firstValueFrom(request));
+      const view = await firstValueFrom(request);
+      if (current()) this.raw.set(view);
     } catch {
-      this.rawFailed.set(true);
+      if (current()) this.rawFailed.set(true);
     }
   }
 
@@ -582,6 +720,76 @@ export class DocumentDetailComponent {
     });
   }
 
+  private async revokeLinks(doc: PlatformDocumentDetail, signer: PlatformSigner): Promise<void> {
+    if (this.pending.key()) return;
+    const answer = await this.dialogs.open({
+      intent: 'primary',
+      icon: 'lock',
+      title: 'docs.revoke.title',
+      message: 'docs.revoke.message',
+      context: {
+        title: signer.name,
+        detail: [
+          signer.email,
+          this.label('docs.revoke.live', { live: signer.link.liveInSet ?? signer.link.live }),
+        ]
+          .filter((part) => !!part)
+          .join(' · '),
+      },
+      confirmLabel: 'docs.revoke.confirm',
+      reason: REASON,
+      warnings: revokeWarningsOf(doc, signer).map((warning) => this.phrase(warning)),
+    });
+    if (answer.answer !== 'confirm' || !answer.reason) return;
+    await this.cut(doc.id, signer.identityId, answer.reason.trim());
+  }
+
+  private async retryCut(
+    documentId: string,
+    signer: PlatformSigner,
+    reason: string,
+  ): Promise<void> {
+    while (
+      await this.dialogs.confirm({
+        intent: 'warn',
+        icon: 'lock',
+        title: 'docs.remove.accessFailed.title',
+        message: 'docs.remove.accessFailed.message',
+        params: { name: signer.name },
+        confirmLabel: 'docs.remove.accessFailed.retry',
+      })
+    ) {
+      if (await this.cut(documentId, signer.identityId, reason)) return;
+    }
+  }
+
+  private cut(documentId: string, identityId: string, reason: string): Promise<boolean> {
+    if (this.pending.key()) return Promise.resolve(false);
+    return this.pending.run(`signer:${identityId}`, async () => {
+      try {
+        const result = await firstValueFrom(this.api.revokeLinks(documentId, identityId, reason));
+        this.notify.success(this.phrase(accessPhraseOf(result.access, result.documents)));
+        await this.load(documentId, false);
+        return true;
+      } catch (error) {
+        this.fail(error);
+        return false;
+      }
+    });
+  }
+
+  private report(notice: TurnNotice): void {
+    const { failed, counts, problem } = noticeReportOf(notice);
+    const text = [
+      counts.map((phrase) => this.phrase(phrase)).join(' · '),
+      problem.map((phrase) => this.phrase(phrase)).join(' '),
+    ]
+      .filter((part) => !!part)
+      .join('. ');
+    if (failed) this.notify.error(text);
+    else this.notify.info(text);
+  }
+
   private async withReason(
     key: string,
     intent: 'primary' | 'danger',
@@ -604,12 +812,12 @@ export class DocumentDetailComponent {
   }
 
   private async saveSigner(
-    signer: PlatformSigner,
+    edit: SignerEdit,
     request: Observable<{ registry?: { code?: string } }>,
     done: string,
   ): Promise<void> {
     if (this.pending.key()) return;
-    await this.pending.run(`signer:${signer.identityId}`, async () => {
+    await this.pending.run(`signer:${edit.signer.identityId}`, async () => {
       try {
         const result = await firstValueFrom(request);
         const code = result.registry?.code;
@@ -621,7 +829,7 @@ export class DocumentDetailComponent {
       } catch (error) {
         this.fail(error);
       }
-      this.editing.set(null);
+      if (this.editing() === edit) this.editing.set(null);
       await this.load(this.id(), false);
     });
   }
@@ -680,7 +888,7 @@ export class DocumentDetailComponent {
       firstValueFrom(this.api.detail(id)),
       firstValueFrom(this.api.trace(id)),
     ]);
-    if (!current()) return;
+    if (!current() || id !== this.id()) return;
     if (detail.status === 'fulfilled') {
       this.detail.set(detail.value);
     } else if (initial) {
@@ -694,5 +902,9 @@ export class DocumentDetailComponent {
 
   private label(key: string, params?: Record<string, unknown>): string {
     return this.translate.instant(key, params) as string;
+  }
+
+  private phrase({ key, params }: Phrase): string {
+    return this.label(key, params);
   }
 }

@@ -17,6 +17,7 @@ import { API_BASE_URL } from '../../../core/config/api.tokens';
 import { sectionPath } from '../../../core/layout/console-nav';
 import { DialogService } from '../../../core/ui/dialog.service';
 import { NotificationService } from '../../../core/ui/notification.service';
+import type { ActionMenuItem } from '../../../shared/ui/action-menu.component';
 import { DocumentSignersComponent } from '../components/document-signers.component';
 import type {
   PlatformDocumentDetail,
@@ -463,7 +464,7 @@ describe('Operación › Documentos › ficha', () => {
         otpChannels: ['email', 'whatsapp'],
         location: { city: 'Cali', region: 'Valle', country: 'Colombia', provider: 'ipinfo' },
       },
-      link: { state: 'active', issued: 2, lastIssuedAt: '2026-10-21T08:00:00.000Z' },
+      link: { state: 'active', issued: 2, live: 1, lastIssuedAt: '2026-10-21T08:00:00.000Z' },
       ...over,
     });
 
@@ -637,7 +638,7 @@ describe('Operación › Documentos › ficha', () => {
 
   const editar = (
     fixture: ComponentFixture<DocumentDetailComponent>,
-    kind: 'reactivate' | 'features',
+    kind: 'reactivate' | 'features' | 'remove',
     signer: PlatformSigner,
   ) => {
     void (
@@ -689,11 +690,11 @@ describe('Operación › Documentos › ficha', () => {
     tab(host, 'Firmantes').click();
     fixture.detectChanges();
     expect(menusOf(fixture)).toEqual([
-      ['a', []],
-      ['b', ['resend', 'unblock', '| reactivate', 'features']],
-      ['c', ['features']],
-      ['d', []],
-      ['e', ['unblock', '| features']],
+      ['a', ['revokeLinks']],
+      ['b', ['resend', 'unblock', '| reactivate', 'features', '| revokeLinks']],
+      ['c', ['features', '| revokeLinks']],
+      ['d', ['revokeLinks']],
+      ['e', ['unblock', '| features', '| revokeLinks']],
     ]);
     conPermisos(['platform:operations']);
     fixture.detectChanges();
@@ -936,6 +937,580 @@ describe('Operación › Documentos › ficha', () => {
     host.querySelector<HTMLButtonElement>('dba-signer-features-form .head__close')!.click();
     fixture.detectChanges();
     expect(host.querySelector('dba-signer-features-form')).toBeNull();
+  });
+
+  const enFirma = { progress: 1, state: 0, label: '' } as const;
+
+  const retiro = () => {
+    const base = platformSigner();
+    return {
+      ana: platformSigner({ identityId: 'i1', name: 'Ana Ruiz', order: 1, checked: true }),
+      luis: platformSigner({
+        identityId: 'i2',
+        name: 'Luis Mora',
+        email: 'luis@x.co',
+        order: 2,
+        files: [{ kind: 'selfie', legacy: false }],
+        attachments: [
+          {
+            index: 0,
+            name: 'RUT',
+            info: '',
+            required: true,
+            includeInDocument: true,
+            provided: true,
+          },
+        ],
+        attempts: { ...base.attempts, credits: { biometric: true, identity: false } },
+        notices: { remindersSent: 1, notifiedAt: '2026-11-01T10:00:00.000Z' },
+        link: { state: 'active', issued: 2, live: 1 },
+        removal: {
+          turn: { from: 2, to: 3 },
+          nobodyPending: false,
+          invitable: ['i3'],
+          formLeftPending: true,
+        },
+      }),
+      sara: platformSigner({ identityId: 'i3', name: 'Sara Paz', email: 'sara@x.co', order: 3 }),
+    };
+  };
+
+  it('quitar del documento sale deshabilitado con la razón del core, y no sale si el core no lo ofrece', async () => {
+    conPermisos(['platform:operations', 'platform:operations:manage']);
+    const { fixture, host } = await montar(
+      detail({
+        status: enFirma,
+        turn: { order: 2, onHold: false, pending: 1 },
+        signers: [
+          platformSigner({
+            identityId: 'a',
+            order: 1,
+            checked: true,
+            editBlock: 'FIRMANTE_YA_FIRMO',
+            removalBlock: 'FIRMANTE_YA_FIRMO',
+          }),
+          platformSigner({ identityId: 'b', order: 2, removal: { nobodyPending: false } }),
+          platformSigner({ identityId: 'c', order: 3, removalBlock: 'UNICO_FIRMANTE' }),
+          platformSigner({ identityId: 'd', order: 4 }),
+        ],
+      }),
+    );
+    tab(host, 'Firmantes').click();
+    fixture.detectChanges();
+    const quitar = (id: string) =>
+      (
+        fixture.debugElement.query(By.directive(DocumentSignersComponent))
+          .componentInstance as unknown as {
+          views: () => { signer: PlatformSigner; actions: ActionMenuItem[] }[];
+        }
+      )
+        .views()
+        .find((view) => view.signer.identityId === id)
+        ?.actions.find((item) => item.key === 'remove');
+    expect(quitar('a')).toEqual({
+      key: 'remove',
+      labelKey: 'docs.signer.remove',
+      danger: true,
+      separated: true,
+      disabled: true,
+      hintKey: 'docs.error.FIRMANTE_YA_FIRMO',
+    });
+    expect(quitar('b')).toEqual({
+      key: 'remove',
+      labelKey: 'docs.signer.remove',
+      danger: true,
+      separated: true,
+    });
+    expect(quitar('c')?.hintKey).toBe('docs.error.UNICO_FIRMANTE');
+    expect(quitar('d')).toBeUndefined();
+
+    host
+      .querySelectorAll<HTMLElement>('.sg__row')[2]
+      .querySelector<HTMLButtonElement>('.sg__tools button[dba-button]')!
+      .click();
+    fixture.detectChanges();
+    const item = await vi.waitFor(() => {
+      const found = [
+        ...document.querySelectorAll<HTMLButtonElement>('.p-popover button.item'),
+      ].find((button) => button.textContent?.includes('Quitar del documento'));
+      expect(found).toBeDefined();
+      return found!;
+    });
+    expect(item.disabled).toBe(true);
+    expect(item.querySelector('.item__hint')?.textContent?.trim()).toBe(
+      es.docs.error.UNICO_FIRMANTE,
+    );
+    item.click();
+    fixture.detectChanges();
+    expect(host.querySelector('dba-signer-remove-form')).toBeNull();
+  });
+
+  it('quitar resume el turno y el corte, avisa lo que pasa, invita si se pide, dice el resultado y recarga', async () => {
+    conPermisos(['platform:operations', 'platform:operations:manage']);
+    const { ana, luis, sara } = retiro();
+    const { fixture, host } = await montar(
+      detail({
+        kind: 'API',
+        status: enFirma,
+        turn: { order: 2, onHold: false, pending: 1 },
+        signers: [ana, luis, sara],
+      }),
+    );
+    const ok = vi.spyOn(TestBed.inject(NotificationService), 'success');
+    const info = vi.spyOn(TestBed.inject(NotificationService), 'info');
+    editar(fixture, 'remove', luis);
+    const modal = host.querySelector<HTMLElement>('dba-signer-remove-form')!;
+    expect(modal.querySelector('.head__title')?.textContent).toContain('Quitar firmante');
+    expect(modal.querySelector('.head__sub')?.textContent).toContain('Luis Mora');
+    const text = () => modal.textContent?.replace(/\s+/g, ' ') ?? '';
+    for (const part of [
+      'Luis Mora sale del documento con todas sus entradas.',
+      'El turno abierto pasa del 2 al 3.',
+      'Se cortan sus enlaces, sesiones de firma y pasos al celular.',
+      'el sistema del cliente no recibe aviso del retiro',
+      'salen del PDF final: RUT.',
+      'Sus validaciones ya cobradas salen del informe de cobro',
+      'Debía llenar su parte del formulario',
+      'ábrelos y guárdalos antes desde el panel del firmante (la flecha al final de su fila).',
+      'Turnos que quedan vacíos: 2.',
+      'Se invita a Sara Paz con la invitación normal',
+      'Sin invitación todavía: Sara Paz.',
+    ]) {
+      expect(text(), part).toContain(part);
+    }
+    sinLlaves(host);
+    const confirmar = () => modal.querySelector<HTMLButtonElement>('.foot__go')!;
+    expect(confirmar().disabled).toBe(true);
+
+    modal.querySelector<HTMLElement>('p-toggleswitch')!.click();
+    fixture.detectChanges();
+    expect(text()).not.toContain('Sin invitación todavía');
+    expect(text()).toContain('el sistema del cliente recibe la invitación por webhook');
+    escribir(modal, '  se creó con el correo errado ');
+    fixture.detectChanges();
+    expect(confirmar().disabled).toBe(false);
+    confirmar().click();
+
+    let req!: ReturnType<HttpTestingController['expectOne']>;
+    await vi.waitFor(() => {
+      req = http.expectOne(
+        (r) => r.method === 'POST' && r.url === '/platform/documents/d1/signers/i2/remove',
+      );
+    });
+    expect(req.request.body).toEqual({ reason: 'se creó con el correo errado', notify: true });
+    req.flush({
+      identityId: 'i2',
+      orders: [2],
+      turn: { from: 2, to: 3 },
+      nobodyPending: false,
+      invitable: ['i3'],
+      access: { links: 1, sessions: 0, handoffs: 0 },
+      notice: { invited: 1, mailed: 1, whatsapp: 0, autoSigned: 0 },
+    });
+    await recargar();
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(host.querySelector('dba-signer-remove-form')).toBeNull();
+    });
+    expect(ok).toHaveBeenCalledWith('Luis Mora salió del documento. El turno pasó al 3.');
+    expect(info).toHaveBeenCalledWith('Invitaciones: 1 · por correo: 1 · por WhatsApp: 0');
+  });
+
+  it('si el retiro no cortó el acceso, ofrece reintentar el corte con la misma razón hasta lograrlo', async () => {
+    conPermisos(['platform:operations', 'platform:operations:manage']);
+    const { ana, luis } = retiro();
+    const solo = { ...luis, removal: { nobodyPending: true } };
+    const { fixture, host } = await montar(
+      detail({
+        status: enFirma,
+        turn: { order: 2, onHold: false, pending: 1 },
+        signers: [ana, solo],
+      }),
+    );
+    const ok = vi.spyOn(TestBed.inject(NotificationService), 'success');
+    const mal = vi.spyOn(TestBed.inject(NotificationService), 'error');
+    const reintentar = vi.spyOn(TestBed.inject(DialogService), 'confirm').mockResolvedValue(true);
+    editar(fixture, 'remove', solo);
+    const modal = host.querySelector<HTMLElement>('dba-signer-remove-form')!;
+    expect(modal.textContent).toContain('No queda nadie por firmar');
+    expect(modal.querySelector('p-toggleswitch')).toBeNull();
+    escribir(modal, 'pedido del cliente');
+    fixture.detectChanges();
+    modal.querySelector<HTMLButtonElement>('.foot__go')!.click();
+
+    let req!: ReturnType<HttpTestingController['expectOne']>;
+    await vi.waitFor(() => {
+      req = http.expectOne((r) => r.url === '/platform/documents/d1/signers/i2/remove');
+    });
+    expect(req.request.body).toEqual({ reason: 'pedido del cliente', notify: false });
+    req.flush({ identityId: 'i2', orders: [2], nobodyPending: true });
+    await recargar();
+    await vi.waitFor(() => expect(reintentar).toHaveBeenCalledTimes(1));
+    expect(reintentar.mock.calls[0][0]).toMatchObject({
+      intent: 'warn',
+      title: 'docs.remove.accessFailed.title',
+      message: 'docs.remove.accessFailed.message',
+      params: { name: 'Luis Mora' },
+      confirmLabel: 'docs.remove.accessFailed.retry',
+    });
+    expect(ok).toHaveBeenCalledWith(
+      'Luis Mora salió del documento. No queda nadie por firmar: ya se puede finalizar.',
+    );
+
+    await vi.waitFor(() => {
+      req = http.expectOne((r) => r.url === '/platform/documents/d1/signers/i2/revoke-links');
+    });
+    expect(req.request.body).toEqual({ reason: 'pedido del cliente' });
+    req.flush({ message: 'caído' }, { status: 503, statusText: 'Service Unavailable' });
+    await vi.waitFor(() => expect(reintentar).toHaveBeenCalledTimes(2));
+    expect(mal).toHaveBeenCalledWith('No se pudo completar la acción. Inténtalo de nuevo.');
+
+    await vi.waitFor(() => {
+      req = http.expectOne((r) => r.url === '/platform/documents/d1/signers/i2/revoke-links');
+    });
+    expect(req.request.body).toEqual({ reason: 'pedido del cliente' });
+    req.flush({ identityId: 'i2', documents: 1, access: { links: 2, sessions: 1, handoffs: 0 } });
+    await recargar();
+    await vi.waitFor(() =>
+      expect(ok).toHaveBeenCalledWith(
+        'Enlaces revocados: 2 · Sesiones cerradas: 1 · Pasos al celular cerrados: 0',
+      ),
+    );
+    expect(reintentar).toHaveBeenCalledTimes(2);
+  });
+
+  it('revocar enlaces dice cuántos siguen vivos, avisa el bloque y el recordatorio, manda la razón y dice lo cortado', async () => {
+    conPermisos(['platform:operations', 'platform:operations:manage']);
+    const { ana, luis: solo } = retiro();
+    const luis = { ...solo, link: { ...solo.link, liveInSet: 3 } };
+    const { fixture } = await montar(
+      detail({
+        status: enFirma,
+        turn: { order: 2, onHold: false, pending: 1 },
+        block: { id: 'k1', name: 'Bloque de arriendos', documents: 3 },
+        signers: [ana, luis],
+      }),
+    );
+    const ok = vi.spyOn(TestBed.inject(NotificationService), 'success');
+    const abrir = vi
+      .spyOn(TestBed.inject(DialogService), 'open')
+      .mockResolvedValueOnce({ answer: 'cancel' })
+      .mockResolvedValueOnce({ answer: 'confirm', reason: ' pidió cortar el enlace ' });
+    const revocar = () =>
+      (
+        fixture.componentInstance as unknown as { runSigner: (a: unknown) => Promise<void> }
+      ).runSigner({ kind: 'revokeLinks', signer: luis });
+
+    await revocar();
+    expect(abrir.mock.calls[0][0]).toMatchObject({
+      intent: 'primary',
+      icon: 'lock',
+      title: 'docs.revoke.title',
+      message: 'docs.revoke.message',
+      confirmLabel: 'docs.revoke.confirm',
+      context: { title: 'Luis Mora', detail: 'luis@x.co · Enlaces vivos: 3' },
+      warnings: [
+        'El documento es parte de un bloque: se revocan sus enlaces en todos los documentos del bloque.',
+        'Sigue en el turno abierto: el próximo recordatorio automático le envía un enlace nuevo. Un reenvío o una aprobación también.',
+      ],
+    });
+    expect(abrir.mock.calls[0][0].reason).toMatchObject({ required: true, min: 3 });
+
+    void revocar();
+    let req!: ReturnType<HttpTestingController['expectOne']>;
+    await vi.waitFor(() => {
+      req = http.expectOne(
+        (r) => r.method === 'POST' && r.url === '/platform/documents/d1/signers/i2/revoke-links',
+      );
+    });
+    expect(req.request.body).toEqual({ reason: 'pidió cortar el enlace' });
+    req.flush({ identityId: 'i2', documents: 3, access: { links: 1, sessions: 1, handoffs: 1 } });
+    await recargar();
+    await vi.waitFor(() =>
+      expect(ok).toHaveBeenCalledWith(
+        'Documentos: 3 · Enlaces revocados: 1 · Sesiones cerradas: 1 · Pasos al celular cerrados: 1',
+      ),
+    );
+  });
+
+  it('corregir el turno sale deshabilitado con la razón del core, y si se puede pasa el turno, avisa y recarga', async () => {
+    conPermisos(['platform:operations', 'platform:operations:manage']);
+    const { ana, luis } = retiro();
+    const pendiente = { ...luis, removal: undefined, notices: { remindersSent: 0 } };
+    const corregir = (fixture: ComponentFixture<DocumentDetailComponent>) =>
+      (fixture.componentInstance as unknown as { menuItems: () => ActionMenuItem[] })
+        .menuItems()
+        .find((item) => item.key === 'fixTurn');
+    const correr = (fixture: ComponentFixture<DocumentDetailComponent>) => {
+      void (
+        fixture.componentInstance as unknown as { runDocument: (k: string) => Promise<void> }
+      ).runDocument('fixTurn');
+      fixture.detectChanges();
+    };
+
+    const bloqueado = await montar(
+      detail({
+        status: enFirma,
+        turn: { order: 1, onHold: false, pending: 0, fixBlock: 'DOCUMENTO_EN_BLOQUE' },
+        signers: [ana, pendiente],
+      }),
+    );
+    expect(corregir(bloqueado.fixture)).toEqual({
+      key: 'fixTurn',
+      labelKey: 'docs.act.fixTurn.label',
+      disabled: true,
+      hintKey: 'docs.error.DOCUMENTO_EN_BLOQUE',
+    });
+    correr(bloqueado.fixture);
+    expect(bloqueado.host.querySelector('dba-turn-fix-form')).toBeNull();
+    bloqueado.fixture.destroy();
+
+    const { fixture, host } = await montar(
+      detail({
+        status: enFirma,
+        turn: { order: 1, onHold: false, pending: 0, fix: { from: 1, to: 2, invitable: ['i2'] } },
+        signers: [ana, pendiente],
+      }),
+    );
+    expect(corregir(fixture)).toEqual({ key: 'fixTurn', labelKey: 'docs.act.fixTurn.label' });
+    const ok = vi.spyOn(TestBed.inject(NotificationService), 'success');
+    correr(fixture);
+    const modal = host.querySelector<HTMLElement>('dba-turn-fix-form')!;
+    expect(modal.querySelector('.head__title')?.textContent).toContain('Corregir turno');
+    expect(modal.querySelector('.head__sub')?.textContent).toContain('Contrato de arriendo');
+    const text = modal.textContent?.replace(/\s+/g, ' ') ?? '';
+    for (const part of [
+      'El turno abierto pasa del 1 al 2, el primero con firmantes pendientes.',
+      'Pendientes en el turno 2: Luis Mora',
+      'Se invita a Luis Mora con la invitación normal',
+      'Sin invitación todavía: Luis Mora.',
+    ]) {
+      expect(text, part).toContain(part);
+    }
+    sinLlaves(host);
+    const confirmar = modal.querySelector<HTMLButtonElement>('.foot__go')!;
+    expect(confirmar.disabled).toBe(true);
+    expect(text).toContain('Mínimo 3 caracteres.');
+    escribir(modal, ' ab ');
+    fixture.detectChanges();
+    expect(confirmar.disabled).toBe(true);
+    escribir(modal, 'el turno quedó en un orden vacío');
+    fixture.detectChanges();
+    confirmar.click();
+
+    let req!: ReturnType<HttpTestingController['expectOne']>;
+    await vi.waitFor(() => {
+      req = http.expectOne(
+        (r) => r.method === 'POST' && r.url === '/platform/documents/d1/turn/fix',
+      );
+    });
+    expect(req.request.body).toEqual({ reason: 'el turno quedó en un orden vacío', notify: false });
+    modal.querySelector<HTMLButtonElement>('.head__close')!.click();
+    fixture.detectChanges();
+    expect(host.querySelector('dba-turn-fix-form')).not.toBeNull();
+    req.flush({ turn: { from: 1, to: 2 }, invitable: ['i2'] });
+    await recargar();
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(host.querySelector('dba-turn-fix-form')).toBeNull();
+    });
+    expect(ok).toHaveBeenCalledWith('El turno pasó al 2.');
+  });
+
+  it('con otra acción en curso, el modal no se marca como enviado: dice que espere y no deja confirmar', async () => {
+    conPermisos(['platform:operations', 'platform:operations:manage']);
+    const { ana, luis } = retiro();
+    const { fixture, host } = await montar(
+      detail({
+        status: enFirma,
+        turn: { order: 2, onHold: false, pending: 1 },
+        signers: [ana, luis],
+      }),
+    );
+    const restore = stubObjectUrls();
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
+    boton(host, 'Expediente').click();
+    const zip = http.expectOne('/platform/documents/d1/bundle');
+    editar(fixture, 'remove', luis);
+    const modal = host.querySelector<HTMLElement>('dba-signer-remove-form')!;
+    escribir(modal, 'se creó con el correo errado');
+    fixture.detectChanges();
+    const confirmar = modal.querySelector<HTMLButtonElement>('.foot__go')!;
+    expect(confirmar.disabled).toBe(true);
+    expect(confirmar.classList.contains('foot__go--busy')).toBe(false);
+    expect(modal.querySelector('.foot__note')?.textContent?.trim()).toBe(
+      'Espera a que termine la acción que está en curso.',
+    );
+    zip.flush(new Blob(['zip']));
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(confirmar.disabled).toBe(false);
+    });
+    expect(modal.querySelector('.foot__note')).toBeNull();
+    restore();
+  });
+
+  it('un aviso que falla a medias dice lo que salió y después lo que falló', async () => {
+    conPermisos(['platform:operations', 'platform:operations:manage']);
+    const { ana, luis } = retiro();
+    const { fixture } = await montar(
+      detail({
+        status: enFirma,
+        turn: { order: 1, onHold: false, pending: 0, fix: { from: 1, to: 2, invitable: ['i2'] } },
+        signers: [ana, { ...luis, removal: undefined }],
+      }),
+    );
+    const mal = vi.spyOn(TestBed.inject(NotificationService), 'error');
+    void (
+      fixture.componentInstance as unknown as {
+        fixTurn: (r: { reason: string; notify: boolean }) => Promise<void>;
+      }
+    ).fixTurn({ reason: 'el turno quedó quieto', notify: true });
+    let req!: ReturnType<HttpTestingController['expectOne']>;
+    await vi.waitFor(() => {
+      req = http.expectOne((r) => r.url === '/platform/documents/d1/turn/fix');
+    });
+    req.flush({
+      turn: { from: 1, to: 2 },
+      invitable: ['i2'],
+      notice: {
+        invited: 1,
+        mailed: 1,
+        whatsapp: 0,
+        autoSigned: 0,
+        error: { reason: 'La invitación falló por un error interno' },
+      },
+    });
+    await recargar();
+    await vi.waitFor(() =>
+      expect(mal).toHaveBeenCalledWith(
+        'Invitaciones: 1 · por correo: 1 · por WhatsApp: 0. Después algo falló y no todo salió. Puedes invitar después con «Reenviar invitación».',
+      ),
+    );
+  });
+
+  it('la trazabilidad del retiro dice a quién y el turno, y abre la copia guardada también con solo lectura', async () => {
+    conPermisos(['platform:operations']);
+    const { fixture, host } = await montar(detail(), [
+      {
+        type: 'admin.signer_removed',
+        timestamp: '2026-11-05T10:00:00.000Z',
+        actor: { type: 'user', name: 'Marta Vidal' },
+        details: {
+          reason: 'se creó con el correo errado',
+          identityId: 'i9',
+          name: 'Pedro Gil',
+          identification: 'CC 10',
+          email: 'p@x.co',
+          orders: [2],
+          turn: { from: 2, to: 3 },
+          nobodyPending: false,
+          access: { links: 1, sessions: 0, handoffs: 0 },
+          copied: 1,
+        },
+      },
+    ]);
+    tab(host, 'Trazabilidad').click();
+    fixture.detectChanges();
+    const trace = host.querySelector<HTMLElement>('dba-document-trace')!;
+    const text = trace.textContent?.replace(/\s+/g, ' ') ?? '';
+    for (const part of [
+      'Firmante quitado por administración',
+      'Razón: se creó con el correo errado',
+      'Firmante: Pedro Gil · CC 10 · p@x.co',
+      'El turno abierto pasó del 2 al 3',
+      'Enlaces revocados: 1 · Sesiones cerradas: 0 · Pasos al celular cerrados: 0',
+    ]) {
+      expect(text, part).toContain(part);
+    }
+    sinLlaves(host);
+    boton(trace, 'Ver la copia guardada').click();
+    fixture.detectChanges();
+    http.expectOne('/platform/documents/d1/signers/i9/removed-copy').flush({
+      id: 'd1',
+      identityId: 'i9',
+      data: { entries: [{ order: 2, name: 'Pedro Gil' }] },
+      hidden: [],
+    });
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(host.querySelector('.raw__code')?.textContent).toContain('"order": 2');
+    });
+    expect(host.querySelector('dba-raw-data')?.textContent).toContain('Pedro Gil');
+    expect(boton(trace, 'Revocar enlaces')).toBeUndefined();
+  });
+
+  const retiroSinCorte: TraceEvent = {
+    type: 'admin.signer_removed',
+    timestamp: '2026-11-05T10:00:00.000Z',
+    actor: { type: 'user', name: 'Marta Vidal' },
+    details: { reason: 'pedido del cliente', identityId: 'i9', name: 'Pedro Gil', orders: [2] },
+  };
+
+  it('si el retiro no cortó el acceso, la traza ofrece cortarlo con su propia razón y avisa el bloque', async () => {
+    conPermisos(['platform:operations', 'platform:operations:manage']);
+    const { fixture, host } = await montar(
+      detail({ block: { id: 'k1', name: 'Bloque de arriendos', documents: 3 } }),
+      [retiroSinCorte],
+    );
+    const ok = vi.spyOn(TestBed.inject(NotificationService), 'success');
+    const abrir = vi
+      .spyOn(TestBed.inject(DialogService), 'open')
+      .mockResolvedValue({ answer: 'confirm', reason: ' se quedó con un enlace vivo ' });
+    tab(host, 'Trazabilidad').click();
+    fixture.detectChanges();
+    const trace = host.querySelector<HTMLElement>('dba-document-trace')!;
+    expect(trace.textContent).toContain('No se pudo cortar su acceso');
+    sinLlaves(host);
+    boton(trace, 'Revocar enlaces').click();
+    await vi.waitFor(() => expect(abrir).toHaveBeenCalledTimes(1));
+    expect(abrir.mock.calls[0][0]).toMatchObject({
+      title: 'docs.revoke.title',
+      message: 'docs.revoke.removedMessage',
+      params: { name: 'Pedro Gil' },
+      confirmLabel: 'docs.revoke.confirm',
+      reason: { required: true, min: 3 },
+      warnings: [
+        'El documento es parte de un bloque: se revocan sus enlaces en todos los documentos del bloque.',
+      ],
+    });
+    let req!: ReturnType<HttpTestingController['expectOne']>;
+    await vi.waitFor(() => {
+      req = http.expectOne(
+        (r) => r.method === 'POST' && r.url === '/platform/documents/d1/signers/i9/revoke-links',
+      );
+    });
+    expect(req.request.body).toEqual({ reason: 'se quedó con un enlace vivo' });
+    req.flush({ identityId: 'i9', documents: 3, access: { links: 1, sessions: 0, handoffs: 0 } });
+    await recargar();
+    await vi.waitFor(() =>
+      expect(ok).toHaveBeenCalledWith(
+        'Documentos: 3 · Enlaces revocados: 1 · Sesiones cerradas: 0 · Pasos al celular cerrados: 0',
+      ),
+    );
+  });
+
+  it('la traza no ofrece cortar sin permiso de gestión ni después de un corte posterior', async () => {
+    conPermisos(['platform:operations']);
+    const lectura = await montar(detail(), [retiroSinCorte]);
+    tab(lectura.host, 'Trazabilidad').click();
+    lectura.fixture.detectChanges();
+    expect(boton(lectura.host, 'Revocar enlaces')).toBeUndefined();
+    lectura.fixture.destroy();
+
+    conPermisos(['platform:operations', 'platform:operations:manage']);
+    const cortado = await montar(detail(), [
+      {
+        type: 'admin.signer_links_revoked',
+        timestamp: '2026-11-05T10:05:00.000Z',
+        actor: { type: 'user', name: 'Marta Vidal' },
+        details: { identityId: 'i9', links: 1, sessions: 0, handoffs: 0, documents: 1 },
+      },
+      retiroSinCorte,
+    ]);
+    tab(cortado.host, 'Trazabilidad').click();
+    cortado.fixture.detectChanges();
+    expect(boton(cortado.host, 'Revocar enlaces')).toBeUndefined();
   });
 
   it('el panel cuenta las reactivaciones y el historial dice qué se reactivó y qué respondió Registraduría', async () => {

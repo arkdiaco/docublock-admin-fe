@@ -31,9 +31,17 @@ import {
 } from '../data/signer-view';
 import { SignerPanelComponent } from './signer-panel.component';
 
-export type SignerActionKind = 'unblock' | 'resend' | 'reactivate' | 'features';
+export type SignerActionKind =
+  'unblock' | 'resend' | 'reactivate' | 'features' | 'revokeLinks' | 'remove';
 
-const ACTION_KINDS: readonly SignerActionKind[] = ['unblock', 'resend', 'reactivate', 'features'];
+const ACTION_KINDS: readonly SignerActionKind[] = [
+  'unblock',
+  'resend',
+  'reactivate',
+  'features',
+  'revokeLinks',
+  'remove',
+];
 
 export interface SignerAction {
   kind: SignerActionKind;
@@ -290,6 +298,24 @@ export class DocumentSignersComponent {
   }
 
   private actionsFor(doc: PlatformDocumentDetail, signer: PlatformSigner): ActionMenuItem[] {
+    const items = this.editsFor(doc, signer);
+    items.push({
+      key: 'revokeLinks',
+      labelKey: 'docs.signer.revokeLinks',
+      separated: items.length > 0,
+    });
+    if (signer.removal || signer.removalBlock)
+      items.push({
+        key: 'remove',
+        labelKey: 'docs.signer.remove',
+        danger: true,
+        separated: true,
+        ...(signer.removal ? {} : { disabled: true, hintKey: `docs.error.${signer.removalBlock}` }),
+      });
+    return items;
+  }
+
+  private editsFor(doc: PlatformDocumentDetail, signer: PlatformSigner): ActionMenuItem[] {
     if (doc.status.state === 4 || signer.checked) return [];
     const items: ActionMenuItem[] = [];
     if (canResend(doc, signer)) items.push({ key: 'resend', labelKey: 'docs.signer.resend' });

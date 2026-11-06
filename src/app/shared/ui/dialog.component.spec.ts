@@ -298,4 +298,34 @@ describe('DialogComponent', () => {
     confirmar.click();
     expect(fixture.componentInstance.result()).toEqual({ answer: 'confirm', reason: 'Salió de la empresa' });
   });
+
+  it('con mínimo de caracteres lo dice bajo el motivo y no confirma con menos', () => {
+    const host = montar();
+    fixture.componentInstance.request.set({
+      intent: 'primary',
+      title: 'docs.revoke.title',
+      confirmLabel: 'docs.revoke.confirm',
+      reason: { labelKey: 'docs.act.reasonLabel', placeholder: 'docs.act.reasonPlaceholder', limit: 500, quick: [], required: true, min: 3 },
+    });
+    fixture.detectChanges();
+
+    const confirmar = host.querySelectorAll<HTMLButtonElement>('.btn')[1];
+    const motivo = host.querySelector<HTMLTextAreaElement>('.body__text')!;
+    expect(host.querySelector('.body__hint')?.textContent?.trim()).toBe('Mínimo 3 caracteres.');
+
+    motivo.value = ' ok ';
+    motivo.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(confirmar.disabled).toBe(true);
+
+    motivo.value = '👍👍';
+    motivo.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(confirmar.disabled).toBe(true);
+
+    motivo.value = 'ok!';
+    motivo.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(confirmar.disabled).toBe(false);
+  });
 });

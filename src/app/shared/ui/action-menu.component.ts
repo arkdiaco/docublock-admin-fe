@@ -7,6 +7,8 @@ export interface ActionMenuItem {
   labelKey: string;
   danger?: boolean;
   separated?: boolean;
+  disabled?: boolean;
+  hintKey?: string;
 }
 
 @Component({
@@ -26,9 +28,14 @@ export interface ActionMenuItem {
               role="menuitem"
               class="item"
               [class.item--danger]="item.danger"
-              (click)="pick(item.key)"
+              [class.item--hinted]="!!item.hintKey"
+              [disabled]="item.disabled"
+              (click)="pick(item)"
             >
               {{ item.labelKey | translate }}
+              @if (item.hintKey) {
+                <span class="item__hint">{{ item.hintKey | translate }}</span>
+              }
             </button>
           </li>
         }
@@ -96,6 +103,32 @@ export interface ActionMenuItem {
     .item--danger:hover {
       color: var(--dba-state-suspended-fg);
     }
+
+    .item--hinted {
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 2px;
+      height: auto;
+      min-height: 36px;
+      padding: 6px 10px;
+    }
+
+    .item__hint {
+      max-width: 280px;
+      font-size: var(--dba-text-meta);
+      font-weight: 400;
+      line-height: 1.35;
+      color: var(--dba-text-muted);
+      white-space: normal;
+    }
+
+    .item:disabled,
+    .item:disabled:hover {
+      background: transparent;
+      color: var(--dba-text-muted);
+      cursor: not-allowed;
+    }
   `,
 })
 export class ActionMenuComponent {
@@ -110,8 +143,9 @@ export class ActionMenuComponent {
     this.panel().toggle(event, event.currentTarget as HTMLElement);
   }
 
-  protected pick(key: string): void {
+  protected pick(item: ActionMenuItem): void {
+    if (item.disabled) return;
     this.panel().hide();
-    this.picked.emit(key);
+    this.picked.emit(item.key);
   }
 }

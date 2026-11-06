@@ -413,6 +413,8 @@ import {
           </dd>
           <dt>{{ 'docs.sp.link.issued' | translate }}</dt>
           <dd class="dba-mono">{{ s.link.issued }}</dd>
+          <dt>{{ 'docs.sp.link.live' | translate }}</dt>
+          <dd class="dba-mono">{{ s.link.live }}</dd>
           @if (s.link.lastIssuedAt) {
             <dt>{{ 'docs.sp.link.last' | translate }}</dt>
             <dd class="dba-mono">{{ stamp(s.link.lastIssuedAt) }}</dd>

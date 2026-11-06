@@ -49,6 +49,9 @@ import { IconComponent, type IconName } from './icon.component';
       </div>
 
       <footer class="foot">
+        @if (note()) {
+          <span class="foot__note">{{ note() | translate }}</span>
+        }
         @if (cancelable()) {
           <button type="button" class="foot__ghost" (click)="dismissed.emit()">
             {{ (cancelLabel() || 'common.cancel') | translate }}
@@ -178,6 +181,14 @@ import { IconComponent, type IconName } from './icon.component';
       background: var(--db-surface-head);
     }
 
+    .foot__note {
+      flex: 1;
+      align-self: center;
+      font-size: var(--db-text-eyebrow);
+      line-height: 16.5px;
+      color: var(--db-ink-soft);
+    }
+
     .foot__ghost {
       padding: 11px 16px;
       border: 1px solid var(--db-border-subtle);
@@ -238,6 +249,7 @@ export class ModalShellComponent {
   readonly cancelable = input(true);
   readonly confirmDisabled = input(false);
   readonly busy = input(false);
+  readonly note = input('');
 
   readonly dismissed = output<void>();
   readonly confirmed = output<void>();

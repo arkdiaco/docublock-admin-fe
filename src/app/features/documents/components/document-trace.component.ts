@@ -6,16 +6,18 @@ import {
   computed,
   inject,
   input,
+  output,
   signal,
 } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AuditEventComponent, type AuditActorKind } from '../../../shared/ui/audit-event.component';
+import { ButtonComponent } from '../../../shared/ui/button.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
 import { FilterPillsComponent, type FilterPill } from '../../../shared/ui/filter-pills.component';
 import type { TraceEvent } from '../data/documents.models';
 import { actorKindOf, traceKeyOf } from '../data/document-view';
 import { TRACE_KEYS } from '../data/trace-keys';
-import { traceReadingOf, type TraceLine } from '../data/trace-reading';
+import { traceReadingOf, type RemovedSigner, type TraceLine } from '../data/trace-reading';
 
 type TraceFilter = 'all' | 'failed';
 
@@ -35,11 +37,29 @@ interface TraceView {
   lines: LineView[];
   failed: boolean;
   meta: string;
+  copy?: RemovedSigner;
+  cut?: RemovedSigner;
 }
+
+const REVOKED = 'admin.signer_links_revoked';
+
+const revokedSince = (events: readonly TraceEvent[], identityId: string, since: string): boolean =>
+  events.some(
+    (event) =>
+      event.type === REVOKED &&
+      event.details?.['identityId'] === identityId &&
+      Date.parse(event.timestamp) >= Date.parse(since),
+  );
 
 @Component({
   selector: 'dba-document-trace',
-  imports: [TranslatePipe, AuditEventComponent, EmptyStateComponent, FilterPillsComponent],
+  imports: [
+    TranslatePipe,
+    AuditEventComponent,
+    ButtonComponent,
+    EmptyStateComponent,
+    FilterPillsComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="tr">
@@ -69,6 +89,26 @@ interface TraceView {
                 {{ line.key | translate: line.params }}
                 @if (line.terms) {
                   <span class="tr__term">{{ line.terms }}</span>
+                }
+              </span>
+            }
+            @if (view.copy || view.cut) {
+              <span class="tr__action">
+                @if (view.copy; as item) {
+                  <button dba-button variant="secondary" (click)="removedCopy.emit(item)">
+                    {{ 'docs.traceUi.removal.copy' | translate }}
+                  </button>
+                }
+                @if (view.cut; as item) {
+                  <button
+                    dba-button
+                    variant="secondary"
+                    [busy]="pendingKey() === 'signer:' + item.identityId"
+                    [disabled]="!!pendingKey()"
+                    (click)="revokeRemoved.emit(item)"
+                  >
+                    {{ 'docs.signer.revokeLinks' | translate }}
+                  </button>
                 }
               </span>
             }
@@ -102,6 +142,13 @@ interface TraceView {
     .tr__term {
       font-weight: 600;
     }
+
+    .tr__action {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
   `,
 })
 export class DocumentTraceComponent {
@@ -109,6 +156,10 @@ export class DocumentTraceComponent {
   private readonly translate = inject(TranslateService);
 
   readonly events = input.required<readonly TraceEvent[]>();
+  readonly canManage = input(false);
+  readonly pendingKey = input<string | null>(null);
+  readonly removedCopy = output<RemovedSigner>();
+  readonly revokeRemoved = output<RemovedSigner>();
 
   protected readonly filter = signal<TraceFilter>('all');
 
@@ -133,6 +184,12 @@ export class DocumentTraceComponent {
         ]
           .filter((part) => !!part)
           .join(' · '),
+        ...(reading.copy ? { copy: reading.copy } : {}),
+        ...(reading.cut &&
+        this.canManage() &&
+        !revokedSince(this.events(), reading.cut.identityId, event.timestamp)
+          ? { cut: reading.cut }
+          : {}),
       };
     }),
   );

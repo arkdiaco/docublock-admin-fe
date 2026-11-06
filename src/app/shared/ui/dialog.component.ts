@@ -11,6 +11,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
+import { textLength } from '../domain/text-length';
 import { IconComponent, type IconName } from './icon.component';
 
 export type DialogIntent = 'primary' | 'danger' | 'success' | 'warn';
@@ -35,6 +36,7 @@ export interface DialogReason {
   limit: number;
   quick: string[];
   required?: boolean;
+  min?: number;
 }
 
 export interface DialogRequest {
@@ -183,6 +185,9 @@ const ANCHOS: Record<DialogSize, number> = { compact: 400, standard: 460, wide: 
                 [value]="reason()"
                 (input)="onReason($event)"
               ></textarea>
+              @if (ask.min) {
+                <span class="body__hint">{{ 'dialog.reasonMin' | translate: { min: ask.min } }}</span>
+              }
             </label>
             @if (ask.quick.length > 0) {
               <div class="body__quick">
@@ -521,6 +526,14 @@ const ANCHOS: Record<DialogSize, number> = { compact: 400, standard: 460, wide: 
       border-color: var(--db-primary);
     }
 
+    .body__hint {
+      display: block;
+      margin-top: 6px;
+      font-size: var(--db-text-micro);
+      line-height: 16px;
+      color: var(--db-ink-soft);
+    }
+
     .body__quick {
       display: flex;
       flex-wrap: wrap;
@@ -745,7 +758,10 @@ export class DialogComponent {
   });
 
   protected readonly confirmBlocked = computed(() => {
-    if (this.request().reason?.required && !this.reason().trim()) return true;
+    const ask = this.request().reason;
+    const written = this.reason().trim();
+    if (ask?.required && !written) return true;
+    if (ask?.min && written && textLength(written) < ask.min) return true;
     const challenge = this.request().challenge;
     if (!challenge) return false;
     return this.typed().trim().toUpperCase() !== challenge.identifier.trim().toUpperCase();

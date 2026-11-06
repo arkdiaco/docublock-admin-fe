@@ -39,7 +39,7 @@ export const platformSigner = (over: Partial<PlatformSigner> = {}): PlatformSign
   history: [],
   attachments: [],
   notices: { remindersSent: 0 },
-  link: { state: 'none', issued: 0 },
+  link: { state: 'none', issued: 0, live: 0 },
   reactivationScopes: [],
   ...over,
 });
