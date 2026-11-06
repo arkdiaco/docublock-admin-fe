@@ -14,7 +14,9 @@ import type {
   InvitationOutcome,
   PlatformDocumentDetail,
   RawDocument,
+  RawSigner,
   RetryableEvidence,
+  SignerFileKind,
 } from './documents.models';
 
 const BASE = '/platform/documents';
@@ -61,6 +63,39 @@ export class DocumentsApi {
 
   attachmentFile(id: string, index: number): Observable<Blob> {
     return this.http.get(`${BASE}/${id}/attachments/${index}/file`, {
+      responseType: 'blob',
+      context: silent(),
+    });
+  }
+
+  signerRaw(id: string, identityId: string): Observable<RawSigner> {
+    return this.http.get<RawSigner>(`${BASE}/${id}/signers/${identityId}/raw`, {
+      context: silent(),
+    });
+  }
+
+  signerFile(
+    id: string,
+    identityId: string,
+    kind: SignerFileKind,
+    history?: number,
+  ): Observable<Blob> {
+    return this.http.get(`${BASE}/${id}/signers/${identityId}/files/${kind}`, {
+      params: toParams({ history }),
+      responseType: 'blob',
+      context: silent(),
+    });
+  }
+
+  signerAttachmentFile(id: string, identityId: string, index: number): Observable<Blob> {
+    return this.http.get(`${BASE}/${id}/signers/${identityId}/attachments/${index}/file`, {
+      responseType: 'blob',
+      context: silent(),
+    });
+  }
+
+  signerReport(id: string, identityId: string): Observable<Blob> {
+    return this.http.get(`${BASE}/${id}/signers/${identityId}/validation-report`, {
       responseType: 'blob',
       context: silent(),
     });

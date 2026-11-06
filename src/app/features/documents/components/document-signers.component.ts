@@ -2,12 +2,16 @@ import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
+  Injector,
   LOCALE_ID,
+  afterNextRender,
   computed,
   inject,
   input,
   output,
   signal,
+  viewChild,
 } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ActionMenuComponent, type ActionMenuItem } from '../../../shared/ui/action-menu.component';
@@ -22,7 +26,15 @@ import {
   type PlatformSigner,
   type RetryableEvidence,
 } from '../data/documents.models';
-import { canResend, evidenceRowsOf, inOpenTurn, type EvidenceRow } from '../data/document-view';
+import { canResend } from '../data/document-view';
+import {
+  SIGNER_STATE_FAMILY,
+  SIGNER_STATE_LABEL,
+  signerStateOf,
+  type SignerPanelRequest,
+  type SignerState,
+} from '../data/signer-view';
+import { SignerPanelComponent } from './signer-panel.component';
 
 export type SignerActionKind = 'unblock' | 'resend' | 'retry';
 
@@ -30,6 +42,11 @@ export interface SignerAction {
   kind: SignerActionKind;
   signer: PlatformSigner;
   type?: RetryableEvidence;
+}
+
+export interface SignerPanelEvent {
+  signer: PlatformSigner;
+  request: SignerPanelRequest;
 }
 
 const COLUMNS: readonly DataColumn[] = [
@@ -41,14 +58,11 @@ const COLUMNS: readonly DataColumn[] = [
   { key: 'tools', width: '76px', align: 'end' },
 ];
 
-const STATE_FAMILY = { blocked: 'suspended', turn: 'warning', enabled: 'active' } as const;
-
 interface SignerView {
   signer: PlatformSigner;
   meta: string;
   signedText: string;
-  state: keyof typeof STATE_FAMILY;
-  evidence: EvidenceRow[];
+  state: SignerState;
   actions: ActionMenuItem[];
 }
 
@@ -62,6 +76,7 @@ interface SignerView {
     EmptyStateComponent,
     IconComponent,
     OrgStateComponent,
+    SignerPanelComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -87,7 +102,7 @@ interface SignerView {
             <span class="dba-td">
               <dba-org-state
                 [state]="family[view.state]"
-                [labelKey]="'docs.signer.' + (view.state === 'turn' ? 'inTurn' : view.state)"
+                [labelKey]="stateLabel[view.state]"
                 variant="inline"
               />
             </span>
@@ -109,51 +124,13 @@ interface SignerView {
                 class="sg__toggle"
                 [class.sg__toggle--open]="open() === view.signer.identityId"
                 [attr.aria-expanded]="open() === view.signer.identityId"
-                [attr.aria-label]="'docs.signer.evidence' | translate"
+                [attr.aria-label]="'docs.signer.panel' | translate"
                 (click)="toggle(view.signer.identityId)"
               >
                 <db-icon name="chevronDown" [size]="15" />
               </button>
             </span>
           </div>
-          @if (open() === view.signer.identityId) {
-            <div class="sg__evidence">
-              <p class="dba-eyebrow sg__eyebrow">{{ 'docs.signer.evidence' | translate }}</p>
-              @if (view.evidence.length === 0) {
-                <p class="dba-meta">{{ 'docs.signer.noEvidence' | translate }}</p>
-              } @else {
-                <dl class="sg__dl">
-                  @for (row of view.evidence; track row.key) {
-                    <dt>{{ row.labelKey | translate }}</dt>
-                    <dd>
-                      <dba-org-state
-                        [state]="
-                          row.state === 'passed'
-                            ? 'active'
-                            : row.state === 'failed'
-                              ? 'suspended'
-                              : 'trial'
-                        "
-                        [labelKey]="
-                          isFile(row.key)
-                            ? 'docs.evidence.captured'
-                            : 'docs.evidence.state.' + row.state
-                        "
-                        variant="inline"
-                      />
-                      @if (row.detail) {
-                        <code class="dba-ref">{{
-                          row.detail === 'unreadable'
-                            ? ('docs.evidence.unreadable' | translate)
-                            : row.detail
-                        }}</code>
-                      }
-                    </dd>
-                  }
-                </dl>
-              }
-            </div>
-          }
         }
       </dba-data-table>
       <dba-action-menu
@@ -163,6 +140,17 @@ interface SignerView {
         [items]="target()?.actions ?? []"
         (picked)="choose($event)"
       />
+      @if (openView(); as view) {
+        <div #openPanel class="sg__open">
+          <dba-signer-panel
+            [signer]="view.signer"
+            [canOpenSigner]="canOpenSigner()"
+            [busy]="pendingKey()"
+            (request)="panelRequest.emit({ signer: view.signer, request: $event })"
+            (closed)="open.set(null)"
+          />
+        </div>
+      }
     }
   `,
   styles: `
@@ -237,53 +225,28 @@ interface SignerView {
       outline: 2px solid var(--dba-violet-500);
     }
 
-    .sg__evidence {
-      padding: 14px 18px 16px 86px;
-      border-bottom: 1px solid var(--dba-border-row);
-      background: var(--dba-surface-head);
-    }
-
-    .sg__eyebrow {
-      margin: 0 0 10px;
-    }
-
-    .sg__dl {
-      display: grid;
-      grid-template-columns: max-content minmax(0, 1fr);
-      gap: 8px 24px;
-      margin: 0;
-    }
-
-    .sg__dl dt {
-      font-size: var(--dba-text-label);
-      color: var(--dba-text-muted);
-    }
-
-    .sg__dl dd {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 0;
-      font-size: var(--dba-text-cell);
-    }
-
-    @media (max-width: 760px) {
-      .sg__evidence {
-        padding-left: 18px;
-      }
+    .sg__open {
+      margin-top: 18px;
+      scroll-margin-top: 18px;
     }
   `,
 })
 export class DocumentSignersComponent {
   private readonly locale = inject(LOCALE_ID);
+  private readonly injector = inject(Injector);
+  private readonly openPanel = viewChild<ElementRef<HTMLElement>>('openPanel');
 
   readonly document = input.required<PlatformDocumentDetail>();
   readonly canManage = input(false);
+  readonly canOpenSigner = input(false);
   readonly busy = input<string | null>(null);
+  readonly pendingKey = input<string | null>(null);
   readonly action = output<SignerAction>();
+  readonly panelRequest = output<SignerPanelEvent>();
 
   protected readonly columns = COLUMNS;
-  protected readonly family = STATE_FAMILY;
+  protected readonly family = SIGNER_STATE_FAMILY;
+  protected readonly stateLabel = SIGNER_STATE_LABEL;
   protected readonly open = signal<string | null>(null);
   protected readonly target = signal<SignerView | null>(null);
 
@@ -300,18 +263,23 @@ export class DocumentSignersComponent {
             ? `✓ ${formatDate(signer.signedAt, 'd/MM/y HH:mm', this.locale)}`
             : '✓'
           : '—',
-        state: signer.blocked ? 'blocked' : inOpenTurn(doc, signer) ? 'turn' : 'enabled',
-        evidence: evidenceRowsOf(signer.evidence),
+        state: signerStateOf(doc, signer),
         actions: this.canManage() ? this.actionsFor(doc, signer) : [],
       }));
   });
 
+  protected readonly openView = computed(
+    () => this.views().find((view) => view.signer.identityId === this.open()) ?? null,
+  );
+
   protected toggle(id: string): void {
     this.open.update((current) => (current === id ? null : id));
-  }
-
-  protected isFile(key: string): boolean {
-    return !(RETRYABLE_EVIDENCE as readonly string[]).includes(key);
+    if (this.open() !== id) return;
+    afterNextRender(
+      () =>
+        this.openPanel()?.nativeElement.scrollIntoView?.({ behavior: 'smooth', block: 'nearest' }),
+      { injector: this.injector },
+    );
   }
 
   protected pickFor(view: SignerView, menu: ActionMenuComponent, event: Event): void {

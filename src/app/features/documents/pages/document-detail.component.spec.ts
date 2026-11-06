@@ -13,9 +13,11 @@ import { of, type Observable } from 'rxjs';
 import es from '../../../../../public/i18n/es.json';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { API_BASE_URL } from '../../../core/config/api.tokens';
+import { sectionPath } from '../../../core/layout/console-nav';
 import { DialogService } from '../../../core/ui/dialog.service';
 import { NotificationService } from '../../../core/ui/notification.service';
-import type { PlatformDocumentDetail, TraceEvent } from '../data/documents.models';
+import type { PlatformDocumentDetail, PlatformSigner, TraceEvent } from '../data/documents.models';
+import { platformSigner } from '../documents-test-kit';
 import { DocumentDetailComponent } from './document-detail.component';
 
 class CatalogoEspanol implements TranslateLoader {
@@ -38,26 +40,19 @@ const detail = (over: Partial<PlatformDocumentDetail> = {}): PlatformDocumentDet
   anchored: false,
   createdAt: '2026-10-20T10:00:00.000Z',
   signers: [
-    {
-      identityId: 'i1',
-      name: 'Ana Ruiz',
-      email: 'ana@x.co',
-      order: 1,
-      role: 'Firmante',
-      checked: true,
-      signingAttempts: 0,
-      blocked: false,
-    },
-    {
+    platformSigner({ identityId: 'i1', name: 'Ana Ruiz', email: 'ana@x.co', checked: true }),
+    platformSigner({
       identityId: 'i2',
       name: 'Luis Mora',
       order: 2,
-      role: 'Firmante',
       checked: true,
       signingAttempts: 3,
       blocked: true,
-      evidence: { liveness: { sessionId: 's', passed: true, confidence: 98 } },
-    },
+      checks: {
+        liveness: { sessionId: 's', passed: true, confidence: 98 },
+        providerResponses: [],
+      },
+    }),
   ],
   versions: [
     {
@@ -407,7 +402,59 @@ describe('Operación › Documentos › ficha', () => {
     expect(items).toEqual(['finalize', 'cancel']);
   });
 
-  it('firmantes con estado, evidencia desplegable y desbloqueo con razón', async () => {
+  const abrirPanel = (fixture: { detectChanges: () => void }, host: HTMLElement) => {
+    tab(host, 'Firmantes').click();
+    fixture.detectChanges();
+    host.querySelector<HTMLButtonElement>('.sg__toggle')!.click();
+    fixture.detectChanges();
+    return host.querySelector<HTMLElement>('dba-signer-panel')!;
+  };
+
+  const completo = (over: Partial<PlatformSigner> = {}): PlatformSigner =>
+    platformSigner({
+      identityId: 'i2',
+      signerId: 's2',
+      name: 'Luis Mora',
+      email: 'luis@x.co',
+      order: 2,
+      signingAttempts: 1,
+      requirements: {
+        identityValid: true,
+        biometricValid: true,
+        liveness: true,
+        checkDataRegistry: true,
+        fullIdentity: true,
+        reqDocument: true,
+        skipEmail: false,
+        fillsForms: false,
+        photoMode: 'document',
+      },
+      identity: {
+        check: { variant: 'full', verifiedAt: '2026-10-21T10:00:00.000Z', ip: '10.0.0.9' },
+        maxAttempts: 3,
+      },
+      checks: {
+        liveness: { passed: true, confidence: 97, threshold: 90, at: '2026-10-21T10:01:00.000Z' },
+        faceCompare: { passed: false, score: 61, threshold: 80, at: '2026-10-21T10:02:00.000Z' },
+        faceMatch: { passed: true, code: 'OK', fallback: false, at: '2026-10-21T10:03:00.000Z' },
+        registry: { ok: true, code: 'VIGENTE', checkedAt: '2026-10-21T10:04:00.000Z' },
+        providerResponses: [
+          { type: 'faceMatch', date: '2026-10-21T10:03:00.000Z', data: { similitud: 0.93 } },
+        ],
+      },
+      files: [{ kind: 'selfie', legacy: false, mime: 'image/jpeg', size: 2048 }],
+      history: [{ index: 0, rejectedAt: '2026-10-21T09:00:00.000Z', files: ['selfie'] }],
+      signature: {
+        signedAt: '2026-10-21T10:05:00.000Z',
+        method: 'otp',
+        otpChannels: ['email', 'whatsapp'],
+        location: { city: 'Cali', region: 'Valle', country: 'Colombia', provider: 'ipinfo' },
+      },
+      link: { state: 'active', issued: 2, lastIssuedAt: '2026-10-21T08:00:00.000Z' },
+      ...over,
+    });
+
+  it('firmantes con estado, panel desplegable y desbloqueo con razón', async () => {
     conPermisos(['platform:operations', 'platform:operations:manage']);
     const { fixture, host } = await montar(
       detail({ signers: [{ ...detail().signers[1], checked: false }] }),
@@ -417,10 +464,9 @@ describe('Operación › Documentos › ficha', () => {
     const row = host.querySelector('.sg__row');
     expect(row?.textContent).toContain('Luis Mora');
     expect(row?.textContent).toContain('Bloqueado');
-    host.querySelector<HTMLButtonElement>('.sg__toggle')!.click();
-    fixture.detectChanges();
-    expect(host.querySelector('.sg__evidence')?.textContent).toContain('Liveness');
-    expect(host.querySelector('.sg__evidence')?.textContent).toContain('Aprobada');
+    const panel = abrirPanel(fixture, host);
+    expect(panel.textContent).toContain('Liveness');
+    expect(panel.textContent).toContain('Aprobada');
     const abrir = vi
       .spyOn(TestBed.inject(DialogService), 'open')
       .mockResolvedValue({ answer: 'confirm', reason: 'llamó al soporte' });
@@ -443,6 +489,124 @@ describe('Operación › Documentos › ficha', () => {
     http
       .expectOne('/platform/documents/d1/traceability')
       .flush({ documentId: 'd1', total: 0, events: [] });
+  });
+
+  it('el panel del firmante reúne requisitos, validaciones con sus números, firma y enlace', async () => {
+    conPermisos(['platform:operations']);
+    const { fixture, host } = await montar(detail({ signers: [completo()] }));
+    const text = abrirPanel(fixture, host).textContent?.replace(/\s+/g, ' ') ?? '';
+    expect(host.querySelector('.sp__meta')?.textContent?.trim()).toBe('Firmante · luis@x.co');
+    for (const part of [
+      'Luis Mora',
+      'Identidad y validaciones',
+      'Validación contra documento',
+      'Biometría avanzada',
+      'Consultar Registraduría',
+      'Del documento, frente y reverso',
+      '97 / 90',
+      '61 / 80',
+      'VIGENTE',
+      '"similitud": 0.93',
+      '1 de 3',
+      'Firma y expediente',
+      'Clave dinámica',
+      'Correo, WhatsApp',
+      'Cali, Valle, Colombia',
+      'según ipinfo',
+      'Activo',
+      'El enlace no se muestra.',
+    ]) {
+      expect(text, part).toContain(part);
+    }
+    expect(host.textContent).not.toMatch(/\b(docs|nav|common)\.[a-zA-Z]/);
+  });
+
+  it('los archivos del firmante se abren en otra pestaña, también los del historial, y uno que falta dice por qué', async () => {
+    conPermisos(['platform:operations']);
+    const { fixture, host } = await montar(detail({ signers: [completo()] }));
+    const panel = abrirPanel(fixture, host);
+    const restore = stubObjectUrls();
+    const pestana = { location: { href: '' }, close: vi.fn() };
+    vi.spyOn(window, 'open').mockReturnValue(pestana as unknown as Window);
+    const [actual, rechazada] = [
+      ...panel.querySelectorAll<HTMLButtonElement>('dba-signer-record .sr__list button'),
+    ];
+    actual.click();
+    http.expectOne('/platform/documents/d1/signers/i2/files/selfie').flush(new Blob(['jpg']));
+    await vi.waitFor(() => expect(pestana.location.href).toBe('blob:prueba'));
+    fixture.detectChanges();
+    const mal = vi.spyOn(TestBed.inject(NotificationService), 'error');
+    rechazada.click();
+    http
+      .expectOne('/platform/documents/d1/signers/i2/files/selfie?history=0')
+      .flush(new Blob([JSON.stringify({ code: 'EVIDENCIA_NO_ENCONTRADA' })]), {
+        status: 404,
+        statusText: 'Not Found',
+      });
+    await vi.waitFor(() => expect(mal).toHaveBeenCalledWith('El firmante no tiene ese archivo.'));
+    expect(pestana.close).toHaveBeenCalled();
+    restore();
+  });
+
+  it('«Datos completos» del firmante dice qué se ocultó y que los archivos se ven en el panel', async () => {
+    conPermisos(['platform:operations']);
+    const { fixture, host } = await montar(detail({ signers: [completo()] }));
+    boton(abrirPanel(fixture, host), 'Datos completos').click();
+    fixture.detectChanges();
+    http.expectOne('/platform/documents/d1/signers/i2/raw').flush({
+      id: 'd1',
+      identityId: 'i2',
+      data: { names: 'Luis', checkDataRegistry: true },
+      hidden: [
+        { path: 'photoFront', reason: 'files' },
+        { path: 'passkeyToken', reason: 'secret' },
+      ],
+    });
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(host.querySelector('.raw__code')?.textContent).toContain('"checkDataRegistry": true');
+    });
+    const ocultos = host.querySelector('.raw__hidden')?.textContent ?? '';
+    expect(ocultos).toContain('Archivos (se ven en el panel del firmante, con auditoría)');
+    expect(ocultos).toContain('photoFront');
+    expect(ocultos).toContain('Secretos');
+    expect(host.querySelector('dba-raw-data')?.textContent).toContain('Luis Mora');
+    expect(host.textContent).not.toMatch(/\b(docs|nav|common)\.[a-zA-Z]/);
+  });
+
+  it('«Ver en Firmantes» sale solo con lectura de Clientes y lleva a la ficha del firmante', async () => {
+    conPermisos(['platform:operations']);
+    const { fixture, host } = await montar(detail({ signers: [completo()] }));
+    const panel = abrirPanel(fixture, host);
+    const enlace = () => panel.querySelector<HTMLAnchorElement>('a[dba-button]');
+    expect(enlace()).toBeNull();
+    conPermisos(['platform:operations', 'platform:clients']);
+    fixture.detectChanges();
+    expect(enlace()?.getAttribute('href')).toBe(`${sectionPath('signers')}/s2`);
+    expect(enlace()?.textContent).toContain('Ver en Firmantes');
+  });
+
+  it('un firmante con la firma retenida sale «Por aprobar» y el panel dice desde cuándo', async () => {
+    conPermisos(['platform:operations']);
+    const { fixture, host } = await montar(
+      detail({
+        signers: [
+          completo({
+            signature: undefined,
+            approval: {
+              status: 'pending',
+              held: true,
+              heldSince: '2026-10-21T10:05:00.000Z',
+              requestedAt: '2026-10-21T10:05:00.000Z',
+            },
+          }),
+        ],
+      }),
+    );
+    const panel = abrirPanel(fixture, host);
+    expect(host.querySelector('.sg__row')?.textContent).toContain('Por aprobar');
+    expect(panel.textContent).toContain('Firma retenida desde');
+    expect(panel.textContent).toContain('Por aprobar');
   });
 
   it('versiones de la más nueva a la vieja con la actual marcada y separar solo con permiso', async () => {

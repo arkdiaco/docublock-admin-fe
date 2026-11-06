@@ -422,7 +422,11 @@
       "attachment_view": "viewed a document's attachment",
       "bundle_download": "downloaded a document's evidence file",
       "certificate_view": "viewed a document's certificate",
-      "raw_view": "viewed a document's full data"
+      "raw_view": "viewed a document's full data",
+      "signer_attachment_view": "viewed a signer's attachment",
+      "signer_file_view": "viewed a signer's file",
+      "signer_raw_view": "viewed a signer's full data",
+      "signer_report_view": "viewed a signer's validation report"
     },
     "invoices": {
       "create": "created an invoice",
@@ -2157,8 +2161,8 @@
       "blocked": "Blocked",
       "enabled": "Enabled",
       "inTurn": "In turn",
-      "evidence": "Evidence",
-      "noEvidence": "No evidence recorded.",
+      "approval": "Awaiting approval",
+      "panel": "Signer details",
       "menu": "Signer actions",
       "empty": "The document has no signers.",
       "unblock": "Unblock",
@@ -2181,13 +2185,224 @@
       "photoFront": "Photo, front",
       "photoBack": "Photo, back",
       "signature": "Handwritten signature",
+      "identityDocument": "Identity file",
       "state": {
         "passed": "Passed",
         "failed": "Failed",
         "waiting": "In progress"
+      }
+    },
+    "sp": {
+      "groupChecks": "Identity and checks",
+      "groupRecord": "Signature and record",
+      "openSigner": "Open in Signers",
+      "principal": "Principal",
+      "type": {
+        "mandatory": "Signer",
+        "guarantor": "Guarantor",
+        "legalRep": "Legal representative"
       },
-      "captured": "Captured",
-      "unreadable": "unreadable"
+      "ip": "IP",
+      "browser": "Browser",
+      "fingerprint": "Device fingerprint",
+      "result": "Result",
+      "date": "Date",
+      "notRequested": "Not requested.",
+      "notDone": "Requested, not done yet.",
+      "req": {
+        "title": "Requirements",
+        "identityValid": "Check against ID",
+        "biometricValid": "Advanced biometrics",
+        "liveness": "Liveness",
+        "checkDataRegistry": "Registry lookup",
+        "reqDocument": "Photos with the ID",
+        "fillsForms": "Fills in the form",
+        "identity": "Identity requested",
+        "identityFull": "Full",
+        "identityBasic": "Basic",
+        "photoMode": "Photo mode",
+        "photo": {
+          "none": "No photos",
+          "holding": "Holding the ID",
+          "document": "Of the ID, front and back"
+        },
+        "email": "Invitation email",
+        "emailSent": "Sent",
+        "emailSkipped": "Not sent"
+      },
+      "identity": {
+        "title": "Identity",
+        "verified": "Verified",
+        "notVerified": "Not verified",
+        "variant": "Variant",
+        "variants": {
+          "full": "Full",
+          "basic": "Basic"
+        },
+        "validated": "Identity validated",
+        "attempts": "Signing attempts",
+        "attemptsOf": "{{used}} of {{max}}",
+        "attemptsNoMax": "{{used}} (no limit)",
+        "blockedAt": "Blocked since"
+      },
+      "consents": {
+        "title": "Consents",
+        "textHash": "Text fingerprint",
+        "none": "No consents recorded."
+      },
+      "live": {
+        "confidence": "Confidence / threshold",
+        "session": "Session"
+      },
+      "doc": {
+        "title": "Check against ID",
+        "score": "Score / threshold",
+        "reading": "ID reading",
+        "number": "Number read",
+        "unreadable": "Unreadable",
+        "skipped": "Skipped",
+        "skip": {
+          "no_reader": "No reader configured"
+        },
+        "tries": "Reading attempts"
+      },
+      "bio": {
+        "title": "Advanced biometrics",
+        "code": "Code",
+        "fallback": "Check used",
+        "fallbackYes": "Fell back to the check against ID",
+        "responses": "Provider responses"
+      },
+      "registry": {
+        "title": "Registry",
+        "code": "Code",
+        "checkedAt": "Checked"
+      },
+      "attempts": {
+        "title": "Attempts and retries",
+        "window": "Last 10 minutes",
+        "kind": {
+          "liveness": "Liveness",
+          "document": "Check against ID",
+          "biometric": "Advanced biometrics"
+        },
+        "usedOf": "{{used}} of {{max}}",
+        "retryAfter": "next attempt in {{seconds}} s",
+        "counted": "Counted attempts",
+        "retries": "Retries granted",
+        "grantedOf": "{{granted}} of {{max}}",
+        "credits": "Credits charged",
+        "charged": "Charged",
+        "notCharged": "Not charged"
+      },
+      "files": {
+        "title": "Files",
+        "none": "No files.",
+        "legacy": "Earlier format"
+      },
+      "sign": {
+        "title": "Signature",
+        "signedAt": "Signed",
+        "how": "How they signed",
+        "method": {
+          "otp": "One-time code",
+          "passkey": "One Touch Sign",
+          "auto": "Automatic signature",
+          "propagated": "Carried over from another document",
+          "unknown": "No data"
+        },
+        "channels": "Code channels",
+        "otpAt": "Code verified",
+        "propagatedFrom": "Source document",
+        "openSource": "Open the document",
+        "origin": "Origin",
+        "place": "Place",
+        "placeBy": "per {{provider}}",
+        "sha": "Signature fingerprint"
+      },
+      "vault": {
+        "title": "Vault seal",
+        "record": "Record",
+        "bundle": "Bundle fingerprint",
+        "key": "Key",
+        "algorithm": "Algorithm",
+        "legacy": "Earlier seal"
+      },
+      "approval": {
+        "title": "Approval",
+        "state": "State",
+        "status": {
+          "pending": "Awaiting approval",
+          "approved": "Approved",
+          "rejected": "Rejected"
+        },
+        "held": "Signature held since",
+        "requested": "Requested",
+        "decided": "Decided",
+        "by": "Decided by",
+        "comment": "Comment",
+        "item": {
+          "sign": "Signature",
+          "photoFront": "Photo, front",
+          "photoBack": "Photo, back",
+          "documentFront": "ID, front",
+          "documentBack": "ID, back"
+        },
+        "itemOk": "Approved",
+        "itemNo": "Rejected",
+        "legacy": "Earlier format",
+        "none": "Did not go through approval."
+      },
+      "history": {
+        "title": "Evidence history",
+        "rejected": "Rejected",
+        "none": "No rejected evidence."
+      },
+      "report": {
+        "title": "Validation report",
+        "issued": "Issued",
+        "view": "View report",
+        "none": "No validation report."
+      },
+      "att": {
+        "title": "Requested attachments",
+        "required": "Required",
+        "optional": "Optional",
+        "inDocument": "Goes in the document",
+        "provided": "Provided by the integration",
+        "pending": "Not delivered",
+        "rejected": "Rejected: {{reason}}",
+        "none": "No attachments requested."
+      },
+      "notices": {
+        "title": "Notices",
+        "notified": "Last notice",
+        "reminders": "Reminders sent",
+        "lastReminder": "Last reminder",
+        "opened": "Link last opened",
+        "ownerExpired": "Owner notified: link expired",
+        "ownerSilent": "Owner notified: no response"
+      },
+      "link": {
+        "title": "Signing link",
+        "state": "State",
+        "states": {
+          "active": "Active",
+          "expired": "Expired",
+          "revoked": "Revoked",
+          "none": "No link"
+        },
+        "issued": "Issued",
+        "last": "Last issued",
+        "expires": "Expires",
+        "revoked": "Revoked",
+        "hidden": "The link is not shown."
+      },
+      "channel": {
+        "email": "Email",
+        "sms": "SMS",
+        "whatsapp": "WhatsApp"
+      }
     },
     "version": {
       "col": {
@@ -2472,6 +2687,9 @@
       "ADJUNTO_NO_ENCONTRADO": "That attachment is no longer on the document.",
       "ARCHIVO_NO_DISPONIBLE": "The file is not in storage.",
       "EXPEDIENTE_MUY_GRANDE": "The evidence file is too large to download.",
+      "EVIDENCIA_NO_ENCONTRADA": "The signer doesn't have that file.",
+      "INFORME_NO_EMITIDO": "The signer has no validation report.",
+      "TIPO_ARCHIVO_INVALIDO": "That file type does not exist.",
       "generic": "The action couldn't be completed. Try again."
     },
     "bulk": {
@@ -2564,7 +2782,8 @@
       "reason": {
         "secret": "Secrets",
         "html": "Template HTML",
-        "signers": "Signers (in their tab)"
+        "signers": "Signers (in their tab)",
+        "files": "Files (in the signer panel, audited)"
       },
       "audited": "This lookup is recorded in the platform audit."
     }

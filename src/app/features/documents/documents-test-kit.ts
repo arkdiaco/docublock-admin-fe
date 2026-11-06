@@ -1,0 +1,43 @@
+import type { PlatformSigner } from './data/documents.models';
+
+export const platformSigner = (over: Partial<PlatformSigner> = {}): PlatformSigner => ({
+  identityId: 'i1',
+  name: 'Ana Ruiz',
+  order: 1,
+  role: 'Firmante',
+  checked: false,
+  signingAttempts: 0,
+  blocked: false,
+  type: 'mandatory',
+  principal: false,
+  legalRep: false,
+  requirements: {
+    identityValid: false,
+    biometricValid: false,
+    liveness: false,
+    checkDataRegistry: false,
+    fullIdentity: false,
+    reqDocument: false,
+    skipEmail: false,
+    fillsForms: false,
+  },
+  identity: {},
+  consents: [],
+  checks: { providerResponses: [] },
+  attempts: {
+    window: {
+      biometric: { used: 0, max: 3 },
+      document: { used: 0, max: 3 },
+      liveness: { used: 0, max: 3 },
+    },
+    counted: {},
+    retries: { biometric: { granted: 0, max: 2 }, document: { granted: 0, max: 5 } },
+    credits: { biometric: false, identity: false },
+  },
+  files: [],
+  history: [],
+  attachments: [],
+  notices: { remindersSent: 0 },
+  link: { state: 'none', issued: 0 },
+  ...over,
+});

@@ -5,7 +5,6 @@ import {
   canResend,
   chainStateOf,
   documentActionsOf,
-  evidenceRowsOf,
   inOpenTurn,
   shortHash,
   statusViewOf,
@@ -31,8 +30,25 @@ import {
   refText,
   turnStateOf,
 } from './data/summary-view';
+import {
+  APPROVAL_ITEMS,
+  ATTEMPT_KINDS,
+  REQUIREMENT_KEYS,
+  SIGNER_STATE_LABEL,
+  checkOf,
+  filePartOf,
+  itemDecisionsOf,
+  locationText,
+  otpChannelKey,
+  panelKeyOf,
+  scoreText,
+  signerStateOf,
+  sizeText,
+  skipReasonKey,
+} from './data/signer-view';
 import { TRACE_KEYS } from './data/trace-keys';
 import { traceReadingOf } from './data/trace-reading';
+import { platformSigner } from './documents-test-kit';
 
 const leaf = (catalog: unknown, key: string): unknown =>
   key
@@ -86,16 +102,7 @@ const signer = (
   order: number,
   checked: boolean,
   over: Partial<PlatformSigner> = {},
-): PlatformSigner => ({
-  identityId,
-  name: identityId,
-  order,
-  role: 'Firmante',
-  checked,
-  signingAttempts: 0,
-  blocked: false,
-  ...over,
-});
+): PlatformSigner => platformSigner({ identityId, name: identityId, order, checked, ...over });
 
 describe('Documentos: estado y blockchain', () => {
   it('el estado del documento manda sobre el progreso de firma', () => {
@@ -251,43 +258,90 @@ describe('Documentos: resumen del documento', () => {
   });
 });
 
-describe('Documentos: evidencias', () => {
-  it('las validaciones salen con su resultado y su dato, y las capturas como capturadas', () => {
-    const rows = evidenceRowsOf({
-      liveness: { sessionId: 's', passed: true, confidence: 97, threshold: 90 },
-      faceCompare: { passed: false, score: 61, threshold: 80 },
-      documentCheck: { passed: false, unreadable: true },
-      faceMatch: { code: 'pendiente' },
-      selfie: { key: 'k', mime: 'image/png' },
-      attempts: { biometric: 2 },
-    });
-    expect(rows).toEqual([
-      { key: 'liveness', labelKey: 'docs.evidence.liveness', state: 'passed', detail: '97 / 90' },
-      {
-        key: 'faceCompare',
-        labelKey: 'docs.evidence.faceCompare',
-        state: 'failed',
-        detail: '61 / 80',
-      },
-      {
-        key: 'faceMatch',
-        labelKey: 'docs.evidence.faceMatch',
-        state: 'waiting',
-        detail: 'pendiente',
-      },
-      {
-        key: 'documentCheck',
-        labelKey: 'docs.evidence.documentCheck',
-        state: 'failed',
-        detail: 'unreadable',
-      },
-      { key: 'selfie', labelKey: 'docs.evidence.selfie', state: 'passed', detail: '' },
-    ]);
+describe('Documentos: panel del firmante', () => {
+  const open = (signers: PlatformSigner[]) =>
+    detailOf(2, 0, { order: 1, onHold: false, pending: 1 }, signers);
+
+  it('el estado de la fila: bloqueado, luego por aprobar, luego en turno', () => {
+    const pending = { status: 'pending', held: true };
+    const doc = open([]);
+    expect(signerStateOf(doc, signer('a', 1, false, { blocked: true, approval: pending }))).toBe(
+      'blocked',
+    );
+    expect(signerStateOf(doc, signer('b', 1, false, { approval: pending }))).toBe('approval');
+    expect(signerStateOf(doc, signer('c', 1, false))).toBe('turn');
+    expect(
+      signerStateOf(doc, signer('d', 2, false, { approval: { status: 'approved', held: false } })),
+    ).toBe('enabled');
+    expect(SIGNER_STATE_LABEL.approval).toBe('docs.signer.approval');
   });
 
-  it('sin evidencia no inventa filas', () => {
-    expect(evidenceRowsOf(undefined)).toEqual([]);
-    expect(evidenceRowsOf({ liveness: null })).toEqual([]);
+  it('los resultados, puntajes, lugares y tamaños se leen sin inventar datos', () => {
+    expect([checkOf(true), checkOf(false), checkOf(undefined)]).toEqual([
+      'passed',
+      'failed',
+      'waiting',
+    ]);
+    expect(scoreText(97, 90)).toBe('97 / 90');
+    expect(scoreText(97)).toBe('97');
+    expect(scoreText(undefined, 90)).toBe('—');
+    expect(locationText({ city: 'Bogotá', country: 'Colombia', countryCode: 'CO' })).toBe(
+      'Bogotá, Colombia',
+    );
+    expect(locationText({ countryCode: 'CO' })).toBe('CO');
+    expect(locationText(undefined)).toBe('—');
+    expect([sizeText(512), sizeText(2048), sizeText(3 * 1024 * 1024), sizeText(0)]).toEqual([
+      '512 B',
+      '2 KB',
+      '3.0 MB',
+      '',
+    ]);
+    expect(otpChannelKey('whatsapp')).toBe('docs.sp.channel.whatsapp');
+    expect(otpChannelKey('fax')).toBeNull();
+    expect(skipReasonKey('no_reader')).toBe('docs.sp.doc.skip.no_reader');
+    expect(skipReasonKey('otro')).toBeNull();
+  });
+
+  it('las decisiones por ítem solo listan lo que se decidió', () => {
+    expect(itemDecisionsOf({ sign: true, photoFront: false })).toEqual([
+      { item: 'sign', approved: true },
+      { item: 'photoFront', approved: false },
+    ]);
+    expect(itemDecisionsOf(undefined)).toEqual([]);
+  });
+
+  it('cada botón del panel tiene su llave, con el historial aparte', () => {
+    expect(panelKeyOf('i1', filePartOf('selfie'))).toBe('sp:i1:file:selfie');
+    expect(panelKeyOf('i1', filePartOf('selfie', 0))).toBe('sp:i1:file:selfie:0');
+  });
+
+  it('cada requisito, intento, ítem, estado y archivo tiene frase en los dos idiomas', () => {
+    for (const key of [
+      ...REQUIREMENT_KEYS.map((req) => `docs.sp.req.${req}`),
+      ...ATTEMPT_KINDS.map((kind) => `docs.sp.attempts.kind.${kind}`),
+      ...APPROVAL_ITEMS.map((item) => `docs.sp.approval.item.${item}`),
+      ...['pending', 'approved', 'rejected'].map((st) => `docs.sp.approval.status.${st}`),
+      ...['active', 'expired', 'revoked', 'none'].map((st) => `docs.sp.link.states.${st}`),
+      ...['otp', 'passkey', 'auto', 'propagated', 'unknown'].map((m) => `docs.sp.sign.method.${m}`),
+      ...['mandatory', 'guarantor', 'legalRep'].map((t) => `docs.sp.type.${t}`),
+      ...['none', 'holding', 'document'].map((mode) => `docs.sp.req.photo.${mode}`),
+      ...['email', 'sms', 'whatsapp'].map((channel) => `docs.sp.channel.${channel}`),
+      ...['full', 'basic'].map((variant) => `docs.sp.identity.variants.${variant}`),
+      ...[
+        'selfie',
+        'documentFront',
+        'documentBack',
+        'photoFront',
+        'photoBack',
+        'signature',
+        'identityDocument',
+      ].map((kind) => `docs.evidence.${kind}`),
+      ...Object.values(SIGNER_STATE_LABEL),
+      'docs.sp.doc.skip.no_reader',
+    ]) {
+      expect(typeof leaf(es, key), key).toBe('string');
+      expect(typeof leaf(en, key), key).toBe('string');
+    }
   });
 });
 

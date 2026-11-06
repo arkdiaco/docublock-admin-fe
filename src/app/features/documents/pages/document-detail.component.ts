@@ -34,6 +34,7 @@ import {
 import {
   DocumentSignersComponent,
   type SignerAction,
+  type SignerPanelEvent,
 } from '../components/document-signers.component';
 import { DocumentSummaryComponent } from '../components/document-summary.component';
 import { DocumentTraceComponent } from '../components/document-trace.component';
@@ -160,8 +161,11 @@ const REASON: DialogReason = {
             <dba-document-signers
               [document]="doc"
               [canManage]="canManage()"
+              [canOpenSigner]="canOpenOrg()"
               [busy]="signerBusy()"
+              [pendingKey]="pending.key()"
               (action)="runSigner($event)"
+              (panelRequest)="viewSignerItem($event)"
             />
           }
           @case ('versions') {
@@ -188,7 +192,7 @@ const REASON: DialogReason = {
       </div>
       @if (rawOpen()) {
         <dba-raw-data
-          [subtitle]="doc.name"
+          [subtitle]="rawSubtitle()"
           [view]="raw()"
           [failed]="rawFailed()"
           (dismissed)="rawOpen.set(false)"
@@ -248,6 +252,7 @@ export class DocumentDetailComponent {
   protected readonly rawOpen = signal(false);
   protected readonly raw = signal<RawDocument | null>(null);
   protected readonly rawFailed = signal(false);
+  protected readonly rawSubtitle = signal('');
 
   protected readonly status = computed(() =>
     statusViewOf(this.detail()?.status ?? { progress: 1, state: 0, label: '' }),
@@ -317,16 +322,36 @@ export class DocumentDetailComponent {
     return value ? formatDate(value, 'd/MM/y HH:mm', this.locale) : '—';
   }
 
-  protected async openRaw(): Promise<void> {
+  protected openRaw(): Promise<void> {
     const doc = this.detail();
-    if (!doc) return;
-    this.raw.set(null);
-    this.rawFailed.set(false);
-    this.rawOpen.set(true);
-    try {
-      this.raw.set(await firstValueFrom(this.api.raw(doc.id)));
-    } catch {
-      this.rawFailed.set(true);
+    if (!doc) return Promise.resolve();
+    return this.showRaw(doc.name, this.api.raw(doc.id));
+  }
+
+  protected viewSignerItem({ signer, request }: SignerPanelEvent): Promise<void> {
+    const doc = this.detail();
+    if (!doc) return Promise.resolve();
+    switch (request.kind) {
+      case 'raw':
+        return this.showRaw(signer.name, this.api.signerRaw(doc.id, signer.identityId));
+      case 'file':
+        return this.openFile(
+          request.key,
+          this.api.signerFile(doc.id, signer.identityId, request.file, request.history),
+          'docs.act.fileError',
+        );
+      case 'attachment':
+        return this.openFile(
+          request.key,
+          this.api.signerAttachmentFile(doc.id, signer.identityId, request.index),
+          'docs.act.fileError',
+        );
+      case 'report':
+        return this.openFile(
+          request.key,
+          this.api.signerReport(doc.id, signer.identityId),
+          'docs.act.pdfError',
+        );
     }
   }
 
@@ -468,6 +493,18 @@ export class DocumentDetailComponent {
       (reason) => this.api.detach(doc.id, version.id, reason),
       { index: version.index },
     );
+  }
+
+  private async showRaw(subtitle: string, request: Observable<RawDocument>): Promise<void> {
+    this.raw.set(null);
+    this.rawFailed.set(false);
+    this.rawSubtitle.set(subtitle);
+    this.rawOpen.set(true);
+    try {
+      this.raw.set(await firstValueFrom(request));
+    } catch {
+      this.rawFailed.set(true);
+    }
   }
 
   private async regenerate(doc: PlatformDocumentDetail): Promise<void> {

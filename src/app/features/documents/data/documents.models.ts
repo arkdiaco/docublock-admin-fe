@@ -61,8 +61,251 @@ export interface DocumentIssues {
   stuckCompleted: IssueBucket;
 }
 
+export type SignerType = 'mandatory' | 'guarantor' | 'legalRep';
+
+export type PhotoMode = 'none' | 'holding' | 'document';
+
+export type EvidenceKind =
+  'selfie' | 'documentFront' | 'documentBack' | 'photoFront' | 'photoBack' | 'signature';
+
+export type SignerFileKind = EvidenceKind | 'identityDocument';
+
+export type AttemptKind = 'biometric' | 'document' | 'liveness';
+
+export type RetryKind = 'biometric' | 'document';
+
+export type ApprovalItem = 'sign' | 'photoFront' | 'photoBack' | 'documentFront' | 'documentBack';
+
+export type SignatureMethod = 'otp' | 'passkey' | 'auto' | 'propagated' | 'unknown';
+
+export type LinkState = 'active' | 'expired' | 'revoked' | 'none';
+
+export interface PersonRef {
+  id: string;
+  name?: string;
+}
+
+export interface SignerRequirements {
+  identityValid: boolean;
+  biometricValid: boolean;
+  liveness: boolean;
+  checkDataRegistry: boolean;
+  fullIdentity: boolean;
+  reqDocument: boolean;
+  skipEmail: boolean;
+  fillsForms: boolean;
+  photoMode?: PhotoMode;
+}
+
+export interface IdentityCheck {
+  variant?: string;
+  verifiedAt?: string;
+  ip?: string;
+  userAgent?: string;
+  fingerprint?: string;
+}
+
+export interface SignerIdentity {
+  check?: IdentityCheck;
+  validated?: boolean;
+  blockedAt?: string;
+  maxAttempts?: number;
+}
+
+export interface SignerConsent {
+  policy: string;
+  code: string;
+  version: number;
+  textHash: string;
+  acceptedAt: string;
+  ip?: string;
+  userAgent?: string;
+  fingerprint?: string;
+}
+
+export interface ProviderResponse {
+  type?: string;
+  date?: string;
+  data: Record<string, unknown>;
+}
+
+export interface LivenessCheck {
+  sessionId?: string;
+  passed?: boolean;
+  confidence?: number;
+  threshold?: number;
+  at?: string;
+}
+
+export interface FaceMatchCheck {
+  passed?: boolean;
+  code?: string;
+  fallback: boolean;
+  at?: string;
+}
+
+export interface FaceCompareCheck {
+  passed?: boolean;
+  score?: number;
+  threshold?: number;
+  at?: string;
+}
+
+export interface DocumentCheck {
+  passed?: boolean;
+  unreadable: boolean;
+  skipped?: string;
+  documentNumber?: string;
+  at?: string;
+}
+
+export interface RegistryCheck {
+  ok?: boolean;
+  code?: string;
+  checkedAt?: string;
+}
+
+export interface SignerChecks {
+  liveness?: LivenessCheck;
+  faceMatch?: FaceMatchCheck;
+  faceCompare?: FaceCompareCheck;
+  documentCheck?: DocumentCheck;
+  documentReadTries?: number;
+  registry?: RegistryCheck;
+  providerResponses: ProviderResponse[];
+}
+
+export interface AttemptWindow {
+  used: number;
+  max: number;
+  retryAfterSeconds?: number;
+}
+
+export interface RetryCounter {
+  granted: number;
+  max: number;
+}
+
+export interface SignerAttempts {
+  window: Record<AttemptKind, AttemptWindow>;
+  counted: Partial<Record<RetryKind, number>>;
+  retries: Record<RetryKind, RetryCounter>;
+  credits: { biometric: boolean; identity: boolean };
+}
+
+export interface SignerFile {
+  kind: SignerFileKind;
+  legacy: boolean;
+  mime?: string;
+  size?: number;
+  sha256?: string;
+  at?: string;
+}
+
+export interface ApprovalDecision {
+  status?: string;
+  requestedAt?: string;
+  decidedAt?: string;
+  decidedBy?: PersonRef;
+  comment?: string;
+  items?: Partial<Record<ApprovalItem, boolean>>;
+}
+
+export interface SignerApproval extends ApprovalDecision {
+  held: boolean;
+  heldSince?: string;
+}
+
+export interface LegacyApprovalComment {
+  by?: PersonRef;
+  comment?: string;
+  at?: string;
+}
+
+export interface LegacyApproval {
+  sign?: boolean;
+  photoFront?: boolean;
+  photoBack?: boolean;
+  comments: LegacyApprovalComment[];
+}
+
+export interface EvidenceHistoryEntry {
+  index: number;
+  rejectedAt?: string;
+  approval?: ApprovalDecision;
+  files: EvidenceKind[];
+}
+
+export interface SignerLocation {
+  city?: string;
+  region?: string;
+  country?: string;
+  countryCode?: string;
+  provider?: string;
+  at?: string;
+}
+
+export interface VaultSeal {
+  recordId?: string;
+  bundleHash?: string;
+  keyId?: string;
+  algorithm?: string;
+  signedAt?: string;
+  legacy?: string;
+}
+
+export interface SignerSignature {
+  signedAt?: string;
+  method: SignatureMethod;
+  otpChannels: string[];
+  otpVerifiedAt?: string;
+  propagatedFrom?: string;
+  ip?: string;
+  browser?: string;
+  origin?: string;
+  fingerprint?: string;
+  location?: SignerLocation;
+  signSha?: string;
+  vault?: VaultSeal;
+}
+
+export interface SignerReport {
+  issuedAt?: string;
+  sha256?: string;
+  available: boolean;
+}
+
+export interface RequestedAttachment {
+  index: number;
+  name: string;
+  info: string;
+  required: boolean;
+  includeInDocument: boolean;
+  provided: boolean;
+  file?: { originalName: string; mime: string; size: number; sha256: string; at?: string };
+  rejection?: { reason: string; at?: string };
+}
+
+export interface SignerNotices {
+  notifiedAt?: string;
+  remindersSent: number;
+  lastReminderAt?: string;
+  lastOpenedAt?: string;
+  ownerLinkExpiredAt?: string;
+  ownerUnresponsiveAt?: string;
+}
+
+export interface SignerLink {
+  state: LinkState;
+  issued: number;
+  lastIssuedAt?: string;
+  expiresAt?: string;
+  revokedAt?: string;
+}
+
 export interface PlatformSigner {
   identityId: string;
+  signerId?: string;
   name: string;
   email?: string;
   identification?: string;
@@ -72,7 +315,23 @@ export interface PlatformSigner {
   signedAt?: string;
   signingAttempts: number;
   blocked: boolean;
-  evidence?: Record<string, unknown>;
+  type: SignerType;
+  principal: boolean;
+  legalRep: boolean;
+  requirements: SignerRequirements;
+  identity: SignerIdentity;
+  consents: SignerConsent[];
+  checks: SignerChecks;
+  attempts: SignerAttempts;
+  files: SignerFile[];
+  history: EvidenceHistoryEntry[];
+  signature?: SignerSignature;
+  approval?: SignerApproval;
+  legacyApproval?: LegacyApproval;
+  report?: SignerReport;
+  attachments: RequestedAttachment[];
+  notices: SignerNotices;
+  link: SignerLink;
 }
 
 export interface VersionComment {
@@ -171,7 +430,7 @@ export interface PlatformDocumentDetail extends PlatformDocumentSummary {
   flow?: LinkedFlow;
 }
 
-export type HiddenReason = 'secret' | 'html' | 'signers';
+export type HiddenReason = 'secret' | 'html' | 'signers' | 'files';
 
 export interface HiddenField {
   path: string;
@@ -182,6 +441,10 @@ export interface RawDocument {
   id: string;
   data: unknown;
   hidden: HiddenField[];
+}
+
+export interface RawSigner extends RawDocument {
+  identityId: string;
 }
 
 export interface TraceActor {

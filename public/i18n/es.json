@@ -422,7 +422,11 @@
       "attachment_view": "vio un adjunto de un documento",
       "bundle_download": "descargó el expediente de un documento",
       "certificate_view": "vio el certificado de un documento",
-      "raw_view": "vio los datos completos de un documento"
+      "raw_view": "vio los datos completos de un documento",
+      "signer_attachment_view": "vio un adjunto de un firmante",
+      "signer_file_view": "vio un archivo de un firmante",
+      "signer_raw_view": "vio los datos completos de un firmante",
+      "signer_report_view": "vio el informe de validación de un firmante"
     },
     "invoices": {
       "create": "creó una factura",
@@ -2157,8 +2161,8 @@
       "blocked": "Bloqueado",
       "enabled": "Habilitado",
       "inTurn": "En turno",
-      "evidence": "Evidencias",
-      "noEvidence": "Sin evidencias registradas.",
+      "approval": "Por aprobar",
+      "panel": "Ver todo del firmante",
       "menu": "Acciones del firmante",
       "empty": "El documento no tiene firmantes.",
       "unblock": "Desbloquear",
@@ -2181,13 +2185,224 @@
       "photoFront": "Foto, frente",
       "photoBack": "Foto, reverso",
       "signature": "Firma manuscrita",
+      "identityDocument": "Archivo de identidad",
       "state": {
         "passed": "Aprobada",
         "failed": "No aprobada",
         "waiting": "En curso"
+      }
+    },
+    "sp": {
+      "groupChecks": "Identidad y validaciones",
+      "groupRecord": "Firma y expediente",
+      "openSigner": "Ver en Firmantes",
+      "principal": "Principal",
+      "type": {
+        "mandatory": "Firmante",
+        "guarantor": "Avalador",
+        "legalRep": "Representante legal"
       },
-      "captured": "Capturada",
-      "unreadable": "ilegible"
+      "ip": "IP",
+      "browser": "Navegador",
+      "fingerprint": "Huella del dispositivo",
+      "result": "Resultado",
+      "date": "Fecha",
+      "notRequested": "No se pidió.",
+      "notDone": "Se pidió y todavía no se hizo.",
+      "req": {
+        "title": "Requisitos",
+        "identityValid": "Validación contra documento",
+        "biometricValid": "Biometría avanzada",
+        "liveness": "Liveness",
+        "checkDataRegistry": "Consultar Registraduría",
+        "reqDocument": "Fotos con el documento",
+        "fillsForms": "Llena el formulario",
+        "identity": "Identidad que se pide",
+        "identityFull": "Completa",
+        "identityBasic": "Básica",
+        "photoMode": "Modo de las fotos",
+        "photo": {
+          "none": "Sin fotos",
+          "holding": "Con el documento en la mano",
+          "document": "Del documento, frente y reverso"
+        },
+        "email": "Correo de invitación",
+        "emailSent": "Se envía",
+        "emailSkipped": "No se envía"
+      },
+      "identity": {
+        "title": "Identidad",
+        "verified": "Verificada",
+        "notVerified": "Sin verificar",
+        "variant": "Variante",
+        "variants": {
+          "full": "Completa",
+          "basic": "Básica"
+        },
+        "validated": "Identidad validada",
+        "attempts": "Intentos de firma",
+        "attemptsOf": "{{used}} de {{max}}",
+        "attemptsNoMax": "{{used}} (sin tope)",
+        "blockedAt": "Bloqueado desde"
+      },
+      "consents": {
+        "title": "Consentimientos",
+        "textHash": "Huella del texto",
+        "none": "No hay consentimientos registrados."
+      },
+      "live": {
+        "confidence": "Confianza / umbral",
+        "session": "Sesión"
+      },
+      "doc": {
+        "title": "Validación contra documento",
+        "score": "Puntaje / umbral",
+        "reading": "Lectura del documento",
+        "number": "Número leído",
+        "unreadable": "Ilegible",
+        "skipped": "Omitida",
+        "skip": {
+          "no_reader": "No hay lector configurado"
+        },
+        "tries": "Lecturas intentadas"
+      },
+      "bio": {
+        "title": "Biometría avanzada",
+        "code": "Código",
+        "fallback": "Validación usada",
+        "fallbackYes": "Cayó a la validación contra documento",
+        "responses": "Respuestas del proveedor"
+      },
+      "registry": {
+        "title": "Registraduría",
+        "code": "Código",
+        "checkedAt": "Consultada"
+      },
+      "attempts": {
+        "title": "Intentos y reintentos",
+        "window": "Últimos 10 minutos",
+        "kind": {
+          "liveness": "Liveness",
+          "document": "Validación contra documento",
+          "biometric": "Biometría avanzada"
+        },
+        "usedOf": "{{used}} de {{max}}",
+        "retryAfter": "otro intento en {{seconds}} s",
+        "counted": "Intentos contados",
+        "retries": "Reintentos concedidos",
+        "grantedOf": "{{granted}} de {{max}}",
+        "credits": "Créditos cobrados",
+        "charged": "Cobrado",
+        "notCharged": "Sin cobrar"
+      },
+      "files": {
+        "title": "Archivos",
+        "none": "Sin archivos.",
+        "legacy": "Formato anterior"
+      },
+      "sign": {
+        "title": "Firma",
+        "signedAt": "Firmó",
+        "how": "Cómo firmó",
+        "method": {
+          "otp": "Clave dinámica",
+          "passkey": "One Touch Sign",
+          "auto": "Firma automática",
+          "propagated": "Propagada desde otro documento",
+          "unknown": "Sin dato"
+        },
+        "channels": "Canales de la clave",
+        "otpAt": "Clave verificada",
+        "propagatedFrom": "Documento de origen",
+        "openSource": "Abrir el documento",
+        "origin": "Origen",
+        "place": "Lugar",
+        "placeBy": "según {{provider}}",
+        "sha": "Huella de la firma"
+      },
+      "vault": {
+        "title": "Sello del vault",
+        "record": "Registro",
+        "bundle": "Huella del paquete",
+        "key": "Llave",
+        "algorithm": "Algoritmo",
+        "legacy": "Sello anterior"
+      },
+      "approval": {
+        "title": "Aprobación",
+        "state": "Estado",
+        "status": {
+          "pending": "Por aprobar",
+          "approved": "Aprobada",
+          "rejected": "Rechazada"
+        },
+        "held": "Firma retenida desde",
+        "requested": "Pedida",
+        "decided": "Decidida",
+        "by": "Decidió",
+        "comment": "Comentario",
+        "item": {
+          "sign": "Firma",
+          "photoFront": "Foto, frente",
+          "photoBack": "Foto, reverso",
+          "documentFront": "Documento, frente",
+          "documentBack": "Documento, reverso"
+        },
+        "itemOk": "Aprobada",
+        "itemNo": "Rechazada",
+        "legacy": "Formato anterior",
+        "none": "No pasó por aprobación."
+      },
+      "history": {
+        "title": "Historial de evidencias",
+        "rejected": "Rechazada",
+        "none": "Sin evidencias rechazadas."
+      },
+      "report": {
+        "title": "Informe de validación",
+        "issued": "Emitido",
+        "view": "Ver informe",
+        "none": "Sin informe de validación."
+      },
+      "att": {
+        "title": "Adjuntos pedidos",
+        "required": "Obligatorio",
+        "optional": "Opcional",
+        "inDocument": "Va en el documento",
+        "provided": "Lo entregó la integración",
+        "pending": "Sin entregar",
+        "rejected": "Rechazado: {{reason}}",
+        "none": "No se pidieron adjuntos."
+      },
+      "notices": {
+        "title": "Avisos",
+        "notified": "Último aviso",
+        "reminders": "Recordatorios enviados",
+        "lastReminder": "Último recordatorio",
+        "opened": "Última apertura del enlace",
+        "ownerExpired": "Aviso al responsable: enlace vencido",
+        "ownerSilent": "Aviso al responsable: no responde"
+      },
+      "link": {
+        "title": "Enlace de firma",
+        "state": "Estado",
+        "states": {
+          "active": "Activo",
+          "expired": "Vencido",
+          "revoked": "Revocado",
+          "none": "Sin enlace"
+        },
+        "issued": "Emitidos",
+        "last": "Último emitido",
+        "expires": "Vence",
+        "revoked": "Revocado",
+        "hidden": "El enlace no se muestra."
+      },
+      "channel": {
+        "email": "Correo",
+        "sms": "SMS",
+        "whatsapp": "WhatsApp"
+      }
     },
     "version": {
       "col": {
@@ -2472,6 +2687,9 @@
       "ADJUNTO_NO_ENCONTRADO": "Ese adjunto ya no está en el documento.",
       "ARCHIVO_NO_DISPONIBLE": "El archivo no está en el almacenamiento.",
       "EXPEDIENTE_MUY_GRANDE": "El expediente es demasiado grande para descargarlo.",
+      "EVIDENCIA_NO_ENCONTRADA": "El firmante no tiene ese archivo.",
+      "INFORME_NO_EMITIDO": "El firmante no tiene informe de validación.",
+      "TIPO_ARCHIVO_INVALIDO": "Ese tipo de archivo no existe.",
       "generic": "No se pudo completar la acción. Inténtalo de nuevo."
     },
     "bulk": {
@@ -2564,7 +2782,8 @@
       "reason": {
         "secret": "Secretos",
         "html": "HTML de la plantilla",
-        "signers": "Firmantes (van en su pestaña)"
+        "signers": "Firmantes (van en su pestaña)",
+        "files": "Archivos (se ven en el panel del firmante, con auditoría)"
       },
       "audited": "Esta consulta queda en la auditoría de plataforma."
     }
