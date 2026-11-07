@@ -30,11 +30,26 @@ const PARAM = {
   channel: 'canal',
   status: 'estado',
   organizationId: 'organizacion',
+  document: 'documento',
   period: 'periodo',
   page: 'pagina',
 } as const;
 
 const MONGO_ID = /^[a-f\d]{24}$/i;
+const DOCUMENT_MAX = 120;
+const MIN_PHONE_DIGITS = 7;
+const EMAIL = /^[^\s@]+@[^\s@]+$/;
+
+export const searchableDestination = (value: string): boolean => {
+  const text = value.trim();
+  if (text.includes('@')) return EMAIL.test(text);
+  return text.replace(/\D/g, '').length >= MIN_PHONE_DIGITS;
+};
+
+const documentOf = (value: unknown): string | null => {
+  const text = typeof value === 'string' ? value.trim() : '';
+  return text && text.length <= DOCUMENT_MAX ? text : null;
+};
 
 const STATES: Record<CodeDeliveryStatus, OrgState> = {
   accepted: 'trial',
@@ -59,6 +74,7 @@ export const filtersOf = (params: Params): CodeDeliveryFilters => {
     status: oneOf(CODE_STATUSES, params[PARAM.status]),
     organizationId:
       typeof organizationId === 'string' && MONGO_ID.test(organizationId) ? organizationId : null,
+    document: documentOf(params[PARAM.document]),
     period: oneOf(Object.keys(PERIODS), params[PARAM.period]),
     page: Number.isSafeInteger(page) && page > 1 ? page : 1,
   };
@@ -69,6 +85,7 @@ export const queryParamsOf = (filters: CodeDeliveryFilters): Params => ({
   [PARAM.channel]: filters.channel,
   [PARAM.status]: filters.status,
   [PARAM.organizationId]: filters.organizationId,
+  [PARAM.document]: filters.document,
   [PARAM.period]: filters.period,
   [PARAM.page]: filters.page > 1 ? filters.page : null,
 });

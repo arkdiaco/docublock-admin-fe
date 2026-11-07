@@ -5996,6 +5996,7 @@
     "empty": "Todavía no hay envíos de códigos",
     "emptyFiltered": "Ningún envío con estos filtros",
     "orgNotice": "Los ingresos no tienen organización: con este filtro no aparecen.",
+    "destinationHint": "Escribe el número completo (7 dígitos o más) o el correo entero para buscar.",
     "noOrganization": "Sin organización",
     "unknownOrganization": "Organización eliminada",
     "unknownDocument": "Documento eliminado",
@@ -6034,7 +6035,11 @@
       "anyPurpose": "Para qué: todos",
       "anyChannel": "Todos los canales",
       "anyPeriod": "Cualquier fecha",
-      "period": "Fecha"
+      "period": "Fecha",
+      "destination": "Número o correo",
+      "destinationPlaceholder": "Número completo o correo",
+      "document": "Código del documento",
+      "documentPlaceholder": "Código del documento"
     },
     "periods": {
       "24h": "Últimas 24 horas",

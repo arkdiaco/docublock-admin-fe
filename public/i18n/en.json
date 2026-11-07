@@ -5996,6 +5996,7 @@
     "empty": "No code deliveries yet",
     "emptyFiltered": "No deliveries match these filters",
     "orgNotice": "Logins have no organization: they don't show with this filter.",
+    "destinationHint": "Type the full number (7 digits or more) or the whole email to search.",
     "noOrganization": "No organization",
     "unknownOrganization": "Deleted organization",
     "unknownDocument": "Deleted document",
@@ -6034,7 +6035,11 @@
       "anyPurpose": "Purpose: all",
       "anyChannel": "All channels",
       "anyPeriod": "Any date",
-      "period": "Date"
+      "period": "Date",
+      "destination": "Number or email",
+      "destinationPlaceholder": "Full number or email",
+      "document": "Document code",
+      "documentPlaceholder": "Document code"
     },
     "periods": {
       "24h": "Last 24 hours",

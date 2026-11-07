@@ -2,6 +2,7 @@ import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   LOCALE_ID,
   computed,
   inject,
@@ -20,6 +21,7 @@ import { DataTableComponent, type DataColumn } from '../../../shared/ui/data-tab
 import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
 import { formatCount } from '../../../shared/domain/money';
 import { FilterPillsComponent } from '../../../shared/ui/filter-pills.component';
+import { IconComponent } from '../../../shared/ui/icon.component';
 import { KpiCardComponent } from '../../../shared/ui/kpi-card.component';
 import { OrgPickerComponent } from '../../../shared/ui/org-picker.component';
 import { OrgStateComponent } from '../../../shared/ui/org-state.component';
@@ -44,11 +46,13 @@ import {
   fromOf,
   kpisOf,
   queryParamsOf,
+  searchableDestination,
   statusPills,
   type CodeDeliveryKpi,
 } from '../data/code-delivery-view';
 
 export const CODE_DELIVERIES_LIMIT = 25;
+export const CODE_DELIVERIES_DEBOUNCE_MS = 350;
 
 const COLUMNS: readonly DataColumn[] = [
   { key: 'created', labelKey: 'cdl.col.created', width: '140px' },
@@ -72,6 +76,7 @@ const COLUMNS: readonly DataColumn[] = [
     DataTableComponent,
     EmptyStateComponent,
     FilterPillsComponent,
+    IconComponent,
     KpiCardComponent,
     OrgPickerComponent,
     OrgStateComponent,
@@ -103,6 +108,30 @@ const COLUMNS: readonly DataColumn[] = [
       />
 
       <div class="bl__tools">
+        <label class="bl__search">
+          <db-icon name="search" [size]="15" />
+          <input
+            type="search"
+            class="bl__input"
+            autocomplete="off"
+            [attr.aria-label]="'cdl.filter.destination' | translate"
+            [placeholder]="'cdl.filter.destinationPlaceholder' | translate"
+            [value]="destinationDraft()"
+            (input)="onDestination($event)"
+          />
+        </label>
+        <label class="bl__search">
+          <db-icon name="search" [size]="15" />
+          <input
+            type="search"
+            class="bl__input"
+            autocomplete="off"
+            [attr.aria-label]="'cdl.filter.document' | translate"
+            [placeholder]="'cdl.filter.documentPlaceholder' | translate"
+            [value]="documentDraft()"
+            (input)="onDocument($event)"
+          />
+        </label>
         <dba-org-picker
           [value]="filters().organizationId"
           (picked)="apply({ organizationId: $event })"
@@ -139,6 +168,9 @@ const COLUMNS: readonly DataColumn[] = [
         />
       </div>
 
+      @if (destinationIncomplete()) {
+        <p class="dba-meta notice">{{ 'cdl.destinationHint' | translate }}</p>
+      }
       @if (filters().organizationId) {
         <p class="dba-meta notice">{{ 'cdl.orgNotice' | translate }}</p>
       }
@@ -242,6 +274,8 @@ export class CodeDeliveriesComponent {
   private readonly router = inject(Router);
   private readonly translate = inject(TranslateService);
   private readonly latest = new LatestRequest();
+  private readonly timers = new Map<'destination' | 'document', ReturnType<typeof setTimeout>>();
+  private readonly destination = signal<string | null>(null);
 
   protected readonly density = inject(DensityService);
   protected readonly columns = COLUMNS;
@@ -258,6 +292,12 @@ export class CodeDeliveriesComponent {
   protected readonly rows = signal<CodeDeliveryRow[]>([]);
   protected readonly total = signal(0);
   protected readonly totals = signal<CodeDeliveryTotals | null>(null);
+  protected readonly destinationDraft = signal('');
+  protected readonly documentDraft = signal(this.filters().document ?? '');
+  protected readonly destinationIncomplete = computed(() => {
+    const draft = this.destinationDraft().trim();
+    return draft !== '' && !searchableDestination(draft);
+  });
 
   protected readonly pills = computed(() => statusPills(this.totals()?.all ?? null));
   protected readonly kpis = computed(() => {
@@ -272,8 +312,16 @@ export class CodeDeliveriesComponent {
     Math.min(this.total(), this.filters().page * CODE_DELIVERIES_LIMIT),
   );
   protected readonly filtered = computed(() => {
-    const { purpose, channel, status, organizationId, period } = this.filters();
-    return !!(purpose || channel || status || organizationId || period);
+    const { purpose, channel, status, organizationId, document, period } = this.filters();
+    return !!(
+      purpose ||
+      channel ||
+      status ||
+      organizationId ||
+      document ||
+      period ||
+      this.destination()
+    );
   });
   protected readonly purposeOptions = computed(() =>
     this.options('cdl.filter.anyPurpose', CODE_PURPOSES, 'cdl.purpose'),
@@ -286,7 +334,28 @@ export class CodeDeliveriesComponent {
   );
 
   constructor() {
+    inject(DestroyRef).onDestroy(() => this.timers.forEach((timer) => clearTimeout(timer)));
     void this.load();
+  }
+
+  protected onDestination(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.destinationDraft.set(value);
+    const text = value.trim();
+    if (text !== '' && !searchableDestination(text)) {
+      this.cancel('destination');
+      return;
+    }
+    this.later('destination', () => {
+      this.destination.set(text || null);
+      this.apply({});
+    });
+  }
+
+  protected onDocument(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.documentDraft.set(value);
+    this.later('document', () => this.apply({ document: value.trim() || null }));
   }
 
   protected apply(
@@ -295,6 +364,7 @@ export class CodeDeliveriesComponent {
       channel: CodeChannel | null;
       status: CodeDeliveryStatus | null;
       organizationId: string | null;
+      document: string | null;
       period: string | null;
       page: number;
     }>,
@@ -332,6 +402,8 @@ export class CodeDeliveriesComponent {
           channel: filters.channel,
           status: filters.status,
           organizationId: filters.organizationId,
+          destination: this.destination(),
+          document: filters.document,
           from: fromOf(filters.period, Date.now()),
           page: filters.page,
           limit: CODE_DELIVERIES_LIMIT,
@@ -353,6 +425,23 @@ export class CodeDeliveriesComponent {
     } finally {
       if (current()) this.loading.set(false);
     }
+  }
+
+  private later(field: 'destination' | 'document', run: () => void): void {
+    this.cancel(field);
+    this.timers.set(
+      field,
+      setTimeout(() => {
+        this.timers.delete(field);
+        run();
+      }, CODE_DELIVERIES_DEBOUNCE_MS),
+    );
+  }
+
+  private cancel(field: 'destination' | 'document'): void {
+    const timer = this.timers.get(field);
+    if (timer) clearTimeout(timer);
+    this.timers.delete(field);
   }
 
   private kpiView(kpi: CodeDeliveryKpi): {

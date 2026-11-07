@@ -61,6 +61,7 @@ export interface CodeDeliveryFilters {
   channel: CodeChannel | null;
   status: CodeDeliveryStatus | null;
   organizationId: string | null;
+  document: string | null;
   period: string | null;
   page: number;
 }
@@ -70,6 +71,8 @@ export interface CodeDeliveriesQuery {
   channel: CodeChannel | null;
   status: CodeDeliveryStatus | null;
   organizationId: string | null;
+  destination: string | null;
+  document: string | null;
   from: string | null;
   page: number;
   limit: number;

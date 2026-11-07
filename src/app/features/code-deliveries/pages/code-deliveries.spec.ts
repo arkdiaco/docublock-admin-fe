@@ -12,10 +12,15 @@ import {
   fromOf,
   kpisOf,
   queryParamsOf,
+  searchableDestination,
   statusPills,
   totalOf,
 } from '../data/code-delivery-view';
-import { CODE_DELIVERIES_LIMIT, CodeDeliveriesComponent } from './code-deliveries.component';
+import {
+  CODE_DELIVERIES_DEBOUNCE_MS,
+  CODE_DELIVERIES_LIMIT,
+  CodeDeliveriesComponent,
+} from './code-deliveries.component';
 
 const LLAVE_CRUDA = /\b(cdl|nav|common)\.[a-zA-Z]/;
 const BASE = '/platform/code-deliveries';
@@ -79,6 +84,13 @@ const limpiarBusquedas = (http: HttpTestingController): void => {
     .forEach((req) => req.flush({ data: [] }));
 };
 
+const escribir = (root: HTMLElement, label: string, value: string): void => {
+  const input = root.querySelector<HTMLInputElement>(`input[aria-label="${label}"]`);
+  expect(input).toBeTruthy();
+  input!.value = value;
+  input!.dispatchEvent(new Event('input'));
+};
+
 const montar = async (url = '/', items = [FIRMA, INGRESO], total?: number) => {
   const http = await configurar();
   conPermisos(['platform:operations']);
@@ -127,6 +139,69 @@ describe('Envíos de códigos', () => {
     expect(params.get('page')).toBe('3');
     expect(Date.parse(params.get('from') ?? '')).toBeLessThan(Date.now() - 6 * 24 * 3_600_000);
     expect(root.textContent).not.toMatch(LLAVE_CRUDA);
+  });
+
+  it('busca por número completo sin ponerlo en la URL y espera a que esté entero', async () => {
+    const { fixture, http, root } = await montar('/?pagina=2');
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate');
+    vi.useFakeTimers();
+    try {
+      escribir(root, 'Número o correo', '300 12');
+      vi.advanceTimersByTime(CODE_DELIVERIES_DEBOUNCE_MS);
+      fixture.detectChanges();
+      http.expectNone((req) => req.url.endsWith(BASE));
+      expect(root.textContent).toContain('número completo');
+
+      escribir(root, 'Número o correo', '+57 300 123 4567');
+      vi.advanceTimersByTime(CODE_DELIVERIES_DEBOUNCE_MS);
+    } finally {
+      vi.useRealTimers();
+    }
+    const segundo = pedido(http);
+    expect(segundo.request.params.get('destination')).toBe('+57 300 123 4567');
+    expect(segundo.request.params.get('page')).toBe('1');
+    segundo.flush(reporte([FIRMA]));
+    limpiarBusquedas(http);
+    await asentar(fixture);
+    expect(root.textContent).not.toContain('número completo');
+    expect(
+      JSON.stringify(navigate.mock.calls.map(([, extras]) => extras?.queryParams)),
+    ).not.toContain('4567');
+    expect(navigate).toHaveBeenCalled();
+  });
+
+  it('busca por código de documento y lo guarda en la URL', async () => {
+    const { fixture, http, root } = await montar('/?canal=sms');
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate');
+    vi.useFakeTimers();
+    try {
+      escribir(root, 'Código del documento', ' PRUEBA-022 ');
+      vi.advanceTimersByTime(CODE_DELIVERIES_DEBOUNCE_MS);
+    } finally {
+      vi.useRealTimers();
+    }
+    const segundo = pedido(http);
+    expect(segundo.request.params.get('document')).toBe('PRUEBA-022');
+    expect(segundo.request.params.get('channel')).toBe('sms');
+    segundo.flush(reporte([]));
+    limpiarBusquedas(http);
+    await asentar(fixture);
+    expect(navigate).toHaveBeenCalledWith(
+      [],
+      expect.objectContaining({
+        queryParams: expect.objectContaining({ documento: 'PRUEBA-022' }),
+      }),
+    );
+    expect(root.textContent).toContain('Ningún envío con estos filtros');
+    expect(root.textContent).not.toMatch(LLAVE_CRUDA);
+  });
+
+  it('el código de documento de la URL llena la caja y va al core', async () => {
+    const { primero, root } = await montar('/?documento=GR-001');
+    expect(primero.request.params.get('document')).toBe('GR-001');
+    expect(
+      root.querySelector<HTMLInputElement>('input[aria-label="Código del documento"]')?.value,
+    ).toBe('GR-001');
   });
 
   it('ignora en la URL lo que no es un filtro válido', async () => {
@@ -277,15 +352,25 @@ describe('Vista de envíos de códigos', () => {
         organizacion: 'arkdia',
         periodo: '1y',
         pagina: '-2',
+        documento: 'x'.repeat(121),
       }),
     ).toEqual({
       purpose: null,
       channel: null,
       status: null,
       organizationId: null,
+      document: null,
       period: null,
       page: 1,
     });
+  });
+
+  it('solo se busca un número completo o un correo entero', () => {
+    expect(searchableDestination('+57 300 123 4567')).toBe(true);
+    expect(searchableDestination('6012345')).toBe(true);
+    expect(searchableDestination('4567')).toBe(false);
+    expect(searchableDestination('ana@correo.co')).toBe(true);
+    expect(searchableDestination('ana@')).toBe(false);
   });
 
   it('una página fuera de lo representable vuelve a la primera', () => {
@@ -300,6 +385,7 @@ describe('Vista de envíos de códigos', () => {
         channel: null,
         status: null,
         organizationId: null,
+        document: 'PRUEBA-022',
         period: '24h',
         page: 1,
       }),
@@ -308,6 +394,7 @@ describe('Vista de envíos de códigos', () => {
       canal: null,
       estado: null,
       organizacion: null,
+      documento: 'PRUEBA-022',
       periodo: '24h',
       pagina: null,
     });
