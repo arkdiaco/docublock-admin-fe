@@ -18,7 +18,9 @@ import { LatestRequest } from '../../../shared/http/latest-request';
 import { ButtonComponent } from '../../../shared/ui/button.component';
 import { DataTableComponent, type DataColumn } from '../../../shared/ui/data-table.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
+import { formatCount } from '../../../shared/domain/money';
 import { FilterPillsComponent } from '../../../shared/ui/filter-pills.component';
+import { KpiCardComponent } from '../../../shared/ui/kpi-card.component';
 import { OrgPickerComponent } from '../../../shared/ui/org-picker.component';
 import { OrgStateComponent } from '../../../shared/ui/org-state.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
@@ -30,6 +32,7 @@ import {
   type CodeDeliveryFilters,
   type CodeDeliveryRow,
   type CodeDeliveryStatus,
+  type CodeDeliveryTotals,
   type CodePurpose,
 } from '../data/code-deliveries.models';
 import {
@@ -39,8 +42,10 @@ import {
   detailOf,
   filtersOf,
   fromOf,
+  kpisOf,
   queryParamsOf,
   statusPills,
+  type CodeDeliveryKpi,
 } from '../data/code-delivery-view';
 
 export const CODE_DELIVERIES_LIMIT = 25;
@@ -67,6 +72,7 @@ const COLUMNS: readonly DataColumn[] = [
     DataTableComponent,
     EmptyStateComponent,
     FilterPillsComponent,
+    KpiCardComponent,
     OrgPickerComponent,
     OrgStateComponent,
     SectionLoaderComponent,
@@ -81,8 +87,16 @@ const COLUMNS: readonly DataColumn[] = [
         </div>
       </header>
 
+      @if (kpis().length > 0) {
+        <div class="kpis">
+          @for (kpi of kpis(); track kpi.label) {
+            <dba-kpi-card dense [label]="kpi.label" [value]="kpi.value" [delta]="kpi.delta" />
+          }
+        </div>
+      }
+
       <db-filter-pills
-        [pills]="pills"
+        [pills]="pills()"
         [active]="filters().status ?? all"
         [label]="'cdl.col.status' | translate"
         (activeChange)="apply({ status: $any($event) || null })"
@@ -207,6 +221,18 @@ const COLUMNS: readonly DataColumn[] = [
     .notice {
       margin: 0;
     }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--dba-grid-gap);
+    }
+
+    @media (max-width: 760px) {
+      .kpis {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
   `,
 })
 export class CodeDeliveriesComponent {
@@ -221,7 +247,6 @@ export class CodeDeliveriesComponent {
   protected readonly columns = COLUMNS;
   protected readonly limit = CODE_DELIVERIES_LIMIT;
   protected readonly all = ALL;
-  protected readonly pills = statusPills();
   protected readonly documentsPath = sectionPath('documents');
   protected readonly stateOf = codeStateOf;
   protected readonly detail = detailOf;
@@ -232,6 +257,13 @@ export class CodeDeliveriesComponent {
   protected readonly failed = signal(false);
   protected readonly rows = signal<CodeDeliveryRow[]>([]);
   protected readonly total = signal(0);
+  protected readonly totals = signal<CodeDeliveryTotals | null>(null);
+
+  protected readonly pills = computed(() => statusPills(this.totals()?.all ?? null));
+  protected readonly kpis = computed(() => {
+    const totals = this.totals();
+    return totals ? kpisOf(totals).map((kpi) => this.kpiView(kpi)) : [];
+  });
 
   protected readonly pageCount = computed(() =>
     Math.max(1, Math.ceil(this.total() / CODE_DELIVERIES_LIMIT)),
@@ -313,11 +345,28 @@ export class CodeDeliveriesComponent {
       }
       this.rows.set(report.items);
       this.total.set(report.total);
+      this.totals.set(report.totals);
     } catch {
-      if (current()) this.failed.set(true);
+      if (!current()) return;
+      this.failed.set(true);
+      this.totals.set(null);
     } finally {
       if (current()) this.loading.set(false);
     }
+  }
+
+  private kpiView(kpi: CodeDeliveryKpi): {
+    label: string;
+    value: string;
+    delta: string;
+  } {
+    return {
+      label: kpi.labelKey,
+      value: formatCount(kpi.total),
+      delta: kpi.parts
+        .map((part) => `${this.text(`cdl.status.${part.status}`)} ${formatCount(part.count)}`)
+        .join(' · '),
+    };
   }
 
   private options(

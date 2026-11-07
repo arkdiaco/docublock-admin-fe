@@ -10,7 +10,10 @@ import {
   detailOf,
   filtersOf,
   fromOf,
+  kpisOf,
   queryParamsOf,
+  statusPills,
+  totalOf,
 } from '../data/code-delivery-view';
 import { CODE_DELIVERIES_LIMIT, CodeDeliveriesComponent } from './code-deliveries.component';
 
@@ -191,6 +194,50 @@ describe('Envíos de códigos', () => {
     expect(root.querySelectorAll('.dba-tr').length).toBe(1);
   });
 
+  it('arriba muestra los totales del periodo por canal y los estados cuentan en sus pastillas', async () => {
+    const http = await configurar();
+    conPermisos(['platform:operations']);
+    await TestBed.inject(Router).navigateByUrl('/?estado=failed');
+    const fixture = TestBed.createComponent(CodeDeliveriesComponent);
+    const email = { ...cuenta(), accepted: 1200, failed: 3 };
+    const whatsapp = { ...cuenta(), read: 40, delivered: 8, undelivered: 2 };
+    pedido(http).flush({
+      ...reporte([FIRMA]),
+      totals: {
+        all: { ...cuenta(), accepted: 1200, failed: 3, read: 40, delivered: 8, undelivered: 2 },
+        byChannel: { email, sms: cuenta(), whatsapp },
+      },
+    });
+    limpiarBusquedas(http);
+    await asentar(fixture);
+    const root = fixture.nativeElement as HTMLElement;
+
+    const tarjetas = [...root.querySelectorAll('dba-kpi-card')].map((card) =>
+      [...card.querySelectorAll('p')].map((p) => p.textContent?.trim()).join(' | '),
+    );
+    expect(tarjetas).toEqual([
+      'Correo | 1.203 | Aceptado 1.200 · Falló al salir 3',
+      'SMS | 0',
+      'WhatsApp | 50 | Entregado 8 · Leído 40 · No entregado 2',
+    ]);
+    expect(root.querySelectorAll('.kpi__delta--bad, .kpi__delta--warn').length).toBe(0);
+
+    const pastillas = [...root.querySelectorAll<HTMLButtonElement>('db-filter-pills button')].map(
+      (button) => (button.textContent ?? '').replace(/\s+/g, ' ').trim(),
+    );
+    expect(pastillas).toEqual([
+      'Todos 1253',
+      'Aceptado 1200',
+      'Enviado 0',
+      'Entregado 8',
+      'Leído 40',
+      'No entregado 2',
+      'Falló al salir 3',
+    ]);
+    expect(root.querySelectorAll('.pill--danger').length).toBe(2);
+    expect(root.textContent).not.toMatch(LLAVE_CRUDA);
+  });
+
   it('sin envíos muestra el vacío', async () => {
     const { root } = await montar('/', []);
     expect(root.querySelector('.dba-tr')).toBeNull();
@@ -210,6 +257,7 @@ describe('Envíos de códigos', () => {
     const reintentar = [...root.querySelectorAll<HTMLButtonElement>('button')].find(
       (button) => button.textContent?.trim() === 'Reintentar',
     );
+    expect(root.querySelector('dba-kpi-card')).toBeNull();
     reintentar?.click();
     await asentar(fixture);
     pedido(http).flush(reporte([FIRMA]));
@@ -264,6 +312,27 @@ describe('Vista de envíos de códigos', () => {
     const now = Date.parse('2026-11-06T12:00:00.000Z');
     expect(fromOf('24h', now)).toBe('2026-11-05T12:00:00.000Z');
     expect(fromOf(null, now)).toBeNull();
+  });
+
+  it('sin totales las pastillas no muestran cuenta', () => {
+    expect(statusPills(null).every((pill) => pill.count === undefined && !pill.danger)).toBe(true);
+  });
+
+  it('los totales suman todos los estados y hay una tarjeta por canal', () => {
+    expect(totalOf({ ...cuenta(), accepted: 2, sent: 1, read: 4 })).toBe(7);
+    const kpis = kpisOf({
+      all: { ...cuenta(), accepted: 2, failed: 1 },
+      byChannel: {
+        email: { ...cuenta(), accepted: 2 },
+        sms: { ...cuenta(), failed: 1 },
+        whatsapp: cuenta(),
+      },
+    });
+    expect(kpis).toEqual([
+      { labelKey: 'cdl.channel.email', total: 2, parts: [{ status: 'accepted', count: 2 }] },
+      { labelKey: 'cdl.channel.sms', total: 1, parts: [{ status: 'failed', count: 1 }] },
+      { labelKey: 'cdl.channel.whatsapp', total: 0, parts: [] },
+    ]);
   });
 
   it('cada estado tiene su color y el detalle junta código y error', () => {

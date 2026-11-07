@@ -5,10 +5,14 @@ import {
   CODE_CHANNELS,
   CODE_PURPOSES,
   CODE_STATUSES,
+  type CodeDeliveryCounts,
   type CodeDeliveryFilters,
   type CodeDeliveryRow,
   type CodeDeliveryStatus,
+  type CodeDeliveryTotals,
 } from './code-deliveries.models';
+
+const PROBLEMS: readonly CodeDeliveryStatus[] = ['undelivered', 'failed'];
 
 const HOUR = 3_600_000;
 
@@ -74,10 +78,35 @@ export const fromOf = (period: string | null, now: number): string | null => {
   return span ? new Date(now - span).toISOString() : null;
 };
 
-export const statusPills = (): FilterPill[] => [
-  { key: ALL, labelKey: 'cdl.filter.all' },
-  ...CODE_STATUSES.map((status) => ({ key: status, labelKey: `cdl.status.${status}` })),
+export const statusPills = (counts: CodeDeliveryCounts | null): FilterPill[] => [
+  { key: ALL, labelKey: 'cdl.filter.all', count: counts ? totalOf(counts) : undefined },
+  ...CODE_STATUSES.map((status) => ({
+    key: status,
+    labelKey: `cdl.status.${status}`,
+    count: counts?.[status],
+    danger: PROBLEMS.includes(status) && (counts?.[status] ?? 0) > 0,
+  })),
 ];
+
+export const totalOf = (counts: CodeDeliveryCounts): number =>
+  CODE_STATUSES.reduce((sum, status) => sum + (counts[status] ?? 0), 0);
+
+export interface CodeDeliveryKpi {
+  labelKey: string;
+  total: number;
+  parts: { status: CodeDeliveryStatus; count: number }[];
+}
+
+const kpiOf = (labelKey: string, counts: CodeDeliveryCounts): CodeDeliveryKpi => ({
+  labelKey,
+  total: totalOf(counts),
+  parts: CODE_STATUSES.map((status) => ({ status, count: counts[status] ?? 0 })).filter(
+    (part) => part.count > 0,
+  ),
+});
+
+export const kpisOf = (totals: CodeDeliveryTotals): CodeDeliveryKpi[] =>
+  CODE_CHANNELS.map((channel) => kpiOf(`cdl.channel.${channel}`, totals.byChannel[channel]));
 
 export const detailOf = (row: Pick<CodeDeliveryRow, 'error' | 'errorCode'>): string =>
   [row.errorCode, row.error]
