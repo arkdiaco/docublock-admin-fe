@@ -338,6 +338,15 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
         ),
     },
   ],
+  codeDeliveries: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/code-deliveries/pages/code-deliveries.component').then(
+          (m) => m.CodeDeliveriesComponent,
+        ),
+    },
+  ],
   tasks: [
     {
       path: '',

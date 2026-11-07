@@ -8,6 +8,7 @@ export type ConsoleSection =
   | 'documents'
   | 'support'
   | 'integrations'
+  | 'codeDeliveries'
   | 'tasks'
   | 'plans'
   | 'subscriptions'
@@ -67,6 +68,7 @@ export const CONSOLE_GROUPS: readonly ConsoleGroup[] = [
       { key: 'documents', path: 'documentos', labelKey: 'nav.documents' },
       { key: 'support', path: 'soporte', labelKey: 'nav.support' },
       { key: 'integrations', path: 'integraciones', labelKey: 'nav.integrations' },
+      { key: 'codeDeliveries', path: 'envios-codigos', labelKey: 'nav.codeDeliveries' },
       { key: 'tasks', path: 'tareas', labelKey: 'nav.tasks' },
     ],
   },

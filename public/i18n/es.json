@@ -82,7 +82,8 @@
     "kindPersons": "Tipos de persona",
     "identificationTypes": "Tipos de identificación",
     "signerFields": "Campos del firmante",
-    "propertyCatalog": "Inmuebles"
+    "propertyCatalog": "Inmuebles",
+    "codeDeliveries": "Envíos de códigos"
   },
   "auth": {
     "title": "Acceso a la plataforma",
@@ -5984,6 +5985,62 @@
           "use": "Publicación del inmueble al aprobar una consignación"
         }
       }
+    }
+  },
+  "cdl": {
+    "lead": "Los códigos de ingreso y de firma que Docublock mandó, por canal, y si llegaron.",
+    "loading": "Cargando envíos…",
+    "tableLabel": "Envíos de códigos",
+    "errorTitle": "No pudimos cargar los envíos",
+    "errorLead": "Inténtalo de nuevo en un momento.",
+    "empty": "Todavía no hay envíos de códigos",
+    "emptyFiltered": "Ningún envío con estos filtros",
+    "orgNotice": "Los ingresos no tienen organización: con este filtro no aparecen.",
+    "noOrganization": "Sin organización",
+    "unknownOrganization": "Organización eliminada",
+    "unknownDocument": "Documento eliminado",
+    "col": {
+      "created": "Fecha",
+      "purpose": "Para qué",
+      "channel": "Canal",
+      "status": "Estado",
+      "person": "Persona",
+      "organization": "Organización",
+      "document": "Documento",
+      "detail": "Detalle"
+    },
+    "purpose": {
+      "login": "Ingreso",
+      "wallet_login": "Ingreso a la billetera",
+      "signing": "Firma",
+      "massive_signing": "Firma masiva",
+      "auto_sign": "Firma automática"
+    },
+    "channel": {
+      "email": "Correo",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp"
+    },
+    "status": {
+      "accepted": "Aceptado",
+      "sent": "Enviado",
+      "delivered": "Entregado",
+      "read": "Leído",
+      "undelivered": "No entregado",
+      "failed": "Falló al salir"
+    },
+    "filter": {
+      "all": "Todos",
+      "anyPurpose": "Para qué: todos",
+      "anyChannel": "Todos los canales",
+      "anyPeriod": "Cualquier fecha",
+      "period": "Fecha"
+    },
+    "periods": {
+      "24h": "Últimas 24 horas",
+      "7d": "Últimos 7 días",
+      "30d": "Últimos 30 días",
+      "90d": "Últimos 90 días"
     }
   }
 }

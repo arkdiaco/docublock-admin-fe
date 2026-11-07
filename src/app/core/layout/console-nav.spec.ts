@@ -27,7 +27,7 @@ describe('menú de la consola', () => {
   it('son los cinco grupos de la decisión 2, con sus secciones en orden', () => {
     expect(CONSOLE_GROUPS.map((group) => [group.path, group.items.map((item) => item.path)])).toEqual([
       ['clientes', ['organizaciones', 'usuarios', 'firmantes', 'juridicas']],
-      ['operacion', ['documentos', 'soporte', 'integraciones', 'tareas']],
+      ['operacion', ['documentos', 'soporte', 'integraciones', 'envios-codigos', 'tareas']],
       ['comercial', ['planes', 'suscripciones', 'marketplace', 'promocionales', 'referidos', 'resellers', 'facturacion']],
       ['catalogos', ['paises', 'ciudades', 'tipos-persona', 'tipos-identificacion', 'campos-firmante', 'inmuebles', 'politicas', 'comunicaciones']],
       ['plataforma', ['personal', 'auditoria', 'configuracion', 'salud']],
@@ -43,7 +43,7 @@ describe('menú de la consola', () => {
   });
 
   it('superadmin ve todo', () => {
-    expect(visibleGroups(SUPERADMIN).flatMap((group) => group.items).length).toBe(27);
+    expect(visibleGroups(SUPERADMIN).flatMap((group) => group.items).length).toBe(28);
   });
 
   it('support ve los cinco grupos, pero Plataforma sin Personal', () => {

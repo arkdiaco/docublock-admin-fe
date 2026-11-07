@@ -66,6 +66,7 @@
     "documents": "Documents",
     "support": "Support & SLA",
     "integrations": "Integrations",
+    "codeDeliveries": "Code deliveries",
     "tasks": "Tasks",
     "subscriptions": "Subscriptions",
     "marketplace": "Marketplace",
@@ -5984,6 +5985,62 @@
           "use": "Publishing the property when a consignment is approved"
         }
       }
+    }
+  },
+  "cdl": {
+    "lead": "The login and signing codes Docublock sent, by channel, and whether they arrived.",
+    "loading": "Loading deliveries…",
+    "tableLabel": "Code deliveries",
+    "errorTitle": "We couldn't load the deliveries",
+    "errorLead": "Try again in a moment.",
+    "empty": "No code deliveries yet",
+    "emptyFiltered": "No deliveries match these filters",
+    "orgNotice": "Logins have no organization: they don't show with this filter.",
+    "noOrganization": "No organization",
+    "unknownOrganization": "Deleted organization",
+    "unknownDocument": "Deleted document",
+    "col": {
+      "created": "Date",
+      "purpose": "Purpose",
+      "channel": "Channel",
+      "status": "Status",
+      "person": "Person",
+      "organization": "Organization",
+      "document": "Document",
+      "detail": "Detail"
+    },
+    "purpose": {
+      "login": "Login",
+      "wallet_login": "Wallet login",
+      "signing": "Signing",
+      "massive_signing": "Bulk signing",
+      "auto_sign": "Automatic signing"
+    },
+    "channel": {
+      "email": "Email",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp"
+    },
+    "status": {
+      "accepted": "Accepted",
+      "sent": "Sent",
+      "delivered": "Delivered",
+      "read": "Read",
+      "undelivered": "Undelivered",
+      "failed": "Failed to send"
+    },
+    "filter": {
+      "all": "All",
+      "anyPurpose": "Purpose: all",
+      "anyChannel": "All channels",
+      "anyPeriod": "Any date",
+      "period": "Date"
+    },
+    "periods": {
+      "24h": "Last 24 hours",
+      "7d": "Last 7 days",
+      "30d": "Last 30 days",
+      "90d": "Last 90 days"
     }
   }
 }
