@@ -288,6 +288,11 @@ describe('Vista de envíos de códigos', () => {
     });
   });
 
+  it('una página fuera de lo representable vuelve a la primera', () => {
+    expect(filtersOf({ pagina: '1e300' }).page).toBe(1);
+    expect(filtersOf({ pagina: '3' }).page).toBe(3);
+  });
+
   it('escribe en la URL solo lo que hay y omite la página 1', () => {
     expect(
       queryParamsOf({

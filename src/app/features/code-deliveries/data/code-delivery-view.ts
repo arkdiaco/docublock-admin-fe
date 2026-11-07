@@ -60,7 +60,7 @@ export const filtersOf = (params: Params): CodeDeliveryFilters => {
     organizationId:
       typeof organizationId === 'string' && MONGO_ID.test(organizationId) ? organizationId : null,
     period: oneOf(Object.keys(PERIODS), params[PARAM.period]),
-    page: Number.isInteger(page) && page > 1 ? page : 1,
+    page: Number.isSafeInteger(page) && page > 1 ? page : 1,
   };
 };
 
