@@ -22,11 +22,14 @@ export const MAX_BAR_SERIES = 3;
 
 const TICKS = 4;
 
-export const niceTicks = (max: number, count = TICKS): number[] => {
+export const niceTicks = (max: number, count = TICKS, minStep = 0): number[] => {
   if (!(max > 0)) return [0];
-  const rough = max / count;
+  const rough = Math.max(max / count, minStep);
   const magnitude = 10 ** Math.floor(Math.log10(rough));
-  const step = [1, 2, 2.5, 5, 10].map((f) => f * magnitude).find((s) => s >= rough) ?? rough;
+  const step =
+    [1, 2, 2.5, 5, 10]
+      .map((f) => f * magnitude)
+      .find((s) => s >= rough && (minStep === 0 || Number.isInteger(s))) ?? rough;
   const steps = Math.ceil(max / step);
   return Array.from({ length: steps + 1 }, (_, i) => Number((i * step).toPrecision(12)));
 };
@@ -237,6 +240,7 @@ export class BarChartComponent {
   readonly series = input.required<readonly BarChartSeries[]>();
   readonly label = input.required<string>();
   readonly format = input<((value: number) => string) | null>(null);
+  readonly integers = input(false);
 
   private readonly number = new Intl.NumberFormat(inject(LOCALE_ID));
 
@@ -247,7 +251,11 @@ export class BarChartComponent {
   protected readonly visibleSeries = computed(() => this.series().slice(0, MAX_BAR_SERIES));
 
   private readonly ticks = computed(() =>
-    niceTicks(Math.max(0, ...this.visibleSeries().flatMap((serie) => serie.values))),
+    niceTicks(
+      Math.max(0, ...this.visibleSeries().flatMap((serie) => serie.values)),
+      TICKS,
+      this.integers() ? 1 : 0,
+    ),
   );
 
   protected readonly top = computed(() => this.ticks().at(-1) || 1);

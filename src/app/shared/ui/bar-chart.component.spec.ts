@@ -38,6 +38,12 @@ describe('niceTicks', () => {
     expect(niceTicks(0.3)).toEqual([0, 0.1, 0.2, 0.3]);
   });
 
+  it('con paso mínimo de uno el eje no parte las cantidades', () => {
+    expect(niceTicks(2, 4, 1)).toEqual([0, 1, 2]);
+    expect(niceTicks(7, 4, 1)).toEqual([0, 2, 4, 6, 8]);
+    expect(niceTicks(1000, 4, 1)).toEqual([0, 250, 500, 750, 1000]);
+  });
+
   it('sin datos queda solo el cero', () => {
     expect(niceTicks(0)).toEqual([0]);
     expect(niceTicks(Number.NaN)).toEqual([0]);

@@ -363,6 +363,15 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
         ),
     },
   ],
+  platformAnalytics: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/platform-analytics/pages/platform-analytics.component').then(
+          (m) => m.PlatformAnalyticsComponent,
+        ),
+    },
+  ],
   resellerDocuments: [
     {
       path: '',

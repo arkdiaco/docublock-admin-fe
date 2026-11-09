@@ -6259,5 +6259,40 @@
       "csv": "No pudimos exportar el CSV. Inténtalo de nuevo.",
       "pdf": "No pudimos generar el PDF. Inténtalo de nuevo."
     }
+  },
+  "pan": {
+    "lead": "Cifras de toda la plataforma, sin las organizaciones de prueba",
+    "year": "Año",
+    "loading": "Cargando la analítica…",
+    "errorTitle": "No pudimos cargar la analítica",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "statsLabel": "Resumen de la plataforma",
+    "stat": {
+      "users": "Usuarios",
+      "usersNote": "Con al menos una organización",
+      "clients": "Organizaciones cliente",
+      "resellers": "Resellers",
+      "documents": "Documentos creados en {{year}}",
+      "documentsNote": "{{signed}} firmados",
+      "transactions": "Transacciones en {{year}}",
+      "transactionsNote": "{{approved}} aprobadas"
+    },
+    "transactionsByMonth": "Transacciones por mes · {{year}}",
+    "documentsByMonth": "Documentos por mes · {{year}}",
+    "series": {
+      "approved": "Aprobadas",
+      "total": "Totales",
+      "created": "Creados",
+      "signed": "Firmados"
+    },
+    "plans": "Planes más usados",
+    "plansLead": "Organizaciones activas según su plan vigente",
+    "planShare": "{{share}} % de las organizaciones activas",
+    "noPlansTitle": "Sin organizaciones activas",
+    "noPlansLead": "Cuando haya organizaciones activas, verás aquí su plan.",
+    "noTransactionsTitle": "Sin transacciones en el año",
+    "noTransactionsLead": "Cuando haya pagos registrados en este año, verás aquí su reparto por mes.",
+    "noDocumentsTitle": "Sin documentos en el año",
+    "noDocumentsLead": "Cuando se creen o firmen documentos en este año, verás aquí su reparto por mes."
   }
 }

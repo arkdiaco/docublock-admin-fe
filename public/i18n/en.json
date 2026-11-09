@@ -6259,5 +6259,40 @@
       "csv": "We couldn't export the CSV. Try again.",
       "pdf": "We couldn't generate the PDF. Try again."
     }
+  },
+  "pan": {
+    "lead": "Platform-wide figures, excluding test organizations",
+    "year": "Year",
+    "loading": "Loading analytics…",
+    "errorTitle": "We could not load the analytics",
+    "errorLead": "Check your connection and try again.",
+    "statsLabel": "Platform summary",
+    "stat": {
+      "users": "Users",
+      "usersNote": "With at least one organization",
+      "clients": "Client organizations",
+      "resellers": "Resellers",
+      "documents": "Documents created in {{year}}",
+      "documentsNote": "{{signed}} signed",
+      "transactions": "Transactions in {{year}}",
+      "transactionsNote": "{{approved}} approved"
+    },
+    "transactionsByMonth": "Transactions by month · {{year}}",
+    "documentsByMonth": "Documents by month · {{year}}",
+    "series": {
+      "approved": "Approved",
+      "total": "Total",
+      "created": "Created",
+      "signed": "Signed"
+    },
+    "plans": "Most used plans",
+    "plansLead": "Active organizations by their current plan",
+    "planShare": "{{share}}% of active organizations",
+    "noPlansTitle": "No active organizations",
+    "noPlansLead": "When there are active organizations, their plan will show here.",
+    "noTransactionsTitle": "No transactions this year",
+    "noTransactionsLead": "When payments are recorded this year, their monthly split will show here.",
+    "noDocumentsTitle": "No documents this year",
+    "noDocumentsLead": "When documents are created or signed this year, their monthly split will show here."
   }
 }
