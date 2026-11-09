@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, input, model, signal, untracked } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
+import { AuthStore } from '../../../core/auth/auth.store';
 import { DensityService } from '../../../core/preferences/density.service';
 import { NotificationService } from '../../../core/ui/notification.service';
 import { PendingAction } from '../../../shared/domain/pending-action';
@@ -10,6 +11,7 @@ import { CheckComponent } from '../../../shared/ui/check.component';
 import { DataTableComponent, type DataColumn } from '../../../shared/ui/data-table.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
 import { IconComponent } from '../../../shared/ui/icon.component';
+import { OrgPickerComponent } from '../../../shared/ui/org-picker.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
 import { CommunicationsApi } from '../data/communications.api';
 import type { RecipientKind, RecipientRow } from '../data/communications.models';
@@ -35,6 +37,7 @@ const COLUMNS: readonly DataColumn[] = [
     DataTableComponent,
     EmptyStateComponent,
     IconComponent,
+    OrgPickerComponent,
     SectionLoaderComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -51,6 +54,9 @@ const COLUMNS: readonly DataColumn[] = [
           (input)="onSearch($event)"
         />
       </label>
+      @if (orgScope(); as scope) {
+        <dba-org-picker [scope]="scope" [value]="organizationId()" (picked)="pickOrganization($event)" />
+      }
       <button dba-button variant="secondary" [disabled]="items().length === 0" (click)="markPage()">
         {{ 'comm.markPage' | translate }}
       </button>
@@ -132,6 +138,7 @@ export class RecipientPickerComponent {
   readonly selected = model.required<ReadonlySet<string>>();
 
   private readonly api = inject(CommunicationsApi);
+  private readonly auth = inject(AuthStore);
   private readonly notify = inject(NotificationService);
   private readonly translate = inject(TranslateService);
   private readonly latest = new LatestRequest();
@@ -145,6 +152,13 @@ export class RecipientPickerComponent {
   protected readonly page = signal(1);
   protected readonly total = signal(0);
   protected readonly searchDraft = signal('');
+  protected readonly organizationId = signal<string | null>(null);
+  protected readonly orgScope = computed(() => {
+    if (this.kind() !== 'user') return null;
+    if (this.auth.canRead('clients')) return 'clients' as const;
+    if (this.auth.canRead('commercial')) return 'commercial' as const;
+    return null;
+  });
   protected readonly items = signal<RecipientRow[]>([]);
   protected readonly pageCount = computed(() => Math.max(1, Math.ceil(this.total() / LIMIT)));
   protected readonly rangeFrom = computed(() =>
@@ -177,6 +191,12 @@ export class RecipientPickerComponent {
     }, DEBOUNCE_MS);
   }
 
+  protected pickOrganization(id: string | null): void {
+    this.organizationId.set(id);
+    this.page.set(1);
+    void this.reload();
+  }
+
   protected goPage(page: number): void {
     this.page.set(page);
     void this.reload();
@@ -199,6 +219,7 @@ export class RecipientPickerComponent {
             this.api.recipients({
               kind: this.kind(),
               search: this.search || undefined,
+              organizationId: this.organizationFilter(),
               page,
               limit: BULK_LIMIT,
             }),
@@ -226,6 +247,7 @@ export class RecipientPickerComponent {
         this.api.recipients({
           kind: this.kind(),
           search: this.search || undefined,
+          organizationId: this.organizationFilter(),
           page: this.page(),
           limit: LIMIT,
         }),
@@ -238,5 +260,9 @@ export class RecipientPickerComponent {
     } finally {
       if (current()) this.loading.set(false);
     }
+  }
+
+  private organizationFilter(): string | undefined {
+    return this.orgScope() ? (this.organizationId() ?? undefined) : undefined;
   }
 }
