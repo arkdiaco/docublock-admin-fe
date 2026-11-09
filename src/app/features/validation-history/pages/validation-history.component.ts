@@ -203,7 +203,13 @@ interface NodePanel {
             <div class="vh__group">
               <div class="vh__group-head">
                 <h2 class="dba-section vh__group-name">
-                  {{ group.reseller?.businessName ?? ('vhis.noReseller' | translate) }}
+                  @if (group.reseller && canOpenReseller()) {
+                    <a class="dba-ref" [routerLink]="[resellersPath, group.reseller.id]">{{
+                      group.reseller.businessName
+                    }}</a>
+                  } @else {
+                    {{ group.reseller?.businessName ?? ('vhis.noReseller' | translate) }}
+                  }
                 </h2>
                 <span class="dba-meta vh__num">{{
                   'vhis.groupSummary'
@@ -602,6 +608,7 @@ export class ValidationHistoryComponent {
   }).format(new Date(`${LAST_LEGACY_DAY}T12:00:00Z`));
   protected readonly organizationsPath = sectionPath('organizations');
   protected readonly signersPath = sectionPath('signers');
+  protected readonly resellersPath = sectionPath('resellers');
   protected readonly filters = signal<HistoryFilters>(
     historyFiltersOf(this.route.snapshot.queryParams),
   );
@@ -617,6 +624,7 @@ export class ValidationHistoryComponent {
   );
   protected readonly canOpenOrganization = computed(() => this.auth.canRead('clients'));
   protected readonly canOpenSigner = computed(() => this.auth.canRead('clients'));
+  protected readonly canOpenReseller = computed(() => this.auth.canRead('commercial'));
   protected readonly organizationScope = computed<LookupScope | null>(() =>
     this.auth.canRead('clients')
       ? 'clients'

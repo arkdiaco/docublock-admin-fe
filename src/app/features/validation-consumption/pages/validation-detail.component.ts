@@ -127,7 +127,12 @@ type LoadState = 'loading' | 'ready' | 'failed' | 'notFound';
           <span class="dba-meta">
             {{ 'vdet.scope.' + (scope() ?? 'organization') | translate }}
             @if (detail()?.billedVia; as via) {
-              · {{ 'vdet.billedVia' | translate: { name: via.businessName } }}
+              · {{ 'vdet.billedVia' | translate }}
+              @if (canOpenReseller()) {
+                <a class="dba-ref" [routerLink]="[resellersPath, via.id]">{{ via.businessName }}</a>
+              } @else {
+                {{ via.businessName }}
+              }
             }
           </span>
         </div>
@@ -578,6 +583,7 @@ export class ValidationDetailComponent {
   protected readonly documentsPath = sectionPath('documents');
   protected readonly signersPath = sectionPath('signers');
   protected readonly organizationsPath = sectionPath('organizations');
+  protected readonly resellersPath = sectionPath('resellers');
   protected readonly scope = signal<DetailScope | null>(
     scopeOf(this.route.snapshot.paramMap.get('alcance')),
   );
@@ -596,6 +602,7 @@ export class ValidationDetailComponent {
   protected readonly canOpenDocument = computed(() => this.auth.canRead('operations'));
   protected readonly canOpenSigner = computed(() => this.auth.canRead('clients'));
   protected readonly canOpenOrganization = computed(() => this.auth.canRead('clients'));
+  protected readonly canOpenReseller = computed(() => this.auth.canRead('commercial'));
   protected readonly canExport = computed(
     () =>
       this.state() === 'ready' && !this.invalid() && !this.exporting() && !!this.detail()?.total,

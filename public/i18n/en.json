@@ -6122,7 +6122,7 @@
       "organization": "Organization",
       "reseller": "Reseller"
     },
-    "billedVia": "Billed with the pricing of reseller {{name}}",
+    "billedVia": "Billed with the pricing of reseller",
     "searchPlaceholder": "Search a document by name or code",
     "searchLabel": "Search document",
     "typeLabel": "Validation type",

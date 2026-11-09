@@ -248,7 +248,9 @@ describe('Detalle del consumo', () => {
 
     let texto = root.textContent ?? '';
     expect(texto).toContain('Org Con Reseller');
-    expect(texto).toContain('Se cobra con la tarifa del reseller Reseller Norte');
+    expect(texto.replace(/\s+/g, ' ')).toContain(
+      'Se cobra con la tarifa del reseller Reseller Norte',
+    );
     expect(texto).toContain('Resumen por mes');
     expect(texto).toContain('November 2026');
     expect(texto).toContain('CU-001');
@@ -299,6 +301,18 @@ describe('Detalle del consumo', () => {
     expect(enlaces).toContain('/clientes/firmantes/s1');
     expect(enlaces).toContain(`${BASE}?desde=2026-11-01&vista=resellers`);
     expect(root.textContent).toContain('Reseller');
+    http.verify();
+  });
+
+  it('con Comercial enlaza el reseller que cobra la organización', async () => {
+    const { harness, http, root } = await montar(['platform:intelligence', 'platform:commercial']);
+    pedido(http).flush(detalle());
+    await asentar(harness);
+    const enlace = root.querySelector<HTMLAnchorElement>(
+      `a[href="/comercial/resellers/${RESELLER}"]`,
+    );
+    expect(enlace?.textContent?.trim()).toBe('Reseller Norte');
+    expect(root.textContent).toContain('Se cobra con la tarifa del reseller');
     http.verify();
   });
 

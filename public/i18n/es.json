@@ -6122,7 +6122,7 @@
       "organization": "Organización",
       "reseller": "Reseller"
     },
-    "billedVia": "Se cobra con la tarifa del reseller {{name}}",
+    "billedVia": "Se cobra con la tarifa del reseller",
     "searchPlaceholder": "Buscar documento por nombre o código",
     "searchLabel": "Buscar documento",
     "typeLabel": "Tipo de validación",

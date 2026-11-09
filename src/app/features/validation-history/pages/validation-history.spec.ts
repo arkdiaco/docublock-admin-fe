@@ -217,6 +217,19 @@ describe('Histórico de validaciones', () => {
     http.verify();
   });
 
+  it('con Comercial enlaza al reseller y filtra organizaciones con su buscador', async () => {
+    const { harness, http, root } = await montar(['platform:intelligence', 'platform:commercial']);
+    pedido(http).flush(historico());
+    await asentar(harness);
+    const enlace = root.querySelector<HTMLAnchorElement>(
+      `a[href="/comercial/resellers/${RESELLER}"]`,
+    );
+    expect(enlace?.textContent?.trim()).toBe('Reseller Andino');
+    expect(root.textContent).toContain('Todas las organizaciones');
+    expect(root.querySelectorAll('a[href^="/clientes/"]')).toHaveLength(0);
+    http.verify();
+  });
+
   it('despliega una organización con sus firmantes y validaciones', async () => {
     const { harness, http, root } = await montar(['platform:intelligence', 'platform:clients']);
     pedido(http).flush(historico());
