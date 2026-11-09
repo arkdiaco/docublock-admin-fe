@@ -72,7 +72,7 @@ export class ValidationsApi {
     });
   }
 
-  billingPdf(orgId: string, from: string, to: string): Observable<ExportedFile> {
+  billingPdf(orgId: string, from?: string, to?: string): Observable<ExportedFile> {
     return this.http
       .post(
         `/platform/validation-credits/${orgId}/billing/pdf`,

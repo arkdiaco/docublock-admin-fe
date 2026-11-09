@@ -6056,5 +6056,62 @@
       "30d": "Last 30 days",
       "90d": "Last 90 days"
     }
+  },
+  "vcon": {
+    "lead": "Validations used by each account in the period and what they are worth under its rate.",
+    "from": "From",
+    "to": "To",
+    "rangeInvalid": "“From” is later than “To”.",
+    "viewLabel": "Group by",
+    "view": {
+      "organizaciones": "By organization",
+      "resellers": "By reseller"
+    },
+    "csv": "Export CSV",
+    "loading": "Loading usage…",
+    "errorTitle": "We could not load usage",
+    "errorLead": "Check your connection and try again.",
+    "emptyTitle": "No validations in the period",
+    "emptyLead": "Change the dates or leave the period empty to see the whole history.",
+    "statsLabel": "Validations in the period",
+    "stat": {
+      "total": "Total",
+      "totalNote": "Provider calls",
+      "otherNote": "Not billed"
+    },
+    "otherNote": "A lookup reused on other documents of the same signer counts once. “Other” groups validations with no rate, such as advanced liveness.",
+    "type": {
+      "ani": "Registry lookup",
+      "liveness": "Liveness",
+      "macherFacial": "Advanced biometrics",
+      "otros": "Other"
+    },
+    "tableLabel": {
+      "organizaciones": "Usage by organization",
+      "resellers": "Usage by reseller"
+    },
+    "col": {
+      "organization": "Organization",
+      "reseller": "Reseller",
+      "organizations": "Organizations",
+      "ani": "RL",
+      "liveness": "LV",
+      "macherFacial": "AB",
+      "otros": "Other",
+      "total": "Total",
+      "packages": "Packages",
+      "value": "Period value",
+      "currency": "Currency"
+    },
+    "direct": "Direct",
+    "noReseller": "No reseller",
+    "viaReseller": "Via reseller",
+    "noPricing": "No rate",
+    "actions": "Actions",
+    "actionsFor": "Actions for {{name}}",
+    "action": {
+      "pricing": "Rate",
+      "billing": "Billing statement for the period"
+    }
   }
 }

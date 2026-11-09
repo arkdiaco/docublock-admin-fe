@@ -6056,5 +6056,62 @@
       "30d": "Últimos 30 días",
       "90d": "Últimos 90 días"
     }
+  },
+  "vcon": {
+    "lead": "Validaciones consumidas por cada cuenta en el periodo y lo que vale cada una según su tarifa.",
+    "from": "Desde",
+    "to": "Hasta",
+    "rangeInvalid": "La fecha «Desde» es posterior a «Hasta».",
+    "viewLabel": "Agrupar por",
+    "view": {
+      "organizaciones": "Por organización",
+      "resellers": "Por reseller"
+    },
+    "csv": "Exportar CSV",
+    "loading": "Cargando el consumo…",
+    "errorTitle": "No pudimos cargar el consumo",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "emptyTitle": "Sin validaciones en el periodo",
+    "emptyLead": "Cambia las fechas o deja el periodo vacío para ver todo el histórico.",
+    "statsLabel": "Validaciones del periodo",
+    "stat": {
+      "total": "Total",
+      "totalNote": "Llamadas al proveedor",
+      "otherNote": "No se cobran"
+    },
+    "otherNote": "Cada consulta repetida en otros documentos del mismo firmante cuenta una sola vez. «Otros» reúne las validaciones que no tienen tarifa, como la prueba de vida avanzada.",
+    "type": {
+      "ani": "Consultar Registraduría",
+      "liveness": "Liveness",
+      "macherFacial": "Biometría avanzada",
+      "otros": "Otros"
+    },
+    "tableLabel": {
+      "organizaciones": "Consumo por organización",
+      "resellers": "Consumo por reseller"
+    },
+    "col": {
+      "organization": "Organización",
+      "reseller": "Reseller",
+      "organizations": "Organizaciones",
+      "ani": "CR",
+      "liveness": "LV",
+      "macherFacial": "BA",
+      "otros": "Otros",
+      "total": "Total",
+      "packages": "Paquetes",
+      "value": "Valor del periodo",
+      "currency": "Moneda"
+    },
+    "direct": "Directa",
+    "noReseller": "Sin reseller",
+    "viaReseller": "Vía reseller",
+    "noPricing": "Sin tarifa",
+    "actions": "Acciones",
+    "actionsFor": "Acciones de {{name}}",
+    "action": {
+      "pricing": "Tarifa",
+      "billing": "Cuenta de cobro del periodo"
+    }
   }
 }

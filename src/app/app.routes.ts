@@ -347,6 +347,15 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
         ),
     },
   ],
+  validationConsumption: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/validation-consumption/pages/validation-consumption.component').then(
+          (m) => m.ValidationConsumptionComponent,
+        ),
+    },
+  ],
   tasks: [
     {
       path: '',
