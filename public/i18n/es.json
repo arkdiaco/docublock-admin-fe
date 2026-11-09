@@ -58,6 +58,7 @@
       "clients": "Clientes",
       "operations": "Operación",
       "commercial": "Comercial",
+      "intelligence": "Inteligencia",
       "catalogs": "Catálogos",
       "platform": "Plataforma"
     },
@@ -83,7 +84,13 @@
     "identificationTypes": "Tipos de identificación",
     "signerFields": "Campos del firmante",
     "propertyCatalog": "Inmuebles",
-    "codeDeliveries": "Envíos de códigos"
+    "codeDeliveries": "Envíos de códigos",
+    "platformAnalytics": "Analítica de plataforma",
+    "revenue": "Ingresos",
+    "validationConsumption": "Consumo de validaciones",
+    "validationHistory": "Histórico de validaciones",
+    "resellerDocuments": "Documentos por reseller",
+    "consents": "Tratamiento de datos"
   },
   "auth": {
     "title": "Acceso a la plataforma",
@@ -228,6 +235,8 @@
       "navGroupNote": "Cada grupo del menú abre su submenú; en el móvil se lista con su encabezado. El grupo se marca cuando una de sus secciones está abierta y suma sus conteos.",
       "actionMenu": "Menú de acciones",
       "actionMenuNote": "Sobre el popover del menú. Agrupa con separador; lo destructivo va en rojo y al final. Lo usan la cuenta y las filas de Personal.",
+      "barChart": "Gráfica de barras",
+      "barChartNote": "Barras por categoría con hasta tres series, eje en pasos redondos y tabla oculta para lectores de pantalla. Colores --dba-chart-*. La usan las pantallas de Inteligencia.",
       "actionPicked": "Elegiste: {{key}}",
       "usage": "Uso en una fila",
       "usageNote": "Documentos usados contra el límite dentro de una tabla: tono de aviso desde el 90 % y de exceso al pasar el límite; ∞ cuando no hay tope.",

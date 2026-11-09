@@ -58,6 +58,7 @@
       "clients": "Clients",
       "operations": "Operations",
       "commercial": "Commercial",
+      "intelligence": "Intelligence",
       "catalogs": "Catalogs",
       "platform": "Platform"
     },
@@ -83,7 +84,13 @@
     "kindPersons": "Person types",
     "identificationTypes": "ID types",
     "signerFields": "Signer fields",
-    "propertyCatalog": "Properties"
+    "propertyCatalog": "Properties",
+    "platformAnalytics": "Platform analytics",
+    "revenue": "Revenue",
+    "validationConsumption": "Validation usage",
+    "validationHistory": "Validation history",
+    "resellerDocuments": "Documents by reseller",
+    "consents": "Data processing"
   },
   "auth": {
     "title": "Platform access",
@@ -228,6 +235,8 @@
       "navGroupNote": "Each menu group opens its submenu; on mobile it is listed under its heading. The group is marked when one of its sections is open and adds up its counts.",
       "actionMenu": "Action menu",
       "actionMenuNote": "Built on the menu popover. Groups with a separator; destructive goes in red and last. Used by the account and Staff rows.",
+      "barChart": "Bar chart",
+      "barChartNote": "Bars per category with up to three series, an axis in round steps and a hidden table for screen readers. Colors --dba-chart-*. Used by the Intelligence screens.",
       "actionPicked": "You picked: {{key}}",
       "usage": "Usage in a row",
       "usageNote": "Documents used against the limit inside a table: warning tone from 90 % and over tone past the limit; ∞ when there is no cap.",

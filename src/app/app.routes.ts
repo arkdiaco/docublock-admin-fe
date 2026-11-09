@@ -438,7 +438,7 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
   ],
 };
 
-const sectionRoute = (group: ConsoleGroup, item: ConsoleItem): Route => ({
+const pageRoute = (group: ConsoleGroup, item: ConsoleItem): Route => ({
   path: item.path,
   canMatch: [platformMatchGuard],
   data: { titleKey: item.labelKey, platform: itemAccess(group, item) },
@@ -446,6 +446,11 @@ const sectionRoute = (group: ConsoleGroup, item: ConsoleItem): Route => ({
     { path: '', loadComponent: placeholder, data: { titleKey: item.labelKey } },
   ],
 });
+
+const sectionRoute = (group: ConsoleGroup, item: ConsoleItem): Route =>
+  item.link
+    ? { path: item.path, pathMatch: 'full', redirectTo: item.link.href }
+    : pageRoute(group, item);
 
 const firstVisible = (group: ConsoleGroup) => () => {
   const owned = inject(AuthStore).platformPermissions();
