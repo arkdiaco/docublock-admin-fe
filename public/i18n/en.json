@@ -4945,10 +4945,6 @@
       "hint": "One per line, with the country code. The name is optional and goes after a comma.",
       "capped": "Only the first 10,000 numbers will be used: that is the maximum per send."
     },
-    "defaultName": {
-      "label": "Name for those without one",
-      "hint": "Without it, recipients with no name cannot be sent to."
-    },
     "review": {
       "title": "Review",
       "run": "Review {{total}} recipients",
@@ -4977,12 +4973,10 @@
       "title": "Message",
       "text": "Text",
       "placeholder": "Write the text each recipient will get",
-      "hint": "The same for everyone; only the name changes. WhatsApp does not allow line breaks here: they become spaces.",
+      "hint": "The same for everyone. WhatsApp does not allow line breaks here: they become spaces.",
       "previewTitle": "What fills in the template",
-      "previewName": "Name",
       "previewText": "Text",
       "previewNote": "The rest of the message comes from the template approved in WhatsApp.",
-      "noName": "Recipient name",
       "noText": "The text will show here"
     },
     "send": {

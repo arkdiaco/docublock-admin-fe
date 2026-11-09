@@ -158,9 +158,6 @@ describe('Comunicaciones', () => {
     const area = host.querySelector('textarea') as HTMLTextAreaElement;
     area.value = '+573001234567, Ana\n+573001234568';
     area.dispatchEvent(new Event('input'));
-    const nombre = host.querySelector('dba-field input') as HTMLInputElement;
-    nombre.value = ' Cliente ';
-    nombre.dispatchEvent(new Event('input'));
     fixture.detectChanges();
     boton(host, 'Revisar').click();
     const peticion = http.expectOne('/platform/communications/whatsapp/preview');
@@ -168,7 +165,6 @@ describe('Comunicaciones', () => {
       userIds: [],
       signerIds: [],
       numbers: [{ phone: '+573001234567', name: 'Ana' }, { phone: '+573001234568' }],
-      defaultName: 'Cliente',
     });
     peticion.flush({ sendable: [], excluded: [], duplicates: 0 });
     await ver(fixture, 'Se pueden enviar');

@@ -21,8 +21,6 @@ import { TranslatePipe } from '@ngx-translate/core';
         <div class="preview__image preview__image--empty" aria-hidden="true"></div>
       }
       <dl class="preview__vars">
-        <dt>{{ 'comm.message.previewName' | translate }}</dt>
-        <dd [class.preview__empty]="!name()">{{ name() || ('comm.message.noName' | translate) }}</dd>
         <dt>{{ 'comm.message.previewText' | translate }}</dt>
         <dd [class.preview__empty]="!text()">{{ text() || ('comm.message.noText' | translate) }}</dd>
       </dl>
@@ -99,7 +97,6 @@ import { TranslatePipe } from '@ngx-translate/core';
 })
 export class MessagePreviewComponent {
   readonly imageUrl = input('');
-  readonly name = input('');
   readonly text = input('');
 
   protected readonly broken = signal(false);
