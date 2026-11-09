@@ -55,6 +55,7 @@ export class CommunicationsApi {
   recipients(query: {
     kind: RecipientKind;
     search?: string;
+    organizationId?: string;
     page: number;
     limit: number;
   }): Observable<RecipientsPage> {

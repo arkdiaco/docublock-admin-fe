@@ -4893,7 +4893,7 @@
     }
   },
   "comm": {
-    "lead": "Mensajes por WhatsApp con imagen, nombre y texto",
+    "lead": "Mensajes por WhatsApp con imagen y texto",
     "loading": "Cargando destinatarios…",
     "search": "Buscar por nombre, correo o teléfono",
     "markPage": "Marcar esta página",

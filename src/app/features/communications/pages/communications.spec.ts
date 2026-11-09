@@ -1,7 +1,9 @@
 import type { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
+import { OrgPickerComponent } from '../../../shared/ui/org-picker.component';
 import { conPermisos, configurar } from '../../catalogs/pages/catalogs-test-kit';
 import { parseNumbers, toggled, withAll } from '../data/recipient-selection';
 import { CommunicationsComponent } from './communications.component';
@@ -97,6 +99,34 @@ describe('Comunicaciones', () => {
     expect(host.textContent).toContain('Sin indicativo');
     expect(host.textContent).not.toContain('Subir imagen');
     expect(host.textContent ?? '').not.toMatch(LLAVE_CRUDA);
+  });
+
+  it('sin Clientes ni Comercial no ofrece filtrar por organización', async () => {
+    const fixture = abrir(LEER);
+    lista().flush(FILAS);
+    const host = await ver(fixture, 'Ana Ruiz');
+    expect(host.querySelector('dba-org-picker')).toBeNull();
+  });
+
+  it('con Clientes filtra los usuarios por organización y vuelve a la primera página', async () => {
+    const fixture = abrir([...LEER, 'platform:clients']);
+    lista().flush(FILAS);
+    await ver(fixture, 'Ana Ruiz');
+    const picker = fixture.debugElement.query(By.directive(OrgPickerComponent))
+      .componentInstance as OrgPickerComponent;
+    picker.picked.emit('6a979ef858233f68f8ba543a');
+    const filtrada = lista();
+    expect(filtrada.request.params.get('organizationId')).toBe('6a979ef858233f68f8ba543a');
+    expect(filtrada.request.params.get('page')).toBe('1');
+    filtrada.flush({ total: 1, items: [FILAS.items[0]] });
+    await ver(fixture, 'Ana Ruiz');
+    http
+      .expectOne('/platform/organizations/6a979ef858233f68f8ba543a')
+      .flush({ businessName: 'Acme SAS', tributaryNumber: '900123' });
+    picker.picked.emit(null);
+    const todas = lista();
+    expect(todas.request.params.has('organizationId')).toBe(false);
+    todas.flush(FILAS);
   });
 
   it('marca, revisa y muestra enviables y no enviables', async () => {

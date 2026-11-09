@@ -4893,7 +4893,7 @@
     }
   },
   "comm": {
-    "lead": "WhatsApp messages with an image, name and text",
+    "lead": "WhatsApp messages with an image and text",
     "loading": "Loading recipients…",
     "search": "Search by name, email or phone",
     "markPage": "Select this page",
