@@ -9,6 +9,8 @@ describe('permisos de plataforma por grupo', () => {
       'platform:operations:manage',
       'platform:commercial',
       'platform:commercial:manage',
+      'platform:intelligence',
+      'platform:intelligence:manage',
       'platform:catalogs',
       'platform:catalogs:manage',
       'platform:platform',

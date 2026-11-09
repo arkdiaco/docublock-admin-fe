@@ -18,6 +18,7 @@ import { FilterPillsComponent, type FilterPill } from '../../../shared/ui/filter
 import { ActionMenuComponent, type ActionMenuItem } from '../../../shared/ui/action-menu.component';
 import { OrgFlagComponent } from '../../../shared/ui/org-flag.component';
 import { NavGroupComponent, type NavGroupLink } from '../../../shared/ui/nav-group.component';
+import { BarChartComponent, type BarChartCategory, type BarChartSeries } from '../../../shared/ui/bar-chart.component';
 import { IconComponent } from '../../../shared/ui/icon.component';
 import { KpiCardComponent } from '../../../shared/ui/kpi-card.component';
 import { ModuleToggleComponent } from '../../../shared/ui/module-toggle.component';
@@ -91,6 +92,20 @@ const NAV_LINKS: readonly NavGroupLink[] = [
 const NAV_LINKS_QUIET: readonly NavGroupLink[] = [
   { key: 'plans', labelKey: 'nav.plans', path: '/comercial/planes' },
   { key: 'billing', labelKey: 'nav.billing', path: '/comercial/facturacion' },
+];
+
+const CHART_MONTHS: readonly BarChartCategory[] = [
+  { key: '1', label: 'Ene' },
+  { key: '2', label: 'Feb' },
+  { key: '3', label: 'Mar' },
+  { key: '4', label: 'Abr' },
+  { key: '5', label: 'May' },
+  { key: '6', label: 'Jun' },
+];
+
+const CHART_SERIES: readonly BarChartSeries[] = [
+  { key: 'approved', label: 'Aprobadas', values: [42, 51, 38, 64, 58, 71] },
+  { key: 'total', label: 'Totales', values: [55, 60, 49, 80, 66, 84] },
 ];
 
 const FILTERS: readonly FilterPill[] = [
@@ -178,6 +193,7 @@ const pctOf = (used: number, limit: number): string =>
     DataTableComponent,
     RecordHeaderComponent,
     UnderlineTabsComponent,
+    BarChartComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -405,6 +421,12 @@ const pctOf = (used: number, limit: number): string =>
               }
             </div>
             <p class="dba-body">{{ 'sys.c.actionMenuNote' | translate }}</p>
+          </div>
+
+          <div class="card">
+            <h3 class="dba-eyebrow">{{ 'sys.c.barChart' | translate }}</h3>
+            <dba-bar-chart [categories]="chartMonths" [series]="chartSeries" [label]="'sys.c.barChart' | translate" />
+            <p class="dba-body">{{ 'sys.c.barChartNote' | translate }}</p>
           </div>
         </div>
       </section>
@@ -856,6 +878,8 @@ export class DesignSystemComponent {
   ];
   protected readonly actionPicked = signal('');
   protected readonly navLinksQuiet = NAV_LINKS_QUIET;
+  protected readonly chartMonths = CHART_MONTHS;
+  protected readonly chartSeries = CHART_SERIES;
   protected readonly orgColumns = ORG_COLUMNS;
   protected readonly recordCrumbs = ['nav.crumbRoot', 'nav.organizations', 'ORG-0412'];
 

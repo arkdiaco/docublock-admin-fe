@@ -347,6 +347,56 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
         ),
     },
   ],
+  validationConsumption: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/validation-consumption/pages/validation-consumption.component').then(
+          (m) => m.ValidationConsumptionComponent,
+        ),
+    },
+    {
+      path: ':alcance/:id',
+      loadComponent: () =>
+        import('./features/validation-consumption/pages/validation-detail.component').then(
+          (m) => m.ValidationDetailComponent,
+        ),
+    },
+  ],
+  platformAnalytics: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/platform-analytics/pages/platform-analytics.component').then(
+          (m) => m.PlatformAnalyticsComponent,
+        ),
+    },
+  ],
+  validationHistory: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/validation-history/pages/validation-history.component').then(
+          (m) => m.ValidationHistoryComponent,
+        ),
+    },
+  ],
+  resellerDocuments: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/reseller-documents/pages/reseller-documents.component').then(
+          (m) => m.ResellerDocumentsComponent,
+        ),
+    },
+  ],
+  consents: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/consents/pages/consents.component').then((m) => m.ConsentsComponent),
+    },
+  ],
   tasks: [
     {
       path: '',
@@ -438,7 +488,7 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
   ],
 };
 
-const sectionRoute = (group: ConsoleGroup, item: ConsoleItem): Route => ({
+const pageRoute = (group: ConsoleGroup, item: ConsoleItem): Route => ({
   path: item.path,
   canMatch: [platformMatchGuard],
   data: { titleKey: item.labelKey, platform: itemAccess(group, item) },
@@ -446,6 +496,11 @@ const sectionRoute = (group: ConsoleGroup, item: ConsoleItem): Route => ({
     { path: '', loadComponent: placeholder, data: { titleKey: item.labelKey } },
   ],
 });
+
+const sectionRoute = (group: ConsoleGroup, item: ConsoleItem): Route =>
+  item.link
+    ? { path: item.path, pathMatch: 'full', redirectTo: item.link.href }
+    : pageRoute(group, item);
 
 const firstVisible = (group: ConsoleGroup) => () => {
   const owned = inject(AuthStore).platformPermissions();

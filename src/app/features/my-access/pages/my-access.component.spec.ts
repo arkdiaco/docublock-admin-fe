@@ -80,6 +80,7 @@ describe('MyAccessComponent', () => {
         'platform:operations',
         'platform:operations:manage',
         'platform:commercial',
+        'platform:intelligence',
         'platform:catalogs',
         'platform:platform',
       ],
@@ -111,6 +112,7 @@ describe('MyAccessComponent', () => {
       'Clientes Sí Sí',
       'Operación Sí Sí',
       'Comercial Sí No',
+      'Inteligencia Sí No',
       'Catálogos Sí No',
       'Plataforma Sí No',
     ]);

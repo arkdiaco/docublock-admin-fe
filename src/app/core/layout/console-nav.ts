@@ -17,6 +17,12 @@ export type ConsoleSection =
   | 'referrals'
   | 'resellers'
   | 'billing'
+  | 'platformAnalytics'
+  | 'revenue'
+  | 'validationConsumption'
+  | 'validationHistory'
+  | 'resellerDocuments'
+  | 'consents'
   | 'countries'
   | 'cities'
   | 'kindPersons'
@@ -35,6 +41,7 @@ export interface ConsoleItem {
   path: string;
   labelKey: string;
   manage?: boolean;
+  link?: { group: PlatformGroup; href: string };
 }
 
 export interface ConsoleGroup {
@@ -87,6 +94,24 @@ export const CONSOLE_GROUPS: readonly ConsoleGroup[] = [
     ],
   },
   {
+    key: 'intelligence',
+    path: 'inteligencia',
+    labelKey: 'nav.group.intelligence',
+    items: [
+      { key: 'platformAnalytics', path: 'analitica', labelKey: 'nav.platformAnalytics' },
+      {
+        key: 'revenue',
+        path: 'ingresos',
+        labelKey: 'nav.revenue',
+        link: { group: 'commercial', href: '/comercial/facturacion/ingresos' },
+      },
+      { key: 'validationConsumption', path: 'consumo-validaciones', labelKey: 'nav.validationConsumption' },
+      { key: 'validationHistory', path: 'historico-validaciones', labelKey: 'nav.validationHistory' },
+      { key: 'resellerDocuments', path: 'documentos-reseller', labelKey: 'nav.resellerDocuments' },
+      { key: 'consents', path: 'tratamiento-datos', labelKey: 'nav.consents' },
+    ],
+  },
+  {
     key: 'catalogs',
     path: 'catalogos',
     labelKey: 'nav.group.catalogs',
@@ -132,7 +157,11 @@ export const itemAccess = (group: ConsoleGroup, item: ConsoleItem): readonly str
   item.manage ? [platformManage(group.key)] : groupAccess(group.key);
 
 export const canSeeItem = (owned: readonly string[], group: ConsoleGroup, item: ConsoleItem): boolean =>
-  item.manage ? canManageGroup(owned, group.key) : canReadGroup(owned, group.key);
+  (item.manage ? canManageGroup(owned, group.key) : canReadGroup(owned, group.key)) &&
+  (!item.link || canReadGroup(owned, item.link.group));
+
+export const itemHref = (group: ConsoleGroup, item: ConsoleItem): string =>
+  item.link?.href ?? `/${group.path}/${item.path}`;
 
 export const visibleGroups = (owned: readonly string[]): ConsoleGroup[] =>
   CONSOLE_GROUPS.map((group) => ({ ...group, items: group.items.filter((item) => canSeeItem(owned, group, item)) })).filter(

@@ -11,7 +11,7 @@ import { AuthStore } from '../auth/auth.store';
 import { LOGIN_ROUTE, SessionService } from '../auth/session.service';
 import { APP_ENV } from '../config/api.tokens';
 import { DensityService } from '../preferences/density.service';
-import { MY_ACCESS_PATH, OVERVIEW_PATH, visibleGroups } from './console-nav';
+import { MY_ACCESS_PATH, OVERVIEW_PATH, itemHref, visibleGroups } from './console-nav';
 import { titleKeysOf } from './console-title.strategy';
 import { NavCounts } from './nav-counts.service';
 import { SearchDialogComponent } from './search-dialog.component';
@@ -454,7 +454,7 @@ import { ActionMenuComponent, type ActionMenuItem } from '../../shared/ui/action
       color: var(--dba-violet-700);
     }
 
-    @media (max-width: 960px) {
+    @media (max-width: 1480px) {
       .bar__search {
         width: var(--dba-height-search);
         padding: 0;
@@ -531,7 +531,7 @@ export class ConsoleShellComponent {
       links: group.items.map((item) => ({
         key: item.key,
         labelKey: item.labelKey,
-        path: `/${group.path}/${item.path}`,
+        path: itemHref(group, item),
         count: counts[item.key],
       })),
     }));

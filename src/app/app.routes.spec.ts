@@ -73,6 +73,14 @@ describe('rutas de la consola', () => {
     expect(await ir('/comercial/planes')).toBe('/comercial/planes');
   });
 
+  it('Inteligencia abre su primera sección e Ingresos lleva a Facturación', async () => {
+    entrar([...READONLY, 'platform:intelligence']);
+    expect(await ir('/inteligencia')).toBe('/inteligencia/analitica');
+    expect(await ir('/inteligencia/ingresos')).toBe('/comercial/facturacion/ingresos');
+    entrar(READONLY);
+    expect(await ir('/inteligencia/analitica')).toBe('/panel');
+  });
+
   it('sin sesión todo manda al acceso con la vuelta guardada', async () => {
     expect(await ir('/clientes/organizaciones')).toBe('/acceso?redirect=%2Fclientes%2Forganizaciones');
     expect(await ir('/sistema/diseno')).toBe('/acceso?redirect=%2Fsistema%2Fdiseno');

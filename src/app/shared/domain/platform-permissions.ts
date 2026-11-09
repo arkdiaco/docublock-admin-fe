@@ -1,4 +1,4 @@
-export const PLATFORM_GROUPS = ['clients', 'operations', 'commercial', 'catalogs', 'platform'] as const;
+export const PLATFORM_GROUPS = ['clients', 'operations', 'commercial', 'intelligence', 'catalogs', 'platform'] as const;
 
 export type PlatformGroup = (typeof PLATFORM_GROUPS)[number];
 

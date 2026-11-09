@@ -78,12 +78,21 @@ const NOT_A_RESELLER = 400;
           [meta]="item.tributaryNumber"
         />
 
-        @if (canOpenOrg() || canManage()) {
+        @if (canOpenOrg() || canOpenSignedDocuments() || canManage()) {
           <div class="bd__actions">
             @if (canOpenOrg()) {
               <a dba-button variant="secondary" [routerLink]="[orgsPath, item.id]">{{
                 'rsl.detail.openOrg' | translate
               }}</a>
+            }
+            @if (canOpenSignedDocuments()) {
+              <a
+                dba-button
+                variant="secondary"
+                [routerLink]="[signedDocumentsPath]"
+                [queryParams]="{ reseller: item.id }"
+                >{{ 'rsl.detail.signedDocuments' | translate }}</a
+              >
             }
             @if (canManage()) {
               <button
@@ -151,6 +160,8 @@ export class ResellerDetailComponent {
   protected readonly pending = new PendingAction();
   protected readonly canManage = computed(() => this.auth.canManage('commercial'));
   protected readonly canOpenOrg = computed(() => this.auth.canRead('clients'));
+  protected readonly signedDocumentsPath = sectionPath('resellerDocuments');
+  protected readonly canOpenSignedDocuments = computed(() => this.auth.canRead('intelligence'));
   protected readonly loading = signal(true);
   protected readonly error = signal(false);
   protected readonly missing = signal(false);

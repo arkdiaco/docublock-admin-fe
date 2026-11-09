@@ -50,7 +50,17 @@ describe('Comercial › Resellers › ficha', () => {
     expect(host.textContent).toContain('Notaría 14');
     expect(quitarRol(host)).toBeUndefined();
     expect(host.textContent).not.toContain('Ver organización');
+    expect(host.textContent).not.toContain('Documentos firmados');
     expect(host.querySelector('dba-portfolio-tab a')).toBeNull();
+  });
+
+  it('con Inteligencia enlaza sus documentos firmados con el reseller elegido', async () => {
+    conPermisos(['platform:commercial', 'platform:intelligence']);
+    const { host } = await montar();
+    const enlace = [...host.querySelectorAll('a')].find((a) =>
+      a.textContent?.includes('Documentos firmados'),
+    );
+    expect(enlace?.getAttribute('href')).toBe('/inteligencia/documentos-reseller?reseller=rs1');
   });
 
   it('con clients enlaza la organización y la cartera', async () => {

@@ -58,6 +58,7 @@
       "clients": "Clients",
       "operations": "Operations",
       "commercial": "Commercial",
+      "intelligence": "Intelligence",
       "catalogs": "Catalogs",
       "platform": "Platform"
     },
@@ -83,7 +84,13 @@
     "kindPersons": "Person types",
     "identificationTypes": "ID types",
     "signerFields": "Signer fields",
-    "propertyCatalog": "Properties"
+    "propertyCatalog": "Properties",
+    "platformAnalytics": "Platform analytics",
+    "revenue": "Revenue",
+    "validationConsumption": "Validation usage",
+    "validationHistory": "Validation history",
+    "resellerDocuments": "Documents by reseller",
+    "consents": "Data processing"
   },
   "auth": {
     "title": "Platform access",
@@ -228,6 +235,8 @@
       "navGroupNote": "Each menu group opens its submenu; on mobile it is listed under its heading. The group is marked when one of its sections is open and adds up its counts.",
       "actionMenu": "Action menu",
       "actionMenuNote": "Built on the menu popover. Groups with a separator; destructive goes in red and last. Used by the account and Staff rows.",
+      "barChart": "Bar chart",
+      "barChartNote": "Bars per category with up to three series, an axis in round steps and a hidden table for screen readers. Colors --dba-chart-*. Used by the Intelligence screens.",
       "actionPicked": "You picked: {{key}}",
       "usage": "Usage in a row",
       "usageNote": "Documents used against the limit inside a table: warning tone from 90 % and over tone past the limit; ∞ when there is no cap.",
@@ -3982,7 +3991,8 @@
       "email": "Email",
       "portfolio": "Portfolio",
       "created": "Created",
-      "tabsLabel": "Reseller sections"
+      "tabsLabel": "Reseller sections",
+      "signedDocuments": "Signed documents"
     },
     "port": {
       "searchPlaceholder": "Search by name or tax ID",
@@ -6046,6 +6056,293 @@
       "7d": "Last 7 days",
       "30d": "Last 30 days",
       "90d": "Last 90 days"
+    }
+  },
+  "vcon": {
+    "lead": "Validations used by each account in the period and what they are worth under its rate.",
+    "from": "From",
+    "to": "To",
+    "rangeInvalid": "“From” is later than “To”.",
+    "viewLabel": "Group by",
+    "view": {
+      "organizaciones": "By organization",
+      "resellers": "By reseller"
+    },
+    "csv": "Export CSV",
+    "loading": "Loading usage…",
+    "errorTitle": "We could not load usage",
+    "errorLead": "Check your connection and try again.",
+    "emptyTitle": "No validations in the period",
+    "emptyLead": "Change the dates or leave the period empty to see the whole history.",
+    "statsLabel": "Validations in the period",
+    "stat": {
+      "total": "Total",
+      "totalNote": "Provider calls",
+      "otherNote": "Not billed"
+    },
+    "otherNote": "A lookup reused on other documents of the same signer counts once. “Other” groups validations with no rate, such as advanced liveness.",
+    "type": {
+      "ani": "Registry lookup",
+      "liveness": "Liveness",
+      "macherFacial": "Advanced biometrics",
+      "otros": "Other"
+    },
+    "tableLabel": {
+      "organizaciones": "Usage by organization",
+      "resellers": "Usage by reseller"
+    },
+    "col": {
+      "organization": "Organization",
+      "reseller": "Reseller",
+      "organizations": "Organizations",
+      "ani": "RL",
+      "liveness": "LV",
+      "macherFacial": "AB",
+      "otros": "Other",
+      "total": "Total",
+      "packages": "Packages",
+      "value": "Period value",
+      "currency": "Currency"
+    },
+    "direct": "Direct",
+    "noReseller": "No reseller",
+    "viaReseller": "Via reseller",
+    "noPricing": "No rate",
+    "actions": "Actions",
+    "actionsFor": "Actions for {{name}}",
+    "action": {
+      "pricing": "Rate",
+      "billing": "Billing statement for the period",
+      "detail": "View detail"
+    }
+  },
+  "vdet": {
+    "back": "Back to consumption",
+    "scope": {
+      "organization": "Organization",
+      "reseller": "Reseller"
+    },
+    "billedVia": "Billed with the pricing of reseller",
+    "searchPlaceholder": "Search a document by name or code",
+    "searchLabel": "Search document",
+    "typeLabel": "Validation type",
+    "typeAll": "All",
+    "csv": "Export CSV",
+    "pdf": "Download PDF",
+    "loading": "Loading the detail…",
+    "errorTitle": "We could not load the detail",
+    "errorLead": "Check your connection and try again.",
+    "notFoundTitle": "We could not find this account",
+    "notFoundLead": "It may no longer exist or it is not a reseller. Go back to consumption and pick it again.",
+    "noPricing": "This account has no validation pricing set up, so the value stays empty.",
+    "capped": "The period has too many validations to read them all; the figures are partial. Shorten the period to see it complete.",
+    "stat": {
+      "value": "Value",
+      "valueNote": "With the current pricing"
+    },
+    "months": "Summary by month",
+    "monthsLabel": "Consumption by month",
+    "documents": "Documents",
+    "documentsLabel": "Documents of {{month}}",
+    "emptyTitle": "No validations with these filters",
+    "emptyLead": "Change the dates, the type or the search.",
+    "col": {
+      "month": "Month",
+      "documents": "Documents",
+      "signers": "Signers",
+      "document": "Document",
+      "organization": "Organization"
+    },
+    "expand": "Show signers of {{name}}",
+    "expandSigner": "Show validations of {{name}}",
+    "noCode": "No code",
+    "noIdentification": "No identification",
+    "copyNote": "Copies are the same check stored in another document of the signer: they are shown but not counted.",
+    "result": {
+      "passed": "Passed",
+      "failed": "Failed",
+      "retry": "Retry",
+      "unknown": "No data"
+    },
+    "retry": "Retry",
+    "copy": "Copy · not counted",
+    "range": "{{from}}–{{to}} of {{total}} documents",
+    "error": {
+      "csv": "We could not export the CSV.",
+      "pdf": "We could not generate the PDF."
+    }
+  },
+  "cns": {
+    "lead": "Data processing policy acceptances at signing",
+    "csv": "Export CSV",
+    "loading": "Loading acceptances…",
+    "errorTitle": "We couldn't load the acceptances",
+    "errorLead": "Check your connection and try again.",
+    "emptyTitle": "No acceptances yet",
+    "emptyLead": "They will show up here when signers accept the data processing policy.",
+    "emptyFilteredTitle": "No acceptance matches",
+    "emptyFilteredLead": "Change the period, organization, policy or search.",
+    "searchLabel": "Search acceptances",
+    "searchPlaceholder": "Document, code, signer or ID number",
+    "policyLabel": "Policy",
+    "policyAll": "All policies",
+    "policyOption": "{{title}} · v{{version}} ({{count}})",
+    "legacyOption": "Acceptance before the catalog ({{count}})",
+    "legacy": "Acceptance before the catalog",
+    "legacyVersion": "Recorded version {{version}}",
+    "version": "Version {{version}}",
+    "noVersion": "No version",
+    "unknownPolicy": "Unnamed policy",
+    "noIdentification": "No ID number",
+    "noCode": "No code",
+    "unknownOrganization": "Unnamed organization",
+    "exportCapped": "The CSV includes the first {{cap}} acceptances. Shorten the period to export them all.",
+    "statsLabel": "Acceptance summary",
+    "stat": {
+      "total": "Acceptances",
+      "totalNote": "In the chosen period and filters",
+      "signers": "Distinct signers",
+      "organizations": "Organizations"
+    },
+    "tableLabel": "Data processing acceptances",
+    "range": "{{from}}–{{to}} of {{total}}",
+    "col": {
+      "acceptedAt": "Accepted",
+      "signer": "Signer",
+      "document": "Document",
+      "organization": "Organization",
+      "policy": "Policy",
+      "ip": "IP"
+    },
+    "error": {
+      "csv": "We couldn't export the CSV. Try again."
+    }
+  },
+  "rdoc": {
+    "lead": "Documents signed by a reseller's organizations",
+    "resellerLabel": "Reseller",
+    "pickReseller": "Choose a reseller",
+    "csv": "Export CSV",
+    "pdf": "Download PDF",
+    "loading": "Loading signed documents…",
+    "chooseTitle": "Choose a reseller",
+    "chooseLead": "You will see the documents its organizations signed in the period.",
+    "notFoundTitle": "We couldn't find this reseller",
+    "notFoundLead": "It may no longer exist or no longer be a reseller. Choose another one.",
+    "errorTitle": "We couldn't load the documents",
+    "errorLead": "Check your connection and try again.",
+    "noPortfolioTitle": "This reseller has no organizations",
+    "noPortfolioLead": "When it manages organizations, they will show up here.",
+    "emptyTitle": "No signed documents",
+    "emptyLead": "None of the reseller's organizations finished signing a document in the period.",
+    "exportCapped": "The CSV includes the first {{cap}} documents. Shorten the period to export them all.",
+    "statsLabel": "Signed documents summary",
+    "stat": {
+      "total": "Signed documents",
+      "totalNote": "Every signer finished",
+      "organizations": "Organizations",
+      "withSigned": "With signed documents"
+    },
+    "byOrganization": "Summary by organization",
+    "documents": "Document detail",
+    "noCode": "No code",
+    "range": "{{from}}–{{to}} of {{total}}",
+    "col": {
+      "organization": "Organization",
+      "signedDocuments": "Signed documents",
+      "document": "Document",
+      "code": "Code",
+      "signers": "Signed",
+      "signedAt": "Signed on"
+    },
+    "error": {
+      "csv": "We couldn't export the CSV. Try again.",
+      "pdf": "We couldn't generate the PDF. Try again."
+    }
+  },
+  "pan": {
+    "lead": "Platform-wide figures, excluding test organizations",
+    "year": "Year",
+    "loading": "Loading analytics…",
+    "errorTitle": "We could not load the analytics",
+    "errorLead": "Check your connection and try again.",
+    "statsLabel": "Platform summary",
+    "stat": {
+      "users": "Users",
+      "usersNote": "With at least one organization",
+      "clients": "Client organizations",
+      "resellers": "Resellers",
+      "documents": "Documents created in {{year}}",
+      "documentsNote": "{{signed}} signed",
+      "transactions": "Transactions in {{year}}",
+      "transactionsNote": "{{approved}} approved"
+    },
+    "transactionsByMonth": "Transactions by month · {{year}}",
+    "documentsByMonth": "Documents by month · {{year}}",
+    "series": {
+      "approved": "Approved",
+      "total": "Total",
+      "created": "Created",
+      "signed": "Signed"
+    },
+    "plans": "Most used plans",
+    "plansLead": "Active organizations by their current plan",
+    "planShare": "{{share}}% of active organizations",
+    "noPlansTitle": "No active organizations",
+    "noPlansLead": "When there are active organizations, their plan will show here.",
+    "noTransactionsTitle": "No transactions this year",
+    "noTransactionsLead": "When payments are recorded this year, their monthly split will show here.",
+    "noDocumentsTitle": "No documents this year",
+    "noDocumentsLead": "When documents are created or signed this year, their monthly split will show here."
+  },
+  "vhis": {
+    "lead": "Validations stored per signer before the April 20, 2026 change",
+    "resellerLabel": "Reseller",
+    "allResellers": "All resellers",
+    "organizationLabel": "Organization",
+    "allOrganizations": "All organizations",
+    "cutoffNote": "Only validations up to {{day}} count. Later ones are in Validation usage.",
+    "countNote": "A signer who signed in several organizations shows up in each one and counts once in the reseller total. In package mode, one package is charged per signer.",
+    "csv": "Export CSV",
+    "pdf": "Download PDF",
+    "loading": "Loading the validation history…",
+    "afterCutoffTitle": "The period starts after the cutoff",
+    "afterCutoffLead": "The history only holds validations before April 20, 2026.",
+    "notFoundTitle": "We couldn't find that filter",
+    "notFoundLead": "The organization may no longer exist or may no longer be a reseller. Pick another one.",
+    "errorTitle": "We couldn't load the history",
+    "errorLead": "Check your connection and try again.",
+    "emptyTitle": "No validations in the period",
+    "emptyLead": "There are no historical validations for these filters.",
+    "capped": "The period exceeds the maximum number of validations that can be read; figures are partial. Shorten the period to see it in full.",
+    "statsLabel": "Validation history summary",
+    "stat": {
+      "validations": "Validations",
+      "validationsNote": "Copies of the same check are not counted",
+      "signers": "Signers",
+      "signersNote": "Each signer counts once"
+    },
+    "noReseller": "No reseller",
+    "noOrganization": "No organization",
+    "groupSummary": "Signers: {{signers}} · Validations: {{validations}}",
+    "groupLabel": "Organizations of {{name}}",
+    "col": {
+      "organization": "Organization",
+      "signers": "Signers",
+      "value": "Value"
+    },
+    "expand": "Show the signers of {{name}}",
+    "expandSigner": "Show the validations of {{name}}",
+    "multiOrg": "signed in {{count}} organizations",
+    "searchLabel": "Search signer",
+    "searchPlaceholder": "Name or ID number",
+    "signersLoading": "Loading the signers…",
+    "signersError": "We couldn't load the signers.",
+    "signersEmpty": "No signer matches the search.",
+    "range": "{{from}}–{{to}} of {{total}}",
+    "error": {
+      "csv": "We couldn't export the CSV. Try again.",
+      "pdf": "We couldn't generate the PDF. Try again."
     }
   }
 }

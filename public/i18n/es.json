@@ -58,6 +58,7 @@
       "clients": "Clientes",
       "operations": "Operación",
       "commercial": "Comercial",
+      "intelligence": "Inteligencia",
       "catalogs": "Catálogos",
       "platform": "Plataforma"
     },
@@ -83,7 +84,13 @@
     "identificationTypes": "Tipos de identificación",
     "signerFields": "Campos del firmante",
     "propertyCatalog": "Inmuebles",
-    "codeDeliveries": "Envíos de códigos"
+    "codeDeliveries": "Envíos de códigos",
+    "platformAnalytics": "Analítica de plataforma",
+    "revenue": "Ingresos",
+    "validationConsumption": "Consumo de validaciones",
+    "validationHistory": "Histórico de validaciones",
+    "resellerDocuments": "Documentos por reseller",
+    "consents": "Tratamiento de datos"
   },
   "auth": {
     "title": "Acceso a la plataforma",
@@ -228,6 +235,8 @@
       "navGroupNote": "Cada grupo del menú abre su submenú; en el móvil se lista con su encabezado. El grupo se marca cuando una de sus secciones está abierta y suma sus conteos.",
       "actionMenu": "Menú de acciones",
       "actionMenuNote": "Sobre el popover del menú. Agrupa con separador; lo destructivo va en rojo y al final. Lo usan la cuenta y las filas de Personal.",
+      "barChart": "Gráfica de barras",
+      "barChartNote": "Barras por categoría con hasta tres series, eje en pasos redondos y tabla oculta para lectores de pantalla. Colores --dba-chart-*. La usan las pantallas de Inteligencia.",
       "actionPicked": "Elegiste: {{key}}",
       "usage": "Uso en una fila",
       "usageNote": "Documentos usados contra el límite dentro de una tabla: tono de aviso desde el 90 % y de exceso al pasar el límite; ∞ cuando no hay tope.",
@@ -3982,7 +3991,8 @@
       "email": "Correo",
       "portfolio": "Cartera",
       "created": "Creada",
-      "tabsLabel": "Secciones del reseller"
+      "tabsLabel": "Secciones del reseller",
+      "signedDocuments": "Documentos firmados"
     },
     "port": {
       "searchPlaceholder": "Buscar por nombre o NIT",
@@ -6046,6 +6056,293 @@
       "7d": "Últimos 7 días",
       "30d": "Últimos 30 días",
       "90d": "Últimos 90 días"
+    }
+  },
+  "vcon": {
+    "lead": "Validaciones consumidas por cada cuenta en el periodo y lo que vale cada una según su tarifa.",
+    "from": "Desde",
+    "to": "Hasta",
+    "rangeInvalid": "La fecha «Desde» es posterior a «Hasta».",
+    "viewLabel": "Agrupar por",
+    "view": {
+      "organizaciones": "Por organización",
+      "resellers": "Por reseller"
+    },
+    "csv": "Exportar CSV",
+    "loading": "Cargando el consumo…",
+    "errorTitle": "No pudimos cargar el consumo",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "emptyTitle": "Sin validaciones en el periodo",
+    "emptyLead": "Cambia las fechas o deja el periodo vacío para ver todo el histórico.",
+    "statsLabel": "Validaciones del periodo",
+    "stat": {
+      "total": "Total",
+      "totalNote": "Llamadas al proveedor",
+      "otherNote": "No se cobran"
+    },
+    "otherNote": "Cada consulta repetida en otros documentos del mismo firmante cuenta una sola vez. «Otros» reúne las validaciones que no tienen tarifa, como la prueba de vida avanzada.",
+    "type": {
+      "ani": "Consultar Registraduría",
+      "liveness": "Liveness",
+      "macherFacial": "Biometría avanzada",
+      "otros": "Otros"
+    },
+    "tableLabel": {
+      "organizaciones": "Consumo por organización",
+      "resellers": "Consumo por reseller"
+    },
+    "col": {
+      "organization": "Organización",
+      "reseller": "Reseller",
+      "organizations": "Organizaciones",
+      "ani": "CR",
+      "liveness": "LV",
+      "macherFacial": "BA",
+      "otros": "Otros",
+      "total": "Total",
+      "packages": "Paquetes",
+      "value": "Valor del periodo",
+      "currency": "Moneda"
+    },
+    "direct": "Directa",
+    "noReseller": "Sin reseller",
+    "viaReseller": "Vía reseller",
+    "noPricing": "Sin tarifa",
+    "actions": "Acciones",
+    "actionsFor": "Acciones de {{name}}",
+    "action": {
+      "pricing": "Tarifa",
+      "billing": "Cuenta de cobro del periodo",
+      "detail": "Ver detalle"
+    }
+  },
+  "vdet": {
+    "back": "Volver al consumo",
+    "scope": {
+      "organization": "Organización",
+      "reseller": "Reseller"
+    },
+    "billedVia": "Se cobra con la tarifa del reseller",
+    "searchPlaceholder": "Buscar documento por nombre o código",
+    "searchLabel": "Buscar documento",
+    "typeLabel": "Tipo de validación",
+    "typeAll": "Todos",
+    "csv": "Exportar CSV",
+    "pdf": "Descargar PDF",
+    "loading": "Cargando el detalle…",
+    "errorTitle": "No pudimos cargar el detalle",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "notFoundTitle": "No encontramos esta cuenta",
+    "notFoundLead": "Puede que ya no exista o que no sea un reseller. Vuelve al consumo y elígela de nuevo.",
+    "noPricing": "Esta cuenta no tiene tarifa de validaciones configurada, así que el valor queda vacío.",
+    "capped": "El periodo tiene demasiadas validaciones para leerlas todas; las cifras son parciales. Acorta el periodo para verlo completo.",
+    "stat": {
+      "value": "Valor",
+      "valueNote": "Con la tarifa vigente"
+    },
+    "months": "Resumen por mes",
+    "monthsLabel": "Consumo por mes",
+    "documents": "Documentos",
+    "documentsLabel": "Documentos de {{month}}",
+    "emptyTitle": "Sin validaciones con estos filtros",
+    "emptyLead": "Cambia las fechas, el tipo o la búsqueda.",
+    "col": {
+      "month": "Mes",
+      "documents": "Documentos",
+      "signers": "Firmantes",
+      "document": "Documento",
+      "organization": "Organización"
+    },
+    "expand": "Ver firmantes de {{name}}",
+    "expandSigner": "Ver validaciones de {{name}}",
+    "noCode": "Sin código",
+    "noIdentification": "Sin identificación",
+    "copyNote": "Las copias son la misma consulta guardada en otro documento del firmante: se muestran pero no se cuentan.",
+    "result": {
+      "passed": "Aprobada",
+      "failed": "Fallida",
+      "retry": "Reintento",
+      "unknown": "Sin dato"
+    },
+    "retry": "Reintento",
+    "copy": "Copia · no cuenta",
+    "range": "{{from}}–{{to}} de {{total}} documentos",
+    "error": {
+      "csv": "No pudimos exportar el CSV.",
+      "pdf": "No pudimos generar el PDF."
+    }
+  },
+  "cns": {
+    "lead": "Aceptaciones de la política de tratamiento de datos al firmar",
+    "csv": "Exportar CSV",
+    "loading": "Cargando las aceptaciones…",
+    "errorTitle": "No pudimos cargar las aceptaciones",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "emptyTitle": "Aún no hay aceptaciones",
+    "emptyLead": "Aparecerán aquí cuando los firmantes acepten la política de tratamiento de datos.",
+    "emptyFilteredTitle": "Ninguna aceptación coincide",
+    "emptyFilteredLead": "Cambia el periodo, la organización, la política o la búsqueda.",
+    "searchLabel": "Buscar aceptaciones",
+    "searchPlaceholder": "Documento, código, firmante o identificación",
+    "policyLabel": "Política",
+    "policyAll": "Todas las políticas",
+    "policyOption": "{{title}} · v{{version}} ({{count}})",
+    "legacyOption": "Aceptación anterior al catálogo ({{count}})",
+    "legacy": "Aceptación anterior al catálogo",
+    "legacyVersion": "Versión registrada {{version}}",
+    "version": "Versión {{version}}",
+    "noVersion": "Sin versión",
+    "unknownPolicy": "Política sin nombre",
+    "noIdentification": "Sin identificación",
+    "noCode": "Sin código",
+    "unknownOrganization": "Organización sin nombre",
+    "exportCapped": "El CSV trae las primeras {{cap}} aceptaciones. Acorta el periodo para exportarlas todas.",
+    "statsLabel": "Resumen de aceptaciones",
+    "stat": {
+      "total": "Aceptaciones",
+      "totalNote": "En el periodo y filtros elegidos",
+      "signers": "Firmantes distintos",
+      "organizations": "Organizaciones"
+    },
+    "tableLabel": "Aceptaciones de tratamiento de datos",
+    "range": "{{from}}–{{to}} de {{total}}",
+    "col": {
+      "acceptedAt": "Aceptó",
+      "signer": "Firmante",
+      "document": "Documento",
+      "organization": "Organización",
+      "policy": "Política",
+      "ip": "IP"
+    },
+    "error": {
+      "csv": "No pudimos exportar el CSV. Inténtalo de nuevo."
+    }
+  },
+  "rdoc": {
+    "lead": "Documentos firmados por las organizaciones de un reseller",
+    "resellerLabel": "Reseller",
+    "pickReseller": "Elige un reseller",
+    "csv": "Exportar CSV",
+    "pdf": "Descargar PDF",
+    "loading": "Cargando los documentos firmados…",
+    "chooseTitle": "Elige un reseller",
+    "chooseLead": "Verás los documentos que firmaron sus organizaciones en el periodo.",
+    "notFoundTitle": "No encontramos este reseller",
+    "notFoundLead": "Puede que ya no exista o que haya dejado de ser reseller. Elige otro.",
+    "errorTitle": "No pudimos cargar los documentos",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "noPortfolioTitle": "Este reseller no tiene organizaciones",
+    "noPortfolioLead": "Cuando tenga organizaciones a su cargo, aparecerán aquí.",
+    "emptyTitle": "Sin documentos firmados",
+    "emptyLead": "Ninguna organización del reseller terminó de firmar un documento en el periodo.",
+    "exportCapped": "El CSV trae los primeros {{cap}} documentos. Acorta el periodo para exportarlos todos.",
+    "statsLabel": "Resumen de documentos firmados",
+    "stat": {
+      "total": "Documentos firmados",
+      "totalNote": "Todos los firmantes terminaron",
+      "organizations": "Organizaciones",
+      "withSigned": "Con documentos firmados"
+    },
+    "byOrganization": "Resumen por organización",
+    "documents": "Detalle de documentos",
+    "noCode": "Sin código",
+    "range": "{{from}}–{{to}} de {{total}}",
+    "col": {
+      "organization": "Organización",
+      "signedDocuments": "Documentos firmados",
+      "document": "Documento",
+      "code": "Código",
+      "signers": "Firmaron",
+      "signedAt": "Fecha de firma"
+    },
+    "error": {
+      "csv": "No pudimos exportar el CSV. Inténtalo de nuevo.",
+      "pdf": "No pudimos generar el PDF. Inténtalo de nuevo."
+    }
+  },
+  "pan": {
+    "lead": "Cifras de toda la plataforma, sin las organizaciones de prueba",
+    "year": "Año",
+    "loading": "Cargando la analítica…",
+    "errorTitle": "No pudimos cargar la analítica",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "statsLabel": "Resumen de la plataforma",
+    "stat": {
+      "users": "Usuarios",
+      "usersNote": "Con al menos una organización",
+      "clients": "Organizaciones cliente",
+      "resellers": "Resellers",
+      "documents": "Documentos creados en {{year}}",
+      "documentsNote": "{{signed}} firmados",
+      "transactions": "Transacciones en {{year}}",
+      "transactionsNote": "{{approved}} aprobadas"
+    },
+    "transactionsByMonth": "Transacciones por mes · {{year}}",
+    "documentsByMonth": "Documentos por mes · {{year}}",
+    "series": {
+      "approved": "Aprobadas",
+      "total": "Totales",
+      "created": "Creados",
+      "signed": "Firmados"
+    },
+    "plans": "Planes más usados",
+    "plansLead": "Organizaciones activas según su plan vigente",
+    "planShare": "{{share}} % de las organizaciones activas",
+    "noPlansTitle": "Sin organizaciones activas",
+    "noPlansLead": "Cuando haya organizaciones activas, verás aquí su plan.",
+    "noTransactionsTitle": "Sin transacciones en el año",
+    "noTransactionsLead": "Cuando haya pagos registrados en este año, verás aquí su reparto por mes.",
+    "noDocumentsTitle": "Sin documentos en el año",
+    "noDocumentsLead": "Cuando se creen o firmen documentos en este año, verás aquí su reparto por mes."
+  },
+  "vhis": {
+    "lead": "Validaciones guardadas por firmante antes del cambio del 20 de abril de 2026",
+    "resellerLabel": "Reseller",
+    "allResellers": "Todos los resellers",
+    "organizationLabel": "Organización",
+    "allOrganizations": "Todas las organizaciones",
+    "cutoffNote": "Solo cuenta validaciones hasta el {{day}}. Las posteriores están en Consumo de validaciones.",
+    "countNote": "Un firmante que firmó en varias organizaciones aparece en cada una y cuenta una vez en el total del reseller. En modo paquete se cobra un paquete por firmante.",
+    "csv": "Exportar CSV",
+    "pdf": "Descargar PDF",
+    "loading": "Cargando el histórico de validaciones…",
+    "afterCutoffTitle": "El periodo empieza después del corte",
+    "afterCutoffLead": "El histórico solo tiene validaciones anteriores al 20 de abril de 2026.",
+    "notFoundTitle": "No encontramos ese filtro",
+    "notFoundLead": "Puede que la organización ya no exista o que haya dejado de ser reseller. Elige otra.",
+    "errorTitle": "No pudimos cargar el histórico",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "emptyTitle": "Sin validaciones en el periodo",
+    "emptyLead": "No hay validaciones históricas para estos filtros.",
+    "capped": "El periodo supera el máximo de validaciones que se pueden leer; las cifras son parciales. Acorta el periodo para verlo completo.",
+    "statsLabel": "Resumen del histórico de validaciones",
+    "stat": {
+      "validations": "Validaciones",
+      "validationsNote": "Sin contar copias de la misma consulta",
+      "signers": "Firmantes",
+      "signersNote": "Cada firmante cuenta una vez"
+    },
+    "noReseller": "Sin reseller",
+    "noOrganization": "Sin organización",
+    "groupSummary": "Firmantes: {{signers}} · Validaciones: {{validations}}",
+    "groupLabel": "Organizaciones de {{name}}",
+    "col": {
+      "organization": "Organización",
+      "signers": "Firmantes",
+      "value": "Valor"
+    },
+    "expand": "Ver los firmantes de {{name}}",
+    "expandSigner": "Ver las validaciones de {{name}}",
+    "multiOrg": "firmó en {{count}} organizaciones",
+    "searchLabel": "Buscar firmante",
+    "searchPlaceholder": "Nombre o identificación",
+    "signersLoading": "Cargando los firmantes…",
+    "signersError": "No pudimos cargar los firmantes.",
+    "signersEmpty": "Ningún firmante coincide con la búsqueda.",
+    "range": "{{from}}–{{to}} de {{total}}",
+    "error": {
+      "csv": "No pudimos exportar el CSV. Inténtalo de nuevo.",
+      "pdf": "No pudimos generar el PDF. Inténtalo de nuevo."
     }
   }
 }
