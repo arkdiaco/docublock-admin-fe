@@ -363,6 +363,15 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
         ),
     },
   ],
+  resellerDocuments: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/reseller-documents/pages/reseller-documents.component').then(
+          (m) => m.ResellerDocumentsComponent,
+        ),
+    },
+  ],
   consents: [
     {
       path: '',

@@ -3991,7 +3991,8 @@
       "email": "Correo",
       "portfolio": "Cartera",
       "created": "Creada",
-      "tabsLabel": "Secciones del reseller"
+      "tabsLabel": "Secciones del reseller",
+      "signedDocuments": "Documentos firmados"
     },
     "port": {
       "searchPlaceholder": "Buscar por nombre o NIT",
@@ -6215,6 +6216,48 @@
     },
     "error": {
       "csv": "No pudimos exportar el CSV. Inténtalo de nuevo."
+    }
+  },
+  "rdoc": {
+    "lead": "Documentos firmados por las organizaciones de un reseller",
+    "resellerLabel": "Reseller",
+    "pickReseller": "Elige un reseller",
+    "csv": "Exportar CSV",
+    "pdf": "Descargar PDF",
+    "loading": "Cargando los documentos firmados…",
+    "chooseTitle": "Elige un reseller",
+    "chooseLead": "Verás los documentos que firmaron sus organizaciones en el periodo.",
+    "notFoundTitle": "No encontramos este reseller",
+    "notFoundLead": "Puede que ya no exista o que haya dejado de ser reseller. Elige otro.",
+    "errorTitle": "No pudimos cargar los documentos",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "noPortfolioTitle": "Este reseller no tiene organizaciones",
+    "noPortfolioLead": "Cuando tenga organizaciones a su cargo, aparecerán aquí.",
+    "emptyTitle": "Sin documentos firmados",
+    "emptyLead": "Ninguna organización del reseller terminó de firmar un documento en el periodo.",
+    "exportCapped": "El CSV trae los primeros {{cap}} documentos. Acorta el periodo para exportarlos todos.",
+    "statsLabel": "Resumen de documentos firmados",
+    "stat": {
+      "total": "Documentos firmados",
+      "totalNote": "Todos los firmantes terminaron",
+      "organizations": "Organizaciones",
+      "withSigned": "Con documentos firmados"
+    },
+    "byOrganization": "Resumen por organización",
+    "documents": "Detalle de documentos",
+    "noCode": "Sin código",
+    "range": "{{from}}–{{to}} de {{total}}",
+    "col": {
+      "organization": "Organización",
+      "signedDocuments": "Documentos firmados",
+      "document": "Documento",
+      "code": "Código",
+      "signers": "Firmaron",
+      "signedAt": "Fecha de firma"
+    },
+    "error": {
+      "csv": "No pudimos exportar el CSV. Inténtalo de nuevo.",
+      "pdf": "No pudimos generar el PDF. Inténtalo de nuevo."
     }
   }
 }

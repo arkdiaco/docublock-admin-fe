@@ -3991,7 +3991,8 @@
       "email": "Email",
       "portfolio": "Portfolio",
       "created": "Created",
-      "tabsLabel": "Reseller sections"
+      "tabsLabel": "Reseller sections",
+      "signedDocuments": "Signed documents"
     },
     "port": {
       "searchPlaceholder": "Search by name or tax ID",
@@ -6215,6 +6216,48 @@
     },
     "error": {
       "csv": "We couldn't export the CSV. Try again."
+    }
+  },
+  "rdoc": {
+    "lead": "Documents signed by a reseller's organizations",
+    "resellerLabel": "Reseller",
+    "pickReseller": "Choose a reseller",
+    "csv": "Export CSV",
+    "pdf": "Download PDF",
+    "loading": "Loading signed documents…",
+    "chooseTitle": "Choose a reseller",
+    "chooseLead": "You will see the documents its organizations signed in the period.",
+    "notFoundTitle": "We couldn't find this reseller",
+    "notFoundLead": "It may no longer exist or no longer be a reseller. Choose another one.",
+    "errorTitle": "We couldn't load the documents",
+    "errorLead": "Check your connection and try again.",
+    "noPortfolioTitle": "This reseller has no organizations",
+    "noPortfolioLead": "When it manages organizations, they will show up here.",
+    "emptyTitle": "No signed documents",
+    "emptyLead": "None of the reseller's organizations finished signing a document in the period.",
+    "exportCapped": "The CSV includes the first {{cap}} documents. Shorten the period to export them all.",
+    "statsLabel": "Signed documents summary",
+    "stat": {
+      "total": "Signed documents",
+      "totalNote": "Every signer finished",
+      "organizations": "Organizations",
+      "withSigned": "With signed documents"
+    },
+    "byOrganization": "Summary by organization",
+    "documents": "Document detail",
+    "noCode": "No code",
+    "range": "{{from}}–{{to}} of {{total}}",
+    "col": {
+      "organization": "Organization",
+      "signedDocuments": "Signed documents",
+      "document": "Document",
+      "code": "Code",
+      "signers": "Signed",
+      "signedAt": "Signed on"
+    },
+    "error": {
+      "csv": "We couldn't export the CSV. Try again.",
+      "pdf": "We couldn't generate the PDF. Try again."
     }
   }
 }

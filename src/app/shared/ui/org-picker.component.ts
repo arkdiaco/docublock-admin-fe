@@ -39,7 +39,7 @@ const ANY = '';
       (ngModelChange)="pick($event)"
       (onFilter)="search($event)"
       (onShow)="warm()"
-      [ariaLabel]="'orgPicker.label' | translate"
+      [ariaLabel]="labelKey() | translate"
       appendTo="body"
       styleClass="pick"
     />
@@ -75,6 +75,7 @@ export class OrgPickerComponent {
   readonly value = input<string | null>(null);
   readonly scope = input<LookupScope>('clients');
   readonly anyKey = input('orgPicker.any');
+  readonly labelKey = input('orgPicker.label');
   readonly picked = output<string | null>();
   readonly selection = output<OrganizationOption | null>();
 

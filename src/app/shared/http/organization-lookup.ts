@@ -12,13 +12,14 @@ export interface OrganizationOption {
   resellerName?: string;
 }
 
-export type LookupScope = 'clients' | 'commercial';
+export type LookupScope = 'clients' | 'commercial' | 'resellers';
 
 export const LOOKUP_LIMIT = 8;
 
 const ROUTES: Record<LookupScope, string> = {
   clients: '/platform/organizations',
   commercial: '/platform/commercial/organizations',
+  resellers: '/platform/intelligence/resellers',
 };
 
 @Injectable({ providedIn: 'root' })
