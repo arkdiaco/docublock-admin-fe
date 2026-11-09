@@ -363,6 +363,13 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
         ),
     },
   ],
+  consents: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/consents/pages/consents.component').then((m) => m.ConsentsComponent),
+    },
+  ],
   tasks: [
     {
       path: '',

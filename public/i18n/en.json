@@ -6170,5 +6170,51 @@
       "csv": "We could not export the CSV.",
       "pdf": "We could not generate the PDF."
     }
+  },
+  "cns": {
+    "lead": "Data processing policy acceptances at signing",
+    "csv": "Export CSV",
+    "loading": "Loading acceptances…",
+    "errorTitle": "We couldn't load the acceptances",
+    "errorLead": "Check your connection and try again.",
+    "emptyTitle": "No acceptances yet",
+    "emptyLead": "They will show up here when signers accept the data processing policy.",
+    "emptyFilteredTitle": "No acceptance matches",
+    "emptyFilteredLead": "Change the period, organization, policy or search.",
+    "searchLabel": "Search acceptances",
+    "searchPlaceholder": "Document, code, signer or ID number",
+    "policyLabel": "Policy",
+    "policyAll": "All policies",
+    "policyOption": "{{title}} · v{{version}} ({{count}})",
+    "legacyOption": "Acceptance before the catalog ({{count}})",
+    "legacy": "Acceptance before the catalog",
+    "legacyVersion": "Recorded version {{version}}",
+    "version": "Version {{version}}",
+    "noVersion": "No version",
+    "unknownPolicy": "Unnamed policy",
+    "noIdentification": "No ID number",
+    "noCode": "No code",
+    "unknownOrganization": "Unnamed organization",
+    "exportCapped": "The CSV includes the first {{cap}} acceptances. Shorten the period to export them all.",
+    "statsLabel": "Acceptance summary",
+    "stat": {
+      "total": "Acceptances",
+      "totalNote": "In the chosen period and filters",
+      "signers": "Distinct signers",
+      "organizations": "Organizations"
+    },
+    "tableLabel": "Data processing acceptances",
+    "range": "{{from}}–{{to}} of {{total}}",
+    "col": {
+      "acceptedAt": "Accepted",
+      "signer": "Signer",
+      "document": "Document",
+      "organization": "Organization",
+      "policy": "Policy",
+      "ip": "IP"
+    },
+    "error": {
+      "csv": "We couldn't export the CSV. Try again."
+    }
   }
 }

@@ -6170,5 +6170,51 @@
       "csv": "No pudimos exportar el CSV.",
       "pdf": "No pudimos generar el PDF."
     }
+  },
+  "cns": {
+    "lead": "Aceptaciones de la política de tratamiento de datos al firmar",
+    "csv": "Exportar CSV",
+    "loading": "Cargando las aceptaciones…",
+    "errorTitle": "No pudimos cargar las aceptaciones",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "emptyTitle": "Aún no hay aceptaciones",
+    "emptyLead": "Aparecerán aquí cuando los firmantes acepten la política de tratamiento de datos.",
+    "emptyFilteredTitle": "Ninguna aceptación coincide",
+    "emptyFilteredLead": "Cambia el periodo, la organización, la política o la búsqueda.",
+    "searchLabel": "Buscar aceptaciones",
+    "searchPlaceholder": "Documento, código, firmante o identificación",
+    "policyLabel": "Política",
+    "policyAll": "Todas las políticas",
+    "policyOption": "{{title}} · v{{version}} ({{count}})",
+    "legacyOption": "Aceptación anterior al catálogo ({{count}})",
+    "legacy": "Aceptación anterior al catálogo",
+    "legacyVersion": "Versión registrada {{version}}",
+    "version": "Versión {{version}}",
+    "noVersion": "Sin versión",
+    "unknownPolicy": "Política sin nombre",
+    "noIdentification": "Sin identificación",
+    "noCode": "Sin código",
+    "unknownOrganization": "Organización sin nombre",
+    "exportCapped": "El CSV trae las primeras {{cap}} aceptaciones. Acorta el periodo para exportarlas todas.",
+    "statsLabel": "Resumen de aceptaciones",
+    "stat": {
+      "total": "Aceptaciones",
+      "totalNote": "En el periodo y filtros elegidos",
+      "signers": "Firmantes distintos",
+      "organizations": "Organizaciones"
+    },
+    "tableLabel": "Aceptaciones de tratamiento de datos",
+    "range": "{{from}}–{{to}} de {{total}}",
+    "col": {
+      "acceptedAt": "Aceptó",
+      "signer": "Firmante",
+      "document": "Documento",
+      "organization": "Organización",
+      "policy": "Política",
+      "ip": "IP"
+    },
+    "error": {
+      "csv": "No pudimos exportar el CSV. Inténtalo de nuevo."
+    }
   }
 }
