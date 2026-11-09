@@ -50,6 +50,7 @@ import {
   resellerValueOf,
   type ConsumptionValue,
 } from '../data/consumption-view';
+import { scopePathOf } from '../data/detail-view';
 
 const COUNT_COLUMNS: readonly DataColumn[] = [
   { key: 'ani', labelKey: 'vcon.col.ani', width: '84px', align: 'end' },
@@ -90,6 +91,7 @@ interface RowView {
   packages: number;
   value: ConsumptionValue;
   target: { id: string; name: string } | null;
+  detail: string[] | null;
 }
 
 @Component({
@@ -337,6 +339,7 @@ export class ValidationConsumptionComponent {
   private readonly latest = new LatestRequest();
   private readonly organizationsPath = sectionPath('organizations');
   private readonly resellersPath = sectionPath('resellers');
+  private readonly detailPath = sectionPath('validationConsumption');
   private readonly menu = viewChild.required<ActionMenuComponent>('menu');
 
   protected readonly density = inject(DensityService);
@@ -409,6 +412,7 @@ export class ValidationConsumptionComponent {
         packages: row.packages,
         value: organizationValueOf(row),
         target: row.billedViaReseller ? null : { id: row.organizationId, name: row.businessName },
+        detail: [this.detailPath, scopePathOf('organization'), row.organizationId],
       }));
     return report.resellers.map((row) => ({
       key: row.resellerId ?? 'sin-reseller',
@@ -419,6 +423,7 @@ export class ValidationConsumptionComponent {
       packages: row.packages,
       value: resellerValueOf(row),
       target: row.resellerId ? { id: row.resellerId, name: row.businessName } : null,
+      detail: row.resellerId ? [this.detailPath, scopePathOf('reseller'), row.resellerId] : null,
     }));
   });
 
@@ -450,8 +455,9 @@ export class ValidationConsumptionComponent {
   }
 
   protected actionsOf(row: RowView): ActionMenuItem[] {
-    if (!row.target) return [];
     const items: ActionMenuItem[] = [];
+    if (row.detail) items.push({ key: 'detail', labelKey: 'vcon.action.detail' });
+    if (!row.target) return items;
     if (this.auth.canManage('clients'))
       items.push({ key: 'pricing', labelKey: 'vcon.action.pricing' });
     if (this.auth.canRead('clients') && row.value.kind === 'amount')
@@ -465,6 +471,11 @@ export class ValidationConsumptionComponent {
   }
 
   protected async pick(key: string): Promise<void> {
+    const detail = this.menuRow()?.detail;
+    if (key === 'detail' && detail) {
+      await this.router.navigate(detail, { queryParams: queryParamsOf(this.filters()) });
+      return;
+    }
     const target = this.menuRow()?.target;
     if (!target) return;
     if (key === 'pricing') await this.openPricing(target);

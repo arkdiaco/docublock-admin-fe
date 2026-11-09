@@ -6111,7 +6111,64 @@
     "actionsFor": "Actions for {{name}}",
     "action": {
       "pricing": "Rate",
-      "billing": "Billing statement for the period"
+      "billing": "Billing statement for the period",
+      "detail": "View detail"
+    }
+  },
+  "vdet": {
+    "back": "Back to consumption",
+    "scope": {
+      "organization": "Organization",
+      "reseller": "Reseller"
+    },
+    "billedVia": "Billed with the pricing of reseller {{name}}",
+    "searchPlaceholder": "Search a document by name or code",
+    "searchLabel": "Search document",
+    "typeLabel": "Validation type",
+    "typeAll": "All",
+    "csv": "Export CSV",
+    "pdf": "Download PDF",
+    "loading": "Loading the detail…",
+    "errorTitle": "We could not load the detail",
+    "errorLead": "Check your connection and try again.",
+    "notFoundTitle": "We could not find this account",
+    "notFoundLead": "It may no longer exist or it is not a reseller. Go back to consumption and pick it again.",
+    "noPricing": "This account has no validation pricing set up, so the value stays empty.",
+    "capped": "The period has too many validations to read them all; the figures are partial. Shorten the period to see it complete.",
+    "stat": {
+      "value": "Value",
+      "valueNote": "With the current pricing"
+    },
+    "months": "Summary by month",
+    "monthsLabel": "Consumption by month",
+    "documents": "Documents",
+    "documentsLabel": "Documents of {{month}}",
+    "emptyTitle": "No validations with these filters",
+    "emptyLead": "Change the dates, the type or the search.",
+    "col": {
+      "month": "Month",
+      "documents": "Documents",
+      "signers": "Signers",
+      "document": "Document",
+      "organization": "Organization"
+    },
+    "expand": "Show signers of {{name}}",
+    "expandSigner": "Show validations of {{name}}",
+    "noCode": "No code",
+    "noIdentification": "No identification",
+    "copyNote": "Copies are the same check stored in another document of the signer: they are shown but not counted.",
+    "result": {
+      "passed": "Passed",
+      "failed": "Failed",
+      "retry": "Retry",
+      "unknown": "No data"
+    },
+    "retry": "Retry",
+    "copy": "Copy · not counted",
+    "range": "{{from}}–{{to}} of {{total}} documents",
+    "error": {
+      "csv": "We could not export the CSV.",
+      "pdf": "We could not generate the PDF."
     }
   }
 }

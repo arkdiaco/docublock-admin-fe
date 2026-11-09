@@ -219,7 +219,7 @@ const opcionesDe = async (
 describe('Consumo de validaciones', () => {
   afterEach(() => TestBed.inject(Router).dispose());
 
-  it('con solo Inteligencia muestra cifras y filas, sin enlaces ni acciones', async () => {
+  it('con solo Inteligencia muestra cifras y filas, sin enlaces y solo con el detalle', async () => {
     const { fixture, http, root } = await montar(['platform:intelligence']);
     const primero = pedido(http);
     expect(primero.request.params.has('from')).toBe(false);
@@ -238,7 +238,10 @@ describe('Consumo de validaciones', () => {
     expect(texto).not.toMatch(LLAVE_CRUDA);
     expect(filas(root)).toHaveLength(3);
     expect(root.querySelectorAll('a.dba-ref')).toHaveLength(0);
-    expect(root.querySelectorAll('.vc__more')).toHaveLength(0);
+    expect(root.querySelectorAll('.vc__more')).toHaveLength(3);
+    for (const fila of filas(root)) {
+      expect(await opcionesDe(fixture, fila)).toEqual(['Ver detalle']);
+    }
     http.verify();
   });
 
@@ -257,9 +260,13 @@ describe('Consumo de validaciones', () => {
     expect(enlaces).toContain(`/comercial/resellers/${RESELLER}`);
 
     const [directa, conReseller, sinTarifa] = filas(root);
-    expect(conReseller.querySelector('.vc__more')).toBeNull();
-    expect(await opcionesDe(fixture, directa)).toEqual(['Tarifa', 'Cuenta de cobro del periodo']);
-    expect(await opcionesDe(fixture, sinTarifa)).toEqual(['Tarifa']);
+    expect(await opcionesDe(fixture, conReseller)).toEqual(['Ver detalle']);
+    expect(await opcionesDe(fixture, directa)).toEqual([
+      'Ver detalle',
+      'Tarifa',
+      'Cuenta de cobro del periodo',
+    ]);
+    expect(await opcionesDe(fixture, sinTarifa)).toEqual(['Ver detalle', 'Tarifa']);
     http.verify();
   });
 
@@ -267,7 +274,10 @@ describe('Consumo de validaciones', () => {
     const { fixture, http, root } = await montar(['platform:intelligence', 'platform:clients']);
     pedido(http).flush(REPORTE);
     await asentar(fixture);
-    expect(await opcionesDe(fixture, filas(root)[0])).toEqual(['Cuenta de cobro del periodo']);
+    expect(await opcionesDe(fixture, filas(root)[0])).toEqual([
+      'Ver detalle',
+      'Cuenta de cobro del periodo',
+    ]);
   });
 
   it('respeta el periodo y la vista de la URL; la fila sin reseller no tiene acciones', async () => {
@@ -290,7 +300,30 @@ describe('Consumo de validaciones', () => {
     expect(sinReseller.querySelector('.vc__more')).toBeNull();
     expect(norte.textContent).toContain('Reseller Norte');
     expect(norte.textContent).toMatch(/COP\s4,000/);
-    expect(await opcionesDe(fixture, norte)).toEqual(['Tarifa', 'Cuenta de cobro del periodo']);
+    expect(await opcionesDe(fixture, norte)).toEqual([
+      'Ver detalle',
+      'Tarifa',
+      'Cuenta de cobro del periodo',
+    ]);
+  });
+
+  it('«Ver detalle» abre el detalle de la cuenta y conserva el periodo y la vista', async () => {
+    const { fixture, http, root } = await montar(
+      ['platform:intelligence'],
+      '/?desde=2026-11-01&vista=resellers',
+    );
+    pedido(http).flush(REPORTE);
+    await asentar(fixture);
+    const router = TestBed.inject(Router);
+    const navegar = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+    filas(root)[1].querySelector<HTMLButtonElement>('.vc__more')!.click();
+    await asentar(fixture);
+    document.querySelector<HTMLElement>('[role="menuitem"]')!.click();
+    await asentar(fixture);
+    expect(navegar).toHaveBeenCalledWith(
+      ['/inteligencia/consumo-validaciones', 'reseller', RESELLER],
+      { queryParams: { desde: '2026-11-01', hasta: null, vista: 'resellers' } },
+    );
   });
 
   it('con el rango invertido avisa y no consulta', async () => {

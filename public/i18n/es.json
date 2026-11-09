@@ -6111,7 +6111,64 @@
     "actionsFor": "Acciones de {{name}}",
     "action": {
       "pricing": "Tarifa",
-      "billing": "Cuenta de cobro del periodo"
+      "billing": "Cuenta de cobro del periodo",
+      "detail": "Ver detalle"
+    }
+  },
+  "vdet": {
+    "back": "Volver al consumo",
+    "scope": {
+      "organization": "Organización",
+      "reseller": "Reseller"
+    },
+    "billedVia": "Se cobra con la tarifa del reseller {{name}}",
+    "searchPlaceholder": "Buscar documento por nombre o código",
+    "searchLabel": "Buscar documento",
+    "typeLabel": "Tipo de validación",
+    "typeAll": "Todos",
+    "csv": "Exportar CSV",
+    "pdf": "Descargar PDF",
+    "loading": "Cargando el detalle…",
+    "errorTitle": "No pudimos cargar el detalle",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "notFoundTitle": "No encontramos esta cuenta",
+    "notFoundLead": "Puede que ya no exista o que no sea un reseller. Vuelve al consumo y elígela de nuevo.",
+    "noPricing": "Esta cuenta no tiene tarifa de validaciones configurada, así que el valor queda vacío.",
+    "capped": "El periodo tiene demasiadas validaciones para leerlas todas; las cifras son parciales. Acorta el periodo para verlo completo.",
+    "stat": {
+      "value": "Valor",
+      "valueNote": "Con la tarifa vigente"
+    },
+    "months": "Resumen por mes",
+    "monthsLabel": "Consumo por mes",
+    "documents": "Documentos",
+    "documentsLabel": "Documentos de {{month}}",
+    "emptyTitle": "Sin validaciones con estos filtros",
+    "emptyLead": "Cambia las fechas, el tipo o la búsqueda.",
+    "col": {
+      "month": "Mes",
+      "documents": "Documentos",
+      "signers": "Firmantes",
+      "document": "Documento",
+      "organization": "Organización"
+    },
+    "expand": "Ver firmantes de {{name}}",
+    "expandSigner": "Ver validaciones de {{name}}",
+    "noCode": "Sin código",
+    "noIdentification": "Sin identificación",
+    "copyNote": "Las copias son la misma consulta guardada en otro documento del firmante: se muestran pero no se cuentan.",
+    "result": {
+      "passed": "Aprobada",
+      "failed": "Fallida",
+      "retry": "Reintento",
+      "unknown": "Sin dato"
+    },
+    "retry": "Reintento",
+    "copy": "Copia · no cuenta",
+    "range": "{{from}}–{{to}} de {{total}} documentos",
+    "error": {
+      "csv": "No pudimos exportar el CSV.",
+      "pdf": "No pudimos generar el PDF."
     }
   }
 }

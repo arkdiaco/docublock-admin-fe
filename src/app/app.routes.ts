@@ -355,6 +355,13 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
           (m) => m.ValidationConsumptionComponent,
         ),
     },
+    {
+      path: ':alcance/:id',
+      loadComponent: () =>
+        import('./features/validation-consumption/pages/validation-detail.component').then(
+          (m) => m.ValidationDetailComponent,
+        ),
+    },
   ],
   tasks: [
     {
