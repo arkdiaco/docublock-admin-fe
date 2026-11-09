@@ -372,6 +372,15 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
         ),
     },
   ],
+  validationHistory: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/validation-history/pages/validation-history.component').then(
+          (m) => m.ValidationHistoryComponent,
+        ),
+    },
+  ],
   resellerDocuments: [
     {
       path: '',

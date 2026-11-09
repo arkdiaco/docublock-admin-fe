@@ -6294,5 +6294,55 @@
     "noTransactionsLead": "When payments are recorded this year, their monthly split will show here.",
     "noDocumentsTitle": "No documents this year",
     "noDocumentsLead": "When documents are created or signed this year, their monthly split will show here."
+  },
+  "vhis": {
+    "lead": "Validations stored per signer before the April 20, 2026 change",
+    "resellerLabel": "Reseller",
+    "allResellers": "All resellers",
+    "organizationLabel": "Organization",
+    "allOrganizations": "All organizations",
+    "cutoffNote": "Only validations up to {{day}} count. Later ones are in Validation usage.",
+    "countNote": "A signer who signed in several organizations shows up in each one and counts once in the reseller total. In package mode, one package is charged per signer.",
+    "csv": "Export CSV",
+    "pdf": "Download PDF",
+    "loading": "Loading the validation history…",
+    "afterCutoffTitle": "The period starts after the cutoff",
+    "afterCutoffLead": "The history only holds validations before April 20, 2026.",
+    "notFoundTitle": "We couldn't find that filter",
+    "notFoundLead": "The organization may no longer exist or may no longer be a reseller. Pick another one.",
+    "errorTitle": "We couldn't load the history",
+    "errorLead": "Check your connection and try again.",
+    "emptyTitle": "No validations in the period",
+    "emptyLead": "There are no historical validations for these filters.",
+    "capped": "The period exceeds the maximum number of validations that can be read; figures are partial. Shorten the period to see it in full.",
+    "statsLabel": "Validation history summary",
+    "stat": {
+      "validations": "Validations",
+      "validationsNote": "Copies of the same check are not counted",
+      "signers": "Signers",
+      "signersNote": "Each signer counts once"
+    },
+    "noReseller": "No reseller",
+    "noOrganization": "No organization",
+    "groupSummary": "Signers: {{signers}} · Validations: {{validations}}",
+    "groupLabel": "Organizations of {{name}}",
+    "col": {
+      "organization": "Organization",
+      "signers": "Signers",
+      "value": "Value"
+    },
+    "expand": "Show the signers of {{name}}",
+    "expandSigner": "Show the validations of {{name}}",
+    "multiOrg": "signed in {{count}} organizations",
+    "searchLabel": "Search signer",
+    "searchPlaceholder": "Name or ID number",
+    "signersLoading": "Loading the signers…",
+    "signersError": "We couldn't load the signers.",
+    "signersEmpty": "No signer matches the search.",
+    "range": "{{from}}–{{to}} of {{total}}",
+    "error": {
+      "csv": "We couldn't export the CSV. Try again.",
+      "pdf": "We couldn't generate the PDF. Try again."
+    }
   }
 }

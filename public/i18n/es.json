@@ -6294,5 +6294,55 @@
     "noTransactionsLead": "Cuando haya pagos registrados en este año, verás aquí su reparto por mes.",
     "noDocumentsTitle": "Sin documentos en el año",
     "noDocumentsLead": "Cuando se creen o firmen documentos en este año, verás aquí su reparto por mes."
+  },
+  "vhis": {
+    "lead": "Validaciones guardadas por firmante antes del cambio del 20 de abril de 2026",
+    "resellerLabel": "Reseller",
+    "allResellers": "Todos los resellers",
+    "organizationLabel": "Organización",
+    "allOrganizations": "Todas las organizaciones",
+    "cutoffNote": "Solo cuenta validaciones hasta el {{day}}. Las posteriores están en Consumo de validaciones.",
+    "countNote": "Un firmante que firmó en varias organizaciones aparece en cada una y cuenta una vez en el total del reseller. En modo paquete se cobra un paquete por firmante.",
+    "csv": "Exportar CSV",
+    "pdf": "Descargar PDF",
+    "loading": "Cargando el histórico de validaciones…",
+    "afterCutoffTitle": "El periodo empieza después del corte",
+    "afterCutoffLead": "El histórico solo tiene validaciones anteriores al 20 de abril de 2026.",
+    "notFoundTitle": "No encontramos ese filtro",
+    "notFoundLead": "Puede que la organización ya no exista o que haya dejado de ser reseller. Elige otra.",
+    "errorTitle": "No pudimos cargar el histórico",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "emptyTitle": "Sin validaciones en el periodo",
+    "emptyLead": "No hay validaciones históricas para estos filtros.",
+    "capped": "El periodo supera el máximo de validaciones que se pueden leer; las cifras son parciales. Acorta el periodo para verlo completo.",
+    "statsLabel": "Resumen del histórico de validaciones",
+    "stat": {
+      "validations": "Validaciones",
+      "validationsNote": "Sin contar copias de la misma consulta",
+      "signers": "Firmantes",
+      "signersNote": "Cada firmante cuenta una vez"
+    },
+    "noReseller": "Sin reseller",
+    "noOrganization": "Sin organización",
+    "groupSummary": "Firmantes: {{signers}} · Validaciones: {{validations}}",
+    "groupLabel": "Organizaciones de {{name}}",
+    "col": {
+      "organization": "Organización",
+      "signers": "Firmantes",
+      "value": "Valor"
+    },
+    "expand": "Ver los firmantes de {{name}}",
+    "expandSigner": "Ver las validaciones de {{name}}",
+    "multiOrg": "firmó en {{count}} organizaciones",
+    "searchLabel": "Buscar firmante",
+    "searchPlaceholder": "Nombre o identificación",
+    "signersLoading": "Cargando los firmantes…",
+    "signersError": "No pudimos cargar los firmantes.",
+    "signersEmpty": "Ningún firmante coincide con la búsqueda.",
+    "range": "{{from}}–{{to}} de {{total}}",
+    "error": {
+      "csv": "No pudimos exportar el CSV. Inténtalo de nuevo.",
+      "pdf": "No pudimos generar el PDF. Inténtalo de nuevo."
+    }
   }
 }
