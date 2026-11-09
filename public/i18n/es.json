@@ -4945,10 +4945,6 @@
       "hint": "Uno por línea, con indicativo de país. El nombre es opcional y va después de una coma.",
       "capped": "Solo se tomarán los primeros 10.000 números: es el máximo por envío."
     },
-    "defaultName": {
-      "label": "Nombre para quien no lo tiene",
-      "hint": "Sin este dato, quien no tenga nombre no se podrá enviar."
-    },
     "review": {
       "title": "Revisión",
       "run": "Revisar {{total}} destinatarios",
@@ -4977,12 +4973,10 @@
       "title": "Mensaje",
       "text": "Texto",
       "placeholder": "Escribe el texto que recibirá cada destinatario",
-      "hint": "Es igual para todos; solo cambia el nombre. WhatsApp no admite saltos de línea aquí: se convierten en espacio.",
+      "hint": "Es igual para todos. WhatsApp no admite saltos de línea aquí: se convierten en espacio.",
       "previewTitle": "Lo que se llena en la plantilla",
-      "previewName": "Nombre",
       "previewText": "Texto",
       "previewNote": "El resto del mensaje lo pone la plantilla aprobada en WhatsApp.",
-      "noName": "Nombre del destinatario",
       "noText": "Aquí saldrá el texto"
     },
     "send": {

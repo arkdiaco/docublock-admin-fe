@@ -4,7 +4,6 @@ import { firstValueFrom } from 'rxjs';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { NotificationService } from '../../../core/ui/notification.service';
 import { ButtonComponent } from '../../../shared/ui/button.component';
-import { FieldComponent } from '../../../shared/ui/field.component';
 import { TextAreaComponent } from '../../../shared/ui/text-area.component';
 import { UnderlineTabsComponent, type UnderlineTab } from '../../../shared/ui/underline-tabs.component';
 import { CAMPAIGN_UNCERTAIN, CommunicationsApi, campaignErrorKey } from '../data/communications.api';
@@ -24,7 +23,6 @@ type RecipientsTab = 'user' | 'signer' | 'number';
     TranslatePipe,
     ButtonComponent,
     CampaignImageComponent,
-    FieldComponent,
     MessagePreviewComponent,
     RecipientPickerComponent,
     RecipientsReviewComponent,
@@ -63,13 +61,6 @@ type RecipientsTab = 'user' | 'signer' | 'number';
 
     <section class="step">
       <h2 class="dba-panel">{{ 'comm.review.title' | translate }}</h2>
-      <dba-field
-        class="step__name"
-        label="comm.defaultName.label"
-        hint="comm.defaultName.hint"
-        [maxlength]="120"
-        [(value)]="defaultName"
-      />
       <div class="step__actions">
         <button dba-button [busy]="reviewing()" [disabled]="selectedCount() === 0" (click)="review()">
           {{ 'comm.review.run' | translate: { total: selectedCount() } }}
@@ -98,7 +89,7 @@ type RecipientsTab = 'user' | 'signer' | 'number';
               [(value)]="text"
             />
           </div>
-          <dba-message-preview [imageUrl]="image()?.localUrl ?? ''" [name]="previewName()" [text]="cleanText()" />
+          <dba-message-preview [imageUrl]="image()?.localUrl ?? ''" [text]="cleanText()" />
         </div>
         <div class="step__actions">
           <button dba-button [busy]="preparing()" [disabled]="missing().length > 0" (click)="prepare()">
@@ -127,11 +118,6 @@ type RecipientsTab = 'user' | 'signer' | 'number';
       flex-direction: column;
       gap: 14px;
       margin-top: 28px;
-    }
-
-    .step__name {
-      width: 100%;
-      max-width: 420px;
     }
 
     .step__message {
@@ -176,7 +162,6 @@ export class CampaignComposerComponent {
   protected readonly userIds = signal<ReadonlySet<string>>(new Set());
   protected readonly signerIds = signal<ReadonlySet<string>>(new Set());
   protected readonly numbersText = signal('');
-  protected readonly defaultName = signal('');
   protected readonly image = signal<PickedImage | null>(null);
   protected readonly text = signal('');
   protected readonly textMax = TEXT_MAX;
@@ -197,7 +182,6 @@ export class CampaignComposerComponent {
       userIds: [...this.userIds()],
       signerIds: [...this.signerIds()],
       numbers: this.numbers().slice(0, MAX_CONTACTS),
-      ...(this.defaultName().trim() ? { defaultName: this.defaultName().trim() } : {}),
     }),
   );
   private readonly reviewed = signal<RecipientsSelection | null>(null);
@@ -212,9 +196,6 @@ export class CampaignComposerComponent {
   ]);
 
   protected readonly cleanText = computed(() => cleanVariable(this.text()));
-  protected readonly previewName = computed(
-    () => this.preview()?.sendable[0]?.name ?? cleanVariable(this.defaultName()),
-  );
   protected readonly missing = computed((): string[] => [
     ...(this.selectedCount() === 0 ? [this.label('comm.send.needRecipients')] : []),
     ...(this.image() ? [] : [this.label('comm.send.needImage')]),

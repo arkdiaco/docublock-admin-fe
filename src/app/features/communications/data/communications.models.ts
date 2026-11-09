@@ -23,7 +23,6 @@ export interface RecipientsSelection {
   userIds: string[];
   signerIds: string[];
   numbers: CustomNumber[];
-  defaultName?: string;
 }
 
 export interface SendableRecipient {
