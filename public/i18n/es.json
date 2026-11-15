@@ -5734,7 +5734,12 @@
         "login_otp_max_attempts": {
           "label": "Intentos del código de acceso",
           "audience": "Lo ven usuarios y firmantes",
-          "hint": "Intentos que tiene cada código al entrar a Docublock y a la wallet. Al agotarlos hay que pedir otro."
+          "hint": "Intentos que tiene cada código al entrar a Docublock. Al agotarlos, el documento queda bloqueado durante los minutos de bloqueo antes de poder pedir o escribir otro código."
+        },
+        "login_otp_lockout_minutes": {
+          "label": "Bloqueo tras agotar los intentos",
+          "audience": "Lo ven usuarios",
+          "hint": "Minutos que el documento queda sin poder entrar ni pedir código después de agotar los intentos del código de acceso. Se cuentan desde el último intento fallido."
         },
         "platform_otp_max_attempts": {
           "label": "Intentos del código de la consola",
