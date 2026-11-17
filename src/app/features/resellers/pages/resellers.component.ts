@@ -35,6 +35,7 @@ const COLUMNS: readonly DataColumn[] = [
   { key: 'org', labelKey: 'rsl.col.org', width: 'minmax(0, 1.6fr)' },
   { key: 'email', labelKey: 'rsl.col.email', width: 'minmax(0, 1.1fr)' },
   { key: 'portfolio', labelKey: 'rsl.col.portfolio', width: '100px', align: 'end' },
+  { key: 'model', labelKey: 'rsl.col.model', width: '150px' },
   { key: 'state', labelKey: 'rsl.col.state', width: '120px' },
   { key: 'created', labelKey: 'rsl.col.created', width: '100px' },
   { key: 'chevron', width: '24px', align: 'end' },
@@ -101,7 +102,7 @@ const COLUMNS: readonly DataColumn[] = [
           [columns]="columns"
           [label]="'nav.resellers' | translate"
           [dense]="density.compact()"
-          minWidth="760px"
+          minWidth="910px"
           [total]="total()"
           [from]="rangeFrom()"
           [to]="rangeTo()"
@@ -119,6 +120,13 @@ const COLUMNS: readonly DataColumn[] = [
                 <span class="cell__muted">{{ row.email || '—' }}</span>
               </span>
               <span class="dba-td dba-td--end cell__amount">{{ row.portfolioCount }}</span>
+              <span class="dba-td cell">
+                @if (row.model) {
+                  <span class="cell__label">{{ 'rsl.model.' + row.model | translate }}</span>
+                } @else {
+                  <span class="dba-meta">{{ 'rsl.model.none' | translate }}</span>
+                }
+              </span>
               <span class="dba-td">
                 <dba-org-state
                   [state]="row.active ? 'active' : 'suspended'"

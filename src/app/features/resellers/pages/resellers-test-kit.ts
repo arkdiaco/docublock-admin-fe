@@ -61,9 +61,20 @@ export const reseller = (over: Partial<Reseller> = {}): Reseller => ({
   active: true,
   isReseller: true,
   portfolioCount: 2,
+  model: null,
   createdAt: '2026-01-15T10:00:00.000Z',
   ...over,
 });
+
+export const tipificado = (over: Partial<Reseller> = {}): Reseller =>
+  reseller({
+    id: 'rs2',
+    businessName: 'Planes Andinos SAS',
+    tributaryNumber: '900333444',
+    email: 'equipo@andinos.co',
+    model: 'PLANS',
+    ...over,
+  });
 
 export const cartera = (over: Partial<PortfolioOrg> = {}): PortfolioOrg => ({
   id: 'o1',

@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { choiceProblemOf } from '../components/org-choice-form.component';
 import { ResellersComponent } from './resellers.component';
-import { conPermisos, configurar, reseller } from './resellers-test-kit';
+import { conPermisos, configurar, reseller, tipificado } from './resellers-test-kit';
 
 interface Pagina {
   mark: (id: string) => Promise<void>;
@@ -19,10 +19,10 @@ describe('Comercial › Resellers', () => {
 
   afterEach(() => http.verify());
 
-  const montar = async () => {
+  const montar = async (items = [reseller()]) => {
     const fixture = TestBed.createComponent(ResellersComponent);
     fixture.detectChanges();
-    http.expectOne((r) => r.url === '/platform/resellers').flush({ total: 1, items: [reseller()] });
+    http.expectOne((r) => r.url === '/platform/resellers').flush({ total: items.length, items });
     const host = fixture.nativeElement as HTMLElement;
     await vi.waitFor(() => {
       fixture.detectChanges();
@@ -39,6 +39,21 @@ describe('Comercial › Resellers', () => {
     expect(host.textContent).toContain('hola@aliados.co');
     expect(host.textContent).toContain('Resellers: 1');
     expect(host.textContent).not.toContain('Marcar como reseller');
+  });
+
+  it('muestra el modelo comercial de cada reseller entre la cartera y el estado', async () => {
+    conPermisos(['platform:commercial']);
+    const { host } = await montar([reseller(), tipificado()]);
+    const encabezados = [...host.querySelectorAll('.tbl__th')].map((c) => c.textContent?.trim());
+    const columna = encabezados.indexOf('Modelo');
+    expect(columna).toBe(encabezados.indexOf('Cartera') + 1);
+    expect(encabezados[columna + 1]).toBe('Estado');
+    const filas = [...host.querySelectorAll('a.bl-row')];
+    const modelo = (fila: Element) => fila.querySelectorAll('.dba-td')[columna];
+    expect(modelo(filas[0]).textContent?.trim()).toBe('Sin tipificar');
+    expect(modelo(filas[0]).querySelector('.dba-meta')).not.toBeNull();
+    expect(modelo(filas[1]).textContent?.trim()).toBe('Planes prepagados');
+    expect(modelo(filas[1]).querySelector('.dba-meta')).toBeNull();
   });
 
   it('marcar manda isReseller=true y lleva a la ficha', async () => {
