@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { choiceProblemOf } from '../components/org-choice-form.component';
 import { ResellersComponent } from './resellers.component';
-import { conPermisos, configurar, reseller, tipificado } from './resellers-test-kit';
+import { LLAVE_CRUDA, conPermisos, configurar, reseller, tipificado } from './resellers-test-kit';
 
 interface Pagina {
   mark: (id: string) => Promise<void>;
@@ -54,6 +54,7 @@ describe('Comercial › Resellers', () => {
     expect(modelo(filas[0]).querySelector('.dba-meta')).not.toBeNull();
     expect(modelo(filas[1]).textContent?.trim()).toBe('Planes prepagados');
     expect(modelo(filas[1]).querySelector('.dba-meta')).toBeNull();
+    expect(host.textContent).not.toMatch(LLAVE_CRUDA);
   });
 
   it('marcar manda isReseller=true y lleva a la ficha', async () => {

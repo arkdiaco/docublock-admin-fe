@@ -240,6 +240,7 @@ describe('Visión general: frases de la actividad', () => {
   it('una acción desconocida no tiene llave: se muestra su código', () => {
     expect(activityKeyOf('organization.suspend')).toBe('act.organization.suspend');
     expect(activityKeyOf('algo.nuevo')).toBeNull();
+    expect(activityKeyOf('resellers.model_set')).toBe('act.resellers.model_set');
   });
 
   it('la referencia del evento se acorta como en el diseño', () => {

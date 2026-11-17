@@ -7,6 +7,7 @@ import { PLATFORM_ROLES } from '../../../shared/domain/platform-role';
 import { sectionPath } from '../../../core/layout/console-nav';
 import { ActionRowComponent } from '../../../shared/ui/action-row.component';
 import { OrgPickerComponent } from '../../../shared/ui/org-picker.component';
+import { ChoiceListComponent, type ChoiceOption } from '../../../shared/ui/choice-list.component';
 import { AuditEventComponent } from '../../../shared/ui/audit-event.component';
 import { DataTableComponent, type DataColumn } from '../../../shared/ui/data-table.component';
 import { RecordHeaderComponent } from '../../../shared/ui/record-header.component';
@@ -185,6 +186,7 @@ const pctOf = (used: number, limit: number): string =>
     AuditEventComponent,
     ActionRowComponent,
     OrgPickerComponent,
+    ChoiceListComponent,
     FilterPillsComponent,
     OrgStateComponent,
     RoleTagComponent,
@@ -375,6 +377,10 @@ const pctOf = (used: number, limit: number): string =>
             <h3 class="dba-eyebrow card__eyebrow">{{ 'sys.c.orgPicker' | translate }}</h3>
             <dba-org-picker [value]="pickedOrg()" (picked)="pickedOrg.set($event)" />
             <p class="dba-body">{{ 'sys.c.orgPickerNote' | translate }}</p>
+
+            <h3 class="dba-eyebrow card__eyebrow">{{ 'sys.c.choices' | translate }}</h3>
+            <dba-choice-list [options]="choices" [value]="choice()" [label]="'sys.c.choices' | translate" (picked)="choice.set($event)" />
+            <p class="dba-body">{{ 'sys.c.choicesNote' | translate }}</p>
 
             <h3 class="dba-eyebrow card__eyebrow">{{ 'sys.c.filters' | translate }}</h3>
             <db-filter-pills [pills]="filters" [active]="filter()" (activeChange)="filter.set($event)" />
@@ -890,6 +896,11 @@ export class DesignSystemComponent {
     { minQuantity: '500', discountPct: '12' },
   ]);
   protected readonly sampleText = signal('');
+  protected readonly choices: readonly ChoiceOption[] = [
+    { value: 'monthly', labelKey: 'sys.c.choiceMonthly', leadKey: 'sys.c.choiceMonthlyLead' },
+    { value: 'yearly', labelKey: 'sys.c.choiceYearly', leadKey: 'sys.c.choiceYearlyLead' },
+  ];
+  protected readonly choice = signal<string | null>('monthly');
   protected readonly filter = signal('all');
   protected readonly pickedOrg = signal<string | null>(null);
   protected readonly challengeResult = signal('');

@@ -130,6 +130,17 @@ describe('DesignSystemComponent', () => {
     expect(host.querySelector('db-underline-tabs .tab--on')?.textContent).toContain('Resumen');
   });
 
+  it('la opción excluyente trae la elegida marcada y cambia con un clic', () => {
+    const { fixture, host } = montar();
+    const lista = host.querySelector('dba-choice-list')!;
+    const radios = lista.querySelectorAll<HTMLInputElement>('input[type="radio"]');
+    expect([...radios].map((r) => r.checked)).toEqual([true, false]);
+    expect(lista.textContent).toContain('Cobro anual');
+    radios[1].click();
+    fixture.detectChanges();
+    expect(lista.querySelectorAll('.choice')[1].classList.contains('choice--on')).toBe(true);
+  });
+
   it('nada sale como llave cruda', () => {
     const { host } = montar();
     expect(host.textContent).not.toMatch(/\b(sys|org|role|shell|env|common|dialog|nav)\.[a-zA-Z]/);

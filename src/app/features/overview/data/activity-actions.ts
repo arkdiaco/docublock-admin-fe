@@ -103,6 +103,7 @@ export const ACTIVITY_ACTIONS = [
   'referrals.create',
   'referrals.update',
   'resellers.flag_set',
+  'resellers.model_set',
   'roles.sync',
   'session.login',
   'session.logout',

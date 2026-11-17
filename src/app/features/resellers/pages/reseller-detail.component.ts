@@ -30,8 +30,9 @@ import {
 } from '../../../shared/ui/underline-tabs.component';
 import { HistoryTabComponent } from '../components/history-tab.component';
 import { PortfolioTabComponent } from '../components/portfolio-tab.component';
+import { ResellerModelFormComponent } from '../components/reseller-model-form.component';
 import { RESELLER_ERRORS, ResellersApi } from '../data/resellers.api';
-import type { Reseller } from '../data/resellers.models';
+import type { Reseller, ResellerModel } from '../data/resellers.models';
 
 type DetailTab = 'portfolio' | 'history';
 
@@ -49,6 +50,7 @@ const NOT_A_RESELLER = 400;
     UnderlineTabsComponent,
     HistoryTabComponent,
     PortfolioTabComponent,
+    ResellerModelFormComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -97,6 +99,16 @@ const NOT_A_RESELLER = 400;
             @if (canManage()) {
               <button
                 dba-button
+                variant="secondary"
+                [disabled]="!!pending.key()"
+                (click)="modelOpen.set(true)"
+              >
+                {{
+                  (item.model ? 'rsl.detail.model.change' : 'rsl.detail.model.define') | translate
+                }}
+              </button>
+              <button
+                dba-button
                 variant="destructive"
                 [busy]="pending.key() === 'remove'"
                 [disabled]="!!pending.key() || item.portfolioCount > 0"
@@ -122,6 +134,15 @@ const NOT_A_RESELLER = 400;
             <dd>{{ item.email || '—' }}</dd>
             <dt>{{ 'rsl.detail.portfolio' | translate }}</dt>
             <dd class="dba-mono">{{ item.portfolioCount }}</dd>
+            <dt>{{ 'rsl.detail.model.label' | translate }}</dt>
+            @if (item.model) {
+              <dd>{{ 'rsl.model.' + item.model | translate }}</dd>
+            } @else {
+              <dd class="bd__model">
+                <span class="dba-meta">{{ 'rsl.model.none' | translate }}</span>
+                <span class="dba-meta">{{ 'rsl.detail.modelHint' | translate }}</span>
+              </dd>
+            }
             <dt>{{ 'rsl.detail.created' | translate }}</dt>
             <dd class="dba-mono">{{ day(item.createdAt) }}</dd>
           </dl>
@@ -139,9 +160,26 @@ const NOT_A_RESELLER = 400;
           <dba-history-tab [resellerId]="item.id" />
         }
       </div>
+
+      @if (modelOpen()) {
+        <dba-reseller-model-form
+          [current]="item.model"
+          [subtitle]="item.businessName"
+          [busy]="pending.key() === 'model'"
+          (submitted)="saveModel($event)"
+          (dismissed)="modelOpen.set(false)"
+        />
+      }
     }
   `,
   styleUrl: '../../../shared/ui/detail-page.scss',
+  styles: `
+    .bd__model {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+  `,
 })
 export class ResellerDetailComponent {
   readonly id = input.required<string>();
@@ -166,6 +204,7 @@ export class ResellerDetailComponent {
   protected readonly error = signal(false);
   protected readonly missing = signal(false);
   protected readonly tab = signal<DetailTab>('portfolio');
+  protected readonly modelOpen = signal(false);
   protected readonly reseller = signal<Reseller | null>(null);
   protected readonly initials = computed(() => initialsOf(this.reseller()?.businessName ?? ''));
   protected readonly tabs = computed<UnderlineTab[]>(() => [
@@ -200,6 +239,26 @@ export class ResellerDetailComponent {
     }
   }
 
+  protected async saveModel(model: ResellerModel): Promise<void> {
+    const reseller = this.reseller();
+    if (!reseller) return;
+    await this.pending.run('model', async () => {
+      try {
+        await firstValueFrom(this.api.setModel(reseller.id, model));
+        this.modelOpen.set(false);
+        this.notify.success(
+          this.label('rsl.detail.model.done', {
+            name: reseller.businessName,
+            model: this.label(`rsl.model.${model}`),
+          }),
+        );
+        await this.refresh();
+      } catch (error) {
+        this.notify.error(this.errorLabel(error));
+      }
+    });
+  }
+
   protected async removeRole(): Promise<void> {
     const reseller = this.reseller();
     if (!reseller) return;
@@ -220,12 +279,16 @@ export class ResellerDetailComponent {
         );
         void this.router.navigate([this.path]);
       } catch (error) {
-        const code = errorCodeOf(error);
-        const known = code !== null && RESELLER_ERRORS.includes(code);
-        this.notify.error(this.label(known ? `rsl.error.${code}` : 'rsl.error.generic'));
+        this.notify.error(this.errorLabel(error));
         await this.refresh();
       }
     });
+  }
+
+  private errorLabel(error: unknown): string {
+    const code = errorCodeOf(error);
+    const known = code !== null && RESELLER_ERRORS.includes(code);
+    return this.label(known ? `rsl.error.${code}` : 'rsl.error.generic');
   }
 
   private async load(id: string): Promise<void> {

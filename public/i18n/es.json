@@ -247,7 +247,13 @@
       "textAreaHint": "Se muestra en la tienda.",
       "textAreaNote": "Área de texto con contador cuando hay límite; mismo borde y foco que el campo de una línea.",
       "orgPicker": "Selector de organización · búsqueda en el servidor",
-      "orgPickerNote": "Busca por nombre o NIT contra la plataforma y muestra 8 resultados. «Todas» limpia el filtro."
+      "orgPickerNote": "Busca por nombre o NIT contra la plataforma y muestra 8 resultados. «Todas» limpia el filtro.",
+      "choices": "Opción excluyente",
+      "choiceMonthly": "Cobro mensual",
+      "choiceMonthlyLead": "Se factura el primer día de cada mes.",
+      "choiceYearly": "Cobro anual",
+      "choiceYearlyLead": "Se factura una vez al año con descuento.",
+      "choicesNote": "Para elegir una sola entre pocas opciones que necesitan explicación; en los modales va con el valor actual marcado."
     },
     "pieces": "Tabla y ficha",
     "piecesNote": "La tabla de organizaciones y la cabecera de la ficha, con datos de muestra. Cabecera en mono, filas de 48 px, fila elegida en morado tenue con el identificador en morado 700; paginación con ventana. «Entrar como» no se construye: se abre la ficha."
@@ -519,7 +525,8 @@
       "update": "editó un referido"
     },
     "resellers": {
-      "flag_set": "cambió la marca de reseller de {{org}}"
+      "flag_set": "cambió la marca de reseller de {{org}}",
+      "model_set": "cambió el modelo comercial de {{org}}"
     },
     "roles": {
       "sync": "sincronizó los roles de sistema de {{org}}"
@@ -3998,7 +4005,22 @@
       "portfolio": "Cartera",
       "created": "Creada",
       "tabsLabel": "Secciones del reseller",
-      "signedDocuments": "Documentos firmados"
+      "signedDocuments": "Documentos firmados",
+      "modelHint": "Hasta definirlo, el reseller puede transferir documentos y asignar planes",
+      "model": {
+        "label": "Modelo comercial",
+        "define": "Definir modelo",
+        "change": "Cambiar modelo",
+        "title": "¿Cómo opera este reseller?",
+        "confirm": "Guardar modelo",
+        "done": "{{name}} quedó como {{model}}",
+        "POOL": {
+          "lead": "Transfiere documentos de su propia cuota a cada organización"
+        },
+        "PLANS": {
+          "lead": "Asigna a cada organización un plan prepagado; no transfiere de su cuota"
+        }
+      }
     },
     "port": {
       "searchPlaceholder": "Buscar por nombre o NIT",
@@ -4049,7 +4071,8 @@
       "action": {
         "reseller": {
           "flag_set": "{{org}} quedó marcada como reseller",
-          "flag_removed": "{{org}} dejó de ser reseller"
+          "flag_removed": "{{org}} dejó de ser reseller",
+          "model_set": "cambió el modelo comercial de {{org}}"
         },
         "organization": {
           "reseller_assigned": "{{org}} entró a la cartera de {{reseller}}",
