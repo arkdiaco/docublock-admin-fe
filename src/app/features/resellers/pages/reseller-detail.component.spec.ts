@@ -4,7 +4,14 @@ import { Router } from '@angular/router';
 import { DialogService } from '../../../core/ui/dialog.service';
 import { NotificationService } from '../../../core/ui/notification.service';
 import { ResellerDetailComponent } from './reseller-detail.component';
-import { cartera, conPermisos, configurar, movimiento, reseller } from './resellers-test-kit';
+import {
+  LLAVE_CRUDA,
+  cartera,
+  conPermisos,
+  configurar,
+  movimiento,
+  reseller,
+} from './resellers-test-kit';
 
 const BASE = '/platform/resellers/rs1';
 
@@ -146,6 +153,7 @@ describe('Comercial › Resellers › ficha', () => {
       ]);
       expect(boton(host, 'Definir modelo')).toBeUndefined();
       expect(boton(host, 'Cambiar modelo')).toBeUndefined();
+      expect(host.textContent).not.toMatch(LLAVE_CRUDA);
     });
 
     it('tipificado muestra el modelo sin la nota y ofrece cambiarlo con el actual marcado', async () => {
@@ -172,6 +180,7 @@ describe('Comercial › Resellers › ficha', () => {
         'Asigna a cada organización un plan prepagado; no transfiere de su cuota',
       );
       expect(boton(host, 'Guardar modelo')?.disabled).toBe(true);
+      expect(host.textContent).not.toMatch(LLAVE_CRUDA);
       modal.querySelectorAll<HTMLInputElement>('input[type="radio"]')[0].click();
       fixture.detectChanges();
       boton(host, 'Guardar modelo')!.click();
@@ -258,6 +267,7 @@ describe('Comercial › Resellers › ficha', () => {
     expect(host.textContent).toContain('Notaría 14 pasó de Otros SAS a Aliados SAS');
     expect(host.textContent).toContain('Aliados SAS quedó marcada como reseller');
     expect(host.textContent).toContain('cambió el modelo comercial de Aliados SAS');
+    expect(host.textContent).not.toMatch(LLAVE_CRUDA);
     expect(host.textContent).toContain('Sam Ventas');
     expect(host.textContent).toContain('Personal de plataforma');
   });

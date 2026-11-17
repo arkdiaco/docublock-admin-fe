@@ -39,6 +39,8 @@ export const configurar = async (): Promise<HttpTestingController> => {
   return TestBed.inject(HttpTestingController);
 };
 
+export const LLAVE_CRUDA = /\b(rsl|act|common|orgPicker|tbl)\.[a-zA-Z]/;
+
 export const conPermisos = (permisos: string[]): void =>
   TestBed.inject(AuthStore).setProfile({
     user: {
