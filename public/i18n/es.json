@@ -2598,7 +2598,7 @@
       "identity_verified": "Identidad verificada",
       "identity_failed": "Verificación de identidad fallida",
       "identity_blocked": "Firmante bloqueado por identidad",
-      "identity_registry_checked": "Consulta al padrón de identidad",
+      "identity_registry_checked": "Consulta a la Registraduría",
       "identity_correction_requested": "Corrección de identidad solicitada",
       "otp_sent": "Clave dinámica enviada",
       "otp_failed": "Clave dinámica fallida",
@@ -2898,7 +2898,7 @@
       "hint": {
         "identityValid": "Fotos del documento, selfie y Liveness",
         "biometricValid": "Selfie y Liveness contra el registro de identidad",
-        "checkDataRegistry": "Una consulta al padrón de identidad",
+        "checkDataRegistry": "Una consulta a la Registraduría",
         "fullIdentity": "Además de correo y celular, fechas y lugar de expedición",
         "reqDocument": "Fotos del firmante con su documento",
         "skipEmail": "La invitación también llega por correo"
