@@ -229,7 +229,7 @@ describe('Comercial › Resellers › ficha', () => {
     const req = http.expectOne((r) => r.url === '/platform/resellers/history');
     expect(req.request.params.get('resellerId')).toBe('rs1');
     req.flush({
-      total: 3,
+      total: 4,
       items: [
         movimiento(),
         movimiento({
@@ -243,6 +243,11 @@ describe('Comercial › Resellers › ficha', () => {
           action: 'reseller.flag_set',
           organizationName: 'Aliados SAS',
         }),
+        movimiento({
+          id: 'h4',
+          action: 'reseller.model_set',
+          organizationName: 'Aliados SAS',
+        }),
       ],
     });
     await vi.waitFor(() => {
@@ -252,6 +257,7 @@ describe('Comercial › Resellers › ficha', () => {
     expect(host.textContent).toContain('Notaría 14 entró a la cartera de Aliados SAS');
     expect(host.textContent).toContain('Notaría 14 pasó de Otros SAS a Aliados SAS');
     expect(host.textContent).toContain('Aliados SAS quedó marcada como reseller');
+    expect(host.textContent).toContain('cambió el modelo comercial de Aliados SAS');
     expect(host.textContent).toContain('Sam Ventas');
     expect(host.textContent).toContain('Personal de plataforma');
   });

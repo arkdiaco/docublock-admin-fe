@@ -525,7 +525,8 @@
       "update": "edited a referral"
     },
     "resellers": {
-      "flag_set": "changed the reseller flag of {{org}}"
+      "flag_set": "changed the reseller flag of {{org}}",
+      "model_set": "changed the business model of {{org}}"
     },
     "roles": {
       "sync": "synced the system roles of {{org}}"
@@ -4070,7 +4071,8 @@
       "action": {
         "reseller": {
           "flag_set": "{{org}} was marked as a reseller",
-          "flag_removed": "{{org}} stopped being a reseller"
+          "flag_removed": "{{org}} stopped being a reseller",
+          "model_set": "changed the business model of {{org}}"
         },
         "organization": {
           "reseller_assigned": "{{org}} joined {{reseller}}'s portfolio",

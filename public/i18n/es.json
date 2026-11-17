@@ -525,7 +525,8 @@
       "update": "editó un referido"
     },
     "resellers": {
-      "flag_set": "cambió la marca de reseller de {{org}}"
+      "flag_set": "cambió la marca de reseller de {{org}}",
+      "model_set": "cambió el modelo comercial de {{org}}"
     },
     "roles": {
       "sync": "sincronizó los roles de sistema de {{org}}"
@@ -4070,7 +4071,8 @@
       "action": {
         "reseller": {
           "flag_set": "{{org}} quedó marcada como reseller",
-          "flag_removed": "{{org}} dejó de ser reseller"
+          "flag_removed": "{{org}} dejó de ser reseller",
+          "model_set": "cambió el modelo comercial de {{org}}"
         },
         "organization": {
           "reseller_assigned": "{{org}} entró a la cartera de {{reseller}}",
