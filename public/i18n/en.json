@@ -5734,7 +5734,12 @@
         "login_otp_max_attempts": {
           "label": "Access code attempts",
           "audience": "Seen by users and signers",
-          "hint": "Attempts each code has when entering Docublock and the wallet. Once used up, another code is needed."
+          "hint": "Attempts each code has when entering Docublock. Once used up, the ID is locked for the lockout minutes before another code can be requested or entered."
+        },
+        "login_otp_lockout_minutes": {
+          "label": "Lockout after failed attempts",
+          "audience": "Seen by users",
+          "hint": "Minutes during which the ID can neither sign in nor request a code after using up the access code attempts. Counted from the last failed attempt."
         },
         "platform_otp_max_attempts": {
           "label": "Console code attempts",
