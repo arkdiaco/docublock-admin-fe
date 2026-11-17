@@ -154,6 +154,7 @@ export const ACTIVITY_ACTIONS = [
   'users.passkey_revoke',
   'users.session_revoke',
   'users.sessions_revoke',
+  'users.support_session',
   'users.unblock',
   'users.update',
   'validation_credits.pricing_update',

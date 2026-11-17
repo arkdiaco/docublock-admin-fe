@@ -241,6 +241,7 @@ describe('Visión general: frases de la actividad', () => {
     expect(activityKeyOf('organization.suspend')).toBe('act.organization.suspend');
     expect(activityKeyOf('algo.nuevo')).toBeNull();
     expect(activityKeyOf('resellers.model_set')).toBe('act.resellers.model_set');
+    expect(activityKeyOf('users.support_session')).toBe('act.users.support_session');
   });
 
   it('la referencia del evento se acorta como en el diseño', () => {
