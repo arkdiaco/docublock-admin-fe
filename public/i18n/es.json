@@ -3939,8 +3939,14 @@
       "org": "Organización",
       "email": "Correo",
       "portfolio": "Cartera",
+      "model": "Modelo",
       "state": "Estado",
       "created": "Creada"
+    },
+    "model": {
+      "POOL": "Bolsa propia",
+      "PLANS": "Planes prepagados",
+      "none": "Sin tipificar"
     },
     "state": {
       "active": "Activa",

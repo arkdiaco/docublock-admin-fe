@@ -3,6 +3,8 @@ export interface PageOf<T> {
   items: T[];
 }
 
+export type ResellerModel = 'POOL' | 'PLANS';
+
 export interface Reseller {
   id: string;
   businessName: string;
@@ -11,6 +13,7 @@ export interface Reseller {
   active: boolean;
   isReseller: boolean;
   portfolioCount: number;
+  model: ResellerModel | null;
   createdAt?: string;
 }
 
@@ -33,6 +36,7 @@ export interface PortfolioOrg {
 export type HistoryAction =
   | 'reseller.flag_set'
   | 'reseller.flag_removed'
+  | 'reseller.model_set'
   | 'organization.reseller_assigned'
   | 'organization.reseller_unassigned';
 

@@ -3939,8 +3939,14 @@
       "org": "Organization",
       "email": "Email",
       "portfolio": "Portfolio",
+      "model": "Model",
       "state": "Status",
       "created": "Created"
+    },
+    "model": {
+      "POOL": "Own pool",
+      "PLANS": "Prepaid plans",
+      "none": "Not set"
     },
     "state": {
       "active": "Active",

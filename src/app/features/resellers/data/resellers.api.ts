@@ -3,7 +3,13 @@ import { Injectable, inject } from '@angular/core';
 import type { Observable } from 'rxjs';
 import { SILENT_ERRORS } from '../../../core/http/http.interceptors';
 import { toParams } from '../../../shared/http/query-params';
-import type { HistoryEntry, PageOf, PortfolioOrg, Reseller } from './resellers.models';
+import type {
+  HistoryEntry,
+  PageOf,
+  PortfolioOrg,
+  Reseller,
+  ResellerModel,
+} from './resellers.models';
 
 const silent = (): HttpContext => new HttpContext().set(SILENT_ERRORS, true);
 const BASE = '/platform/resellers';
@@ -29,6 +35,10 @@ export class ResellersApi {
 
   setFlag(id: string, isReseller: boolean): Observable<Reseller> {
     return this.http.put<Reseller>(`${BASE}/${id}`, { isReseller }, { context: silent() });
+  }
+
+  setModel(id: string, model: ResellerModel): Observable<Reseller> {
+    return this.http.patch<Reseller>(`${BASE}/${id}/model`, { model }, { context: silent() });
   }
 
   portfolio(
