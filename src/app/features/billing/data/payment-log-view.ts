@@ -133,3 +133,13 @@ export const prettyJson = (value: unknown): string =>
 
 export const durationText = (ms: number): string =>
   ms < 1000 ? `${Math.round(ms)} ms` : `${(ms / 1000).toFixed(1)} s`;
+
+export const REPLAY_ERRORS: readonly string[] = [
+  'PAYMENT_LOG_NOT_FOUND',
+  'PAYMENT_LOG_NOT_REAPPLICABLE',
+  'PAYMENT_LOG_REQUEST_UNUSABLE',
+];
+
+export const REPLAY_DONE: readonly string[] = ['applied', 'duplicate'];
+
+export const canReplay = (row: PaymentLogRow): boolean => row.stage === 'apply' && !row.ok;

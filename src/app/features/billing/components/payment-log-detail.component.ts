@@ -16,6 +16,7 @@ import { ModalShellComponent } from '../../../shared/ui/modal-shell.component';
 import { OrgStateComponent } from '../../../shared/ui/org-state.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
 import {
+  canReplay,
   durationText,
   failureText,
   logLabelKeyOf,
@@ -26,7 +27,13 @@ import type { PaymentLogDetail, PaymentLogRow } from '../data/payment-logs.model
 
 @Component({
   selector: 'dba-payment-log-detail',
-  imports: [TranslatePipe, RouterLink, ModalShellComponent, OrgStateComponent, SectionLoaderComponent],
+  imports: [
+    TranslatePipe,
+    RouterLink,
+    ModalShellComponent,
+    OrgStateComponent,
+    SectionLoaderComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <db-modal-shell
@@ -38,9 +45,11 @@ import type { PaymentLogDetail, PaymentLogRow } from '../data/payment-logs.model
         ('plog.stage.' + row().stage | translate)
       "
       [maxWidth]="720"
-      confirmLabel="common.close"
-      [cancelable]="false"
-      (confirmed)="dismissed.emit()"
+      [confirmLabel]="replayable() ? 'plog.reapply.action' : 'common.close'"
+      [cancelable]="replayable()"
+      cancelLabel="common.close"
+      [busy]="busy()"
+      (confirmed)="replayable() ? reapply.emit() : dismissed.emit()"
       (dismissed)="dismissed.emit()"
     >
       @if (detail(); as log) {
@@ -74,6 +83,10 @@ import type { PaymentLogDetail, PaymentLogRow } from '../data/payment-logs.model
           @if (log.planCode) {
             <dt>{{ 'plog.field.plan' | translate }}</dt>
             <dd class="dba-mono">{{ log.planCode }}</dd>
+          }
+          @if (log.replayOf) {
+            <dt>{{ 'plog.field.replayOf' | translate }}</dt>
+            <dd class="dba-mono">{{ log.replayOf }}</dd>
           }
           @if (log.outcome) {
             <dt>{{ 'plog.field.outcome' | translate }}</dt>
@@ -110,13 +123,18 @@ export class PaymentLogDetailComponent {
   readonly row = input.required<PaymentLogRow>();
   readonly detail = input<PaymentLogDetail | null>(null);
   readonly failed = input(false);
+  readonly busy = input(false);
   readonly dismissed = output<void>();
+  readonly reapply = output<void>();
 
   private readonly auth = inject(AuthStore);
   private readonly locale = inject(LOCALE_ID);
 
   protected readonly orgsPath = sectionPath('organizations');
   protected readonly canOpenOrg = computed(() => this.auth.canRead('clients'));
+  protected readonly replayable = computed(
+    () => canReplay(this.row()) && this.auth.canManage('commercial'),
+  );
   protected readonly request = computed(() => prettyJson(this.detail()?.request));
   protected readonly response = computed(() => prettyJson(this.detail()?.response));
   protected readonly stateOf = logStateOf;

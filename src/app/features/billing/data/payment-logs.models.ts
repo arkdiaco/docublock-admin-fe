@@ -28,6 +28,7 @@ export interface PaymentLogRow {
   organizationName: string | null;
   reference?: string;
   planCode?: string;
+  replayOf?: string;
   ok: boolean;
   outcome: string | null;
   error?: PaymentLogFailure;
@@ -72,4 +73,8 @@ export interface PaymentLogsQuery {
   from: string | null;
   page: number;
   limit: number;
+}
+
+export interface PaymentLogReplay {
+  outcome: string;
 }

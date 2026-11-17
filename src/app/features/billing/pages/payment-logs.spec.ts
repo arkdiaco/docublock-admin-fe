@@ -1,6 +1,8 @@
 import type { HttpTestingController, TestRequest } from '@angular/common/http/testing';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { DialogService } from '../../../core/ui/dialog.service';
+import { NotificationService } from '../../../core/ui/notification.service';
 import { conPermisos, configurar } from '../../catalogs/pages/catalogs-test-kit';
 import {
   failureText,
@@ -11,7 +13,11 @@ import {
   queryParamsOf,
   resultPills,
 } from '../data/payment-log-view';
-import type { PaymentLogDetail, PaymentLogReport, PaymentLogRow } from '../data/payment-logs.models';
+import type {
+  PaymentLogDetail,
+  PaymentLogReport,
+  PaymentLogRow,
+} from '../data/payment-logs.models';
 import {
   PAYMENT_LOGS_DEBOUNCE_MS,
   PAYMENT_LOGS_LIMIT,
@@ -83,9 +89,15 @@ const limpiarBusquedas = (http: HttpTestingController): void => {
     .forEach((req) => req.flush({ data: [] }));
 };
 
-const montar = async (url = '/', items = [FALLIDO, RECHAZADO]) => {
+const GESTOR = ['platform:commercial', 'platform:commercial:manage', 'platform:clients'];
+
+const montar = async (
+  url = '/',
+  items = [FALLIDO, RECHAZADO],
+  permisos = ['platform:commercial', 'platform:clients'],
+) => {
   const http = await configurar();
-  conPermisos(['platform:commercial', 'platform:clients']);
+  conPermisos(permisos);
   await TestBed.inject(Router).navigateByUrl(url);
   const fixture = TestBed.createComponent(PaymentLogsComponent);
   const primero = pedido(http);
@@ -168,6 +180,85 @@ describe('Bitácora de pagos', () => {
     expect(texto).not.toMatch(LLAVE_CRUDA);
     const enlace = modal?.querySelector<HTMLAnchorElement>('a.item__link');
     expect(enlace?.getAttribute('href')).toContain(ORG);
+  });
+
+  const abrirFallido = async (permisos: string[]) => {
+    const montado = await montar('/', [FALLIDO, RECHAZADO], permisos);
+    montado.root.querySelector<HTMLButtonElement>('button.dba-tr')!.click();
+    montado.http.expectOne((req) => req.url.endsWith(`${BASE}/l1`)).flush(DETALLE);
+    await asentar(montado.fixture);
+    const botones = () =>
+      [...document.querySelectorAll<HTMLButtonElement>('dba-payment-log-detail button')].map((b) =>
+        b.textContent?.trim(),
+      );
+    const reaplicar = () =>
+      [...document.querySelectorAll<HTMLButtonElement>('dba-payment-log-detail button')].find(
+        (b) => b.textContent?.trim() === 'Reaplicar',
+      );
+    return { ...montado, botones, reaplicar };
+  };
+
+  it('solo lectura: el detalle de un fallo no ofrece reaplicar', async () => {
+    const { botones } = await abrirFallido(['platform:commercial', 'platform:clients']);
+    expect(botones()).not.toContain('Reaplicar');
+    expect(botones()).toContain('Cerrar');
+  });
+
+  it('reaplicar confirma, llama al core, avisa el resultado y recarga la lista', async () => {
+    const { http, fixture, reaplicar } = await abrirFallido(GESTOR);
+    const confirmar = vi.spyOn(TestBed.inject(DialogService), 'confirm').mockResolvedValue(true);
+    const exito = vi.spyOn(TestBed.inject(NotificationService), 'success');
+    reaplicar()!.click();
+    await vi.waitFor(() => expect(confirmar).toHaveBeenCalled());
+    expect(confirmar.mock.calls[0][0]).toMatchObject({
+      title: 'plog.reapply.title',
+      params: { event: 'evt_1' },
+    });
+    await vi.waitFor(() => {
+      const post = http.expectOne((req) => req.url.endsWith(`${BASE}/l1/reapply`));
+      expect(post.request.method).toBe('POST');
+      post.flush({ outcome: 'duplicate' });
+    });
+    await vi.waitFor(() => pedido(http).flush(reporte([FALLIDO])));
+    await asentar(fixture);
+    expect(exito).toHaveBeenCalledWith('Ese evento ya estaba aplicado; no se cambió nada');
+    expect(document.querySelector('dba-payment-log-detail')).toBeNull();
+  });
+
+  it('si vuelve a fallar avisa el motivo del core', async () => {
+    const { http, reaplicar } = await abrirFallido(GESTOR);
+    vi.spyOn(TestBed.inject(DialogService), 'confirm').mockResolvedValue(true);
+    const fallo = vi.spyOn(TestBed.inject(NotificationService), 'error');
+    reaplicar()!.click();
+    await vi.waitFor(() =>
+      http
+        .expectOne((req) => req.url.endsWith(`${BASE}/l1/reapply`))
+        .flush(
+          { message: 'El plan CORE_10 no está en el catálogo', code: 'CORE_10' },
+          { status: 422, statusText: 'Unprocessable' },
+        ),
+    );
+    await vi.waitFor(() => pedido(http).flush(reporte([FALLIDO])));
+    expect(fallo).toHaveBeenCalledWith('Volvió a fallar: El plan CORE_10 no está en el catálogo');
+  });
+
+  it('un evento recortado se explica con su código', async () => {
+    const { http, reaplicar } = await abrirFallido(GESTOR);
+    vi.spyOn(TestBed.inject(DialogService), 'confirm').mockResolvedValue(true);
+    const fallo = vi.spyOn(TestBed.inject(NotificationService), 'error');
+    reaplicar()!.click();
+    await vi.waitFor(() =>
+      http
+        .expectOne((req) => req.url.endsWith(`${BASE}/l1/reapply`))
+        .flush(
+          { message: 'x', code: 'PAYMENT_LOG_REQUEST_UNUSABLE' },
+          { status: 422, statusText: 'Unprocessable' },
+        ),
+    );
+    await vi.waitFor(() => pedido(http).flush(reporte([FALLIDO])));
+    expect(fallo).toHaveBeenCalledWith(
+      'El evento guardado está incompleto o recortado; no se puede reaplicar',
+    );
   });
 
   it('si el core falla muestra el aviso y deja reintentar', async () => {

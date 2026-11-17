@@ -6411,7 +6411,8 @@
       "error": "Error",
       "stack": "Error trace",
       "request": "What was received or sent",
-      "response": "Response"
+      "response": "Response",
+      "replayOf": "Retry of record"
     },
     "filter": {
       "all": "All",
@@ -6456,7 +6457,26 @@
       "unknown_link": "Unknown link",
       "forwarded": "Forwarded",
       "rejected": "Rejected",
-      "failed": "Failed"
+      "failed": "Failed",
+      "recorded": "Recorded"
+    },
+    "reapply": {
+      "action": "Reapply",
+      "title": "Apply this event again?",
+      "message": "The core processes event {{event}} again exactly as it arrived. If it was already applied nothing changes, and the attempt is logged as a new record.",
+      "confirm": "Reapply",
+      "done": {
+        "applied": "The event was applied",
+        "duplicate": "That event was already applied; nothing changed",
+        "other": "The event was processed: {{outcome}}"
+      },
+      "failed": "It failed again: {{message}}",
+      "failedGeneric": "It failed again. Check the new record in the log",
+      "error": {
+        "PAYMENT_LOG_NOT_FOUND": "That record is no longer in the log",
+        "PAYMENT_LOG_NOT_REAPPLICABLE": "Only a received event that failed can be reapplied",
+        "PAYMENT_LOG_REQUEST_UNUSABLE": "The stored event is incomplete or truncated; it cannot be reapplied"
+      }
     }
   }
 }

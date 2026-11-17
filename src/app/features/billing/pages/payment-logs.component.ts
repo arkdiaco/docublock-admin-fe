@@ -14,6 +14,10 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Select } from 'primeng/select';
 import { firstValueFrom } from 'rxjs';
 import { DensityService } from '../../../core/preferences/density.service';
+import { DialogService } from '../../../core/ui/dialog.service';
+import { NotificationService } from '../../../core/ui/notification.service';
+import { PendingAction } from '../../../shared/domain/pending-action';
+import { errorCodeOf, errorMessageOf } from '../../../shared/http/error-code';
 import { LatestRequest } from '../../../shared/http/latest-request';
 import { ButtonComponent } from '../../../shared/ui/button.component';
 import { DataTableComponent, type DataColumn } from '../../../shared/ui/data-table.component';
@@ -36,6 +40,8 @@ import {
   logStateOf,
   okOf,
   queryParamsOf,
+  REPLAY_DONE,
+  REPLAY_ERRORS,
   resultPills,
 } from '../data/payment-log-view';
 import { PaymentLogsApi } from '../data/payment-logs.api';
@@ -212,7 +218,9 @@ type FilterChange = Partial<Omit<PaymentLogFilters, 'page'>> & { page?: number }
         [row]="row"
         [detail]="detail()"
         [failed]="detailFailed()"
+        [busy]="!!pending.key()"
         (dismissed)="close()"
+        (reapply)="reapply(row)"
       />
     }
   `,
@@ -229,11 +237,14 @@ export class PaymentLogsComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly translate = inject(TranslateService);
+  private readonly dialogs = inject(DialogService);
+  private readonly notify = inject(NotificationService);
   private readonly latest = new LatestRequest();
   private readonly latestDetail = new LatestRequest();
   private searchTimer: ReturnType<typeof setTimeout> | null = null;
 
   protected readonly density = inject(DensityService);
+  protected readonly pending = new PendingAction();
   protected readonly columns = COLUMNS;
   protected readonly limit = PAYMENT_LOGS_LIMIT;
   protected readonly all = ALL;
@@ -332,6 +343,28 @@ export class PaymentLogsComponent {
     this.detail.set(null);
   }
 
+  protected async reapply(row: PaymentLogRow): Promise<void> {
+    const confirmed = await this.dialogs.confirm({
+      intent: 'primary',
+      icon: 'rotate',
+      title: 'plog.reapply.title',
+      message: 'plog.reapply.message',
+      params: { event: row.eventId ?? row.operation },
+      confirmLabel: 'plog.reapply.confirm',
+    });
+    if (!confirmed) return;
+    await this.pending.run('reapply', async () => {
+      try {
+        const { outcome } = await firstValueFrom(this.api.reapply(row.id));
+        this.notify.success(this.replayDone(outcome));
+      } catch (error) {
+        this.notify.error(this.replayFailure(error));
+      }
+      this.close();
+      await this.load();
+    });
+  }
+
   protected async load(): Promise<void> {
     const current = this.latest.start();
     const filters = this.filters();
@@ -377,6 +410,25 @@ export class PaymentLogsComponent {
       { id: ALL, label: this.text(anyKey) },
       ...ids.map((id) => ({ id, label: this.text(`${prefix}.${id}`) })),
     ];
+  }
+
+  private replayDone(outcome: string): string {
+    if (REPLAY_DONE.includes(outcome)) return this.text(`plog.reapply.done.${outcome}`);
+    const label = this.translate.instant(`plog.outcome.${outcome}`) as string;
+    return this.translate.instant('plog.reapply.done.other', {
+      outcome: label.startsWith('plog.') ? outcome : label,
+    }) as string;
+  }
+
+  private replayFailure(error: unknown): string {
+    const code = errorCodeOf(error);
+    if (code !== null && REPLAY_ERRORS.includes(code)) {
+      return this.text(`plog.reapply.error.${code}`);
+    }
+    const message = errorMessageOf(error);
+    return message
+      ? (this.translate.instant('plog.reapply.failed', { message }) as string)
+      : this.text('plog.reapply.failedGeneric');
   }
 
   private text(key: string): string {

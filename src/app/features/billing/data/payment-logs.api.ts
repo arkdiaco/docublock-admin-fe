@@ -3,7 +3,12 @@ import { Injectable, inject } from '@angular/core';
 import type { Observable } from 'rxjs';
 import { SILENT_ERRORS } from '../../../core/http/http.interceptors';
 import { toParams } from '../../../shared/http/query-params';
-import type { PaymentLogDetail, PaymentLogReport, PaymentLogsQuery } from './payment-logs.models';
+import type {
+  PaymentLogDetail,
+  PaymentLogReplay,
+  PaymentLogReport,
+  PaymentLogsQuery,
+} from './payment-logs.models';
 
 const BASE = '/platform/payment-logs';
 
@@ -20,6 +25,12 @@ export class PaymentLogsApi {
 
   detail(id: string): Observable<PaymentLogDetail> {
     return this.http.get<PaymentLogDetail>(`${BASE}/${encodeURIComponent(id)}`, {
+      context: new HttpContext().set(SILENT_ERRORS, true),
+    });
+  }
+
+  reapply(id: string): Observable<PaymentLogReplay> {
+    return this.http.post<PaymentLogReplay>(`${BASE}/${encodeURIComponent(id)}/reapply`, null, {
       context: new HttpContext().set(SILENT_ERRORS, true),
     });
   }

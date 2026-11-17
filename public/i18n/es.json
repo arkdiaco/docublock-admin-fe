@@ -6411,7 +6411,8 @@
       "error": "Error",
       "stack": "Traza del error",
       "request": "Lo que se recibió o se envió",
-      "response": "Respuesta"
+      "response": "Respuesta",
+      "replayOf": "Reintento del registro"
     },
     "filter": {
       "all": "Todos",
@@ -6456,7 +6457,26 @@
       "unknown_link": "Enlace desconocido",
       "forwarded": "Reenviado",
       "rejected": "Rechazado",
-      "failed": "Fallido"
+      "failed": "Fallido",
+      "recorded": "Registrado"
+    },
+    "reapply": {
+      "action": "Reaplicar",
+      "title": "¿Volver a aplicar este evento?",
+      "message": "El core vuelve a procesar el evento {{event}} tal como llegó. Si ya se había aplicado no cambia nada, y el intento queda en la bitácora como un registro nuevo.",
+      "confirm": "Reaplicar",
+      "done": {
+        "applied": "El evento se aplicó",
+        "duplicate": "Ese evento ya estaba aplicado; no se cambió nada",
+        "other": "El evento se procesó: {{outcome}}"
+      },
+      "failed": "Volvió a fallar: {{message}}",
+      "failedGeneric": "Volvió a fallar. Mira el registro nuevo en la bitácora",
+      "error": {
+        "PAYMENT_LOG_NOT_FOUND": "Ese registro ya no existe en la bitácora",
+        "PAYMENT_LOG_NOT_REAPPLICABLE": "Solo se reaplica un evento recibido que falló",
+        "PAYMENT_LOG_REQUEST_UNUSABLE": "El evento guardado está incompleto o recortado; no se puede reaplicar"
+      }
     }
   }
 }
