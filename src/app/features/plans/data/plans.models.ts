@@ -114,3 +114,29 @@ export interface StripeLinkBody {
   annual: string | null;
   reason: string;
 }
+
+export type PlanStripeStatus = 'synced' | 'pending' | 'drifted' | 'not_applicable' | 'unknown';
+
+export interface PlanStripeIssue {
+  slot: 'monthly' | 'annual';
+  code: string;
+  message: string;
+}
+
+export interface PlanStripeSync {
+  code: string;
+  name: string;
+  version: number;
+  currency: string;
+  priceMonthly: number;
+  priceAnnual: number;
+  stripePriceMonthly: string | null;
+  stripePriceAnnual: string | null;
+  status: PlanStripeStatus;
+  issues: PlanStripeIssue[];
+}
+
+export interface PlanStripePublished {
+  outcome: 'published' | 'already_synced';
+  plan: PlanDetail;
+}

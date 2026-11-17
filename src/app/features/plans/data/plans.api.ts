@@ -10,6 +10,8 @@ import type {
   PlanDetail,
   PlanQuery,
   PlanRow,
+  PlanStripePublished,
+  PlanStripeSync,
   StripeLinkBody,
   VersionedPlan,
   VersionPlanBody,
@@ -73,6 +75,18 @@ export class PlansApi {
     return this.http.put<PlanDetail>(`/platform/plans/${encodeURIComponent(code)}/stripe`, body, {
       context: silent(),
     });
+  }
+
+  publishStripe(code: string, reason: string): Observable<PlanStripePublished> {
+    return this.http.post<PlanStripePublished>(
+      `/platform/plans/${encodeURIComponent(code)}/stripe/publish`,
+      { reason },
+      { context: silent() },
+    );
+  }
+
+  stripeSync(): Observable<PlanStripeSync[]> {
+    return this.http.get<PlanStripeSync[]>('/platform/plans/stripe-sync', { context: silent() });
   }
 
   legacyPlans(): Observable<LegacyPlanChoice[]> {

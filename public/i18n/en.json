@@ -1575,7 +1575,6 @@
     "perMonth": "{{price}} / month",
     "months": "{{months}} months",
     "hidden": "Hidden from catalog",
-    "stripePending": "Stripe pending",
     "stripe": {
       "ready": "Ready",
       "pending": "Pending",
@@ -1655,7 +1654,8 @@
       "reactivated": "Plan reactivated.",
       "stripeLinked": "Stripe prices verified and linked.",
       "stripeUnlinked": "Stripe prices unlinked.",
-      "legacyLinked": "Legacy plan updated."
+      "legacyLinked": "Legacy plan updated.",
+      "stripePublished": "Plan created in Stripe and prices linked."
     },
     "error": {
       "PLAN_CODIGO_EN_USO": "A plan with that code already exists, even if retired.",
@@ -1677,7 +1677,8 @@
       "STRIPE_MONTO_DISTINTO": "The {{slot}} doesn't match: the plan says {{expected}} and Stripe charges {{actual}}.",
       "STRIPE_PRECIO_EN_USO": "That price is already linked to plan {{plan}}.",
       "STRIPE_PAR_INCOMPLETO": "Monthly and annual go together.",
-      "STRIPE_NO_DISPONIBLE": "Stripe couldn't be reached. Try again in a few minutes."
+      "STRIPE_NO_DISPONIBLE": "Stripe couldn't be reached. Try again in a few minutes.",
+      "STRIPE_PRECIO_DISTINTO": "Stripe already has a price for this plan version with another amount or currency. Check it in Stripe or link the prices by hand."
     },
     "packagePrice": "{{price}} · {{months}} months",
     "stripeLink": {
@@ -1711,6 +1712,45 @@
       "year": "year",
       "day": "day",
       "week": "week"
+    },
+    "stripePublish": {
+      "open": "Create in Stripe",
+      "title": "Create {{name}} in Stripe?",
+      "message": "The plan product and its two prices ({{monthly}} a month and {{annual}} a year) are created in the live Stripe account and linked to the plan. If they already exist, they are reused.",
+      "confirm": "Create in Stripe"
+    },
+    "sync": {
+      "check": "Check in Stripe",
+      "publishPending": "Sync pending",
+      "summary": "Stripe: up to date {{synced}} · pending {{pending}} · with differences {{drifted}} · no answer {{unknown}}",
+      "nonePending": "No plans are pending creation in Stripe.",
+      "confirmTitle": "Create the pending plans in Stripe ({{total}})?",
+      "confirmMessage": "They are created one by one in the live Stripe account and linked: {{plans}}.",
+      "confirm": "Create in Stripe",
+      "resultsTitle": "Sync result",
+      "resultsLead": "Created {{ok}} · failed {{failed}}",
+      "published": "Created and linked",
+      "failed": "Not created",
+      "status": {
+        "linked": "Linked",
+        "synced": "Up to date",
+        "pending": "Pending",
+        "drifted": "With differences",
+        "not_applicable": "Not applicable",
+        "unknown": "No answer from Stripe"
+      },
+      "slot": {
+        "monthly": "monthly",
+        "annual": "annual"
+      },
+      "issue": {
+        "STRIPE_PRECIO_NO_EXISTE": "The {{slot}} price doesn't exist in Stripe",
+        "STRIPE_PRECIO_INACTIVO": "The {{slot}} price is archived",
+        "STRIPE_INTERVALO_DISTINTO": "The {{slot}} price charges on another interval",
+        "STRIPE_MONEDA_DISTINTA": "The {{slot}} price charges in another currency",
+        "STRIPE_MONTO_DISTINTO": "The {{slot}} price charges another amount",
+        "other": "The {{slot}} price doesn't match"
+      }
     }
   },
   "subs": {

@@ -17,7 +17,7 @@ import { DialogService } from '../../core/ui/dialog.service';
 import { LegacyLinkFormComponent } from './components/legacy-link-form.component';
 import { PlanFormComponent } from './components/plan-form.component';
 import { StripeLinkFormComponent } from './components/stripe-link-form.component';
-import type { PlanDetail, PlanRow } from './data/plans.models';
+import type { PlanDetail, PlanRow, PlanStripeSync } from './data/plans.models';
 import { PlanDetailComponent } from './pages/plan-detail.component';
 import { PlansComponent } from './pages/plans.component';
 
@@ -50,6 +50,20 @@ const row = (over: Partial<PlanRow> = {}): PlanRow => ({
   stripeReady: true,
   subscribers: 11,
   protected: false,
+  ...over,
+});
+
+const sync = (over: Partial<PlanStripeSync> = {}): PlanStripeSync => ({
+  code: 'CORE_10',
+  name: 'Core 10',
+  version: 2,
+  currency: 'COP',
+  priceMonthly: 64999,
+  priceAnnual: 701999,
+  stripePriceMonthly: 'price_m',
+  stripePriceAnnual: 'price_a',
+  status: 'synced',
+  issues: [],
   ...over,
 });
 
@@ -173,9 +187,102 @@ describe('Comercial › Planes', () => {
       expect(filas[1]).toContain('∞');
       expect(filas[2]).toContain('6 meses');
       expect(filas[2]).toContain('Oculto del catálogo');
-      expect(filas[3]).toContain('Stripe pendiente');
+      expect(filas[0]).toContain('Enlazado');
+      expect(filas[1]).toContain('No aplica');
+      expect(filas[3]).toContain('Pendiente');
+      expect(boton(host, 'Revisar en Stripe')).toBeDefined();
+      expect(boton(host, 'Sincronizar pendientes')).toBeUndefined();
       expect(boton(host, 'Crear plan')).toBeUndefined();
       expect(host.textContent).not.toMatch(/plans\./);
+    });
+
+    it('«Revisar en Stripe» consulta el estado real y marca las diferencias de cada plan', async () => {
+      perfil(['platform:commercial']);
+      const { fixture, host } = await montar([
+        row(),
+        row({ code: 'PRIME_80', name: 'Prime 80', stripeReady: false }),
+      ]);
+      boton(host, 'Revisar en Stripe')!.click();
+      http.expectOne((r) => r.method === 'GET' && r.url === '/platform/plans/stripe-sync').flush([
+        sync({
+          status: 'drifted',
+          issues: [{ slot: 'monthly', code: 'STRIPE_MONTO_DISTINTO', message: 'x' }],
+        }),
+        sync({ code: 'PRIME_80', status: 'pending', stripePriceMonthly: null, stripePriceAnnual: null }),
+      ]);
+      await fixture.whenStable();
+      fixture.detectChanges();
+      const filas = [...host.querySelectorAll('dba-data-table .dba-tr')].map((r) =>
+        r.textContent?.replace(/\s+/g, ' ').trim(),
+      );
+      expect(filas[0]).toContain('Con diferencias');
+      expect(filas[0]).toContain('El precio mensual cobra otro monto');
+      expect(filas[1]).toContain('Pendiente');
+      expect(host.textContent).toContain('Stripe: al día 0 · pendientes 1 · con diferencias 1');
+      expect(host.textContent).not.toMatch(/plans\./);
+    });
+
+    it('«Sincronizar pendientes» crea uno por uno los pendientes y muestra el resultado de cada uno', async () => {
+      perfil(['platform:commercial', 'platform:commercial:manage']);
+      const { fixture, host } = await montar([
+        row(),
+        row({ code: 'CORE_40', name: 'Core 40', stripeReady: false }),
+        row({ code: 'PRIME_80', name: 'Prime 80', stripeReady: false }),
+      ]);
+      const abrir = vi
+        .spyOn(TestBed.inject(DialogService), 'open')
+        .mockResolvedValue({ answer: 'confirm', reason: 'Alta en Stripe' });
+      const pendientes = [
+        sync(),
+        sync({ code: 'CORE_40', name: 'Core 40', status: 'pending' }),
+        sync({ code: 'PRIME_80', name: 'Prime 80', status: 'pending' }),
+      ];
+      boton(host, 'Sincronizar pendientes')!.click();
+      http.expectOne('/platform/plans/stripe-sync').flush(pendientes);
+      await vi.waitFor(() => expect(abrir).toHaveBeenCalled());
+      expect(abrir.mock.calls[0][0].params).toEqual({ total: 2, plans: 'CORE_40, PRIME_80' });
+
+      let primero!: ReturnType<HttpTestingController['expectOne']>;
+      await vi.waitFor(() => {
+        primero = http.expectOne('/platform/plans/CORE_40/stripe/publish');
+      });
+      expect(primero.request.body).toEqual({ reason: 'Alta en Stripe' });
+      primero.flush({ outcome: 'published', plan: detail({ code: 'CORE_40' }) });
+      let segundo!: ReturnType<HttpTestingController['expectOne']>;
+      await vi.waitFor(() => {
+        segundo = http.expectOne('/platform/plans/PRIME_80/stripe/publish');
+      });
+      segundo.flush(
+        { code: 'STRIPE_PRECIO_DISTINTO', message: 'x' },
+        { status: 409, statusText: 'Conflict' },
+      );
+      await vi.waitFor(() => {
+        http.expectOne((r) => r.url === '/platform/plans').flush([row()]);
+      });
+      await vi.waitFor(() => {
+        http.expectOne('/platform/plans/stripe-sync').flush([sync()]);
+      });
+      await fixture.whenStable();
+      fixture.detectChanges();
+      const modal = host.querySelector('dba-stripe-sync-results')!;
+      expect(modal.textContent).toContain('Creados 1 · con error 1');
+      expect(modal.textContent).toContain('Creado y enlazado');
+      expect(modal.textContent).toContain('Stripe ya tiene un precio para esta versión');
+      expect(host.textContent).not.toMatch(/plans\./);
+    });
+
+    it('«Sincronizar pendientes» sin pendientes avisa y no pregunta', async () => {
+      perfil(['platform:commercial', 'platform:commercial:manage']);
+      const { fixture, host } = await montar([row()]);
+      const abrir = vi.spyOn(TestBed.inject(DialogService), 'open');
+      const espia = avisos();
+      boton(host, 'Sincronizar pendientes')!.click();
+      http.expectOne('/platform/plans/stripe-sync').flush([sync()]);
+      await fixture.whenStable();
+      expect(abrir).not.toHaveBeenCalled();
+      expect(espia.mock.calls.map(([m]) => m.detail)).toEqual([
+        'No hay planes pendientes por crear en Stripe.',
+      ]);
     });
 
     it('crear manda el plan y abre su ficha', async () => {
@@ -360,6 +467,40 @@ describe('Comercial › Planes', () => {
       expect(tarjeta(paquete.host, 'Stripe').textContent).toContain('No aplica');
       expect(boton(paquete.host, 'Enlazar precios')).toBeUndefined();
       expect(tarjeta(paquete.host, 'Plan legacy').textContent).toContain('Sin vínculo');
+    });
+
+    it('«Crear en Stripe» solo aparece con el plan pendiente y publica con el motivo', async () => {
+      perfil(['platform:commercial', 'platform:commercial:manage']);
+      const listo = await montar(detail());
+      expect(boton(listo.host, 'Crear en Stripe')).toBeUndefined();
+
+      const { fixture, host } = await montar(detail({ stripeReady: false }));
+      const espia = avisos();
+      const abrir = vi
+        .spyOn(TestBed.inject(DialogService), 'open')
+        .mockResolvedValue({ answer: 'confirm', reason: 'Alta en Stripe' });
+      boton(host, 'Crear en Stripe')!.click();
+      await vi.waitFor(() => expect(abrir).toHaveBeenCalled());
+      expect(abrir.mock.calls[0][0].title).toBe('plans.stripePublish.title');
+      let req!: ReturnType<HttpTestingController['expectOne']>;
+      await vi.waitFor(() => {
+        req = http.expectOne('/platform/plans/CORE_10/stripe/publish');
+      });
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual({ reason: 'Alta en Stripe' });
+      req.flush({ outcome: 'published', plan: detail() });
+      await fixture.whenStable();
+      fixture.detectChanges();
+      expect(espia.mock.calls.map(([m]) => m.detail)).toEqual([
+        'Plan creado en Stripe y precios enlazados.',
+      ]);
+      expect(boton(host, 'Crear en Stripe')).toBeUndefined();
+    });
+
+    it('sin commercial:manage no ofrece crear en Stripe', async () => {
+      perfil(['platform:commercial']);
+      const { host } = await montar(detail({ stripeReady: false }));
+      expect(boton(host, 'Crear en Stripe')).toBeUndefined();
     });
 
     it('un monto distinto en Stripe deja el modal abierto con «el plan dice → Stripe cobra»', async () => {
