@@ -247,7 +247,13 @@
       "textAreaHint": "Shown in the store.",
       "textAreaNote": "Text area with a counter when there's a limit; same border and focus as the single-line field.",
       "orgPicker": "Organization picker · server search",
-      "orgPickerNote": "Searches the platform by name or tax ID and shows 8 results. «All» clears the filter."
+      "orgPickerNote": "Searches the platform by name or tax ID and shows 8 results. «All» clears the filter.",
+      "choices": "Exclusive choice",
+      "choiceMonthly": "Monthly billing",
+      "choiceMonthlyLead": "Billed on the first day of each month.",
+      "choiceYearly": "Yearly billing",
+      "choiceYearlyLead": "Billed once a year with a discount.",
+      "choicesNote": "To pick a single one among a few options that need explaining; in modals it comes with the current value checked."
     },
     "pieces": "Table and record",
     "piecesNote": "The organizations table and the record header, with sample data. Mono header, 48 px rows, the selected row in soft purple with its identifier in purple 700; windowed pagination. «Impersonate» is not built: the record opens instead."
@@ -3998,7 +4004,22 @@
       "portfolio": "Portfolio",
       "created": "Created",
       "tabsLabel": "Reseller sections",
-      "signedDocuments": "Signed documents"
+      "signedDocuments": "Signed documents",
+      "modelHint": "Until it is set, the reseller can transfer documents and assign plans",
+      "model": {
+        "label": "Business model",
+        "define": "Set model",
+        "change": "Change model",
+        "title": "How does this reseller operate?",
+        "confirm": "Save model",
+        "done": "{{name}} is now {{model}}",
+        "POOL": {
+          "lead": "Transfers documents from its own quota to each organization"
+        },
+        "PLANS": {
+          "lead": "Assigns each organization a prepaid plan; does not transfer from its quota"
+        }
+      }
     },
     "port": {
       "searchPlaceholder": "Search by name or tax ID",

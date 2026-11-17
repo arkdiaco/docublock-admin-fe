@@ -2,6 +2,7 @@ import type { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { DialogService } from '../../../core/ui/dialog.service';
+import { NotificationService } from '../../../core/ui/notification.service';
 import { ResellerDetailComponent } from './reseller-detail.component';
 import { cartera, conPermisos, configurar, movimiento, reseller } from './resellers-test-kit';
 
@@ -105,6 +106,106 @@ describe('Comercial › Resellers › ficha', () => {
     fixture.detectChanges();
     expect(navegar).not.toHaveBeenCalled();
     expect(host.textContent).toContain('Organizaciones en cartera: 1.');
+  });
+
+  const fila = (host: HTMLElement, etiqueta: string) => {
+    const dt = [...host.querySelectorAll('.bd__dl dt')].find(
+      (d) => d.textContent?.trim() === etiqueta,
+    );
+    return dt?.nextElementSibling as HTMLElement | undefined;
+  };
+
+  const boton = (host: HTMLElement, texto: string) =>
+    [...host.querySelectorAll<HTMLButtonElement>('button')].find(
+      (b) => b.textContent?.trim() === texto,
+    );
+
+  const abrirModelo = async (
+    fixture: { detectChanges: () => void },
+    host: HTMLElement,
+    texto: string,
+  ) => {
+    boton(host, texto)!.click();
+    fixture.detectChanges();
+    await vi.waitFor(() =>
+      expect(host.querySelector('db-modal-shell dba-choice-list')).not.toBeNull(),
+    );
+    return host.querySelector('db-modal-shell') as HTMLElement;
+  };
+
+  describe('modelo comercial', () => {
+    it('sin tipificar lo dice y explica qué ve el reseller; sin gestión no ofrece definirlo', async () => {
+      conPermisos(['platform:commercial']);
+      const { host } = await montar();
+      const dd = fila(host, 'Modelo comercial')!;
+      expect(dd.textContent).toContain('Sin tipificar');
+      const notas = [...dd.querySelectorAll('.dba-meta')].map((n) => n.textContent?.trim());
+      expect(notas).toEqual([
+        'Sin tipificar',
+        'Hasta definirlo, el reseller puede transferir documentos y asignar planes',
+      ]);
+      expect(boton(host, 'Definir modelo')).toBeUndefined();
+      expect(boton(host, 'Cambiar modelo')).toBeUndefined();
+    });
+
+    it('tipificado muestra el modelo sin la nota y ofrece cambiarlo con el actual marcado', async () => {
+      conPermisos(['platform:commercial', 'platform:commercial:manage']);
+      const { fixture, host } = await montar(reseller({ model: 'PLANS' }));
+      const dd = fila(host, 'Modelo comercial')!;
+      expect(dd.textContent?.trim()).toBe('Planes prepagados');
+      expect(boton(host, 'Definir modelo')).toBeUndefined();
+      const modal = await abrirModelo(fixture, host, 'Cambiar modelo');
+      expect(modal.textContent).toContain('¿Cómo opera este reseller?');
+      const radios = modal.querySelectorAll<HTMLInputElement>('input[type="radio"]');
+      expect([...radios].map((r) => r.checked)).toEqual([false, true]);
+    });
+
+    it('definir el modelo manda el PATCH con lo elegido, avisa y refresca la ficha', async () => {
+      conPermisos(['platform:commercial', 'platform:commercial:manage']);
+      const exito = vi.spyOn(TestBed.inject(NotificationService), 'success');
+      const { fixture, host } = await montar();
+      const modal = await abrirModelo(fixture, host, 'Definir modelo');
+      expect(modal.textContent).toContain(
+        'Transfiere documentos de su propia cuota a cada organización',
+      );
+      expect(modal.textContent).toContain(
+        'Asigna a cada organización un plan prepagado; no transfiere de su cuota',
+      );
+      expect(boton(host, 'Guardar modelo')?.disabled).toBe(true);
+      modal.querySelectorAll<HTMLInputElement>('input[type="radio"]')[0].click();
+      fixture.detectChanges();
+      boton(host, 'Guardar modelo')!.click();
+      const req = await vi.waitFor(() => http.expectOne(`${BASE}/model`));
+      expect(req.request.method).toBe('PATCH');
+      expect(req.request.body).toEqual({ model: 'POOL' });
+      req.flush(reseller({ model: 'POOL' }));
+      const refresco = await vi.waitFor(() => http.expectOne(BASE));
+      refresco.flush(reseller({ model: 'POOL' }));
+      await vi.waitFor(() => {
+        fixture.detectChanges();
+        expect(host.querySelector('db-modal-shell')).toBeNull();
+        expect(fila(host, 'Modelo comercial')?.textContent?.trim()).toBe('Bolsa propia');
+      });
+      expect(exito).toHaveBeenCalledWith('Aliados SAS quedó como Bolsa propia');
+      expect(boton(host, 'Cambiar modelo')).toBeDefined();
+    });
+
+    it('si la organización dejó de ser reseller lo explica y deja el modal abierto', async () => {
+      conPermisos(['platform:commercial', 'platform:commercial:manage']);
+      const fallo = vi.spyOn(TestBed.inject(NotificationService), 'error');
+      const { fixture, host } = await montar();
+      const modal = await abrirModelo(fixture, host, 'Definir modelo');
+      modal.querySelectorAll<HTMLInputElement>('input[type="radio"]')[1].click();
+      fixture.detectChanges();
+      boton(host, 'Guardar modelo')!.click();
+      const req = await vi.waitFor(() => http.expectOne(`${BASE}/model`));
+      req.flush({ code: 'NO_ES_RESELLER' }, { status: 409, statusText: 'Conflict' });
+      await vi.waitFor(() =>
+        expect(fallo).toHaveBeenCalledWith('Esa organización ya no es reseller.'),
+      );
+      fixture.detectChanges();
+      expect(host.querySelector('db-modal-shell')).not.toBeNull();
+    });
   });
 
   it('una organización que ya no es reseller se ve como inexistente', async () => {
