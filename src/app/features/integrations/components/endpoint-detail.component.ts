@@ -65,7 +65,7 @@ import type { EndpointRow } from '../data/integrations.models';
       }
     </db-modal-shell>
   `,
-  styleUrl: './integration-item.scss',
+  styleUrl: '../../../shared/ui/detail-item.scss',
 })
 export class EndpointDetailComponent {
   readonly endpoint = input.required<EndpointRow>();

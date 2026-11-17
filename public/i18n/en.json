@@ -3287,7 +3287,8 @@
     "section": {
       "transactions": "Transactions",
       "invoices": "Invoices",
-      "revenue": "Revenue"
+      "revenue": "Revenue",
+      "log": "Log"
     },
     "txStatus": {
       "PENDING": "Pending",
@@ -3448,7 +3449,8 @@
         "promo": "Promo code",
         "requested": "Requested",
         "events": "Gateway events",
-        "invoiced": "Marked as invoiced"
+        "invoiced": "Marked as invoiced",
+        "log": "Payment log"
       },
       "promoValue": "{{code}} ({{discount}}%)",
       "invoiceLinked": "Invoice {{number}}",
@@ -3496,7 +3498,8 @@
         "invoice": {
           "done": "Invoice {{number}} created as a draft."
         }
-      }
+      },
+      "openLog": "See the calls for this link"
     },
     "inv": {
       "count": "Invoices: {{total}}",
@@ -3704,7 +3707,8 @@
       "noTransactions": "This organization has no transactions.",
       "noInvoices": "This organization has no invoices.",
       "loading": "Loading billing",
-      "error": "We couldn't load this organization's billing."
+      "error": "We couldn't load this organization's billing.",
+      "paymentLog": "Payment log"
     }
   },
   "promo": {
@@ -6376,6 +6380,83 @@
     "error": {
       "csv": "We couldn't export the CSV. Try again.",
       "pdf": "We couldn't generate the PDF. Try again."
+    }
+  },
+  "plog": {
+    "lead": "Every payment call: what Stripe and Alohapay sent, what the core did and what we asked them",
+    "loading": "Loading the payment log…",
+    "loadingDetail": "Loading the entry…",
+    "detailFailed": "This entry could not be loaded. Close it and open it again.",
+    "tableLabel": "Payment log",
+    "errorTitle": "The payment log could not be loaded",
+    "errorLead": "Check the connection to the API and try again.",
+    "empty": "No payment calls have been logged yet.",
+    "emptyFiltered": "No calls match these filters.",
+    "orgNotice": "Includes the organization’s calls and those for the Alohapay links of its transactions.",
+    "noOrganization": "No organization",
+    "col": {
+      "at": "Date",
+      "source": "Source",
+      "operation": "Operation",
+      "organization": "Organization",
+      "reference": "Reference",
+      "result": "Result",
+      "duration": "Duration"
+    },
+    "field": {
+      "direction": "Direction",
+      "eventId": "Event id",
+      "plan": "Plan",
+      "outcome": "Technical result",
+      "error": "Error",
+      "stack": "Error trace",
+      "request": "What was received or sent",
+      "response": "Response"
+    },
+    "filter": {
+      "all": "All",
+      "search": "Search by event or reference",
+      "searchPlaceholder": "Event id, link or subscription",
+      "provider": "Provider",
+      "anyProvider": "Any provider",
+      "stage": "Stage",
+      "anyStage": "Any stage",
+      "period": "Period",
+      "anyPeriod": "Any date"
+    },
+    "periods": {
+      "24h": "Last 24 hours",
+      "7d": "Last 7 days",
+      "30d": "Last 30 days",
+      "90d": "Last 90 days"
+    },
+    "provider": {
+      "stripe": "Stripe",
+      "alohapay": "Alohapay"
+    },
+    "stage": {
+      "intake": "Reached commons",
+      "apply": "Applied in the core",
+      "call": "Outgoing call"
+    },
+    "direction": {
+      "in": "Incoming: the provider called us",
+      "out": "Outgoing: we called the provider"
+    },
+    "result": {
+      "ok": "Succeeded",
+      "failed": "Failed"
+    },
+    "outcome": {
+      "applied": "Applied",
+      "duplicate": "Duplicate",
+      "ignored": "Ignored",
+      "not_eligible": "Not applicable",
+      "unchanged": "No changes",
+      "unknown_link": "Unknown link",
+      "forwarded": "Forwarded",
+      "rejected": "Rejected",
+      "failed": "Failed"
     }
   }
 }

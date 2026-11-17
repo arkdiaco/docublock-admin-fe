@@ -3287,7 +3287,8 @@
     "section": {
       "transactions": "Transacciones",
       "invoices": "Facturas",
-      "revenue": "Ingresos"
+      "revenue": "Ingresos",
+      "log": "Bitácora"
     },
     "txStatus": {
       "PENDING": "Pendiente",
@@ -3448,7 +3449,8 @@
         "promo": "Promocional",
         "requested": "Solicitada",
         "events": "Eventos de la pasarela",
-        "invoiced": "Marcada como facturada"
+        "invoiced": "Marcada como facturada",
+        "log": "Bitácora de pagos"
       },
       "promoValue": "{{code}} ({{discount}} %)",
       "invoiceLinked": "Factura {{number}}",
@@ -3496,7 +3498,8 @@
         "invoice": {
           "done": "Factura {{number}} creada en borrador."
         }
-      }
+      },
+      "openLog": "Ver los llamados de este enlace"
     },
     "inv": {
       "count": "Facturas: {{total}}",
@@ -3704,7 +3707,8 @@
       "noTransactions": "Esta organización no tiene transacciones.",
       "noInvoices": "Esta organización no tiene facturas.",
       "loading": "Cargando la facturación",
-      "error": "No pudimos cargar la facturación de esta organización."
+      "error": "No pudimos cargar la facturación de esta organización.",
+      "paymentLog": "Bitácora de pagos"
     }
   },
   "promo": {
@@ -6376,6 +6380,83 @@
     "error": {
       "csv": "No pudimos exportar el CSV. Inténtalo de nuevo.",
       "pdf": "No pudimos generar el PDF. Inténtalo de nuevo."
+    }
+  },
+  "plog": {
+    "lead": "Cada llamado de pagos: lo que llegó de Stripe y Alohapay, lo que hizo el core y lo que les pedimos",
+    "loading": "Cargando la bitácora de pagos…",
+    "loadingDetail": "Cargando el registro…",
+    "detailFailed": "No se pudo cargar este registro. Ciérralo y vuelve a abrirlo.",
+    "tableLabel": "Bitácora de pagos",
+    "errorTitle": "No se pudo cargar la bitácora",
+    "errorLead": "Revisa la conexión con la API y vuelve a intentarlo.",
+    "empty": "Todavía no hay llamados de pagos registrados.",
+    "emptyFiltered": "Ningún llamado coincide con estos filtros.",
+    "orgNotice": "Incluye los llamados de la organización y los de los enlaces de Alohapay de sus transacciones.",
+    "noOrganization": "Sin organización",
+    "col": {
+      "at": "Fecha",
+      "source": "Origen",
+      "operation": "Operación",
+      "organization": "Organización",
+      "reference": "Referencia",
+      "result": "Resultado",
+      "duration": "Duración"
+    },
+    "field": {
+      "direction": "Sentido",
+      "eventId": "Id del evento",
+      "plan": "Plan",
+      "outcome": "Resultado técnico",
+      "error": "Error",
+      "stack": "Traza del error",
+      "request": "Lo que se recibió o se envió",
+      "response": "Respuesta"
+    },
+    "filter": {
+      "all": "Todos",
+      "search": "Buscar por evento o referencia",
+      "searchPlaceholder": "Id del evento, enlace o suscripción",
+      "provider": "Proveedor",
+      "anyProvider": "Cualquier proveedor",
+      "stage": "Etapa",
+      "anyStage": "Cualquier etapa",
+      "period": "Periodo",
+      "anyPeriod": "Cualquier fecha"
+    },
+    "periods": {
+      "24h": "Últimas 24 horas",
+      "7d": "Últimos 7 días",
+      "30d": "Últimos 30 días",
+      "90d": "Últimos 90 días"
+    },
+    "provider": {
+      "stripe": "Stripe",
+      "alohapay": "Alohapay"
+    },
+    "stage": {
+      "intake": "Llegó al commons",
+      "apply": "Aplicado en el core",
+      "call": "Llamado saliente"
+    },
+    "direction": {
+      "in": "Entrante: nos llamó el proveedor",
+      "out": "Saliente: llamamos al proveedor"
+    },
+    "result": {
+      "ok": "Correcto",
+      "failed": "Con error"
+    },
+    "outcome": {
+      "applied": "Aplicado",
+      "duplicate": "Repetido",
+      "ignored": "Ignorado",
+      "not_eligible": "No aplica",
+      "unchanged": "Sin cambios",
+      "unknown_link": "Enlace desconocido",
+      "forwarded": "Reenviado",
+      "rejected": "Rechazado",
+      "failed": "Fallido"
     }
   }
 }

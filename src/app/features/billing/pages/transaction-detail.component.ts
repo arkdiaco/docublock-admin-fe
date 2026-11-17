@@ -176,6 +176,15 @@ interface StoredTax {
                 @if (tx.alohapayId) {
                   <dt>{{ 'billing.td.field.link' | translate }}</dt>
                   <dd class="dba-mono">{{ tx.alohapayId }}</dd>
+                  <dt>{{ 'billing.td.field.log' | translate }}</dt>
+                  <dd>
+                    <a
+                      class="bd__link"
+                      [routerLink]="[billingPath, 'bitacora']"
+                      [queryParams]="{ buscar: tx.alohapayId }"
+                      >{{ 'billing.td.openLog' | translate }}</a
+                    >
+                  </dd>
                 }
                 @if (tx.liveStatus) {
                   <dt>{{ 'billing.td.field.live' | translate }}</dt>

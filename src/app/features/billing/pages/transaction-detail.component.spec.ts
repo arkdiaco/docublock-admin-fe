@@ -55,6 +55,15 @@ describe('Comercial › Facturación › ficha de la transacción', () => {
     expect(host.querySelector('.bd__actions')).toBeNull();
   });
 
+  it('con enlace de Alohapay lleva a su bitácora de pagos filtrada', async () => {
+    conPermisos(['platform:commercial']);
+    const { host } = await montar(fichaTransaccion({ alohapayId: 'pl_77' }));
+    const enlace = [...host.querySelectorAll<HTMLAnchorElement>('a.bd__link')].find((a) =>
+      a.textContent?.includes('Ver los llamados de este enlace'),
+    );
+    expect(enlace?.getAttribute('href')).toBe('/comercial/facturacion/bitacora?buscar=pl_77');
+  });
+
   it('solo lectura: sin acciones', async () => {
     conPermisos(['platform:commercial']);
     const { host } = await montar();
