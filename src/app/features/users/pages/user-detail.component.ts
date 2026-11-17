@@ -86,6 +86,15 @@ const ISO_DAY = /^\d{4}-\d{2}-\d{2}/;
 
         @if (canManage()) {
           <div class="bd__actions">
+            <button
+              dba-button
+              variant="primary"
+              [busy]="pending.key() === 'support'"
+              [disabled]="!!pending.key() || !item.active"
+              (click)="enterAs()"
+            >
+              {{ 'usr.action.support' | translate }}
+            </button>
             <button dba-button variant="secondary" (click)="editing.set(true)">
               {{ 'usr.action.edit' | translate }}
             </button>
@@ -109,6 +118,7 @@ const ISO_DAY = /^\d{4}-\d{2}-\d{2}/;
               >
                 {{ 'usr.action.unblock' | translate }}
               </button>
+              <span class="dba-meta">{{ 'usr.action.supportBlocked' | translate }}</span>
             }
           </div>
         }
@@ -253,6 +263,24 @@ export class UserDetailComponent {
         this.editing.set(false);
         this.notify.success(this.label('usr.edit.done'));
       } catch (error) {
+        this.notifyFailure(error);
+      }
+    });
+  }
+
+  protected async enterAs(): Promise<void> {
+    const tab = window.open('', '_blank');
+    await this.pending.run('support', async () => {
+      try {
+        const { url } = await firstValueFrom(this.api.supportSession(this.id()));
+        if (tab) {
+          tab.opener = null;
+          tab.location.href = url;
+        } else {
+          window.open(url, '_blank', 'noopener');
+        }
+      } catch (error) {
+        tab?.close();
         this.notifyFailure(error);
       }
     });

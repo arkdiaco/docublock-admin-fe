@@ -86,8 +86,14 @@ export interface UserSession {
   sid: string;
   device?: string;
   ip?: string;
+  support?: boolean;
   lastUsedAt?: string;
   createdAt?: string;
+}
+
+export interface SupportSessionLink {
+  url: string;
+  expiresAt: string;
 }
 
 export interface UserPasskey {

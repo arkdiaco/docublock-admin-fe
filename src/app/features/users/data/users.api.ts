@@ -9,6 +9,7 @@ import type {
   OrganizationRole,
   PageOf,
   PlatformUserDetail,
+  SupportSessionLink,
   UserAccess,
   UserChanges,
   UserHistoryEvent,
@@ -36,6 +37,7 @@ export const USER_ERRORS: readonly string[] = [
   'FECHA_FUTURA',
   'PAIS_NO_EXISTE',
   'CIUDAD_NO_EXISTE',
+  'USUARIO_BLOQUEADO',
 ];
 
 @Injectable({ providedIn: 'root' })
@@ -115,6 +117,14 @@ export class UsersApi {
 
   unblock(id: string, reason: string): Observable<UserAccess> {
     return this.http.post<UserAccess>(`${BASE}/${id}/unblock`, { reason }, { context: silent() });
+  }
+
+  supportSession(id: string): Observable<SupportSessionLink> {
+    return this.http.post<SupportSessionLink>(
+      `${BASE}/${id}/support-session`,
+      {},
+      { context: silent() },
+    );
   }
 
   sessions(id: string): Observable<UserSession[]> {

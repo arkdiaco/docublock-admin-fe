@@ -81,6 +81,7 @@ describe('Clientes › Ficha del usuario', () => {
     const host = await montar((req) => req.flush(ficha()));
     expect(botones(host).join()).not.toContain('Editar datos');
     expect(botones(host).join()).not.toContain('Bloquear cuenta');
+    expect(botones(host).join()).not.toContain('Entrar como este usuario');
     expect(botones(host).join()).not.toContain('Agregar a organización');
     expect(host.querySelector('.uo__more')).toBeNull();
   });
@@ -124,6 +125,81 @@ describe('Clientes › Ficha del usuario', () => {
     pulsar(host, 'Bloquear cuenta');
     await vi.waitFor(() => expect(abrir).toHaveBeenCalled());
     http.expectNone('/platform/users/u1/block');
+  });
+
+  describe('entrar como este usuario', () => {
+    const pestanaFalsa = () => {
+      const pestana = { opener: {} as unknown, location: { href: '' }, close: vi.fn() };
+      const abrir = vi.spyOn(window, 'open').mockReturnValue(pestana as unknown as Window);
+      return { pestana, abrir };
+    };
+
+    it('abre una pestaña en el clic y la lleva al enlace que da el core, sin diálogo', async () => {
+      conPermisos(['platform:clients:manage']);
+      const dialogo = vi.spyOn(TestBed.inject(DialogService), 'open');
+      const { pestana, abrir } = pestanaFalsa();
+      const host = await montar((req) => req.flush(ficha()));
+
+      pulsar(host, 'Entrar como este usuario');
+      expect(abrir).toHaveBeenCalledWith('', '_blank');
+      const pedido = await vi.waitFor(() => http.expectOne('/platform/users/u1/support-session'));
+      expect(pedido.request.method).toBe('POST');
+      expect(pedido.request.body).toEqual({});
+      pedido.flush({ url: 'https://app.test/soporte#codigo', expiresAt: '2026-11-17T18:00:00Z' });
+
+      await vi.waitFor(() => expect(pestana.location.href).toBe('https://app.test/soporte#codigo'));
+      expect(pestana.opener).toBeNull();
+      expect(pestana.close).not.toHaveBeenCalled();
+      expect(dialogo).not.toHaveBeenCalled();
+    });
+
+    it('si el navegador bloquea la pestaña abre el enlace aparte', async () => {
+      conPermisos(['platform:clients:manage']);
+      const abrir = vi.spyOn(window, 'open').mockReturnValue(null);
+      const host = await montar((req) => req.flush(ficha()));
+
+      pulsar(host, 'Entrar como este usuario');
+      const pedido = await vi.waitFor(() => http.expectOne('/platform/users/u1/support-session'));
+      pedido.flush({ url: 'https://app.test/soporte#codigo', expiresAt: '2026-11-17T18:00:00Z' });
+
+      await vi.waitFor(() =>
+        expect(abrir).toHaveBeenLastCalledWith(
+          'https://app.test/soporte#codigo',
+          '_blank',
+          'noopener',
+        ),
+      );
+    });
+
+    it('con la cuenta bloqueada el botón está apagado y dice por qué', async () => {
+      conPermisos(['platform:clients:manage']);
+      const host = await montar((req) => req.flush(ficha({ active: false })));
+      const boton = [...host.querySelectorAll('button')].find((b) =>
+        b.textContent?.includes('Entrar como este usuario'),
+      );
+      expect(boton?.disabled).toBe(true);
+      expect(host.textContent).toContain('Desbloquea la cuenta para entrar como este usuario.');
+    });
+
+    it('si el core lo rechaza cierra la pestaña vacía y explica el motivo', async () => {
+      conPermisos(['platform:clients:manage']);
+      const { pestana } = pestanaFalsa();
+      const fallo = vi.spyOn(TestBed.inject(NotificationService), 'error');
+      const host = await montar((req) => req.flush(ficha()));
+
+      pulsar(host, 'Entrar como este usuario');
+      const pedido = await vi.waitFor(() => http.expectOne('/platform/users/u1/support-session'));
+      pedido.flush(
+        { message: 'El usuario está bloqueado', code: 'USUARIO_BLOQUEADO' },
+        { status: 409, statusText: 'Conflict' },
+      );
+
+      await vi.waitFor(() => expect(pestana.close).toHaveBeenCalled());
+      expect(fallo).toHaveBeenCalledWith(
+        'La cuenta está bloqueada. Desbloquéala para entrar como este usuario.',
+      );
+      expect(pestana.location.href).toBe('');
+    });
   });
 
   it('un 404 lleva al estado de no encontrado', async () => {

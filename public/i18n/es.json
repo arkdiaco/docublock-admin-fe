@@ -581,6 +581,7 @@
       "passkey_revoke": "revocó una llave de acceso de un usuario",
       "session_revoke": "cerró una sesión de un usuario",
       "sessions_revoke": "cerró todas las sesiones de un usuario",
+      "support_session": "entró como soporte a la cuenta de un usuario",
       "unblock": "desbloqueó una cuenta de usuario",
       "update": "editó los datos de un usuario"
     },
@@ -4160,7 +4161,9 @@
     "action": {
       "edit": "Editar datos",
       "block": "Bloquear cuenta",
-      "unblock": "Desbloquear cuenta"
+      "unblock": "Desbloquear cuenta",
+      "support": "Entrar como este usuario",
+      "supportBlocked": "Desbloquea la cuenta para entrar como este usuario."
     },
     "tab": {
       "organizations": "Organizaciones",
@@ -4255,7 +4258,8 @@
       "closeAllTitle": "Cerrar todas las sesiones",
       "closeAllMessage": "Todas las sesiones de {{name}} terminarán de inmediato.",
       "closed": "Sesión cerrada.",
-      "closedAll": "Sesiones cerradas: {{count}}."
+      "closedAll": "Sesiones cerradas: {{count}}.",
+      "support": "Soporte Docublock"
     },
     "passkeys": {
       "title": "Llaves de acceso",
@@ -4294,7 +4298,8 @@
       "FECHA_FUTURA": "La fecha de expedición no puede estar en el futuro.",
       "PAIS_NO_EXISTE": "Ese país no existe.",
       "CIUDAD_NO_EXISTE": "Esa ciudad no existe.",
-      "generic": "No pudimos guardar los cambios. Inténtalo de nuevo."
+      "generic": "No pudimos guardar los cambios. Inténtalo de nuevo.",
+      "USUARIO_BLOQUEADO": "La cuenta está bloqueada. Desbloquéala para entrar como este usuario."
     }
   },
   "hist": {

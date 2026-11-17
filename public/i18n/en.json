@@ -581,6 +581,7 @@
       "passkey_revoke": "revoked a user's access key",
       "session_revoke": "closed a user's session",
       "sessions_revoke": "closed all of a user's sessions",
+      "support_session": "signed in to a user's account as support",
       "unblock": "unblocked a user account",
       "update": "edited a user's details"
     },
@@ -4160,7 +4161,9 @@
     "action": {
       "edit": "Edit details",
       "block": "Block account",
-      "unblock": "Unblock account"
+      "unblock": "Unblock account",
+      "support": "Sign in as this user",
+      "supportBlocked": "Unblock the account to sign in as this user."
     },
     "tab": {
       "organizations": "Organizations",
@@ -4255,7 +4258,8 @@
       "closeAllTitle": "Close all sessions",
       "closeAllMessage": "All of {{name}}'s sessions will end immediately.",
       "closed": "Session closed.",
-      "closedAll": "Sessions closed: {{count}}."
+      "closedAll": "Sessions closed: {{count}}.",
+      "support": "Docublock Support"
     },
     "passkeys": {
       "title": "Access keys",
@@ -4294,7 +4298,8 @@
       "FECHA_FUTURA": "The issue date can't be in the future.",
       "PAIS_NO_EXISTE": "That country doesn't exist.",
       "CIUDAD_NO_EXISTE": "That city doesn't exist.",
-      "generic": "We couldn't save the changes. Please try again."
+      "generic": "We couldn't save the changes. Please try again.",
+      "USUARIO_BLOQUEADO": "The account is blocked. Unblock it to sign in as this user."
     }
   },
   "hist": {

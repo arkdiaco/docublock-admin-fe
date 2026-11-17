@@ -79,6 +79,30 @@ describe('Ficha del usuario › Sesiones, llaves e historial', () => {
     recarga.flush([]);
   });
 
+  it('la sesión abierta por soporte se rotula «Soporte Docublock» y se puede cerrar', async () => {
+    conPermisos(['platform:clients:manage']);
+    fixture = TestBed.createComponent(UserSessionsTabComponent);
+    fixture.componentRef.setInput('userId', 'u1');
+    fixture.componentRef.setInput('userName', 'Ana Pérez');
+    fixture.detectChanges();
+    await fixture.whenStable();
+    http.expectOne('/platform/users/u1/sessions').flush([
+      { sid: 's1', device: 'Chrome en Mac', ip: '10.0.0.1' },
+      { sid: 's2', device: 'Firefox en Windows', ip: '10.0.0.2', support: true },
+    ]);
+    const host = fixture.nativeElement as HTMLElement;
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(host.textContent).toContain('Soporte Docublock');
+    });
+    const filas = [...host.querySelectorAll('.dba-tr')];
+    const soporte = filas.find((fila) => fila.textContent?.includes('Soporte Docublock'));
+    expect(soporte?.textContent).toContain('Firefox en Windows');
+    expect(soporte?.querySelector('button')?.textContent?.trim()).toBe('Cerrar sesión');
+    expect(filas.filter((fila) => fila.textContent?.includes('Soporte Docublock'))).toHaveLength(1);
+    expect(host.textContent).not.toMatch(/\busr\.[a-zA-Z]/);
+  });
+
   it('revocar una llave manda el motivo', async () => {
     conPermisos(['platform:clients:manage']);
     vi.spyOn(TestBed.inject(DialogService), 'open').mockResolvedValue({
@@ -133,6 +157,32 @@ describe('Ficha del usuario › Sesiones, llaves e historial', () => {
       expect(host.textContent).toContain('agregó a una persona a Notaría Central');
     });
     expect(host.textContent).toContain('«Pedido»');
+    expect(host.textContent).not.toContain('act.users');
+  });
+
+  it('la entrada como soporte se nombra en el historial del usuario', async () => {
+    const fixture = TestBed.createComponent(UserHistoryTabComponent);
+    fixture.componentRef.setInput('userId', 'u1');
+    fixture.detectChanges();
+    await fixture.whenStable();
+    http
+      .expectOne((req) => req.url === '/platform/audit')
+      .flush({
+        total: 1,
+        items: [
+          {
+            id: 'e2',
+            action: 'users.support_session',
+            admin: { id: 'a1', name: 'Sam' },
+            createdAt: '2026-11-17T12:00:00.000Z',
+          },
+        ],
+      });
+    const host = fixture.nativeElement as HTMLElement;
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(host.textContent).toContain('entró como soporte a la cuenta de un usuario');
+    });
     expect(host.textContent).not.toContain('act.users');
   });
 });

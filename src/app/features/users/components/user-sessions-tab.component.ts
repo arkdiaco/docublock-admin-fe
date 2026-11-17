@@ -84,6 +84,9 @@ const COLUMNS: readonly DataColumn[] = [
         @for (row of items(); track row.sid) {
           <div class="dba-tr">
             <span class="dba-td cell">
+              @if (row.support) {
+                <span class="cell__label">{{ 'usr.sessions.support' | translate }}</span>
+              }
               <span class="cell__text">{{
                 row.device || ('usr.sessions.unknownDevice' | translate)
               }}</span>
