@@ -8,6 +8,7 @@ export type SettingUnit =
   | 'minutes'
   | 'seconds'
   | 'attempts'
+  | 'failures'
   | 'perHour'
   | 'reminders'
   | 'rows'

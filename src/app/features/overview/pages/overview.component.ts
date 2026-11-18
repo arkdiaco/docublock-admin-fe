@@ -310,6 +310,7 @@ export class OverviewComponent {
     orgs: this.orgsPath,
     docs: sectionPath('documents'),
     support: sectionPath('support'),
+    errors: sectionPath('errors'),
   };
   protected readonly canSeeAudit = computed(() =>
     canSeeSection(this.auth.platformPermissions(), 'audit'),

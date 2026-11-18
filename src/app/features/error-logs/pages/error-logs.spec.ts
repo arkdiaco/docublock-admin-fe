@@ -1,0 +1,317 @@
+import type { HttpTestingController, TestRequest } from '@angular/common/http/testing';
+import { TestBed, type ComponentFixture } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { DialogService } from '../../../core/ui/dialog.service';
+import { NotificationService } from '../../../core/ui/notification.service';
+import { conPermisos, configurar } from '../../catalogs/pages/catalogs-test-kit';
+import {
+  actorPartsOf,
+  filtersOf,
+  groupStateOf,
+  queryParamsOf,
+  stateActionsOf,
+  statePills,
+} from '../data/error-log-view';
+import type { ErrorGroupDetail, ErrorGroupReport, ErrorGroupRow } from '../data/error-logs.models';
+import {
+  ERROR_LOGS_DEBOUNCE_MS,
+  ERROR_LOGS_LIMIT,
+  ErrorLogsComponent,
+} from './error-logs.component';
+
+const LLAVE_CRUDA = /\b(errl|nav|common)\.[a-zA-Z]/;
+const BASE = '/platform/error-logs';
+const ID = '65a0000000000000000000e1';
+
+const ABIERTO: ErrorGroupRow = {
+  id: ID,
+  service: 'bridge',
+  source: 'http',
+  kind: 'ServiceUnavailableException',
+  route: 'GET /fianza-credito/digital/ciudades',
+  message: 'Fianzacredito no está configurado',
+  lastStatus: 503,
+  state: 'open',
+  count: 7,
+  firstSeen: '2026-11-17T20:00:00.000Z',
+  lastSeen: '2026-11-17T22:00:00.000Z',
+};
+
+const RESUELTO: ErrorGroupRow = {
+  ...ABIERTO,
+  id: '65a0000000000000000000e2',
+  service: 'core',
+  source: 'job',
+  kind: 'TypeError',
+  route: 'job plan-reminders',
+  message: 'Sin plan',
+  lastStatus: null,
+  state: 'resolved',
+  count: 1,
+  triage: { adminId: 'adm1', adminName: 'Marta Vidal', at: '2026-11-17T21:00:00.000Z' },
+};
+
+const DETALLE: ErrorGroupDetail = {
+  ...ABIERTO,
+  samples: [
+    {
+      id: 's1',
+      occurredAt: '2026-11-17T22:00:00.000Z',
+      message: 'Fianzacredito no está configurado',
+      status: 503,
+      method: 'GET',
+      path: '/fianza-credito/digital/ciudades',
+      query: { ciudad: 'Cali' },
+      actor: { organizationId: 'org-1', integrationKeyId: 'llave-1' },
+      requestId: 'req-77',
+      stack: 'ServiceUnavailableException: Fianzacredito\n    at send',
+    },
+  ],
+};
+
+const reporte = (items: ErrorGroupRow[]): ErrorGroupReport => ({
+  total: items.length,
+  page: 1,
+  limit: ERROR_LOGS_LIMIT,
+  items,
+  totals: { open: 3, resolved: 2, silenced: 1 },
+});
+
+const asentar = async (fixture: ComponentFixture<unknown>): Promise<void> => {
+  await fixture.whenStable();
+  fixture.detectChanges();
+};
+
+const pedido = (http: HttpTestingController): TestRequest =>
+  http.expectOne((req) => req.url.endsWith(BASE) && req.method === 'GET');
+
+const LECTOR = ['platform:platform'];
+const GESTOR = ['platform:platform', 'platform:platform:manage'];
+
+const montar = async (url = '/', items = [ABIERTO, RESUELTO], permisos = LECTOR) => {
+  const http = await configurar();
+  conPermisos(permisos);
+  await TestBed.inject(Router).navigateByUrl(url);
+  const fixture = TestBed.createComponent(ErrorLogsComponent);
+  const primero = pedido(http);
+  primero.flush(reporte(items));
+  await asentar(fixture);
+  return { fixture, http, primero, root: fixture.nativeElement as HTMLElement };
+};
+
+const botonesDelDetalle = () =>
+  [...document.querySelectorAll<HTMLButtonElement>('dba-error-log-detail button')].map((b) =>
+    b.textContent?.trim(),
+  );
+
+const botonDelDetalle = (texto: string) =>
+  [...document.querySelectorAll<HTMLButtonElement>('dba-error-log-detail button')].find(
+    (b) => b.textContent?.trim() === texto,
+  );
+
+describe('Plataforma › Fallos', () => {
+  it('lista los grupos con servicio, ruta, veces y estado, con los conteos por estado y sin llaves crudas', async () => {
+    const { root, primero } = await montar();
+
+    expect(primero.request.params.get('page')).toBe('1');
+    expect(primero.request.params.get('limit')).toBe(String(ERROR_LOGS_LIMIT));
+    expect(primero.request.params.has('state')).toBe(false);
+    const texto = root.textContent ?? '';
+    expect(texto).toContain('Fallos');
+    expect(texto).toContain('bridge');
+    expect(texto).toContain('GET /fianza-credito/digital/ciudades');
+    expect(texto).toContain('ServiceUnavailableException');
+    expect(texto).toContain('Fianzacredito no está configurado');
+    expect(texto).toContain('Abierto');
+    expect(texto).toContain('Resuelto');
+    expect(texto).toContain('Silenciado');
+    expect(texto).not.toMatch(LLAVE_CRUDA);
+  });
+
+  it('lee los filtros de la URL y los manda al core', async () => {
+    const { primero } = await montar(
+      '/?estado=open&servicio=commons&buscar=push&periodo=24h&pagina=2',
+    );
+    const params = primero.request.params;
+    expect(params.get('state')).toBe('open');
+    expect(params.get('service')).toBe('commons');
+    expect(params.get('search')).toBe('push');
+    expect(params.get('page')).toBe('2');
+    expect(Date.parse(params.get('from') ?? '')).toBeLessThan(Date.now() - 23 * 3_600_000);
+  });
+
+  it('la búsqueda espera a que se deje de escribir y vuelve a la primera página', async () => {
+    const { root, http, fixture } = await montar('/?pagina=3');
+    vi.useFakeTimers();
+    try {
+      const input = root.querySelector<HTMLInputElement>(
+        'input[aria-label="Buscar en mensaje, ruta o tipo"]',
+      );
+      input!.value = ' fianza ';
+      input!.dispatchEvent(new Event('input'));
+      http.expectNone((req) => req.url.endsWith(BASE));
+      vi.advanceTimersByTime(ERROR_LOGS_DEBOUNCE_MS);
+    } finally {
+      vi.useRealTimers();
+    }
+    const siguiente = pedido(http);
+    expect(siguiente.request.params.get('search')).toBe('fianza');
+    expect(siguiente.request.params.get('page')).toBe('1');
+    siguiente.flush(reporte([]));
+    await asentar(fixture);
+    expect(root.textContent).toContain('Ningún fallo coincide con los filtros');
+  });
+
+  it('abrir un grupo muestra sus muestras con quién, parámetros y traza', async () => {
+    const { root, http, fixture } = await montar();
+    root.querySelector<HTMLButtonElement>('button.dba-tr')!.click();
+    http.expectOne((req) => req.url.endsWith(`${BASE}/${ID}`)).flush(DETALLE);
+    await asentar(fixture);
+
+    const texto = document.querySelector('dba-error-log-detail')?.textContent ?? '';
+    expect(texto).toContain('Últimas muestras (1)');
+    expect(texto).toContain('503 · GET · /fianza-credito/digital/ciudades');
+    expect(texto).toContain('Llave de integración');
+    expect(texto).toContain('llave-1');
+    expect(texto).toContain('req-77');
+    expect(texto).toContain('"ciudad": "Cali"');
+    expect(texto).toContain('at send');
+    expect(texto).not.toMatch(LLAVE_CRUDA);
+  });
+
+  it('el enlace de Visión general abre el grupo directamente', async () => {
+    const http = await configurar();
+    conPermisos(LECTOR);
+    await TestBed.inject(Router).navigateByUrl(`/?grupo=${ID}`);
+    const fixture = TestBed.createComponent(ErrorLogsComponent);
+    pedido(http).flush(reporte([ABIERTO]));
+    http.expectOne((req) => req.url.endsWith(`${BASE}/${ID}`)).flush(DETALLE);
+    await asentar(fixture);
+    expect(document.querySelector('dba-error-log-detail')?.textContent).toContain(
+      'GET /fianza-credito/digital/ciudades',
+    );
+  });
+
+  it('solo lectura: el detalle no ofrece cambiar el estado', async () => {
+    const { root, http, fixture } = await montar();
+    root.querySelector<HTMLButtonElement>('button.dba-tr')!.click();
+    http.expectOne((req) => req.url.endsWith(`${BASE}/${ID}`)).flush(DETALLE);
+    await asentar(fixture);
+    expect(botonesDelDetalle()).not.toContain('Marcar resuelto');
+    expect(botonesDelDetalle()).not.toContain('Silenciar');
+    expect(botonesDelDetalle()).toContain('Cerrar');
+  });
+
+  it('resolver pide motivo, llama al core, avisa y recarga', async () => {
+    const { root, http, fixture } = await montar('/', [ABIERTO], GESTOR);
+    root.querySelector<HTMLButtonElement>('button.dba-tr')!.click();
+    http.expectOne((req) => req.url.endsWith(`${BASE}/${ID}`)).flush(DETALLE);
+    await asentar(fixture);
+    expect(botonesDelDetalle()).toContain('Silenciar');
+    const abrir = vi
+      .spyOn(TestBed.inject(DialogService), 'open')
+      .mockResolvedValue({ answer: 'confirm', reason: 'Se configuró el token' });
+    const exito = vi.spyOn(TestBed.inject(NotificationService), 'success');
+    botonDelDetalle('Marcar resuelto')!.click();
+    await vi.waitFor(() => expect(abrir).toHaveBeenCalled());
+    expect(abrir.mock.calls[0][0]).toMatchObject({
+      title: 'errl.confirm.resolved.title',
+      params: { route: ABIERTO.route },
+    });
+    await vi.waitFor(() => {
+      const post = http.expectOne((req) => req.url.endsWith(`${BASE}/${ID}/state`));
+      expect(post.request.method).toBe('POST');
+      expect(post.request.body).toEqual({ state: 'resolved', reason: 'Se configuró el token' });
+      post.flush({ ...ABIERTO, state: 'resolved' });
+    });
+    await vi.waitFor(() =>
+      http
+        .expectOne((req) => req.url.endsWith(`${BASE}/${ID}`))
+        .flush({ ...DETALLE, state: 'resolved' }),
+    );
+    await vi.waitFor(() => pedido(http).flush(reporte([{ ...ABIERTO, state: 'resolved' }])));
+    await asentar(fixture);
+    expect(exito).toHaveBeenCalledWith('Fallo marcado como resuelto');
+    expect(botonesDelDetalle()).toContain('Reabrir');
+  });
+
+  it('si otro lo cambió antes avisa con el código del core', async () => {
+    const { root, http, fixture } = await montar('/', [ABIERTO], GESTOR);
+    root.querySelector<HTMLButtonElement>('button.dba-tr')!.click();
+    http.expectOne((req) => req.url.endsWith(`${BASE}/${ID}`)).flush(DETALLE);
+    await asentar(fixture);
+    vi.spyOn(TestBed.inject(DialogService), 'open').mockResolvedValue({
+      answer: 'confirm',
+      reason: 'ruido',
+    });
+    const fallo = vi.spyOn(TestBed.inject(NotificationService), 'error');
+    botonDelDetalle('Silenciar')!.click();
+    await vi.waitFor(() =>
+      http
+        .expectOne((req) => req.url.endsWith(`${BASE}/${ID}/state`))
+        .flush({ code: 'ERROR_GROUP_CHANGED' }, { status: 409, statusText: 'Conflict' }),
+    );
+    await vi.waitFor(() => pedido(http).flush(reporte([ABIERTO])));
+    expect(fallo).toHaveBeenCalledWith(
+      'Alguien cambió este fallo mientras lo revisabas. Recarga y vuelve a intentar.',
+    );
+  });
+
+  it('si el core falla muestra el aviso y deja reintentar', async () => {
+    const http = await configurar();
+    conPermisos(LECTOR);
+    const fixture = TestBed.createComponent(ErrorLogsComponent);
+    pedido(http).flush({}, { status: 500, statusText: 'Error' });
+    await asentar(fixture);
+    const root = fixture.nativeElement as HTMLElement;
+    expect(root.textContent).toContain('No se pudieron cargar los fallos');
+    root.querySelector<HTMLButtonElement>('.bl__panel button')!.click();
+    pedido(http).flush(reporte([ABIERTO]));
+    await asentar(fixture);
+    expect(root.textContent).toContain('GET /fianza-credito/digital/ciudades');
+  });
+
+  it('la vista traduce filtros, estados y acciones sin perder datos', () => {
+    const filtros = filtersOf({
+      estado: 'silenced',
+      servicio: 'bridge',
+      buscar: ' push ',
+      periodo: '7d',
+      grupo: ID,
+      pagina: '4',
+    });
+    expect(filtros).toEqual({
+      state: 'silenced',
+      service: 'bridge',
+      search: 'push',
+      period: '7d',
+      group: ID,
+      page: 4,
+    });
+    expect(queryParamsOf(filtros)).toEqual({
+      estado: 'silenced',
+      servicio: 'bridge',
+      buscar: 'push',
+      periodo: '7d',
+      grupo: ID,
+      pagina: 4,
+    });
+    expect(filtersOf({ estado: 'otro', servicio: 'x', grupo: 'no-es-id', pagina: '-1' })).toEqual({
+      state: null,
+      service: null,
+      search: null,
+      period: null,
+      group: null,
+      page: 1,
+    });
+    expect(statePills({ open: 3, resolved: 2, silenced: 1 })[0].count).toBe(6);
+    expect(statePills({ open: 3, resolved: 2, silenced: 1 })[1].danger).toBe(true);
+    expect(groupStateOf('open')).toBe('suspended');
+    expect(stateActionsOf('open').map((a) => a.to)).toEqual(['resolved', 'silenced']);
+    expect(stateActionsOf('silenced').map((a) => a.to)).toEqual(['open']);
+    expect(actorPartsOf({ userId: 'u1', organizationId: 'o1' })).toEqual([
+      { key: 'organizationId', value: 'o1' },
+      { key: 'userId', value: 'u1' },
+    ]);
+  });
+});

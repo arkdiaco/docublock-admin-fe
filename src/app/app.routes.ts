@@ -486,6 +486,15 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
         import('./features/staff/pages/staff.component').then((m) => m.StaffComponent),
     },
   ],
+  errors: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/error-logs/pages/error-logs.component').then(
+          (m) => m.ErrorLogsComponent,
+        ),
+    },
+  ],
   health: [
     {
       path: '',

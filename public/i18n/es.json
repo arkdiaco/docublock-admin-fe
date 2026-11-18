@@ -90,7 +90,8 @@
     "validationConsumption": "Consumo de validaciones",
     "validationHistory": "Histórico de validaciones",
     "resellerDocuments": "Documentos por reseller",
-    "consents": "Tratamiento de datos"
+    "consents": "Tratamiento de datos",
+    "errors": "Fallos"
   },
   "auth": {
     "title": "Acceso a la plataforma",
@@ -411,7 +412,8 @@
       "docUnregistered": "{{n}} firmado(s) sin registro en blockchain",
       "docStuck": "{{n}} con todas las firmas y sin completar",
       "ticketOverdue": "ticket vencido sin atender · {{org}}",
-      "ticketOverdueNoOrg": "ticket vencido sin atender"
+      "ticketOverdueNoOrg": "ticket vencido sin atender",
+      "errorSpike": "{{n}} fallos en 24 h · {{message}}"
     },
     "cta": {
       "review": "Revisar"
@@ -5754,7 +5756,9 @@
       "megabytes": "{{value}} MB",
       "megabytesOne": "{{value}} MB",
       "text": "{{value}}",
-      "lines": "{{value}}"
+      "lines": "{{value}}",
+      "failures": "{{value}} fallos",
+      "failuresOne": "{{value}} fallo"
     },
     "editLabel": {
       "percent": "Porcentaje",
@@ -5786,6 +5790,11 @@
           "label": "Documentos atascados",
           "audience": "Lo ven los clientes",
           "hint": "Horas sin firma desde las que un documento cuenta como atascado en los reportes de cada organización."
+        },
+        "error_spike_count": {
+          "label": "Fallos repetidos",
+          "audience": "Se ve en la consola",
+          "hint": "Veces que un fallo abierto tiene que repetirse en 24 horas para aparecer en «Requiere acción» de Visión general. Cuenta desde que se reabrió."
         },
         "plan_reminder_days": {
           "label": "Recordatorios de vencimiento",
@@ -6518,5 +6527,108 @@
         "PAYMENT_LOG_REQUEST_UNUSABLE": "El evento guardado está incompleto o recortado; no se puede reaplicar"
       }
     }
+  },
+  "errl": {
+    "lead": "Los errores del servidor (5xx) del core, el commons y el bridge, agrupados por causa.",
+    "tableLabel": "Fallos de la plataforma",
+    "loading": "Cargando fallos…",
+    "loadingDetail": "Cargando las muestras…",
+    "errorTitle": "No se pudieron cargar los fallos",
+    "errorLead": "Revisa tu conexión y vuelve a intentar.",
+    "empty": "No hay fallos registrados",
+    "emptyFiltered": "Ningún fallo coincide con los filtros",
+    "detailFailed": "No se pudo cargar el detalle de este fallo.",
+    "filter": {
+      "all": "Todos",
+      "search": "Buscar en mensaje, ruta o tipo",
+      "searchPlaceholder": "Mensaje, ruta o tipo de error",
+      "service": "Servicio",
+      "anyService": "Cualquier servicio",
+      "period": "Última vez",
+      "anyPeriod": "Cualquier fecha"
+    },
+    "periods": {
+      "24h": "Últimas 24 horas",
+      "7d": "Últimos 7 días",
+      "30d": "Últimos 30 días"
+    },
+    "state": {
+      "open": "Abierto",
+      "resolved": "Resuelto",
+      "silenced": "Silenciado"
+    },
+    "service": {
+      "core": "core",
+      "commons": "commons",
+      "bridge": "bridge"
+    },
+    "source": {
+      "http": "Petición HTTP",
+      "job": "Trabajo programado"
+    },
+    "col": {
+      "lastSeen": "Última vez",
+      "service": "Servicio",
+      "route": "Ruta",
+      "message": "Mensaje",
+      "count": "Veces",
+      "state": "Estado"
+    },
+    "field": {
+      "triage": "Revisado",
+      "reopened": "Volvió a pasar",
+      "message": "Mensaje",
+      "firstSeen": "Primera vez",
+      "status": "Último código",
+      "source": "Origen",
+      "path": "URL",
+      "requestId": "Id de la petición",
+      "query": "Parámetros",
+      "body": "Cuerpo recibido",
+      "stack": "Traza"
+    },
+    "triageText": "{{admin}} · {{when}}",
+    "samples": "Últimas muestras ({{n}})",
+    "noSamples": "Las muestras vencen a los 90 días; este fallo ya no tiene ninguna.",
+    "actor": {
+      "organizationId": "Organización",
+      "userId": "Usuario",
+      "platformAdminId": "Admin de plataforma",
+      "integrationKeyId": "Llave de integración",
+      "callerService": "Servicio que llamó"
+    },
+    "action": {
+      "resolve": "Marcar resuelto",
+      "silence": "Silenciar",
+      "reopen": "Reabrir"
+    },
+    "confirm": {
+      "resolved": {
+        "title": "Marcar como resuelto",
+        "message": "«{{route}}» sale de los abiertos. Si vuelve a fallar, se reabre solo."
+      },
+      "silenced": {
+        "title": "Silenciar este fallo",
+        "message": "«{{route}}» se sigue registrando, pero no vuelve a abrirse ni aparece en Visión general hasta que lo reabras."
+      },
+      "open": {
+        "title": "Reabrir este fallo",
+        "message": "«{{route}}» vuelve a los abiertos y puede avisar en Visión general."
+      }
+    },
+    "reason": "Motivo",
+    "reasonPlaceholder": "Qué se hizo o por qué",
+    "done": {
+      "resolved": "Fallo marcado como resuelto",
+      "silenced": "Fallo silenciado",
+      "open": "Fallo reabierto"
+    },
+    "error": {
+      "ERROR_GROUP_NOT_FOUND": "Ese fallo ya no existe en el registro.",
+      "ERROR_GROUP_SAME_STATE": "El fallo ya estaba en ese estado.",
+      "ERROR_GROUP_CHANGED": "Alguien cambió este fallo mientras lo revisabas. Recarga y vuelve a intentar."
+    },
+    "failed": "No se pudo cambiar el estado: {{message}}",
+    "failedGeneric": "No se pudo cambiar el estado. Inténtalo de nuevo."
   }
 }

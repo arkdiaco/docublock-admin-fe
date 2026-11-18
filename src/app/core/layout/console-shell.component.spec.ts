@@ -126,7 +126,7 @@ describe('ConsoleShellComponent', () => {
     fixture.detectChanges();
     expect(textos(host, '.drawer .heading')).toEqual(['Clientes', 'Comercial', 'Plataforma']);
     const enlaces = [...host.querySelectorAll<HTMLAnchorElement>('.drawer .link--drawer')];
-    expect(enlaces.length).toBe(4 + 7 + 3);
+    expect(enlaces.length).toBe(4 + 7 + 4);
     expect(enlaces.map((a) => a.getAttribute('href'))).not.toContain('/plataforma/personal');
     expect(enlaces[0].getAttribute('href')).toBe('/clientes/organizaciones');
     expect(host.querySelector('.drawer__link')?.getAttribute('href')).toBe('/panel');
