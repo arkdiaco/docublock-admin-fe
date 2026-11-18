@@ -4538,6 +4538,7 @@
       "cityEmpty": "Sin ciudades con ese nombre",
       "noCountry": "Primero elige el país",
       "catalogRequired": "Elige el tipo de persona y el tipo de documento: dependen del país y del tipo de persona.",
+      "reasonRequired": "Escribe el motivo: sin él no se puede guardar.",
       "expeditionDate": "Fecha de expedición",
       "birthDate": "Fecha de nacimiento",
       "dateHint": "AAAA-MM-DD",

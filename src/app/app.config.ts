@@ -4,6 +4,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import {
   LOCALE_ID,
   inject,
+  isDevMode,
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
@@ -16,6 +17,7 @@ import {
   withInMemoryScrolling,
   withNavigationErrorHandler,
 } from '@angular/router';
+import { provideServiceWorker } from '@angular/service-worker';
 import { MessageService } from 'primeng/api';
 import { providePrimeNG } from 'primeng/config';
 import { routes } from './app.routes';
@@ -56,5 +58,9 @@ export const appConfig: ApplicationConfig = {
     }),
     MessageService,
     ...provideI18n(),
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
   ],
 };
