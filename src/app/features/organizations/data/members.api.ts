@@ -10,6 +10,7 @@ import type {
   OrgRole,
   Paged,
   RoleSyncReport,
+  SignerChange,
 } from './members.models';
 
 const silent = (): HttpContext => new HttpContext().set(SILENT_ERRORS, true);
@@ -47,6 +48,14 @@ export class MembersApi {
     return this.http.patch<OrgMember>(`/platform/organizations/${orgId}/members/${userId}`, body, {
       context: silent(),
     });
+  }
+
+  updateSigner(orgId: string, userId: string, body: SignerChange): Observable<OrgMember> {
+    return this.http.patch<OrgMember>(
+      `/platform/organizations/${orgId}/members/${userId}/signer`,
+      body,
+      { context: silent() },
+    );
   }
 
   remove(orgId: string, userId: string, reason: string): Observable<unknown> {

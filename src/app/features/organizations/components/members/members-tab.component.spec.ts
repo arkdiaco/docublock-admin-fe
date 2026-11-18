@@ -54,6 +54,18 @@ const ANA: OrgMember = {
   roleName: 'Administrador',
 };
 
+const LUIS: OrgMember = {
+  userId: 'u2',
+  names: 'Luis',
+  surNames: 'Gómez',
+  identification: '2044',
+  email: 'luis@sierra.co',
+  state: 1,
+  roleId: 'r-admin',
+  roleName: 'Administrador',
+  signer: { signerId: 's2', isLegalRep: true, autoSign: true },
+};
+
 const INV: OrgInvitation = {
   id: 'i1',
   identification: '5544',
@@ -96,7 +108,10 @@ describe('MembersTabComponent', () => {
     http.expectOne('/platform/organizations/org-1/roles').flush(ROLES);
   };
 
-  const montar = async (permisos: string[] = ['platform:clients', 'platform:clients:manage']) => {
+  const montar = async (
+    permisos: string[] = ['platform:clients', 'platform:clients:manage'],
+    miembros: OrgMember[] = [ANA],
+  ) => {
     TestBed.inject(AuthStore).setProfile({
       user: {
         id: 'x',
@@ -112,7 +127,7 @@ describe('MembersTabComponent', () => {
     const fixture = TestBed.createComponent(MembersTabComponent);
     fixture.componentRef.setInput('org', ORG);
     fixture.detectChanges();
-    responder();
+    responder(miembros);
     const host = fixture.nativeElement as HTMLElement;
     await vi.waitFor(() => {
       fixture.detectChanges();
@@ -219,6 +234,76 @@ describe('MembersTabComponent', () => {
         expect.objectContaining({
           detail: 'Roles sincronizados: 1 creados, 3 con permisos nuevos',
         }),
+      ),
+    );
+  });
+  const accion = (fixture: { componentInstance: unknown }, key: string) =>
+    (fixture.componentInstance as { onAction: (k: string) => void }).onAction(key);
+
+  const opciones = (fixture: { componentInstance: unknown }) =>
+    (fixture.componentInstance as { actionItems: () => { key: string }[] })
+      .actionItems()
+      .map((item) => item.key);
+
+  it('la columna Firma dice quién es representante legal y quién tiene firma automática', async () => {
+    const { host } = await montar(undefined, [ANA, LUIS]);
+    const celdas = [...host.querySelectorAll('.mt__signing')].map((c) => c.textContent?.trim());
+    expect(celdas[0]).toBe('—');
+    expect(celdas[1]).toContain('Representante legal');
+    expect(celdas[1]).toContain('Firma automática');
+    expect(host.textContent).not.toMatch(/\b(members|common|tbl)\.[a-zA-Z]/);
+  });
+
+  it('nombrar representante legal pide motivo y manda solo isLegalRep', async () => {
+    const { fixture, host } = await montar();
+    const abrir = vi
+      .spyOn(TestBed.inject(DialogService), 'open')
+      .mockResolvedValue({ answer: 'confirm', reason: 'Cambio de gerente' });
+    host.querySelector<HTMLButtonElement>('.mt__more')!.click();
+    fixture.detectChanges();
+    expect(opciones(fixture)).toEqual(['role', 'deactivate', 'legalRepOn', 'remove']);
+    accion(fixture, 'legalRepOn');
+    await vi.waitFor(() => expect(abrir).toHaveBeenCalled());
+    expect(abrir.mock.calls[0][0].params).toEqual({ name: 'Ana Pérez' });
+    let req!: ReturnType<HttpTestingController['expectOne']>;
+    await vi.waitFor(() => {
+      req = http.expectOne((r) => r.method === 'PATCH' && r.url.endsWith('/members/u1/signer'));
+    });
+    expect(req.request.body).toEqual({ isLegalRep: true, reason: 'Cambio de gerente' });
+    req.flush({ ...ANA, signer: { signerId: 's1', isLegalRep: true, autoSign: false } });
+    await vi.waitFor(() => responder());
+  });
+
+  it('apagar la firma automática solo se ofrece si está encendida y nunca la enciende', async () => {
+    const { fixture } = await montar(undefined, [LUIS]);
+    vi.spyOn(TestBed.inject(DialogService), 'open').mockResolvedValue({
+      answer: 'confirm',
+      reason: 'Pedido del cliente',
+    });
+    const avisos = vi.spyOn(TestBed.inject(MessageService), 'add');
+    (
+      fixture.componentInstance as unknown as { acting: { set: (m: OrgMember) => void } }
+    ).acting.set(LUIS);
+    expect(opciones(fixture)).toEqual([
+      'role',
+      'deactivate',
+      'legalRepOff',
+      'autoSignOff',
+      'remove',
+    ]);
+    accion(fixture, 'autoSignOff');
+    let req!: ReturnType<HttpTestingController['expectOne']>;
+    await vi.waitFor(() => {
+      req = http.expectOne((r) => r.method === 'PATCH' && r.url.endsWith('/members/u2/signer'));
+    });
+    expect(req.request.body).toEqual({ autoSign: false, reason: 'Pedido del cliente' });
+    req.flush(
+      { code: 'FIRMA_AUTOMATICA_INACTIVA', message: 'x' },
+      { status: 409, statusText: 'Conflict' },
+    );
+    await vi.waitFor(() =>
+      expect(avisos).toHaveBeenCalledWith(
+        expect.objectContaining({ detail: 'La firma automática ya estaba apagada.' }),
       ),
     );
   });

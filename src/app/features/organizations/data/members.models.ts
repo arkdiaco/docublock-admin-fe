@@ -1,3 +1,9 @@
+export interface MemberSigner {
+  signerId: string;
+  isLegalRep: boolean;
+  autoSign: boolean;
+}
+
 export interface OrgMember {
   userId: string;
   names: string;
@@ -9,6 +15,13 @@ export interface OrgMember {
   roleId: string;
   roleCode?: number;
   roleName?: string;
+  signer?: MemberSigner;
+}
+
+export interface SignerChange {
+  isLegalRep?: boolean;
+  autoSign?: false;
+  reason: string;
 }
 
 export interface OrgRole {

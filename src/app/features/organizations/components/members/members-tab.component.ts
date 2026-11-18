@@ -42,6 +42,7 @@ const MEMBER_COLUMNS: readonly DataColumn[] = [
   { key: 'person', labelKey: 'members.col.person', width: 'minmax(220px, 2fr)' },
   { key: 'identification', labelKey: 'members.col.identification', width: '140px' },
   { key: 'role', labelKey: 'members.col.role', width: 'minmax(0, 1fr)' },
+  { key: 'signing', labelKey: 'members.col.signing', width: 'minmax(150px, 1fr)' },
   { key: 'state', labelKey: 'members.col.state', width: '110px' },
   { key: 'actions', width: '52px', align: 'end' },
 ];
@@ -63,6 +64,11 @@ const KNOWN_ERRORS = [
   'INVITACION_PENDIENTE',
   'INVITACION_NO_PENDIENTE',
   'INVITACION_CORREO_FALLIDO',
+  'FIRMANTE_SIN_CAMBIOS',
+  'FIRMANTE_NO_EXISTE',
+  'FIRMA_AUTOMATICA_INACTIVA',
+  'FIRMANTE_SIN_TIPO_IDENTIFICACION',
+  'FIRMANTE_SIN_PAIS',
 ];
 
 const INVITATION_STATE: Record<string, string> = {
@@ -135,7 +141,7 @@ type Open = { kind: 'invite' } | { kind: 'role'; member: OrgMember } | null;
             <dba-data-table
               [columns]="memberColumns"
               [label]="'members.title' | translate: { total: total() }"
-              minWidth="720px"
+              minWidth="860px"
               [total]="total()"
               [from]="from()"
               [to]="to()"
@@ -153,6 +159,25 @@ type Open = { kind: 'invite' } | { kind: 'role'; member: OrgMember } | null;
                   <span class="dba-td mt__small">{{
                     member.roleName || roleName(member.roleId)
                   }}</span>
+                  <span class="dba-td mt__signing">
+                    @if (member.signer?.isLegalRep) {
+                      <dba-org-state
+                        state="trial"
+                        labelKey="members.signer.legalRep"
+                        variant="inline"
+                      />
+                    }
+                    @if (member.signer?.autoSign) {
+                      <dba-org-state
+                        state="active"
+                        labelKey="members.signer.autoSign"
+                        variant="inline"
+                      />
+                    }
+                    @if (!member.signer?.isLegalRep && !member.signer?.autoSign) {
+                      <span class="mt__muted">—</span>
+                    }
+                  </span>
                   <span class="dba-td">
                     <dba-org-state
                       [state]="member.state === 1 ? 'active' : 'suspended'"
@@ -352,6 +377,13 @@ type Open = { kind: 'invite' } | { kind: 'role'; member: OrgMember } | null;
       white-space: nowrap;
     }
 
+    .mt__signing {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
     .mt__mono {
       font-family: var(--dba-font-mono);
       font-size: var(--dba-text-small);
@@ -478,13 +510,22 @@ export class MembersTabComponent {
     return open?.kind === 'role' ? open.member : null;
   });
 
-  protected readonly actionItems = computed<ActionMenuItem[]>(() => [
-    { key: 'role', labelKey: 'members.action.role' },
-    this.acting()?.state === 1
-      ? { key: 'deactivate', labelKey: 'members.action.deactivate' }
-      : { key: 'activate', labelKey: 'members.action.activate' },
-    { key: 'remove', labelKey: 'members.action.remove', danger: true, separated: true },
-  ]);
+  protected readonly actionItems = computed<ActionMenuItem[]>(() => {
+    const member = this.acting();
+    return [
+      { key: 'role', labelKey: 'members.action.role' },
+      member?.state === 1
+        ? { key: 'deactivate', labelKey: 'members.action.deactivate' }
+        : { key: 'activate', labelKey: 'members.action.activate' },
+      member?.signer?.isLegalRep
+        ? { key: 'legalRepOff', labelKey: 'members.action.legalRepOff', separated: true }
+        : { key: 'legalRepOn', labelKey: 'members.action.legalRepOn', separated: true },
+      ...(member?.signer?.autoSign
+        ? [{ key: 'autoSignOff', labelKey: 'members.action.autoSignOff' }]
+        : []),
+      { key: 'remove', labelKey: 'members.action.remove', danger: true, separated: true },
+    ];
+  });
 
   constructor() {
     effect(() => {
@@ -550,6 +591,9 @@ export class MembersTabComponent {
     if (key === 'role') this.open.set({ kind: 'role', member });
     else if (key === 'deactivate') void this.setState(member, 0);
     else if (key === 'activate') void this.setState(member, 1);
+    else if (key === 'legalRepOn') void this.setLegalRep(member, true);
+    else if (key === 'legalRepOff') void this.setLegalRep(member, false);
+    else if (key === 'autoSignOff') void this.disableAutoSign(member);
     else if (key === 'remove') void this.remove(member);
   }
 
@@ -622,6 +666,44 @@ export class MembersTabComponent {
       this.done(deactivate ? 'members.done.deactivate' : 'members.done.activate', {
         name: member.names,
       });
+    }
+  }
+
+  private async setLegalRep(member: OrgMember, isLegalRep: boolean): Promise<void> {
+    const reason = await this.ask({
+      intent: isLegalRep ? 'primary' : 'danger',
+      icon: isLegalRep ? 'circleCheck' : 'circleX',
+      title: isLegalRep ? 'members.legalRep.onTitle' : 'members.legalRep.offTitle',
+      message: isLegalRep ? 'members.legalRep.onMessage' : 'members.legalRep.offMessage',
+      params: { name: `${member.names} ${member.surNames}` },
+      confirmLabel: isLegalRep ? 'members.action.legalRepOn' : 'members.action.legalRepOff',
+    });
+    if (
+      reason &&
+      (await this.run(this.api.updateSigner(this.orgId(), member.userId, { isLegalRep, reason })))
+    ) {
+      this.done(isLegalRep ? 'members.done.legalRepOn' : 'members.done.legalRepOff', {
+        name: member.names,
+      });
+    }
+  }
+
+  private async disableAutoSign(member: OrgMember): Promise<void> {
+    const reason = await this.ask({
+      intent: 'danger',
+      icon: 'circleX',
+      title: 'members.autoSign.offTitle',
+      message: 'members.autoSign.offMessage',
+      params: { name: `${member.names} ${member.surNames}` },
+      confirmLabel: 'members.action.autoSignOff',
+    });
+    if (
+      reason &&
+      (await this.run(
+        this.api.updateSigner(this.orgId(), member.userId, { autoSign: false, reason }),
+      ))
+    ) {
+      this.done('members.done.autoSignOff', { name: member.names });
     }
   }
 

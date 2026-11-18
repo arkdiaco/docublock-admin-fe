@@ -356,6 +356,7 @@
       "members": "Members",
       "integrations": "Integrations",
       "validations": "Validations",
+      "settings": "Settings",
       "marketplace": "Marketplace",
       "documents": "Documents",
       "audit": "Audit",
@@ -476,6 +477,7 @@
       "invitation_revoke": "revoked an invitation in {{org}}",
       "invite": "invited someone to {{org}}",
       "remove": "removed someone from {{org}}",
+      "signer_update": "changed the legal representative or automatic signing of someone in {{org}}",
       "update": "changed someone’s role in {{org}}"
     },
     "organization": {
@@ -1139,6 +1141,7 @@
       "person": "Person",
       "identification": "ID",
       "role": "Role",
+      "signing": "Signing",
       "state": "Status",
       "email": "Email",
       "expires": "Expires"
@@ -1146,6 +1149,10 @@
     "state": {
       "active": "Active",
       "inactive": "Inactive"
+    },
+    "signer": {
+      "legalRep": "Legal representative",
+      "autoSign": "Automatic signing"
     },
     "invitation": {
       "PENDING": "Pending",
@@ -1162,7 +1169,20 @@
       "role": "Change role",
       "deactivate": "Deactivate",
       "activate": "Activate",
+      "legalRepOn": "Make legal representative",
+      "legalRepOff": "Remove as legal representative",
+      "autoSignOff": "Turn off automatic signing",
       "remove": "Remove from organization"
+    },
+    "legalRep": {
+      "onTitle": "Make {{name}} the legal representative?",
+      "onMessage": "They sign for the organization when a template asks for it, and their seal is generated. There is only one legal representative per organization: if there was one, they stop being it. Automatic signing is not turned on; the person turns it on with their code from Settings › Users.",
+      "offTitle": "Remove {{name}} as legal representative?",
+      "offMessage": "They stop signing for this organization and their automatic signing is turned off here. If they are also legal representative of another organization, they remain so there."
+    },
+    "autoSign": {
+      "offTitle": "Turn off automatic signing for {{name}}?",
+      "offMessage": "They stay legal representative, but their documents in this organization ask for their signature in person again. To turn it back on, the person activates it with their code from Settings › Users."
     },
     "invite": {
       "open": "Invite",
@@ -1201,7 +1221,10 @@
       "revoke": "Invitation revoked",
       "deactivate": "{{name}} is inactive",
       "activate": "{{name}} is active",
-      "remove": "{{name}} is no longer a member"
+      "remove": "{{name}} is no longer a member",
+      "legalRepOn": "{{name}} is the legal representative",
+      "legalRepOff": "{{name}} is no longer legal representative",
+      "autoSignOff": "Automatic signing for {{name}} turned off"
     },
     "error": {
       "ULTIMO_ADMIN": "This is the last active administrator: assign another first.",
@@ -1211,6 +1234,11 @@
       "INVITACION_PENDIENTE": "There's already a pending invitation for that ID.",
       "INVITACION_NO_PENDIENTE": "The invitation is no longer pending.",
       "INVITACION_CORREO_FALLIDO": "The invitation was created but the email failed: resend it.",
+      "FIRMANTE_SIN_CAMBIOS": "There was nothing to change.",
+      "FIRMANTE_NO_EXISTE": "That person has no signer in the organization.",
+      "FIRMA_AUTOMATICA_INACTIVA": "Automatic signing was already off.",
+      "FIRMANTE_SIN_TIPO_IDENTIFICACION": "The person has no document type: complete it in Users to create their signer.",
+      "FIRMANTE_SIN_PAIS": "Neither the person nor the organization has a country: complete it to create their signer.",
       "generic": "It couldn't be saved. Try again."
     }
   },
@@ -1232,13 +1260,6 @@
       "ani": "Confirms the ID with the civil registry",
       "liveness": "Confirms a real person is in front of the camera; uses no credits"
     },
-    "selfService": "Set by the organization:",
-    "self": {
-      "blockComments": "Block comments",
-      "documentPhotos": "Document photos"
-    },
-    "yes": "yes",
-    "no": "no",
     "enableTitle": "Enable {{name}}",
     "disableTitle": "Disable {{name}}",
     "enableMessage": "The organization can request {{name}} from its signers from now on.",
@@ -6630,5 +6651,45 @@
     },
     "failed": "The state could not be changed: {{message}}",
     "failedGeneric": "The state could not be changed. Try again."
+  },
+  "ost": {
+    "loading": "Loading settings",
+    "errorTitle": "We could not load the settings",
+    "errorLead": "Check your connection and try again.",
+    "lead": "The organization can also change these settings in its own Settings. Every change made here asks for a reason and goes to the Audit log.",
+    "group": {
+      "notices": "Notices",
+      "signing": "Signing"
+    },
+    "groupLead": {
+      "notices": "How signers receive the invitation to sign and the signed document.",
+      "signing": "What signers are asked for when signing or rejecting."
+    },
+    "option": {
+      "whatsapp": "WhatsApp notices",
+      "skipVisualSign": "Skip the drawn signature",
+      "blockComments": "Reject without a reason",
+      "documentPhotos": "Document photos"
+    },
+    "hint": {
+      "whatsapp": "The invitation and the signed document also arrive by WhatsApp",
+      "skipVisualSign": "Signers are not asked to draw their signature",
+      "blockComments": "Whoever rejects does not have to write a reason",
+      "documentPhotos": "Front and back of the document instead of two selfies holding it"
+    },
+    "onTitle": "Turn on {{name}}",
+    "offTitle": "Turn off {{name}}",
+    "onMessage": "{{name}} is on for {{org}} from now on. The organization can change it again in its Settings.",
+    "offMessage": "{{name}} is off for {{org}} from now on. The organization can change it again in its Settings.",
+    "on": "Turn on",
+    "off": "Turn off",
+    "done": {
+      "on": "{{name}} is now on.",
+      "off": "{{name}} is now off."
+    },
+    "error": {
+      "generic": "We could not save the change. Please try again.",
+      "SETTINGS_SIN_CAMBIOS": "There are no changes to save."
+    }
   }
 }

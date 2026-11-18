@@ -356,6 +356,7 @@
       "members": "Miembros",
       "integrations": "Integraciones",
       "validations": "Validaciones",
+      "settings": "Ajustes",
       "marketplace": "Marketplace",
       "documents": "Documentos",
       "audit": "Auditoría",
@@ -476,6 +477,7 @@
       "invitation_revoke": "revocó una invitación en {{org}}",
       "invite": "invitó a una persona a {{org}}",
       "remove": "sacó a una persona de {{org}}",
+      "signer_update": "cambió el representante legal o la firma automática de una persona en {{org}}",
       "update": "cambió el rol de una persona en {{org}}"
     },
     "organization": {
@@ -1139,6 +1141,7 @@
       "person": "Persona",
       "identification": "Identificación",
       "role": "Rol",
+      "signing": "Firma",
       "state": "Estado",
       "email": "Correo",
       "expires": "Vence"
@@ -1146,6 +1149,10 @@
     "state": {
       "active": "Activo",
       "inactive": "Inactivo"
+    },
+    "signer": {
+      "legalRep": "Representante legal",
+      "autoSign": "Firma automática"
     },
     "invitation": {
       "PENDING": "Pendiente",
@@ -1162,7 +1169,20 @@
       "role": "Cambiar rol",
       "deactivate": "Desactivar",
       "activate": "Activar",
+      "legalRepOn": "Nombrar representante legal",
+      "legalRepOff": "Quitar como representante legal",
+      "autoSignOff": "Apagar firma automática",
       "remove": "Quitar de la organización"
+    },
+    "legalRep": {
+      "onTitle": "¿Nombrar a {{name}} representante legal?",
+      "onMessage": "Firma por la organización cuando una plantilla lo pide y se le genera el sello. Solo hay un representante legal por organización: si ya había uno, deja de serlo. La firma automática no se enciende; la activa la persona con su código desde Configuración › Usuarios.",
+      "offTitle": "¿Quitar a {{name}} como representante legal?",
+      "offMessage": "Deja de firmar por esta organización y su firma automática se apaga aquí. Si también es representante legal de otra organización, allá lo sigue siendo."
+    },
+    "autoSign": {
+      "offTitle": "¿Apagar la firma automática de {{name}}?",
+      "offMessage": "Sigue siendo representante legal, pero sus documentos en esta organización vuelven a pedir su firma en persona. Para encenderla otra vez, la persona la activa con su código desde Configuración › Usuarios."
     },
     "invite": {
       "open": "Invitar",
@@ -1201,7 +1221,10 @@
       "revoke": "Invitación revocada",
       "deactivate": "{{name}} quedó inactivo",
       "activate": "{{name}} quedó activo",
-      "remove": "{{name}} ya no es miembro"
+      "remove": "{{name}} ya no es miembro",
+      "legalRepOn": "{{name}} es el representante legal",
+      "legalRepOff": "{{name}} ya no es representante legal",
+      "autoSignOff": "Firma automática de {{name}} apagada"
     },
     "error": {
       "ULTIMO_ADMIN": "Es el último administrador activo: asigna otro antes.",
@@ -1211,6 +1234,11 @@
       "INVITACION_PENDIENTE": "Ya hay una invitación pendiente para esa identificación.",
       "INVITACION_NO_PENDIENTE": "La invitación ya no está pendiente.",
       "INVITACION_CORREO_FALLIDO": "La invitación quedó creada pero el correo no salió: reenvíala.",
+      "FIRMANTE_SIN_CAMBIOS": "No había nada que cambiar.",
+      "FIRMANTE_NO_EXISTE": "Esa persona no tiene firmante en la organización.",
+      "FIRMA_AUTOMATICA_INACTIVA": "La firma automática ya estaba apagada.",
+      "FIRMANTE_SIN_TIPO_IDENTIFICACION": "La persona no tiene tipo de documento: complétalo en Usuarios para crearle el firmante.",
+      "FIRMANTE_SIN_PAIS": "Ni la persona ni la organización tienen país: complétalo para crearle el firmante.",
       "generic": "No se pudo guardar. Inténtalo de nuevo."
     }
   },
@@ -1232,13 +1260,6 @@
       "ani": "Confirma la identificación en la Registraduría",
       "liveness": "Confirma que hay una persona real frente a la cámara; no descuenta créditos"
     },
-    "selfService": "Lo que configura la organización:",
-    "self": {
-      "blockComments": "Bloquear comentarios",
-      "documentPhotos": "Fotos del documento"
-    },
-    "yes": "sí",
-    "no": "no",
     "enableTitle": "Habilitar {{name}}",
     "disableTitle": "Deshabilitar {{name}}",
     "enableMessage": "La organización podrá pedir {{name}} a sus firmantes desde ahora.",
@@ -6630,5 +6651,45 @@
     },
     "failed": "No se pudo cambiar el estado: {{message}}",
     "failedGeneric": "No se pudo cambiar el estado. Inténtalo de nuevo."
+  },
+  "ost": {
+    "loading": "Cargando los ajustes",
+    "errorTitle": "No pudimos cargar los ajustes",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "lead": "La organización también puede cambiar estos ajustes en su Configuración. Cada cambio desde aquí pide motivo y queda en Auditoría.",
+    "group": {
+      "notices": "Avisos",
+      "signing": "Firma"
+    },
+    "groupLead": {
+      "notices": "Por dónde les llegan a los firmantes la invitación a firmar y el documento firmado.",
+      "signing": "Lo que se le pide al firmante al firmar o rechazar."
+    },
+    "option": {
+      "whatsapp": "Avisos por WhatsApp",
+      "skipVisualSign": "Saltar la firma visual",
+      "blockComments": "Rechazar sin escribir motivo",
+      "documentPhotos": "Fotos del documento"
+    },
+    "hint": {
+      "whatsapp": "La invitación y el documento firmado también llegan por WhatsApp",
+      "skipVisualSign": "Al firmar no se le pide al firmante dibujar su firma",
+      "blockComments": "Quien rechaza no tiene que escribir el motivo",
+      "documentPhotos": "Frente y reverso del documento en vez de dos selfies sosteniéndolo"
+    },
+    "onTitle": "Encender {{name}}",
+    "offTitle": "Apagar {{name}}",
+    "onMessage": "{{name}} queda encendido para {{org}} desde ahora. La organización puede volver a cambiarlo en su Configuración.",
+    "offMessage": "{{name}} queda apagado para {{org}} desde ahora. La organización puede volver a cambiarlo en su Configuración.",
+    "on": "Encender",
+    "off": "Apagar",
+    "done": {
+      "on": "{{name}} quedó encendido.",
+      "off": "{{name}} quedó apagado."
+    },
+    "error": {
+      "generic": "No pudimos guardar el cambio. Inténtalo de nuevo.",
+      "SETTINGS_SIN_CAMBIOS": "No hay cambios que guardar."
+    }
   }
 }

@@ -7,9 +7,20 @@ export const VALIDATION_KEYS: readonly ValidationKey[] = [
   'liveness',
 ];
 
+export type OrgOption = 'whatsapp' | 'skipVisualSign' | 'blockComments' | 'documentPhotos';
+
+export type OrgOptionGroup = 'notices' | 'signing';
+
+export const ORG_OPTION_GROUPS: readonly { key: OrgOptionGroup; options: readonly OrgOption[] }[] = [
+  { key: 'notices', options: ['whatsapp'] },
+  { key: 'signing', options: ['skipVisualSign', 'blockComments', 'documentPhotos'] },
+];
+
+export type SettingKey = ValidationKey | OrgOption;
+
 export interface OrgSettings {
   validations: Record<ValidationKey, boolean>;
-  selfService: { blockComments: boolean; documentPhotos: boolean };
+  selfService: Record<OrgOption, boolean>;
 }
 
 export type CreditType = 'biometric' | 'ani' | 'identity';
