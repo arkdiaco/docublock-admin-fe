@@ -64,10 +64,14 @@ export const changesOf = (signer: PlatformSignerDetail, form: SignerFormValue): 
   date('expeditionDate');
   date('birthDate');
   if (form.countryId && form.countryId !== signer.countryId) changes.countryId = form.countryId;
-  if (form.kindPersonId && form.kindPersonId !== signer.kindPersonId) {
+  const moved = !!changes.countryId;
+  if (form.kindPersonId && (moved || form.kindPersonId !== signer.kindPersonId)) {
     changes.kindPersonId = form.kindPersonId;
   }
-  if (form.identificationTypeId && form.identificationTypeId !== signer.identificationTypeId) {
+  if (
+    form.identificationTypeId &&
+    (moved || form.identificationTypeId !== signer.identificationTypeId)
+  ) {
     changes.identificationTypeId = form.identificationTypeId;
   }
   if (form.expeditionCityId !== (signer.expeditionCityId ?? null)) {
@@ -213,6 +217,9 @@ export const changesOf = (signer: PlatformSignerDetail, form: SignerFormValue): 
           [maxlength]="500"
           [(value)]="reason"
         />
+        @if (reasonMissing()) {
+          <p class="form__note">{{ 'sig.edit.reasonRequired' | translate }}</p>
+        }
       </div>
     </db-modal-shell>
   `,
@@ -246,9 +253,14 @@ export class SignerEditFormComponent implements OnInit {
   private readonly types = signal<IdentificationTypeOption[]>([]);
   protected readonly cities = signal<NamedOption[]>([]);
 
-  protected readonly typeOptions = computed(() => {
+  private readonly typesForKind = computed(() => {
     const kind = this.kindPersonId();
     return this.types().filter((type) => !type.kindPersonId || !kind || type.kindPersonId === kind);
+  });
+  protected readonly typeOptions = computed(() => {
+    const options = this.typesForKind();
+    const selected = this.types().find((type) => type.id === this.identificationTypeId());
+    return selected && !options.includes(selected) ? [selected, ...options] : options;
   });
   private readonly changes = computed(() =>
     changesOf(this.signer(), {
@@ -276,10 +288,11 @@ export class SignerEditFormComponent implements OnInit {
       this.typeOptions().length > 0;
     return kindMissing || typeMissing;
   });
-  protected readonly canSave = computed(
-    () =>
-      Object.keys(this.changes()).length > 0 && !this.catalogMissing() && !!this.reason().trim(),
+  private readonly ready = computed(
+    () => Object.keys(this.changes()).length > 0 && !this.catalogMissing(),
   );
+  protected readonly reasonMissing = computed(() => this.ready() && !this.reason().trim());
+  protected readonly canSave = computed(() => this.ready() && !!this.reason().trim());
 
   ngOnInit(): void {
     const signer = this.signer();
@@ -295,6 +308,12 @@ export class SignerEditFormComponent implements OnInit {
     this.kindPersonId.set(signer.kindPersonId ?? null);
     this.identificationTypeId.set(signer.identificationTypeId ?? null);
     this.expeditionCityId.set(signer.expeditionCityId ?? null);
+    if (signer.kindPersonId && signer.kindPersonName) {
+      this.kinds.set([{ id: signer.kindPersonId, name: signer.kindPersonName }]);
+    }
+    if (signer.identificationTypeId && signer.identificationTypeName) {
+      this.types.set([{ id: signer.identificationTypeId, name: signer.identificationTypeName }]);
+    }
     if (signer.expeditionCityId && signer.expeditionCityName) {
       this.cities.set([{ id: signer.expeditionCityId, name: signer.expeditionCityName }]);
     }
@@ -307,8 +326,10 @@ export class SignerEditFormComponent implements OnInit {
     const signer = this.signer();
     const same = countryId === (signer.countryId ?? null);
     this.countryId.set(countryId);
-    this.kindPersonId.set(same ? (signer.kindPersonId ?? null) : null);
-    this.identificationTypeId.set(same ? (signer.identificationTypeId ?? null) : null);
+    if (same) {
+      this.kindPersonId.set(signer.kindPersonId ?? null);
+      this.identificationTypeId.set(signer.identificationTypeId ?? null);
+    }
     this.expeditionCityId.set(same ? (signer.expeditionCityId ?? null) : null);
     this.kinds.set([]);
     this.types.set([]);
@@ -320,7 +341,7 @@ export class SignerEditFormComponent implements OnInit {
   protected pickKind(kindPersonId: string | null): void {
     this.kindPersonId.set(kindPersonId);
     const type = this.identificationTypeId();
-    if (type && !this.typeOptions().some((option) => option.id === type)) {
+    if (type && !this.typesForKind().some((option) => option.id === type)) {
       this.identificationTypeId.set(null);
     }
   }
@@ -355,9 +376,18 @@ export class SignerEditFormComponent implements OnInit {
       if (!current()) return;
       this.kinds.set(kinds);
       this.types.set(types);
+      this.fitToCatalog();
     } catch {
       return;
     }
+  }
+
+  private fitToCatalog(): void {
+    const type = this.types().find((option) => option.id === this.identificationTypeId());
+    if (!type) this.identificationTypeId.set(null);
+    const kind = this.kindPersonId();
+    if (kind && !this.kinds().some((option) => option.id === kind)) this.kindPersonId.set(null);
+    if (!this.kindPersonId() && type?.kindPersonId) this.kindPersonId.set(type.kindPersonId);
   }
 
   private async loadCities(search: string): Promise<void> {

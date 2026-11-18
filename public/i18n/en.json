@@ -4538,6 +4538,7 @@
       "cityEmpty": "No cities with that name",
       "noCountry": "Choose the country first",
       "catalogRequired": "Choose the person type and document type: they depend on the country and the person type.",
+      "reasonRequired": "Write the reason: without it the changes cannot be saved.",
       "expeditionDate": "Date of issue",
       "birthDate": "Date of birth",
       "dateHint": "YYYY-MM-DD",
