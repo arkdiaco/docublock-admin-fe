@@ -101,6 +101,7 @@ describe('SubscriptionTabComponent', () => {
 
   const montar = async (
     permisos: string[] = ['platform:clients', 'platform:commercial', 'platform:commercial:manage'],
+    vista: SubscriptionView = VISTA,
   ) => {
     TestBed.inject(AuthStore).setProfile({
       user: {
@@ -117,7 +118,7 @@ describe('SubscriptionTabComponent', () => {
     const fixture = TestBed.createComponent(SubscriptionTabComponent);
     fixture.componentRef.setInput('org', ORG);
     fixture.detectChanges();
-    http.expectOne('/platform/organizations/org-1/subscription').flush(VISTA);
+    http.expectOne('/platform/organizations/org-1/subscription').flush(vista);
     await fixture.whenStable();
     fixture.detectChanges();
     return { fixture, host: fixture.nativeElement as HTMLElement };
@@ -164,6 +165,21 @@ describe('SubscriptionTabComponent', () => {
     expect(host.querySelectorAll('dba-data-table .dba-tr').length).toBe(2);
     expect(host.textContent).toContain('Espejo legacy');
     expect(host.textContent).not.toMatch(/\b(sub|orgd|common|tbl)\.[a-zA-Z]/);
+  });
+
+  it('una fecha del legacy que no es fecha no rompe la pestaña ni el formulario de asignar', async () => {
+    const { fixture, host } = await montar(undefined, {
+      ...VISTA,
+      history: [{ ...VISTA.history[1], periodStart: '' }],
+      mirror: { ...VISTA.mirror, expiration: 'Invalid date' },
+    });
+    expect(host.textContent).toContain('Espejo legacy');
+    expect(host.querySelector('.sub__card:last-of-type')?.textContent).toContain('—');
+    boton(host, 'Asignar plan')!.click();
+    fixture.detectChanges();
+    const form = host.querySelector('dba-assign-plan-form');
+    expect(form?.textContent).toContain('Asignar plan');
+    expect(form?.textContent).toContain('Sierra Norte');
   });
 
   it('sin commercial:manage no hay acciones', async () => {

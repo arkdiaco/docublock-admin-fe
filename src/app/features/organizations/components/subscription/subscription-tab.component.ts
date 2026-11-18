@@ -481,7 +481,9 @@ export class SubscriptionTabComponent {
   }
 
   protected day(value: string): string {
-    return formatDate(value, 'd/MM/y', this.locale);
+    return value && !Number.isNaN(Date.parse(value))
+      ? formatDate(value, 'd/MM/y', this.locale)
+      : '—';
   }
 
   protected counterText(counter: SubscriptionCounter): string {
