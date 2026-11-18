@@ -34,6 +34,6 @@ describe('AppUpdateBarComponent', () => {
     fixture.detectChanges();
     expect(host.querySelector('.upd__text')?.textContent?.trim()).toBe('Hay una versión nueva de Docublock.');
     host.querySelector<HTMLButtonElement>('.upd__cta')!.click();
-    expect(navigation.reload).toHaveBeenCalledTimes(1);
+    await vi.waitFor(() => expect(navigation.reload).toHaveBeenCalledTimes(1));
   });
 });

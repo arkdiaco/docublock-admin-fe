@@ -1,5 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { inject, Injectable, signal } from '@angular/core';
+import { SwUpdate } from '@angular/service-worker';
 import { HardNavigation } from '../browser/hard-navigation';
 import { isStaleChunkError } from './build-id';
 import { CURRENT_BUILD, LatestBuild } from './latest-build';
@@ -15,6 +16,7 @@ export class AppUpdate {
   private readonly latest = inject(LatestBuild);
   private readonly navigation = inject(HardNavigation);
   private readonly document = inject(DOCUMENT);
+  private readonly worker = inject(SwUpdate, { optional: true });
   private readonly _available = signal(false);
   private lastCheck = 0;
 
@@ -30,16 +32,27 @@ export class AppUpdate {
       if (isStaleChunkError(event.reason)) this._available.set(true);
     });
     view?.setInterval(() => void this.check(), CHECK_EVERY_MS);
+    if (this.worker?.isEnabled) {
+      this.worker.versionUpdates.subscribe((event) => {
+        if (event.type === 'VERSION_READY') this._available.set(true);
+      });
+      this.worker.unrecoverable.subscribe(() => this._available.set(true));
+    }
   }
 
   async check(): Promise<void> {
     if (!this.current || this._available() || Date.now() - this.lastCheck < MIN_GAP_MS) return;
     this.lastCheck = Date.now();
+    if (this.worker?.isEnabled) {
+      await this.checkWorker();
+      return;
+    }
     const latest = await this.latest.id();
     if (latest && latest !== this.current) this._available.set(true);
   }
 
-  apply(): void {
+  async apply(): Promise<void> {
+    await this.activateWorker();
     this.navigation.reload();
   }
 
@@ -48,6 +61,23 @@ export class AppUpdate {
     this.remember(url);
     this.navigation.to(url);
     return true;
+  }
+
+  private async checkWorker(): Promise<void> {
+    try {
+      if (await this.worker?.checkForUpdate()) this._available.set(true);
+    } catch {
+      return;
+    }
+  }
+
+  private async activateWorker(): Promise<void> {
+    if (!this.worker?.isEnabled) return;
+    try {
+      await this.worker.activateUpdate();
+    } catch {
+      return;
+    }
   }
 
   private recentlyRecovered(url: string): boolean {
