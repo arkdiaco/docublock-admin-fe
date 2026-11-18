@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -26,6 +25,7 @@ import { RoleTagComponent } from '../../../shared/ui/role-tag.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
 import { errorCodeOf } from '../../../shared/http/error-code';
 import { MyAccessApi, type MySession } from '../data/my-access.api';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const ACCESS_COLUMNS: readonly DataColumn[] = [
   { key: 'group', labelKey: 'mine.col.group', width: 'minmax(0, 1fr)' },
@@ -252,8 +252,8 @@ export class MyAccessComponent {
     this.raw().map((session) => ({
       ...session,
       deviceName: deviceLabel(session.device),
-      started: session.createdAt ? formatDate(session.createdAt, DATE, this.locale) : '—',
-      used: session.lastUsedAt ? formatDate(session.lastUsedAt, DATE, this.locale) : '—',
+      started: session.createdAt ? safeDate(session.createdAt, DATE, this.locale) : '—',
+      used: session.lastUsedAt ? safeDate(session.lastUsedAt, DATE, this.locale) : '—',
     })),
   );
 

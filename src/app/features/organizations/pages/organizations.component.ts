@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -32,6 +31,7 @@ import { OrganizationsApi } from '../data/organizations.api';
 import type { CreateOrganizationBody, PlatformOrgRow, PlatformOrgState, PlatformStateCounts } from '../data/organizations.models';
 import { orgStateView } from '../data/platform-org-state';
 import { initialsOf } from '../../../shared/domain/initials';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const LIMIT = 20;
 const DEBOUNCE_MS = 350;
@@ -523,7 +523,7 @@ export class OrganizationsComponent {
       initials: initialsOf(row.businessName),
       stateFamily: view.family,
       stateLabel: view.labelKey,
-      validity: row.periodEnd ? formatDate(row.periodEnd, 'd/MM/y', this.locale) : '',
+      validity: row.periodEnd ? safeDate(row.periodEnd, 'd/MM/y', this.locale) : '',
     };
   }
 }

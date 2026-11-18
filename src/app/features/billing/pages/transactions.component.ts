@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -51,6 +50,7 @@ import {
   isTransactionView,
   type TransactionView,
 } from '../data/billing-view';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const LIMIT = 20;
 const DEBOUNCE_MS = 350;
@@ -326,7 +326,7 @@ export class TransactionsComponent {
     this.items().map((row) => ({
       ...row,
       amountText: moneyExact(row.amountMajor, row.currency, this.locale),
-      dateText: formatDate(row.requestDate ?? row.createdAt ?? '', 'd/MM/y', this.locale),
+      dateText: safeDate(row.requestDate ?? row.createdAt ?? '', 'd/MM/y', this.locale),
       intervalText: isManualInterval(row.planDuration)
         ? this.label(`billing.interval.${row.planDuration}`)
         : row.planDuration,

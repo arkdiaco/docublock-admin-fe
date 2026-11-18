@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -28,6 +27,7 @@ import { SectionLoaderComponent } from '../../../../shared/ui/section-loader.com
 import { OrgBillingApi } from '../../data/org-billing.api';
 import type { OrgInvoiceRow, OrgTransactionRow } from '../../data/org-billing.models';
 import type { PlatformOrgDetail } from '../../data/organizations.models';
+import { safeDate } from '../../../../shared/i18n/safe-date';
 
 const RECENT = 5;
 
@@ -293,7 +293,7 @@ export class OrgBillingTabComponent {
   }
 
   protected day(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y', this.locale) : '—';
   }
 
   private async load(id: string): Promise<void> {

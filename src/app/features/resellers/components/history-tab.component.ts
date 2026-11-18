@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -20,6 +19,7 @@ import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
 import { ResellersApi } from '../data/resellers.api';
 import type { HistoryEntry } from '../data/resellers.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const LIMIT = 20;
 
@@ -125,7 +125,7 @@ export class HistoryTabComponent {
           previous: entry.previousResellerName ?? unknown,
         }) as string,
         who: entry.actorName ?? (this.translate.instant('rsl.hist.unknownActor') as string),
-        when: entry.createdAt ? formatDate(entry.createdAt, 'd/MM/y HH:mm', this.locale) : '—',
+        when: entry.createdAt ? safeDate(entry.createdAt, 'd/MM/y HH:mm', this.locale) : '—',
       };
     }),
   );

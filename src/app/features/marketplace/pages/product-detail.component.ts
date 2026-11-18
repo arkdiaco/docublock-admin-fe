@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -36,6 +35,7 @@ import {
   type VersionProductBody,
 } from '../data/marketplace.models';
 import { kindLabel, priceText, tiersText } from '../data/product-format';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const ACTION_ERRORS = [
   'PRODUCTO_SIN_CAMBIOS',
@@ -439,7 +439,7 @@ export class ProductDetailComponent {
   }
 
   protected day(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y', this.locale) : '—';
   }
 
   protected pick(key: string): void {

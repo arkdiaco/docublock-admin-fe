@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -23,6 +22,7 @@ import {
   type StateAction,
 } from '../data/error-log-view';
 import type { ErrorGroupDetail, ErrorGroupRow, ErrorSample } from '../data/error-logs.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 @Component({
   selector: 'dba-error-log-detail',
@@ -184,7 +184,7 @@ export class ErrorLogDetailComponent {
   protected readonly pretty = prettyJson;
 
   protected when(value: string): string {
-    return formatDate(value, 'd/MM/y, HH:mm:ss', this.locale);
+    return safeDate(value, 'd/MM/y, HH:mm:ss', this.locale);
   }
 
   protected summaryOf(sample: ErrorSample): string {

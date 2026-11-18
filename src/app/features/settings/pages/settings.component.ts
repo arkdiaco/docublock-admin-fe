@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -27,6 +26,7 @@ import { SettingsTabsComponent } from '../components/settings-tabs.component';
 import { isTextKind, valueLabelOf } from '../data/settings-view';
 import { SettingsApi, settingErrorKey } from '../data/settings.api';
 import type { SettingGroup, SettingItem, SettingValue } from '../data/settings.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const COLUMNS: readonly DataColumn[] = [
   { key: 'setting', labelKey: 'cfg.col.setting', width: 'minmax(0, 2.4fr)' },
@@ -195,7 +195,7 @@ export class SettingsComponent {
     const last = item.lastChange;
     if (!last) return '—';
     const name = last.adminName ?? (this.translate.instant('cfg.unknownAdmin') as string);
-    return `${formatDate(last.at, 'd/MM/y', this.locale)} · ${name}`;
+    return `${safeDate(last.at, 'd/MM/y', this.locale)} · ${name}`;
   }
 
   protected resetSummary(item: SettingItem): string {

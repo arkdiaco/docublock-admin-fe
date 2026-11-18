@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -32,6 +31,7 @@ import { OrgMarketplaceApi } from '../../data/org-marketplace.api';
 import type { OrgAddon, OrgProductPrice, OverrideBody } from '../../data/org-marketplace.models';
 import type { PlatformOrgDetail } from '../../data/organizations.models';
 import { OverrideFormComponent } from './override-form.component';
+import { safeDate } from '../../../../shared/i18n/safe-date';
 
 const PRICE_COLUMNS: readonly DataColumn[] = [
   { key: 'product', labelKey: 'orgMkt.col.product', width: 'minmax(0, 1.5fr)' },
@@ -414,7 +414,7 @@ export class OrgMarketplaceTabComponent {
   }
 
   protected when(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y', this.locale) : '—';
   }
 
   protected tiersOf(price: OrgProductPrice): string {

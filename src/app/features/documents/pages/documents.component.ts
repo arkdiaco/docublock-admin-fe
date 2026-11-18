@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -47,6 +46,7 @@ import {
   type StatusView,
 } from '../data/document-view';
 import { originKeyOf } from '../data/summary-view';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const LIMIT = 20;
 const DEBOUNCE_MS = 350;
@@ -571,7 +571,7 @@ export class DocumentsComponent {
       chain: chainStateOf(doc),
       originKey: originKeyOf(doc.kind),
       ownerText: doc.owner?.names || doc.owner?.email || '—',
-      createdText: doc.createdAt ? formatDate(doc.createdAt, 'd/MM/y', this.locale) : '—',
+      createdText: doc.createdAt ? safeDate(doc.createdAt, 'd/MM/y', this.locale) : '—',
     };
   }
 

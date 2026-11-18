@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -34,6 +33,7 @@ import { MembersApi } from '../../data/members.api';
 import type { InviteBody, OrgInvitation, OrgMember, OrgRole } from '../../data/members.models';
 import { InviteMemberFormComponent } from './invite-member-form.component';
 import { MemberRoleFormComponent } from './member-role-form.component';
+import { safeDate } from '../../../../shared/i18n/safe-date';
 
 const LIMIT = 20;
 const DEBOUNCE_MS = 350;
@@ -545,7 +545,7 @@ export class MembersTabComponent {
   }
 
   protected day(value: string): string {
-    return formatDate(value, 'd/MM/y', this.locale);
+    return safeDate(value, 'd/MM/y', this.locale);
   }
 
   protected onSearch(event: Event): void {

@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import { ChangeDetectionStrategy, Component, LOCALE_ID, computed, inject, input, output } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuthStore } from '../../../core/auth/auth.store';
@@ -7,6 +6,7 @@ import { ModalShellComponent } from '../../../shared/ui/modal-shell.component';
 import { OrgStateComponent } from '../../../shared/ui/org-state.component';
 import { durationOf, jobMetricsOf, jobStateOf } from '../data/job-view';
 import type { JobView } from '../data/tasks.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 @Component({
   selector: 'dba-job-detail',
@@ -151,7 +151,7 @@ export class JobDetailComponent {
   protected readonly metrics = computed(() => jobMetricsOf(this.job().last?.metrics ?? {}));
 
   protected when(value: string): string {
-    return formatDate(value, 'd/MM/y, HH:mm:ss', this.locale);
+    return safeDate(value, 'd/MM/y, HH:mm:ss', this.locale);
   }
 
   protected duration(ms: number): string {

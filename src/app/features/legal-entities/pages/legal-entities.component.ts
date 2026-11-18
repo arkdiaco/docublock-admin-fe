@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -40,6 +39,7 @@ import type {
   LegalEntityView,
   PendingLegalEntity,
 } from '../data/legal-entities.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const LIMIT = 20;
 const DEBOUNCE_MS = 350;
@@ -295,7 +295,7 @@ export class LegalEntitiesComponent {
   }
 
   protected day(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y', this.locale) : '—';
   }
 
   protected openCreate(draft: PendingLegalEntity | null): void {

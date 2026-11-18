@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -38,6 +37,7 @@ import {
   type SubscriptionsFilter,
   type SubscriptionsPage,
 } from '../data/subscriptions.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const LIMIT = 20;
 const DEBOUNCE_MS = 350;
@@ -568,7 +568,7 @@ export class SubscriptionsComponent {
   }
 
   private day(value: string): string {
-    return formatDate(value, 'd/MM/y', this.locale);
+    return safeDate(value, 'd/MM/y', this.locale);
   }
 
   private label(key: string, params?: Record<string, unknown>): string {

@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -24,6 +23,7 @@ import {
   prettyJson,
 } from '../data/payment-log-view';
 import type { PaymentLogDetail, PaymentLogRow } from '../data/payment-logs.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 @Component({
   selector: 'dba-payment-log-detail',
@@ -143,6 +143,6 @@ export class PaymentLogDetailComponent {
   protected readonly duration = durationText;
 
   protected when(value: string): string {
-    return formatDate(value, 'd/MM/y, HH:mm:ss', this.locale);
+    return safeDate(value, 'd/MM/y, HH:mm:ss', this.locale);
   }
 }

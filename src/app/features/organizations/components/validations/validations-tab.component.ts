@@ -1,4 +1,4 @@
-import { formatDate, formatNumber } from '@angular/common';
+import { formatNumber } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -45,6 +45,7 @@ import {
 } from '../../data/validations.models';
 import { CreditFormComponent } from './credit-form.component';
 import { PricingFormComponent } from './pricing-form.component';
+import { safeDate } from '../../../../shared/i18n/safe-date';
 
 const LIMIT = 20;
 
@@ -429,7 +430,7 @@ export class ValidationsTabComponent {
   }
 
   protected when(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y HH:mm', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y HH:mm', this.locale) : '—';
   }
 
   protected amountOf(entry: CreditLogEntry): string {
@@ -529,8 +530,8 @@ export class ValidationsTabComponent {
 
   protected async downloadBilling(): Promise<void> {
     const now = new Date();
-    const from = formatDate(new Date(now.getFullYear(), now.getMonth(), 1), 'y-MM-dd', 'en');
-    const to = formatDate(now, 'y-MM-dd', 'en');
+    const from = safeDate(new Date(now.getFullYear(), now.getMonth(), 1), 'y-MM-dd', 'en');
+    const to = safeDate(now, 'y-MM-dd', 'en');
     this.downloading.set(true);
     try {
       const file = await firstValueFrom(this.api.billingPdf(this.orgId(), from, to));

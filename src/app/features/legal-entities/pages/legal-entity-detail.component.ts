@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -39,6 +38,7 @@ import {
 import { LegalEntityRepresentativesTabComponent } from '../components/legal-entity-representatives-tab.component';
 import { LEGAL_ENTITY_ERRORS, LegalEntitiesApi } from '../data/legal-entities.api';
 import type { LegalEntityDetail } from '../data/legal-entities.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 type DetailTab = 'representatives' | 'history';
 
@@ -216,7 +216,7 @@ export class LegalEntityDetailComponent {
   }
 
   protected day(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y', this.locale) : '—';
   }
 
   protected async save(result: LegalEntityFormResult): Promise<void> {

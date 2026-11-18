@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -28,6 +27,7 @@ import { StatBandComponent, type StatCell } from '../../../shared/ui/stat-band.c
 import { PromotionsApi, type ReportOwner } from '../data/promotions.api';
 import { dayOf, endOfDayIso, firstOfMonth, startOfDayIso } from '../data/promotions-view';
 import type { CurrencyTotals, PromoReport } from '../data/promotions.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const COLUMNS: readonly DataColumn[] = [
   { key: 'kind', labelKey: 'promoReport.col.kind', width: '120px' },
@@ -277,7 +277,7 @@ export class PromoReportComponent {
   }
 
   protected day(value: string): string {
-    return formatDate(value, 'd/MM/y', this.locale);
+    return safeDate(value, 'd/MM/y', this.locale);
   }
 
   protected async load(): Promise<void> {

@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -34,6 +33,7 @@ import type {
 } from '../../data/quotas.models';
 import { AssignQuotaFormComponent } from './assign-quota-form.component';
 import { TransferQuotaFormComponent } from './transfer-quota-form.component';
+import { safeDate } from '../../../../shared/i18n/safe-date';
 
 const HISTORY_LIMIT = 20;
 
@@ -382,7 +382,7 @@ export class QuotasTabComponent {
   }
 
   protected when(entry: QuotaHistoryEntry): string {
-    return entry.createdAt ? formatDate(entry.createdAt, 'd/MM/y HH:mm', this.locale) : '—';
+    return entry.createdAt ? safeDate(entry.createdAt, 'd/MM/y HH:mm', this.locale) : '—';
   }
 
   protected detail(entry: QuotaHistoryEntry): string {

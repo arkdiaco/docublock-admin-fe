@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -53,6 +52,7 @@ import {
   slaStateOf,
   staffNamesOf,
 } from '../data/ticket-view';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const TAB_KEYS = ['conversation', 'sla', 'history', 'data'] as const;
 
@@ -524,7 +524,7 @@ export class TicketDetailComponent {
   }
 
   protected stamp(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y HH:mm', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y HH:mm', this.locale) : '—';
   }
 
   protected async changeStatus(status: TicketStatus | null): Promise<void> {

@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -26,6 +25,7 @@ import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
 import { SIGNER_ERRORS, SignersApi } from '../data/signers.api';
 import type { SignerOneTouch, SignerPasskey } from '../data/signers.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const COLUMNS: readonly DataColumn[] = [
   { key: 'device', labelKey: 'sig.oneTouch.col.device', width: 'minmax(0, 1.6fr)' },
@@ -135,7 +135,7 @@ export class SignerOneTouchTabComponent {
   }
 
   protected day(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y', this.locale) : '—';
   }
 
   protected async reload(): Promise<void> {

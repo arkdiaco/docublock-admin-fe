@@ -1,10 +1,10 @@
-import { formatDate } from '@angular/common';
 import { ChangeDetectionStrategy, Component, LOCALE_ID, computed, inject, input } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { OrgStateComponent } from '../../../shared/ui/org-state.component';
 import { durationOf } from '../data/job-view';
 import { itemStateOf, runStateOf, type MaintenanceStateView } from '../data/maintenance-view';
 import type { MaintenanceItemState, MaintenanceRun } from '../data/tasks.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 @Component({
   selector: 'dba-maintenance-run',
@@ -166,6 +166,6 @@ export class MaintenanceRunComponent {
   }
 
   protected when(value: string): string {
-    return formatDate(value, 'd/MM/y, HH:mm:ss', this.locale);
+    return safeDate(value, 'd/MM/y, HH:mm:ss', this.locale);
   }
 }

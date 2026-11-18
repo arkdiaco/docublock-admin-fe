@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -47,6 +46,7 @@ import {
   type ErrorGroupTotals,
   type ErrorLogFilters,
 } from '../data/error-logs.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 export const ERROR_LOGS_LIMIT = 25;
 export const ERROR_LOGS_DEBOUNCE_MS = 350;
@@ -276,7 +276,7 @@ export class ErrorLogsComponent {
   }
 
   protected when(value: string): string {
-    return formatDate(value, 'd/MM/y, HH:mm', this.locale);
+    return safeDate(value, 'd/MM/y, HH:mm', this.locale);
   }
 
   protected open(row: ErrorGroupRow): void {

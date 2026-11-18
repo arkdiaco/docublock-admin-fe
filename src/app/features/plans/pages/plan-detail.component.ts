@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -40,6 +39,7 @@ import {
   type VersionPlanBody,
 } from '../data/plans.models';
 import { reasonField } from '../data/plan-reason';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const ACTION_ERRORS = [
   'PLAN_SIN_CAMBIOS',
@@ -489,7 +489,7 @@ export class PlanDetailComponent {
   }
 
   protected day(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y', this.locale) : '—';
   }
 
   protected pick(key: string): void {

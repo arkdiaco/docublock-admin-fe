@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import { ChangeDetectionStrategy, Component, LOCALE_ID, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -14,6 +13,7 @@ import { SectionLoaderComponent } from '../../../shared/ui/section-loader.compon
 import { campaignStateOf } from '../data/campaign-state';
 import { CommunicationsApi } from '../data/communications.api';
 import type { CampaignView } from '../data/communications.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const LIMIT = 20;
 
@@ -118,7 +118,7 @@ export class CampaignHistoryComponent {
   }
 
   protected when(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y, HH:mm', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y, HH:mm', this.locale) : '—';
   }
 
   protected async reload(): Promise<void> {

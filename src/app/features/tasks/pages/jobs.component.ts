@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import { ChangeDetectionStrategy, Component, DestroyRef, LOCALE_ID, computed, inject, signal } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
@@ -19,6 +18,7 @@ import { TasksTabsComponent } from '../components/tasks-tabs.component';
 import { durationOf, jobMetricsOf, jobStateOf, type JobStateView } from '../data/job-view';
 import { TasksApi, pauseJobErrorKey, runJobErrorKey } from '../data/tasks.api';
 import type { JobKey, JobView } from '../data/tasks.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const COLUMNS: readonly DataColumn[] = [
   { key: 'job', labelKey: 'task.job.col.job', width: 'minmax(0, 2fr)' },
@@ -165,7 +165,7 @@ export class JobsComponent {
   }
 
   protected when(value: string | undefined): string {
-    return value ? formatDate(value, 'd/MM/y, HH:mm', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y, HH:mm', this.locale) : '—';
   }
 
   protected durationText(job: JobView): string {

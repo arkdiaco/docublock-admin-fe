@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -44,6 +43,7 @@ import {
   canToggleInvoiced,
   isManualInterval,
 } from '../data/billing-view';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const TAB_KEYS = ['payment', 'invoice'] as const;
 
@@ -330,7 +330,7 @@ export class TransactionDetailComponent {
   }
 
   protected stamp(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y HH:mm', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y HH:mm', this.locale) : '—';
   }
 
   protected async changeStatus(next: TransactionStatus): Promise<void> {

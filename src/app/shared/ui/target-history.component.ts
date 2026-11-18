@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -17,6 +16,7 @@ import { AuditEventComponent } from './audit-event.component';
 import { ButtonComponent } from './button.component';
 import { EmptyStateComponent } from './empty-state.component';
 import { SectionLoaderComponent } from './section-loader.component';
+import { safeDate } from '../i18n/safe-date';
 
 export interface TargetHistoryEvent {
   id: string;
@@ -138,7 +138,7 @@ export class TargetHistoryComponent {
 
   protected metaOf(row: TargetHistoryEvent): string {
     return row.createdAt
-      ? `${formatDate(row.createdAt, 'd/MM/y HH:mm', this.locale, 'UTC')} UTC`
+      ? `${safeDate(row.createdAt, 'd/MM/y HH:mm', this.locale, 'UTC')} UTC`
       : '';
   }
 

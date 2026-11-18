@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import { ChangeDetectionStrategy, Component, LOCALE_ID, computed, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -7,6 +6,7 @@ import { canSeeSection, sectionPath } from '../../../core/layout/console-nav';
 import { ModalShellComponent } from '../../../shared/ui/modal-shell.component';
 import { hasError, hasOrganization, hasRetries, kindKeyOf, noRetryKeyOf } from '../data/queue-view';
 import type { QueueItem, QueueKey } from '../data/tasks.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 @Component({
   selector: 'dba-queue-item-detail',
@@ -147,6 +147,6 @@ export class QueueItemDetailComponent {
   });
 
   protected when(value: string | null): string {
-    return value ? formatDate(value, 'd/MM/y, HH:mm', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y, HH:mm', this.locale) : '—';
   }
 }

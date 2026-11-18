@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -32,6 +31,7 @@ import { PromotionsApi } from '../data/promotions.api';
 import { CODE_FAMILY, PROMO_ERRORS, codeStateOf } from '../data/promotions-view';
 import type { Referral, UpdateReferralBody } from '../data/promotions.models';
 import { initialsOf } from '../../../shared/domain/initials';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 @Component({
   selector: 'dba-referral-detail',
@@ -210,7 +210,7 @@ export class ReferralDetailComponent {
   }
 
   protected day(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y', this.locale) : '—';
   }
 
   protected async save(body: UpdateReferralBody): Promise<void> {

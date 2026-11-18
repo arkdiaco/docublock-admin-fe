@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import { ChangeDetectionStrategy, Component, LOCALE_ID, inject, input, output, signal, type OnInit } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
@@ -7,6 +6,7 @@ import { ModalShellComponent } from '../../../shared/ui/modal-shell.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
 import { CatalogsApi } from '../data/catalogs.api';
 import type { ConsentPolicy, PolicyLocale } from '../data/catalogs.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 @Component({
   selector: 'dba-consent-versions',
@@ -80,7 +80,7 @@ export class ConsentVersionsComponent implements OnInit {
   }
 
   protected day(value: string): string {
-    return formatDate(value, 'd/MM/y', this.appLocale);
+    return safeDate(value, 'd/MM/y', this.appLocale);
   }
 
   private async load(): Promise<void> {

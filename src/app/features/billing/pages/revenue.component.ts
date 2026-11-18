@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -53,6 +52,7 @@ import {
   presetRange,
   type RangePreset,
 } from '../data/billing-view';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const LIMIT = 20;
 const DEBOUNCE_MS = 350;
@@ -404,7 +404,7 @@ export class RevenueComponent {
         items: mine(summary.byMonth).map((row) =>
           bar(
             `${row.year}-${row.month}`,
-            formatDate(Date.UTC(row.year, row.month - 1, 1), 'MMM y', this.locale, 'UTC'),
+            safeDate(Date.UTC(row.year, row.month - 1, 1), 'MMM y', this.locale, 'UTC'),
             row.gross,
           ),
         ),
@@ -439,7 +439,7 @@ export class RevenueComponent {
       return {
         ...row,
         amountText: moneyExact(row.amountMajor, row.currency, this.locale),
-        dateText: date ? formatDate(date, 'd/MM/y', this.locale) : '—',
+        dateText: date ? safeDate(date, 'd/MM/y', this.locale) : '—',
       };
     }),
   );

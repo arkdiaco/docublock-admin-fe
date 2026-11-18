@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -75,6 +74,7 @@ import {
   type NoticeRequest,
 } from '../data/turn-changes';
 import { initialsOf } from '../../../shared/domain/initials';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const TAB_KEYS = ['summary', 'signers', 'versions', 'trace'] as const;
 
@@ -414,7 +414,7 @@ export class DocumentDetailComponent {
   }
 
   protected stamp(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y HH:mm', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y HH:mm', this.locale) : '—';
   }
 
   protected openRaw(): Promise<void> {

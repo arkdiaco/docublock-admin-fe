@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import { ChangeDetectionStrategy, Component, LOCALE_ID, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -36,6 +35,7 @@ import {
   type RetryFilter,
   type RetryPreview,
 } from '../data/integrations.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 export const DELIVERIES_LIMIT = 25;
 
@@ -292,7 +292,7 @@ export class DeliveriesComponent {
   }
 
   protected when(value: string): string {
-    return formatDate(value, 'd/MM/y, HH:mm', this.locale);
+    return safeDate(value, 'd/MM/y, HH:mm', this.locale);
   }
 
   protected setFilter<T>(filter: { set(value: T): void }, value: T): void {

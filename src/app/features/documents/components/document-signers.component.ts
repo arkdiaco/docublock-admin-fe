@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -30,6 +29,7 @@ import {
   type SignerState,
 } from '../data/signer-view';
 import { SignerPanelComponent } from './signer-panel.component';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 export type SignerActionKind =
   'unblock' | 'resend' | 'reactivate' | 'features' | 'revokeLinks' | 'remove';
@@ -264,7 +264,7 @@ export class DocumentSignersComponent {
           [signer.email, signer.identification].filter((part) => !!part).join(' · ') || signer.role,
         signedText: signer.checked
           ? signer.signedAt
-            ? `✓ ${formatDate(signer.signedAt, 'd/MM/y HH:mm', this.locale)}`
+            ? `✓ ${safeDate(signer.signedAt, 'd/MM/y HH:mm', this.locale)}`
             : '✓'
           : '—',
         state: signerStateOf(doc, signer),

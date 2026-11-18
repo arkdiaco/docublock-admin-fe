@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -31,6 +30,7 @@ import { InvoiceSendFormComponent } from '../components/invoice-send-form.compon
 import { BillingApi } from '../data/billing.api';
 import { BILLING_ERRORS } from '../data/billing-errors';
 import type { Invoice, InvoiceBody } from '../data/billing.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const REVOKE_AFTER_MS = 60_000;
 
@@ -287,11 +287,11 @@ export class InvoiceDetailComponent {
   }
 
   protected day(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y', this.locale) : '—';
   }
 
   protected stamp(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y HH:mm', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y HH:mm', this.locale) : '—';
   }
 
   protected async openPdf(): Promise<void> {

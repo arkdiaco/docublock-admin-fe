@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -52,6 +51,7 @@ import {
   type SlaState,
   type TicketView,
 } from '../data/ticket-view';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const LIMIT = 20;
 const DEBOUNCE_MS = 350;
@@ -491,7 +491,7 @@ export class TicketsComponent {
       ...ticket,
       requester: ticket.requesterName || ticket.requesterEmail || '—',
       slaState: slaStateOf(ticket, now),
-      createdText: ticket.createdAt ? formatDate(ticket.createdAt, 'd/MM/y', this.locale) : '—',
+      createdText: ticket.createdAt ? safeDate(ticket.createdAt, 'd/MM/y', this.locale) : '—',
     }));
   });
   protected readonly pageCount = computed(() => Math.max(1, Math.ceil(this.total() / LIMIT)));

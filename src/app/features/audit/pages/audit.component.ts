@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -28,6 +27,7 @@ import {
   type AuditFilterProblem,
 } from '../data/audit-filter';
 import type { AuditActor, AuditFilters, AuditRow } from '../data/audit.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const LIMIT = 50;
 const HOUR = 3_600_000;
@@ -706,7 +706,7 @@ export class AuditComponent {
       row.organization?.id ?? (row.target.type === 'organization' ? row.target.id : undefined);
     return {
       ...row,
-      when: row.createdAt ? formatDate(row.createdAt, 'dd/MM HH:mm:ss', this.locale, 'UTC') : '—',
+      when: row.createdAt ? safeDate(row.createdAt, 'dd/MM HH:mm:ss', this.locale, 'UTC') : '—',
       actor: actorHandle(row.admin),
       object,
       objectFilter:
