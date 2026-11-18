@@ -11,7 +11,7 @@ import {
   untracked,
 } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { firstValueFrom, type Observable } from 'rxjs';
+import { firstValueFrom, map, type Observable } from 'rxjs';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { DialogService } from '../../../core/ui/dialog.service';
 import { NotificationService } from '../../../core/ui/notification.service';
@@ -39,6 +39,7 @@ import {
   type StripeLinkBody,
   type VersionPlanBody,
 } from '../data/plans.models';
+import { reasonField } from '../data/plan-reason';
 
 const ACTION_ERRORS = [
   'PLAN_SIN_CAMBIOS',
@@ -58,6 +59,7 @@ const ACTION_ERRORS = [
   'STRIPE_PRECIO_EN_USO',
   'STRIPE_PAR_INCOMPLETO',
   'STRIPE_NO_DISPONIBLE',
+  'STRIPE_PRECIO_DISTINTO',
 ];
 
 const VERSION_COLUMNS: readonly DataColumn[] = [
@@ -70,13 +72,6 @@ const VERSION_COLUMNS: readonly DataColumn[] = [
   { key: 'stripe', labelKey: 'plans.col.stripe', width: '130px' },
 ];
 
-const reasonField = {
-  labelKey: 'plans.f.reason',
-  placeholder: 'plans.form.reasonPlaceholder',
-  limit: 500,
-  quick: [],
-  required: true,
-};
 
 @Component({
   selector: 'dba-plan-detail',
@@ -184,9 +179,16 @@ const reasonField = {
             <header class="pd__head">
               <h2 class="dba-panel">{{ 'plans.col.stripe' | translate }}</h2>
               @if (canLink() && data.stripeReady !== null) {
-                <button dba-button variant="secondary" (click)="linkingStripe.set(true)">
-                  {{ 'plans.stripeLink.open' | translate }}
-                </button>
+                <div class="pd__actions">
+                  @if (data.stripeReady === false) {
+                    <button dba-button [busy]="working()" (click)="publishStripe(data)">
+                      {{ 'plans.stripePublish.open' | translate }}
+                    </button>
+                  }
+                  <button dba-button variant="secondary" (click)="linkingStripe.set(true)">
+                    {{ 'plans.stripeLink.open' | translate }}
+                  </button>
+                </div>
               }
             </header>
             <dl class="pd__dl">
@@ -517,6 +519,23 @@ export class PlanDetailComponent {
       body.monthly ? 'plans.done.stripeLinked' : 'plans.done.stripeUnlinked',
     );
     if (done) this.linkingStripe.set(false);
+  }
+
+  protected async publishStripe(plan: PlanDetail): Promise<void> {
+    const answer = await this.dialogs.open({
+      intent: 'primary',
+      icon: 'chain',
+      title: 'plans.stripePublish.title',
+      message: 'plans.stripePublish.message',
+      params: { name: plan.name, monthly: this.monthly(), annual: this.annual() },
+      confirmLabel: 'plans.stripePublish.confirm',
+      reason: reasonField,
+    });
+    if (answer.answer !== 'confirm' || !answer.reason) return;
+    await this.run(
+      this.api.publishStripe(plan.code, answer.reason).pipe(map((result) => result.plan)),
+      'plans.done.stripePublished',
+    );
   }
 
   protected async linkLegacy(choice: {

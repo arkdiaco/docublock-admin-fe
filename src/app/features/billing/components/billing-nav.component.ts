@@ -6,7 +6,7 @@ import {
   type UnderlineTab,
 } from '../../../shared/ui/underline-tabs.component';
 
-export type BillingSection = 'transactions' | 'invoices' | 'revenue';
+export type BillingSection = 'transactions' | 'invoices' | 'revenue' | 'log';
 
 @Component({
   selector: 'dba-billing-nav',
@@ -75,6 +75,11 @@ export class BillingNavComponent {
       key: 'revenue',
       label: this.translate.instant('billing.section.revenue') as string,
       link: [this.base, 'ingresos'],
+    },
+    {
+      key: 'log',
+      label: this.translate.instant('billing.section.log') as string,
+      link: [this.base, 'bitacora'],
     },
   ]);
 }

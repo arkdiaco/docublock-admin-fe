@@ -6,7 +6,7 @@ import { actionRowsOf, eventRef, revenueViewOf } from './data/dashboard-view';
 
 const org = (id: string) => ({ id, businessName: `Org ${id}`, tributaryNumber: `NIT-${id}` });
 const quota = (id: string, used: number, limit: number) => ({ organization: org(id), used, limit });
-const PATHS = { orgs: '/o', docs: '/d', support: '/s' };
+const PATHS = { orgs: '/o', docs: '/d', support: '/s', errors: '/f' };
 
 const leaf = (catalog: unknown, key: string): unknown =>
   key
@@ -247,5 +247,44 @@ describe('Visión general: frases de la actividad', () => {
   it('la referencia del evento se acorta como en el diseño', () => {
     expect(eventRef('8f3a00000000000000c21d')).toBe('evt 8f3a…c21d');
     expect(eventRef('abc')).toBe('evt abc');
+  });
+});
+
+describe('Visión general: fallos de la plataforma', () => {
+  it('cada grupo con muchos fallos en 24 h abre su detalle en Plataforma › Fallos', () => {
+    const rows = actionRowsOf(
+      [
+        {
+          kind: 'ERROR_SPIKE',
+          total: 1,
+          items: [
+            {
+              group: {
+                id: 'g1',
+                service: 'bridge',
+                route: 'GET /fianza-credito/digital/ciudades',
+                message: 'Fianzacredito no responde',
+              },
+              recent: 7,
+            },
+          ],
+        },
+      ],
+      PATHS,
+    );
+    expect(rows.total).toBe(1);
+    expect(rows.rows).toEqual([
+      {
+        key: 'ERROR_SPIKE:g1',
+        tone: 'bad',
+        reference: 'bridge',
+        subject: 'GET /fianza-credito/digital/ciudades',
+        textKey: 'overview.action.errorSpike',
+        textParams: { n: 7, message: 'Fianzacredito no responde' },
+        ctaKey: 'overview.cta.review',
+        link: ['/f'],
+        query: { grupo: 'g1' },
+      },
+    ]);
   });
 });

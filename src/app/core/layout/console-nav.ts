@@ -34,6 +34,7 @@ export type ConsoleSection =
   | 'staff'
   | 'audit'
   | 'settings'
+  | 'errors'
   | 'health';
 
 export interface ConsoleItem {
@@ -134,6 +135,7 @@ export const CONSOLE_GROUPS: readonly ConsoleGroup[] = [
       { key: 'staff', path: 'personal', labelKey: 'nav.staff', manage: true },
       { key: 'audit', path: 'auditoria', labelKey: 'nav.audit' },
       { key: 'settings', path: 'configuracion', labelKey: 'nav.settings' },
+      { key: 'errors', path: 'fallos', labelKey: 'nav.errors' },
       { key: 'health', path: 'salud', labelKey: 'nav.health' },
     ],
   },

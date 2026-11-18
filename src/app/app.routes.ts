@@ -229,6 +229,13 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
         import('./features/billing/pages/revenue.component').then((m) => m.RevenueComponent),
     },
     {
+      path: 'bitacora',
+      loadComponent: () =>
+        import('./features/billing/pages/payment-logs.component').then(
+          (m) => m.PaymentLogsComponent,
+        ),
+    },
+    {
       path: ':id',
       loadComponent: () =>
         import('./features/billing/pages/transaction-detail.component').then(
@@ -477,6 +484,15 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
       path: '',
       loadComponent: () =>
         import('./features/staff/pages/staff.component').then((m) => m.StaffComponent),
+    },
+  ],
+  errors: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/error-logs/pages/error-logs.component').then(
+          (m) => m.ErrorLogsComponent,
+        ),
     },
   ],
   health: [

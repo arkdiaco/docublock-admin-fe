@@ -43,7 +43,7 @@ describe('menú de la consola', () => {
         ['analitica', 'ingresos', 'consumo-validaciones', 'historico-validaciones', 'documentos-reseller', 'tratamiento-datos'],
       ],
       ['catalogos', ['paises', 'ciudades', 'tipos-persona', 'tipos-identificacion', 'campos-firmante', 'inmuebles', 'politicas', 'comunicaciones']],
-      ['plataforma', ['personal', 'auditoria', 'configuracion', 'salud']],
+      ['plataforma', ['personal', 'auditoria', 'configuracion', 'fallos', 'salud']],
     ]);
     const keys = CONSOLE_GROUPS.flatMap((group) => group.items.map((item) => item.labelKey));
     expect(new Set(keys).size).toBe(keys.length);
@@ -56,7 +56,7 @@ describe('menú de la consola', () => {
   });
 
   it('superadmin ve todo', () => {
-    expect(visibleGroups(SUPERADMIN).flatMap((group) => group.items).length).toBe(34);
+    expect(visibleGroups(SUPERADMIN).flatMap((group) => group.items).length).toBe(35);
   });
 
   it('support ve los seis grupos, pero Plataforma sin Personal', () => {
@@ -69,7 +69,7 @@ describe('menú de la consola', () => {
       'catalogs',
       'platform',
     ]);
-    expect(groups.at(-1)?.items.map((item) => item.key)).toEqual(['audit', 'settings', 'health']);
+    expect(groups.at(-1)?.items.map((item) => item.key)).toEqual(['audit', 'settings', 'errors', 'health']);
   });
 
   it('readonly ve cinco grupos y nunca Plataforma', () => {

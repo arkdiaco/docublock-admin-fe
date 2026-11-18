@@ -12,6 +12,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { sectionPath } from '../../../core/layout/console-nav';
+import { DialogService } from '../../../core/ui/dialog.service';
 import { NotificationService } from '../../../core/ui/notification.service';
 import { errorCodeOf } from '../../../shared/http/error-code';
 import { LatestRequest } from '../../../shared/http/latest-request';
@@ -23,10 +24,26 @@ import { IconComponent } from '../../../shared/ui/icon.component';
 import { OrgStateComponent } from '../../../shared/ui/org-state.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
 import { PlanFormComponent } from '../components/plan-form.component';
+import { StripeSyncResultsComponent } from '../components/stripe-sync-results.component';
 import { limitText } from '../data/plan-format';
 import { priceLabel } from '../data/plan-labels';
+import { reasonField } from '../data/plan-reason';
 import { PlansApi } from '../data/plans.api';
-import type { CreatePlanBody, PlanListState, PlanRow } from '../data/plans.models';
+import type {
+  CreatePlanBody,
+  PlanListState,
+  PlanRow,
+  PlanStripeSync,
+} from '../data/plans.models';
+import { StripeSyncRunner } from '../data/stripe-sync-runner';
+import {
+  issueKeyOf,
+  pendingOf,
+  stripeCellOf,
+  syncCounts,
+  type StripeCell,
+  type StripeSyncResult,
+} from '../data/stripe-sync-view';
 
 const DEBOUNCE_MS = 350;
 
@@ -38,6 +55,7 @@ const COLUMNS: readonly DataColumn[] = [
   { key: 'documents', labelKey: 'plans.col.documents', width: '100px', align: 'end' },
   { key: 'subscribers', labelKey: 'plans.col.subscribers', width: '110px', align: 'end' },
   { key: 'state', labelKey: 'plans.col.state', width: '150px' },
+  { key: 'stripe', labelKey: 'plans.col.stripe', width: '210px' },
   { key: 'chevron', width: '40px', align: 'end' },
 ];
 
@@ -51,6 +69,8 @@ export const CREATE_ERRORS = [
 interface RowView extends PlanRow {
   priceText: string;
   documentsText: string;
+  stripe: StripeCell;
+  stripeNotes: string[];
 }
 
 @Component({
@@ -65,6 +85,7 @@ interface RowView extends PlanRow {
     EmptyStateComponent,
     SectionLoaderComponent,
     PlanFormComponent,
+    StripeSyncResultsComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -73,14 +94,43 @@ interface RowView extends PlanRow {
         <div class="plans__title">
           <h1 class="dba-page">{{ 'nav.plans' | translate }}</h1>
           <span class="dba-meta">{{ 'plans.count' | translate: { total: rows().length } }}</span>
+          @if (counts(); as c) {
+            <span class="dba-meta">{{ 'plans.sync.summary' | translate: c }}</span>
+          }
         </div>
-        @if (canManage()) {
-          <button dba-button (click)="creating.set(true)">
-            <db-icon name="plus" [size]="15" />
-            {{ 'plans.create' | translate }}
+        <div class="plans__actions">
+          <button
+            dba-button
+            variant="secondary"
+            [busy]="checking()"
+            [disabled]="syncing()"
+            (click)="check()"
+          >
+            <db-icon name="rotate" [size]="15" />
+            {{ 'plans.sync.check' | translate }}
           </button>
-        }
+          @if (canManage()) {
+            <button
+              dba-button
+              variant="secondary"
+              [busy]="syncing()"
+              [disabled]="checking()"
+              (click)="publishPending()"
+            >
+              <db-icon name="chain" [size]="15" />
+              {{ 'plans.sync.publishPending' | translate }}
+            </button>
+            <button dba-button (click)="creating.set(true)">
+              <db-icon name="plus" [size]="15" />
+              {{ 'plans.create' | translate }}
+            </button>
+          }
+        </div>
       </header>
+
+      @if (results(); as list) {
+        <dba-stripe-sync-results [results]="list" (dismissed)="results.set(null)" />
+      }
 
       @if (creating()) {
         <dba-plan-form
@@ -119,7 +169,7 @@ interface RowView extends PlanRow {
           <dba-empty-state titleKey="plans.emptyTitle" leadKey="plans.emptyLead" />
         </div>
       } @else {
-        <dba-data-table [columns]="columns" [label]="'nav.plans' | translate" minWidth="1160px">
+        <dba-data-table [columns]="columns" [label]="'nav.plans' | translate" minWidth="1370px">
           @for (row of rows(); track row.code) {
             <button type="button" class="dba-tr" (click)="open(row)">
               <span class="dba-td plan-cell">
@@ -145,10 +195,15 @@ interface RowView extends PlanRow {
                 @if (!row.visible) {
                   <span class="dba-meta">{{ 'plans.hidden' | translate }}</span>
                 }
-                @if (row.stripeReady === false) {
-                  <span class="dba-meta plan-state__warn">{{
-                    'plans.stripePending' | translate
-                  }}</span>
+              </span>
+              <span class="dba-td plan-state">
+                <dba-org-state
+                  [state]="row.stripe.state"
+                  [labelKey]="row.stripe.labelKey"
+                  variant="inline"
+                />
+                @for (note of row.stripeNotes; track note) {
+                  <span class="dba-meta plan-state__warn">{{ note }}</span>
                 }
               </span>
               <db-icon class="dba-td dba-td--end" name="chevronRight" [size]="15" />
@@ -177,6 +232,13 @@ interface RowView extends PlanRow {
       display: flex;
       flex-direction: column;
       gap: 4px;
+    }
+
+    .plans__actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     .plans__tools {
@@ -276,6 +338,8 @@ export class PlansComponent {
   private readonly locale = inject(LOCALE_ID);
   private readonly notify = inject(NotificationService);
   private readonly auth = inject(AuthStore);
+  private readonly dialogs = inject(DialogService);
+  private readonly runner = inject(StripeSyncRunner);
   private readonly latest = new LatestRequest();
 
   protected readonly columns = COLUMNS;
@@ -291,16 +355,39 @@ export class PlansComponent {
   protected readonly searchDraft = signal('');
   protected readonly creating = signal(false);
   protected readonly saving = signal(false);
+  protected readonly checking = signal(false);
+  protected readonly syncing = signal(false);
+  protected readonly results = signal<StripeSyncResult[] | null>(null);
   private readonly items = signal<PlanRow[]>([]);
+  private readonly sync = signal<PlanStripeSync[] | null>(null);
   private search = '';
   private timer: ReturnType<typeof setTimeout> | null = null;
 
+  private readonly syncByCode = computed(
+    () => new Map((this.sync() ?? []).map((row) => [row.code, row])),
+  );
+
+  protected readonly counts = computed(() => {
+    const rows = this.sync();
+    return rows ? syncCounts(rows) : null;
+  });
+
   protected readonly rows = computed<RowView[]>(() =>
-    this.items().map((row) => ({
-      ...row,
-      priceText: priceLabel(row, this.translate, this.locale),
-      documentsText: limitText(row.limits.documents),
-    })),
+    this.items().map((row) => {
+      const stripe = stripeCellOf(row, this.syncByCode().get(row.code));
+      return {
+        ...row,
+        priceText: priceLabel(row, this.translate, this.locale),
+        documentsText: limitText(row.limits.documents),
+        stripe,
+        stripeNotes: stripe.issues.map(
+          (issue) =>
+            this.translate.instant(issueKeyOf(issue), {
+              slot: this.translate.instant(`plans.sync.slot.${issue.slot}`) as string,
+            }) as string,
+        ),
+      };
+    }),
   );
 
   constructor() {
@@ -349,6 +436,52 @@ export class PlansComponent {
     }
   }
 
+  protected async check(): Promise<void> {
+    this.checking.set(true);
+    try {
+      await this.fetchSync();
+    } catch {
+      this.notifyStripeDown();
+    } finally {
+      this.checking.set(false);
+    }
+  }
+
+  protected async publishPending(): Promise<void> {
+    this.syncing.set(true);
+    let pending: PlanStripeSync[];
+    try {
+      pending = pendingOf(await this.fetchSync());
+    } catch {
+      this.notifyStripeDown();
+      this.syncing.set(false);
+      return;
+    }
+    this.syncing.set(false);
+    if (pending.length === 0) {
+      this.notify.info(this.translate.instant('plans.sync.nonePending') as string);
+      return;
+    }
+    const answer = await this.dialogs.open({
+      intent: 'primary',
+      icon: 'chain',
+      title: 'plans.sync.confirmTitle',
+      message: 'plans.sync.confirmMessage',
+      params: { total: pending.length, plans: pending.map((plan) => plan.code).join(', ') },
+      confirmLabel: 'plans.sync.confirm',
+      reason: reasonField,
+    });
+    if (answer.answer !== 'confirm' || !answer.reason) return;
+    this.syncing.set(true);
+    try {
+      this.results.set(await this.runner.publishAll(pending, answer.reason));
+      await this.reload();
+      await this.fetchSync().catch(() => this.sync.set(null));
+    } finally {
+      this.syncing.set(false);
+    }
+  }
+
   protected async reload(): Promise<void> {
     const current = this.latest.start();
     this.loading.set(true);
@@ -363,5 +496,15 @@ export class PlansComponent {
     } finally {
       if (current()) this.loading.set(false);
     }
+  }
+
+  private async fetchSync(): Promise<PlanStripeSync[]> {
+    const rows = await firstValueFrom(this.api.stripeSync());
+    this.sync.set(rows);
+    return rows;
+  }
+
+  private notifyStripeDown(): void {
+    this.notify.error(this.translate.instant('plans.error.STRIPE_NO_DISPONIBLE') as string);
   }
 }

@@ -53,8 +53,17 @@ const RECENT = 5;
         </button>
       </div>
     } @else {
-      @if (canRegister()) {
-        <div class="ob__actions">
+      <div class="ob__actions">
+        <a
+          dba-button
+          variant="secondary"
+          [routerLink]="[billingPath, 'bitacora']"
+          [queryParams]="{ organizacion: org().id }"
+        >
+          <db-icon name="listBullets" [size]="15" />
+          {{ 'billing.orgTab.paymentLog' | translate }}
+        </a>
+        @if (canRegister()) {
           <a
             dba-button
             [routerLink]="billingPath"
@@ -63,8 +72,8 @@ const RECENT = 5;
             <db-icon name="plus" [size]="15" />
             {{ 'billing.orgTab.register' | translate }}
           </a>
-        </div>
-      }
+        }
+      </div>
       <div class="ob__cols">
         <section class="ob__card">
           <h2 class="dba-panel">{{ 'billing.orgTab.transactions' | translate }}</h2>
@@ -141,6 +150,8 @@ const RECENT = 5;
     .ob__actions {
       display: flex;
       justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     .ob__cols {

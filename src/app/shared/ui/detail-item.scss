@@ -6,6 +6,14 @@
   font-size: var(--dba-text-label);
 }
 
+.item,
+.item__heading,
+.item__note,
+.item__more,
+.item__code {
+  flex-shrink: 0;
+}
+
 .item dt {
   color: var(--dba-text-muted);
 }

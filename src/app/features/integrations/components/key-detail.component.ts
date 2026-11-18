@@ -53,7 +53,7 @@ import type { KeyRow } from '../data/integrations.models';
       </dl>
     </db-modal-shell>
   `,
-  styleUrl: './integration-item.scss',
+  styleUrl: '../../../shared/ui/detail-item.scss',
 })
 export class KeyDetailComponent {
   readonly key = input.required<KeyRow>();

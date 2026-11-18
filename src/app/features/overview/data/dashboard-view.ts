@@ -3,6 +3,7 @@ import type { ActionRowTone } from '../../../shared/ui/action-row.component';
 import type { DashboardActionGroup, DashboardActionKind, MonthRevenue } from './dashboard.models';
 
 export const SHOWN_KINDS: readonly DashboardActionKind[] = [
+  'ERROR_SPIKE',
   'QUOTA_EXHAUSTED',
   'TICKET_OVERDUE',
   'SUBSCRIPTION_EXPIRING',
@@ -41,10 +42,23 @@ export interface ActionPaths {
   orgs: string;
   docs: string;
   support: string;
+  errors: string;
 }
 
 const rowsOf = (group: DashboardActionGroup, paths: ActionPaths): ActionRowView[] => {
   switch (group.kind) {
+    case 'ERROR_SPIKE':
+      return group.items.map((item) => ({
+        key: `${group.kind}:${item.group.id}`,
+        tone: 'bad',
+        reference: item.group.service,
+        subject: item.group.route,
+        textKey: 'overview.action.errorSpike',
+        textParams: { n: item.recent, message: item.group.message },
+        ctaKey: 'overview.cta.review',
+        link: [paths.errors],
+        query: { grupo: item.group.id },
+      }));
     case 'QUOTA_EXHAUSTED':
     case 'QUOTA_WARNING':
       return group.items.map((item) => ({

@@ -90,7 +90,8 @@
     "validationConsumption": "Validation usage",
     "validationHistory": "Validation history",
     "resellerDocuments": "Documents by reseller",
-    "consents": "Data processing"
+    "consents": "Data processing",
+    "errors": "Failures"
   },
   "auth": {
     "title": "Platform access",
@@ -411,7 +412,8 @@
       "docUnregistered": "{{n}} signed without a blockchain record",
       "docStuck": "{{n}} with every signature but not completed",
       "ticketOverdue": "overdue ticket waiting for support · {{org}}",
-      "ticketOverdueNoOrg": "overdue ticket waiting for support"
+      "ticketOverdueNoOrg": "overdue ticket waiting for support",
+      "errorSpike": "{{n}} failures in 24 h · {{message}}"
     },
     "cta": {
       "review": "Review"
@@ -1575,7 +1577,6 @@
     "perMonth": "{{price}} / month",
     "months": "{{months}} months",
     "hidden": "Hidden from catalog",
-    "stripePending": "Stripe pending",
     "stripe": {
       "ready": "Ready",
       "pending": "Pending",
@@ -1655,7 +1656,8 @@
       "reactivated": "Plan reactivated.",
       "stripeLinked": "Stripe prices verified and linked.",
       "stripeUnlinked": "Stripe prices unlinked.",
-      "legacyLinked": "Legacy plan updated."
+      "legacyLinked": "Legacy plan updated.",
+      "stripePublished": "Plan created in Stripe and prices linked."
     },
     "error": {
       "PLAN_CODIGO_EN_USO": "A plan with that code already exists, even if retired.",
@@ -1677,7 +1679,8 @@
       "STRIPE_MONTO_DISTINTO": "The {{slot}} doesn't match: the plan says {{expected}} and Stripe charges {{actual}}.",
       "STRIPE_PRECIO_EN_USO": "That price is already linked to plan {{plan}}.",
       "STRIPE_PAR_INCOMPLETO": "Monthly and annual go together.",
-      "STRIPE_NO_DISPONIBLE": "Stripe couldn't be reached. Try again in a few minutes."
+      "STRIPE_NO_DISPONIBLE": "Stripe couldn't be reached. Try again in a few minutes.",
+      "STRIPE_PRECIO_DISTINTO": "Stripe already has a price for this plan version with another amount or currency. Check it in Stripe or link the prices by hand."
     },
     "packagePrice": "{{price}} · {{months}} months",
     "stripeLink": {
@@ -1711,6 +1714,45 @@
       "year": "year",
       "day": "day",
       "week": "week"
+    },
+    "stripePublish": {
+      "open": "Create in Stripe",
+      "title": "Create {{name}} in Stripe?",
+      "message": "The plan product and its two prices ({{monthly}} a month and {{annual}} a year) are created in the live Stripe account and linked to the plan. If they already exist, they are reused.",
+      "confirm": "Create in Stripe"
+    },
+    "sync": {
+      "check": "Check in Stripe",
+      "publishPending": "Sync pending",
+      "summary": "Stripe: up to date {{synced}} · pending {{pending}} · with differences {{drifted}} · no answer {{unknown}}",
+      "nonePending": "No plans are pending creation in Stripe.",
+      "confirmTitle": "Create the pending plans in Stripe ({{total}})?",
+      "confirmMessage": "They are created one by one in the live Stripe account and linked: {{plans}}.",
+      "confirm": "Create in Stripe",
+      "resultsTitle": "Sync result",
+      "resultsLead": "Created {{ok}} · failed {{failed}}",
+      "published": "Created and linked",
+      "failed": "Not created",
+      "status": {
+        "linked": "Linked",
+        "synced": "Up to date",
+        "pending": "Pending",
+        "drifted": "With differences",
+        "not_applicable": "Not applicable",
+        "unknown": "No answer from Stripe"
+      },
+      "slot": {
+        "monthly": "monthly",
+        "annual": "annual"
+      },
+      "issue": {
+        "STRIPE_PRECIO_NO_EXISTE": "The {{slot}} price doesn't exist in Stripe",
+        "STRIPE_PRECIO_INACTIVO": "The {{slot}} price is archived",
+        "STRIPE_INTERVALO_DISTINTO": "The {{slot}} price charges on another interval",
+        "STRIPE_MONEDA_DISTINTA": "The {{slot}} price charges in another currency",
+        "STRIPE_MONTO_DISTINTO": "The {{slot}} price charges another amount",
+        "other": "The {{slot}} price doesn't match"
+      }
     }
   },
   "subs": {
@@ -3287,7 +3329,8 @@
     "section": {
       "transactions": "Transactions",
       "invoices": "Invoices",
-      "revenue": "Revenue"
+      "revenue": "Revenue",
+      "log": "Log"
     },
     "txStatus": {
       "PENDING": "Pending",
@@ -3448,7 +3491,8 @@
         "promo": "Promo code",
         "requested": "Requested",
         "events": "Gateway events",
-        "invoiced": "Marked as invoiced"
+        "invoiced": "Marked as invoiced",
+        "log": "Payment log"
       },
       "promoValue": "{{code}} ({{discount}}%)",
       "invoiceLinked": "Invoice {{number}}",
@@ -3496,7 +3540,8 @@
         "invoice": {
           "done": "Invoice {{number}} created as a draft."
         }
-      }
+      },
+      "openLog": "See the calls for this link"
     },
     "inv": {
       "count": "Invoices: {{total}}",
@@ -3704,7 +3749,8 @@
       "noTransactions": "This organization has no transactions.",
       "noInvoices": "This organization has no invoices.",
       "loading": "Loading billing",
-      "error": "We couldn't load this organization's billing."
+      "error": "We couldn't load this organization's billing.",
+      "paymentLog": "Payment log"
     }
   },
   "promo": {
@@ -5710,7 +5756,9 @@
       "megabytes": "{{value}} MB",
       "megabytesOne": "{{value}} MB",
       "text": "{{value}}",
-      "lines": "{{value}}"
+      "lines": "{{value}}",
+      "failures": "{{value}} failures",
+      "failuresOne": "{{value}} failure"
     },
     "editLabel": {
       "percent": "Percentage",
@@ -5742,6 +5790,11 @@
           "label": "Stuck documents",
           "audience": "Seen by customers",
           "hint": "Hours without a signature from which a document counts as stuck in each organization's reports."
+        },
+        "error_spike_count": {
+          "label": "Repeated failures",
+          "audience": "Shown in the console",
+          "hint": "Times an open failure has to repeat within 24 hours to show under “Needs action” in the Overview. Counted from when it reopened."
         },
         "plan_reminder_days": {
           "label": "Expiry reminders",
@@ -6377,5 +6430,205 @@
       "csv": "We couldn't export the CSV. Try again.",
       "pdf": "We couldn't generate the PDF. Try again."
     }
+  },
+  "plog": {
+    "lead": "Every payment call: what Stripe and Alohapay sent, what the core did and what we asked them",
+    "loading": "Loading the payment log…",
+    "loadingDetail": "Loading the entry…",
+    "detailFailed": "This entry could not be loaded. Close it and open it again.",
+    "tableLabel": "Payment log",
+    "errorTitle": "The payment log could not be loaded",
+    "errorLead": "Check the connection to the API and try again.",
+    "empty": "No payment calls have been logged yet.",
+    "emptyFiltered": "No calls match these filters.",
+    "orgNotice": "Includes the organization’s calls and those for the Alohapay links of its transactions.",
+    "noOrganization": "No organization",
+    "col": {
+      "at": "Date",
+      "source": "Source",
+      "operation": "Operation",
+      "organization": "Organization",
+      "reference": "Reference",
+      "result": "Result",
+      "duration": "Duration"
+    },
+    "field": {
+      "direction": "Direction",
+      "eventId": "Event id",
+      "plan": "Plan",
+      "outcome": "Technical result",
+      "error": "Error",
+      "stack": "Error trace",
+      "request": "What was received or sent",
+      "response": "Response",
+      "replayOf": "Retry of record"
+    },
+    "filter": {
+      "all": "All",
+      "search": "Search by event or reference",
+      "searchPlaceholder": "Event id, link or subscription",
+      "provider": "Provider",
+      "anyProvider": "Any provider",
+      "stage": "Stage",
+      "anyStage": "Any stage",
+      "period": "Period",
+      "anyPeriod": "Any date"
+    },
+    "periods": {
+      "24h": "Last 24 hours",
+      "7d": "Last 7 days",
+      "30d": "Last 30 days",
+      "90d": "Last 90 days"
+    },
+    "provider": {
+      "stripe": "Stripe",
+      "alohapay": "Alohapay"
+    },
+    "stage": {
+      "intake": "Reached commons",
+      "apply": "Applied in the core",
+      "call": "Outgoing call"
+    },
+    "direction": {
+      "in": "Incoming: the provider called us",
+      "out": "Outgoing: we called the provider"
+    },
+    "result": {
+      "ok": "Succeeded",
+      "failed": "Failed"
+    },
+    "outcome": {
+      "applied": "Applied",
+      "duplicate": "Duplicate",
+      "ignored": "Ignored",
+      "not_eligible": "Not applicable",
+      "unchanged": "No changes",
+      "unknown_link": "Unknown link",
+      "forwarded": "Forwarded",
+      "rejected": "Rejected",
+      "failed": "Failed",
+      "recorded": "Recorded"
+    },
+    "reapply": {
+      "action": "Reapply",
+      "title": "Apply this event again?",
+      "message": "The core processes event {{event}} again exactly as it arrived. If it was already applied nothing changes, and the attempt is logged as a new record.",
+      "confirm": "Reapply",
+      "done": {
+        "applied": "The event was applied",
+        "duplicate": "That event was already applied; nothing changed",
+        "other": "The event was processed: {{outcome}}"
+      },
+      "failed": "It failed again: {{message}}",
+      "failedGeneric": "It failed again. Check the new record in the log",
+      "error": {
+        "PAYMENT_LOG_NOT_FOUND": "That record is no longer in the log",
+        "PAYMENT_LOG_NOT_REAPPLICABLE": "Only a received event that failed can be reapplied",
+        "PAYMENT_LOG_REQUEST_UNUSABLE": "The stored event is incomplete or truncated; it cannot be reapplied"
+      }
+    }
+  },
+  "errl": {
+    "lead": "Server errors (5xx) from the core, commons and bridge, grouped by cause.",
+    "tableLabel": "Platform failures",
+    "loading": "Loading failures…",
+    "loadingDetail": "Loading samples…",
+    "errorTitle": "Failures could not be loaded",
+    "errorLead": "Check your connection and try again.",
+    "empty": "No failures recorded",
+    "emptyFiltered": "No failure matches the filters",
+    "detailFailed": "The details of this failure could not be loaded.",
+    "filter": {
+      "all": "All",
+      "search": "Search message, route or type",
+      "searchPlaceholder": "Message, route or error type",
+      "service": "Service",
+      "anyService": "Any service",
+      "period": "Last seen",
+      "anyPeriod": "Any date"
+    },
+    "periods": {
+      "24h": "Last 24 hours",
+      "7d": "Last 7 days",
+      "30d": "Last 30 days"
+    },
+    "state": {
+      "open": "Open",
+      "resolved": "Resolved",
+      "silenced": "Silenced"
+    },
+    "service": {
+      "core": "core",
+      "commons": "commons",
+      "bridge": "bridge"
+    },
+    "source": {
+      "http": "HTTP request",
+      "job": "Scheduled job"
+    },
+    "col": {
+      "lastSeen": "Last seen",
+      "service": "Service",
+      "route": "Route",
+      "message": "Message",
+      "count": "Times",
+      "state": "State"
+    },
+    "field": {
+      "triage": "Reviewed",
+      "reopened": "Happened again",
+      "message": "Message",
+      "firstSeen": "First seen",
+      "status": "Last code",
+      "source": "Source",
+      "path": "URL",
+      "requestId": "Request id",
+      "query": "Parameters",
+      "body": "Received body",
+      "stack": "Stack trace"
+    },
+    "triageText": "{{admin}} · {{when}}",
+    "samples": "Latest samples ({{n}})",
+    "noSamples": "Samples expire after 90 days; this failure has none left.",
+    "actor": {
+      "organizationId": "Organization",
+      "userId": "User",
+      "platformAdminId": "Platform admin",
+      "integrationKeyId": "Integration key",
+      "callerService": "Calling service"
+    },
+    "action": {
+      "resolve": "Mark resolved",
+      "silence": "Silence",
+      "reopen": "Reopen"
+    },
+    "confirm": {
+      "resolved": {
+        "title": "Mark as resolved",
+        "message": "“{{route}}” leaves the open list. If it fails again, it reopens on its own."
+      },
+      "silenced": {
+        "title": "Silence this failure",
+        "message": "“{{route}}” keeps being recorded, but it won't reopen or show in the Overview until you reopen it."
+      },
+      "open": {
+        "title": "Reopen this failure",
+        "message": "“{{route}}” goes back to the open list and can raise an Overview alert."
+      }
+    },
+    "reason": "Reason",
+    "reasonPlaceholder": "What was done or why",
+    "done": {
+      "resolved": "Failure marked as resolved",
+      "silenced": "Failure silenced",
+      "open": "Failure reopened"
+    },
+    "error": {
+      "ERROR_GROUP_NOT_FOUND": "That failure no longer exists in the log.",
+      "ERROR_GROUP_SAME_STATE": "The failure was already in that state.",
+      "ERROR_GROUP_CHANGED": "Someone changed this failure while you were reviewing it. Reload and try again."
+    },
+    "failed": "The state could not be changed: {{message}}",
+    "failedGeneric": "The state could not be changed. Try again."
   }
 }

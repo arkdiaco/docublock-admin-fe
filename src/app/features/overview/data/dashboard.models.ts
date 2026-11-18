@@ -26,7 +26,13 @@ export interface TicketAction {
   organization: { id: string; name?: string } | null;
 }
 
+export interface ErrorSpikeAction {
+  group: { id: string; service: string; route: string; message: string };
+  recent: number;
+}
+
 export type DashboardActionGroup =
+  | { kind: 'ERROR_SPIKE'; total: number; items: ErrorSpikeAction[] }
   | { kind: 'QUOTA_EXHAUSTED' | 'QUOTA_WARNING'; total: number; items: QuotaAction[] }
   | { kind: 'SUBSCRIPTION_EXPIRING'; total: number; items: ExpiringAction[] }
   | { kind: 'TICKET_OVERDUE'; total: number; items: TicketAction[] }

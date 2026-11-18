@@ -87,7 +87,7 @@ import type { DeliveryDetail, DeliveryRow } from '../data/integrations.models';
       }
     </db-modal-shell>
   `,
-  styleUrl: './integration-item.scss',
+  styleUrl: '../../../shared/ui/detail-item.scss',
 })
 export class DeliveryDetailComponent {
   readonly row = input.required<DeliveryRow>();
