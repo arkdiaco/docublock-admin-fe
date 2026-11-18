@@ -67,6 +67,7 @@ export const ACTIVITY_ACTIONS = [
   'members.invitation_revoke',
   'members.invite',
   'members.remove',
+  'members.signer_update',
   'members.update',
   'organization.api_key_rotated',
   'organization.created',
