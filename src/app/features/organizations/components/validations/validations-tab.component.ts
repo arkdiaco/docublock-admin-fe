@@ -111,12 +111,6 @@ type Open = { kind: 'credit'; type: CreditType } | { kind: 'pricing' } | null;
               />
             }
           </div>
-          <p class="dba-meta vt__self">
-            {{ 'val.selfService' | translate }} {{ 'val.self.blockComments' | translate }}:
-            {{ yesNo(settings()!.selfService.blockComments) }} ·
-            {{ 'val.self.documentPhotos' | translate }}:
-            {{ yesNo(settings()!.selfService.documentPhotos) }}
-          </p>
         </section>
 
         <section class="vt__card">
@@ -293,10 +287,6 @@ type Open = { kind: 'credit'; type: CreditType } | { kind: 'pricing' } | null;
       background: var(--dba-border-row);
     }
 
-    .vt__self {
-      margin: 0;
-    }
-
     .vt__muted {
       margin: 0;
       color: var(--dba-text-muted);
@@ -434,10 +424,6 @@ export class ValidationsTabComponent {
     });
   }
 
-  protected yesNo(value: boolean): string {
-    return this.t(value ? 'val.yes' : 'val.no');
-  }
-
   protected money(value: number): string {
     return `${formatNumber(value, this.locale, '1.0-2')} ${this.pricing()?.currency ?? ''}`.trim();
   }
@@ -510,7 +496,7 @@ export class ValidationsTabComponent {
     });
     if (answer.answer !== 'confirm' || !answer.reason) return;
     const settings = await this.run(
-      this.api.setValidation(this.orgId(), key, value, answer.reason),
+      this.api.setSetting(this.orgId(), key, value, answer.reason),
     );
     if (settings) {
       this.settings.set(settings as OrgSettings);

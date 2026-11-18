@@ -12,7 +12,7 @@ import type {
   OrgCredits,
   OrgSettings,
   PricingBody,
-  ValidationKey,
+  SettingKey,
   ValidationPricing,
 } from './validations.models';
 
@@ -26,9 +26,9 @@ export class ValidationsApi {
     return this.http.get<OrgSettings>(`/platform/organizations/${orgId}/settings`);
   }
 
-  setValidation(
+  setSetting(
     orgId: string,
-    key: ValidationKey,
+    key: SettingKey,
     value: boolean,
     reason: string,
   ): Observable<OrgSettings> {

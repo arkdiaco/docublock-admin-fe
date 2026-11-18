@@ -32,6 +32,7 @@ import { ResellerPickerComponent } from '../components/reseller-picker.component
 import { MembersTabComponent } from '../components/members/members-tab.component';
 import { IntegrationsTabComponent } from '../components/integrations/integrations-tab.component';
 import { ValidationsTabComponent } from '../components/validations/validations-tab.component';
+import { OrgSettingsTabComponent } from '../components/settings/org-settings-tab.component';
 import { QuotasTabComponent } from '../components/quotas/quotas-tab.component';
 import { SubscriptionTabComponent } from '../components/subscription/subscription-tab.component';
 import { OrgPurgeComponent } from '../components/purge/org-purge.component';
@@ -51,6 +52,7 @@ const TAB_KEYS = [
   'members',
   'integrations',
   'validations',
+  'settings',
   'marketplace',
   'documents',
   'support',
@@ -87,6 +89,7 @@ const ORG_EDIT_ERRORS = ['TRIBUTARY_NUMBER_INVALID', 'NIT_EN_USO', 'CIUDAD_FUERA
     QuotasTabComponent,
     MembersTabComponent,
     ValidationsTabComponent,
+    OrgSettingsTabComponent,
     IntegrationsTabComponent,
     OrgPurgeComponent,
     OrgAuditTabComponent,
@@ -229,6 +232,8 @@ const ORG_EDIT_ERRORS = ['TRIBUTARY_NUMBER_INVALID', 'NIT_EN_USO', 'CIUDAD_FUERA
           <dba-subscription-tab [org]="org" (changed)="refresh()" />
         } @else if (tab() === 'validations') {
           <dba-validations-tab [org]="org" />
+        } @else if (tab() === 'settings') {
+          <dba-org-settings-tab [org]="org" />
         } @else if (tab() === 'integrations') {
           <dba-integrations-tab [org]="org" />
         } @else if (tab() === 'marketplace') {

@@ -33,7 +33,7 @@ const ORG = {
 
 const SETTINGS: OrgSettings = {
   validations: { identityValid: true, biometricValid: false, ani: true, liveness: false },
-  selfService: { blockComments: false, documentPhotos: true },
+  selfService: { whatsapp: true, skipVisualSign: false, blockComments: false, documentPhotos: true },
 };
 
 const CREDITS: OrgCredits = {

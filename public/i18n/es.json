@@ -356,6 +356,7 @@
       "members": "Miembros",
       "integrations": "Integraciones",
       "validations": "Validaciones",
+      "settings": "Ajustes",
       "marketplace": "Marketplace",
       "documents": "Documentos",
       "audit": "Auditoría",
@@ -1232,13 +1233,6 @@
       "ani": "Confirma la identificación en la Registraduría",
       "liveness": "Confirma que hay una persona real frente a la cámara; no descuenta créditos"
     },
-    "selfService": "Lo que configura la organización:",
-    "self": {
-      "blockComments": "Bloquear comentarios",
-      "documentPhotos": "Fotos del documento"
-    },
-    "yes": "sí",
-    "no": "no",
     "enableTitle": "Habilitar {{name}}",
     "disableTitle": "Deshabilitar {{name}}",
     "enableMessage": "La organización podrá pedir {{name}} a sus firmantes desde ahora.",
@@ -6630,5 +6624,45 @@
     },
     "failed": "No se pudo cambiar el estado: {{message}}",
     "failedGeneric": "No se pudo cambiar el estado. Inténtalo de nuevo."
+  },
+  "ost": {
+    "loading": "Cargando los ajustes",
+    "errorTitle": "No pudimos cargar los ajustes",
+    "errorLead": "Revisa la conexión e inténtalo de nuevo.",
+    "lead": "La organización también puede cambiar estos ajustes en su Configuración. Cada cambio desde aquí pide motivo y queda en Auditoría.",
+    "group": {
+      "notices": "Avisos",
+      "signing": "Firma"
+    },
+    "groupLead": {
+      "notices": "Por dónde les llega la invitación a firmar a los firmantes.",
+      "signing": "Lo que se le pide al firmante al firmar o rechazar."
+    },
+    "option": {
+      "whatsapp": "Avisos por WhatsApp",
+      "skipVisualSign": "Saltar la firma visual",
+      "blockComments": "Rechazar sin escribir motivo",
+      "documentPhotos": "Fotos del documento"
+    },
+    "hint": {
+      "whatsapp": "La invitación a firmar también llega por WhatsApp",
+      "skipVisualSign": "Al firmar no se le pide al firmante dibujar su firma",
+      "blockComments": "Quien rechaza no tiene que escribir el motivo",
+      "documentPhotos": "Frente y reverso del documento en vez de dos selfies sosteniéndolo"
+    },
+    "onTitle": "Encender {{name}}",
+    "offTitle": "Apagar {{name}}",
+    "onMessage": "{{name}} queda encendido para {{org}} desde ahora. La organización puede volver a cambiarlo en su Configuración.",
+    "offMessage": "{{name}} queda apagado para {{org}} desde ahora. La organización puede volver a cambiarlo en su Configuración.",
+    "on": "Encender",
+    "off": "Apagar",
+    "done": {
+      "on": "{{name}} quedó encendido.",
+      "off": "{{name}} quedó apagado."
+    },
+    "error": {
+      "generic": "No pudimos guardar el cambio. Inténtalo de nuevo.",
+      "SETTINGS_SIN_CAMBIOS": "No hay cambios que guardar."
+    }
   }
 }
