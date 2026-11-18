@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -53,6 +52,7 @@ import {
   type PaymentLogRow,
   type PaymentLogTotals,
 } from '../data/payment-logs.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 export const PAYMENT_LOGS_LIMIT = 25;
 export const PAYMENT_LOGS_DEBOUNCE_MS = 350;
@@ -316,7 +316,7 @@ export class PaymentLogsComponent {
   }
 
   protected when(value: string): string {
-    return formatDate(value, 'd/MM/y, HH:mm:ss', this.locale);
+    return safeDate(value, 'd/MM/y, HH:mm:ss', this.locale);
   }
 
   protected organizationOf(row: PaymentLogRow): string {

@@ -1,4 +1,4 @@
-import { NgTemplateOutlet, formatDate } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -25,6 +25,7 @@ import { activityKeyOf } from '../data/activity-actions';
 import { DashboardApi } from '../data/dashboard.api';
 import type { PlatformDashboard } from '../data/dashboard.models';
 import { actionRowsOf, eventRef, revenueViewOf } from '../data/dashboard-view';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 export const greetingKeyOf = (hour: number): string => {
   if (hour < 12) return 'overview.greeting.morning';
@@ -302,7 +303,7 @@ export class OverviewComponent {
   private readonly api = inject(DashboardApi);
   private readonly latest = new LatestRequest();
 
-  protected readonly today = formatDate(new Date(), 'fullDate', this.locale);
+  protected readonly today = safeDate(new Date(), 'fullDate', this.locale);
   protected readonly greetingKey = greetingKeyOf(new Date().getHours());
   protected readonly auditPath = sectionPath('audit');
   protected readonly orgsPath = sectionPath('organizations');
@@ -354,7 +355,7 @@ export class OverviewComponent {
       const revenue = revenueViewOf(
         data.revenue,
         (amount, currency) => money(amount, currency, this.locale),
-        formatDate(previous, 'MMM', this.locale, 'UTC'),
+        safeDate(previous, 'MMM', this.locale, 'UTC'),
       );
       views.push({
         label: 'overview.kpiRevenue',
@@ -391,7 +392,7 @@ export class OverviewComponent {
       code: event.action,
       org: event.organization?.name || null,
       meta: [
-        event.createdAt ? formatDate(event.createdAt, 'dd-MMM HH:mm', this.locale) : '',
+        event.createdAt ? safeDate(event.createdAt, 'dd-MMM HH:mm', this.locale) : '',
         eventRef(event.id),
       ]
         .filter((part) => !!part)

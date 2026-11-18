@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -19,6 +18,7 @@ import { OrgStateComponent } from '../../../shared/ui/org-state.component';
 import { TextAreaComponent } from '../../../shared/ui/text-area.component';
 import type { TicketMessage } from '../data/support.models';
 import { attachmentNameOf } from '../data/ticket-view';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 export interface ReplyDraft {
   body: string;
@@ -284,7 +284,7 @@ export class TicketThreadComponent {
       ...msg,
       key: `${index}:${msg.createdAt}`,
       author: msg.authorName || msg.authorEmail || '—',
-      stamp: formatDate(msg.createdAt, 'd/MM/y HH:mm', this.locale),
+      stamp: safeDate(msg.createdAt, 'd/MM/y HH:mm', this.locale),
       files: msg.attachments.map((ref) => ({ ref, name: attachmentNameOf(ref) })),
     })),
   );

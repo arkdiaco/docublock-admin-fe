@@ -9,7 +9,6 @@ import {
   signal,
   type OnInit,
 } from '@angular/core';
-import { formatDate } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { moneyExact } from '../../../shared/domain/money';
@@ -22,6 +21,7 @@ import { TextAreaComponent } from '../../../shared/ui/text-area.component';
 import type { Invoice, InvoiceBody } from '../data/billing.models';
 import { EMAIL_PATTERN, dayStart, invoiceTotalsOf, numberOf } from '../data/billing-view';
 import { TaxLinesComponent, taxDraftValid, type TaxDraft } from './tax-lines.component';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const CURRENCY = /^[A-Za-z]{3}$/;
 
@@ -311,6 +311,6 @@ export class InvoiceFormComponent implements OnInit {
   }
 
   private dateOf(value?: string): string {
-    return value ? formatDate(value, 'yyyy-MM-dd', this.locale) : '';
+    return safeDate(value, 'yyyy-MM-dd', this.locale, undefined, '');
   }
 }

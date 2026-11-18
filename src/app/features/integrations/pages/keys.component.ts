@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import { ChangeDetectionStrategy, Component, LOCALE_ID, computed, inject, signal } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
@@ -23,6 +22,7 @@ import { FilterUrl } from '../data/filter-url';
 import { IntegrationsApi, actionErrorKey, isBridgeDown } from '../data/integrations.api';
 import type { KeyCounts, KeyFilter, KeyRow, KeyState } from '../data/integrations.models';
 import { ALL_KEYS, keyPills, keyStateOf } from '../data/key-view';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 export const KEYS_LIMIT = 25;
 
@@ -284,6 +284,6 @@ export class KeysComponent {
   }
 
   private when(value: string): string {
-    return formatDate(value, 'd/MM/y, HH:mm', this.locale);
+    return safeDate(value, 'd/MM/y, HH:mm', this.locale);
   }
 }

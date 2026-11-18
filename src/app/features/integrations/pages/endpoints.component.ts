@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import { ChangeDetectionStrategy, Component, LOCALE_ID, inject, computed, signal } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
@@ -21,6 +20,7 @@ import { IntegrationsTabsComponent } from '../components/integrations-tabs.compo
 import { FilterUrl } from '../data/filter-url';
 import { IntegrationsApi, actionErrorKey, isBridgeDown } from '../data/integrations.api';
 import type { EndpointRow } from '../data/integrations.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 export const ENDPOINTS_LIMIT = 25;
 
@@ -197,7 +197,7 @@ export class EndpointsComponent {
 
   protected errorOf(row: EndpointRow): string {
     if (!row.lastFailureAt) return '—';
-    return [formatDate(row.lastFailureAt, 'd/MM/y', this.locale), row.lastError].filter(Boolean).join(' · ');
+    return [safeDate(row.lastFailureAt, 'd/MM/y', this.locale), row.lastError].filter(Boolean).join(' · ');
   }
 
   protected setFilter<T>(target: { set(value: T): void }, value: T): void {

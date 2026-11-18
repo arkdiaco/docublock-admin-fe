@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import { ChangeDetectionStrategy, Component, LOCALE_ID, computed, inject, signal } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
@@ -19,6 +18,7 @@ import { ConsentPublishFormComponent } from '../components/consent-publish-form.
 import { ConsentVersionsComponent } from '../components/consent-versions.component';
 import { CatalogsApi, catalogErrorKey } from '../data/catalogs.api';
 import type { ConsentDraft, ConsentPolicy, PolicyLocale } from '../data/catalogs.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const COLUMNS: readonly DataColumn[] = [
   { key: 'title', labelKey: 'cat.consent.titleLabel', width: 'minmax(0, 1.2fr)' },
@@ -174,7 +174,7 @@ export class ConsentPoliciesComponent {
   }
 
   protected day(value: string): string {
-    return formatDate(value, 'd/MM/y', this.appLocale);
+    return safeDate(value, 'd/MM/y', this.appLocale);
   }
 
   protected async publish(value: { draft: ConsentDraft; reason: string }): Promise<void> {

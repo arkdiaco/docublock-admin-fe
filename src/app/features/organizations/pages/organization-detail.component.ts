@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -43,6 +42,7 @@ import { OrganizationsApi } from '../data/organizations.api';
 import type { PlatformOrgDetail, PlatformOrgUpdate } from '../data/organizations.models';
 import { orgStateView } from '../data/platform-org-state';
 import { initialsOf } from '../../../shared/domain/initials';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const TAB_KEYS = [
   'summary',
@@ -597,6 +597,6 @@ export class OrganizationDetailComponent {
   }
 
   private day(value?: string | null): string {
-    return value ? formatDate(value, 'd/MM/y', this.locale) : '';
+    return value ? safeDate(value, 'd/MM/y', this.locale) : '';
   }
 }

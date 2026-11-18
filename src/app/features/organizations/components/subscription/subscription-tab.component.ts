@@ -1,5 +1,4 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -43,6 +42,7 @@ import {
   TransferDocumentsFormComponent,
   type TransferDocumentsBody,
 } from './transfer-documents-form.component';
+import { safeDate } from '../../../../shared/i18n/safe-date';
 
 const HISTORY_COLUMNS: readonly DataColumn[] = [
   { key: 'plan', labelKey: 'sub.col.plan', width: 'minmax(0, 1.4fr)' },
@@ -481,9 +481,7 @@ export class SubscriptionTabComponent {
   }
 
   protected day(value: string): string {
-    return value && !Number.isNaN(Date.parse(value))
-      ? formatDate(value, 'd/MM/y', this.locale)
-      : '—';
+    return safeDate(value, 'd/MM/y', this.locale);
   }
 
   protected counterText(counter: SubscriptionCounter): string {

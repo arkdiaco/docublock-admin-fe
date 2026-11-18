@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -26,6 +25,7 @@ import { SettingsTabsComponent } from '../components/settings-tabs.component';
 import { isTextKind, sameSettingValue, valueLabelOf } from '../data/settings-view';
 import { SettingsApi, settingErrorKey } from '../data/settings.api';
 import type { SettingChange, SettingItem, SettingValue } from '../data/settings.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 export const HISTORY_LIMIT = 20;
 
@@ -206,7 +206,7 @@ export class SettingsHistoryComponent {
   }
 
   protected when(value: string): string {
-    return formatDate(value, 'd/MM/y, HH:mm', this.locale);
+    return safeDate(value, 'd/MM/y, HH:mm', this.locale);
   }
 
   protected newValueOf(row: SettingChange): string {

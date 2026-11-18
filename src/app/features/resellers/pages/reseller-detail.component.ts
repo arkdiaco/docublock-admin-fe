@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -33,6 +32,7 @@ import { PortfolioTabComponent } from '../components/portfolio-tab.component';
 import { ResellerModelFormComponent } from '../components/reseller-model-form.component';
 import { RESELLER_ERRORS, ResellersApi } from '../data/resellers.api';
 import type { Reseller, ResellerModel } from '../data/resellers.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 type DetailTab = 'portfolio' | 'history';
 
@@ -228,7 +228,7 @@ export class ResellerDetailComponent {
   }
 
   protected day(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y', this.locale) : '—';
   }
 
   protected async refresh(): Promise<void> {

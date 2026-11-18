@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -18,6 +17,7 @@ import type { TraceEvent } from '../data/documents.models';
 import { actorKindOf, traceKeyOf } from '../data/document-view';
 import { TRACE_KEYS } from '../data/trace-keys';
 import { traceReadingOf, type RemovedSigner, type TraceLine } from '../data/trace-reading';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 type TraceFilter = 'all' | 'failed';
 
@@ -178,7 +178,7 @@ export class DocumentTraceComponent {
         lines: reading.lines.map((line) => this.lineView(line)),
         failed: reading.failed,
         meta: [
-          formatDate(event.timestamp, 'd/MM/y HH:mm:ss', this.locale),
+          safeDate(event.timestamp, 'd/MM/y HH:mm:ss', this.locale),
           event.actor.name ? event.actor.email : undefined,
           event.actor.ip,
         ]

@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -28,6 +27,7 @@ import { StaffFormComponent, type StaffFormResult } from '../components/staff-fo
 import { staffErrorKey } from '../data/staff-error';
 import { StaffApi } from '../data/staff.api';
 import type { StaffMember, StaffStatus } from '../data/staff.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const COLUMNS: readonly DataColumn[] = [
   { key: 'person', labelKey: 'staff.col.person', width: 'minmax(240px, 2fr)' },
@@ -345,7 +345,7 @@ export class StaffComponent {
       .map((m) => ({
         ...m,
         initials: initialsOf(m),
-        lastLogin: m.lastLoginAt ? formatDate(m.lastLoginAt, 'd/MM/y, HH:mm', this.locale) : '',
+        lastLogin: m.lastLoginAt ? safeDate(m.lastLoginAt, 'd/MM/y, HH:mm', this.locale) : '',
       })),
   );
 

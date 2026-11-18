@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -12,6 +11,7 @@ import { AuditEventComponent } from '../../../shared/ui/audit-event.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
 import type { TicketAuditEntry } from '../data/support.models';
 import { AUTHOR_KIND, auditValueKindOf } from '../data/ticket-view';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 interface EventView {
   key: string;
@@ -93,7 +93,7 @@ export class TicketHistoryComponent {
         actor: entry.byName || this.label(`support.author.${entry.byType}`),
         text: this.label(`support.audit.${entry.action}`),
         change: this.changeOf(entry),
-        meta: formatDate(entry.createdAt, 'd/MM/y HH:mm', this.locale),
+        meta: safeDate(entry.createdAt, 'd/MM/y HH:mm', this.locale),
       })),
   );
 

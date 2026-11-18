@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -25,6 +24,7 @@ import { IntegrationsApi } from '../../data/integrations.api';
 import type { IntegrationKeyState, OrgIntegrations } from '../../data/integrations.models';
 import type { PlatformOrgDetail } from '../../data/organizations.models';
 import { ApiKeyRevealComponent } from './api-key-reveal.component';
+import { safeDate } from '../../../../shared/i18n/safe-date';
 
 const KEY_COLUMNS: readonly DataColumn[] = [
   { key: 'name', labelKey: 'integ.col.name', width: 'minmax(180px, 1.4fr)' },
@@ -399,7 +399,7 @@ export class IntegrationsTabComponent {
   }
 
   protected day(value?: string | null): string {
-    return value ? formatDate(value, 'd/MM/y', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y', this.locale) : '—';
   }
 
   protected keyState(state: IntegrationKeyState): string {

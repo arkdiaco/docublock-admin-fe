@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -39,6 +38,7 @@ import { SignerOneTouchTabComponent } from '../components/signer-one-touch-tab.c
 import { SignerOrganizationsTabComponent } from '../components/signer-organizations-tab.component';
 import { SIGNER_ERRORS, SignersApi } from '../data/signers.api';
 import type { PlatformSignerDetail, SignerChanges } from '../data/signers.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 type DetailTab = 'organizations' | 'legalEntities' | 'documents' | 'oneTouch' | 'history';
 
@@ -266,15 +266,15 @@ export class SignerDetailComponent {
   }
 
   protected day(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y', this.locale) : '—';
   }
 
   protected utcDay(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y', this.locale, 'UTC') : '—';
+    return value ? safeDate(value, 'd/MM/y', this.locale, 'UTC') : '—';
   }
 
   protected moment(value?: string): string {
-    return value ? `${formatDate(value, 'd/MM/y HH:mm', this.locale, 'UTC')} UTC` : '—';
+    return value ? `${safeDate(value, 'd/MM/y HH:mm', this.locale, 'UTC')} UTC` : '—';
   }
 
   protected expedition(signer: PlatformSignerDetail): string {

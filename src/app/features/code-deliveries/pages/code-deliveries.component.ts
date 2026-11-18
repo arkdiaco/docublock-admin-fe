@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -50,6 +49,7 @@ import {
   statusPills,
   type CodeDeliveryKpi,
 } from '../data/code-delivery-view';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 export const CODE_DELIVERIES_LIMIT = 25;
 export const CODE_DELIVERIES_DEBOUNCE_MS = 350;
@@ -382,7 +382,7 @@ export class CodeDeliveriesComponent {
   }
 
   protected when(value: string): string {
-    return formatDate(value, 'd/MM/y, HH:mm', this.locale);
+    return safeDate(value, 'd/MM/y, HH:mm', this.locale);
   }
 
   protected organizationOf(row: CodeDeliveryRow): string {

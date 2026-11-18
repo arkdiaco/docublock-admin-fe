@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -40,6 +39,7 @@ import type {
   PromoReport,
   UpdatePromoBody,
 } from '../data/promotions.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 type DetailTab = 'report' | 'redemptions';
 
@@ -229,7 +229,7 @@ export class PromotionDetailComponent {
   }
 
   protected day(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y', this.locale) : '—';
   }
 
   protected async save(body: UpdatePromoBody): Promise<void> {

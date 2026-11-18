@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -13,6 +12,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 import type { PlatformDocumentDetail } from '../data/documents.models';
 import { namesOf, noticeWarningsOf, signersOf } from '../data/turn-changes';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 @Component({
   selector: 'dba-turn-notice-field',
@@ -61,7 +61,7 @@ export class TurnNoticeFieldComponent {
 
   protected readonly warnings = computed(() =>
     noticeWarningsOf(this.document(), this.invitable(), this.notify(), this.now, (iso) =>
-      formatDate(iso, 'd/MM/y HH:mm', this.locale),
+      safeDate(iso, 'd/MM/y HH:mm', this.locale),
     ),
   );
 }

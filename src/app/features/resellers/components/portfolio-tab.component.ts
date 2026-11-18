@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -34,6 +33,7 @@ import { UsageMeterComponent } from '../../../shared/ui/usage-meter.component';
 import { RESELLER_ERRORS, ResellersApi } from '../data/resellers.api';
 import type { PortfolioOrg, Reseller } from '../data/resellers.models';
 import { OrgChoiceFormComponent } from './org-choice-form.component';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const LIMIT = 20;
 const DEBOUNCE_MS = 350;
@@ -268,7 +268,7 @@ export class PortfolioTabComponent {
   }
 
   protected day(value: string): string {
-    return formatDate(value, 'd/MM/y', this.locale);
+    return safeDate(value, 'd/MM/y', this.locale);
   }
 
   protected async assign(organizationId: string): Promise<void> {

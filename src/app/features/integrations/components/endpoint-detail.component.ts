@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import { ChangeDetectionStrategy, Component, LOCALE_ID, computed, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -7,6 +6,7 @@ import { sectionPath } from '../../../core/layout/console-nav';
 import { ModalShellComponent } from '../../../shared/ui/modal-shell.component';
 import { OrgStateComponent } from '../../../shared/ui/org-state.component';
 import type { EndpointRow } from '../data/integrations.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 @Component({
   selector: 'dba-endpoint-detail',
@@ -80,6 +80,6 @@ export class EndpointDetailComponent {
   protected readonly canManage = computed(() => this.auth.canManage('operations'));
 
   protected when(value: string | null): string {
-    return value ? formatDate(value, 'd/MM/y, HH:mm', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y, HH:mm', this.locale) : '—';
   }
 }

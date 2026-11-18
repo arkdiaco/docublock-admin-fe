@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -17,6 +16,7 @@ import {
   slaGoalsOf,
   type SlaGoal,
 } from '../data/ticket-view';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 interface GoalView extends SlaGoal {
   target: string;
@@ -163,7 +163,7 @@ export class TicketSlaComponent {
   );
 
   private stamp(value: string): string {
-    return formatDate(value, 'd/MM/y HH:mm', this.locale);
+    return safeDate(value, 'd/MM/y HH:mm', this.locale);
   }
 
   private duration(minutes: number): string {

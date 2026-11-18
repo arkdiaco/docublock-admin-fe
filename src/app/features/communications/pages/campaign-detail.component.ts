@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import { ChangeDetectionStrategy, Component, LOCALE_ID, computed, effect, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -21,6 +20,7 @@ import { failureKey, uncertainTotal } from '../data/campaign-failures';
 import { HISTORY_VIEW, campaignStateOf } from '../data/campaign-state';
 import { CommunicationsApi, retryErrorKey } from '../data/communications.api';
 import type { CampaignDetail } from '../data/communications.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 @Component({
   selector: 'dba-campaign-detail',
@@ -180,7 +180,7 @@ export class CampaignDetailComponent {
   }
 
   protected when(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y, HH:mm', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y, HH:mm', this.locale) : '—';
   }
 
   protected async retry(reason: string): Promise<void> {

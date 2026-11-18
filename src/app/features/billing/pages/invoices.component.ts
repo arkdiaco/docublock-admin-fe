@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -38,6 +37,7 @@ import { InvoiceFormComponent } from '../components/invoice-form.component';
 import { BillingApi } from '../data/billing.api';
 import { BILLING_ERRORS } from '../data/billing-errors';
 import type { Invoice, InvoiceBody } from '../data/billing.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const LIMIT = 20;
 const DEBOUNCE_MS = 350;
@@ -217,7 +217,7 @@ export class InvoicesComponent {
     this.items().map((row) => ({
       ...row,
       totalText: moneyExact(row.total, row.currency, this.locale),
-      issuedText: row.issueDate ? formatDate(row.issueDate, 'd/MM/y', this.locale) : '—',
+      issuedText: row.issueDate ? safeDate(row.issueDate, 'd/MM/y', this.locale) : '—',
     })),
   );
   protected readonly pageCount = computed(() => Math.max(1, Math.ceil(this.total() / LIMIT)));

@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -24,6 +23,7 @@ import { OrgStateComponent } from '../../../shared/ui/org-state.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
 import { PromotionsApi } from '../data/promotions.api';
 import type { PromoCode, Redemption } from '../data/promotions.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const LIMIT = 20;
 
@@ -185,7 +185,7 @@ export class RedemptionsTabComponent {
   }
 
   protected stamp(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y HH:mm', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y HH:mm', this.locale) : '—';
   }
 
   protected async load(): Promise<void> {

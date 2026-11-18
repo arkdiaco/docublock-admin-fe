@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -29,6 +28,7 @@ import { QueueRetryConfirmComponent } from '../components/queue-retry-confirm.co
 import { hasError, hasOrganization, hasRetries, isQueueKey, kindKeyOf, statePills } from '../data/queue-view';
 import { TasksApi, retryErrorKey } from '../data/tasks.api';
 import type { QueueCounts, QueueItem, QueueKey, QueueState } from '../data/tasks.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const LIMIT = 20;
 
@@ -244,7 +244,7 @@ export class QueueDetailComponent {
   }
 
   protected when(value: string | null): string {
-    return value ? formatDate(value, 'd/MM/y, HH:mm', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y, HH:mm', this.locale) : '—';
   }
 
   protected async retry(queue: QueueKey, item: QueueItem, reason: string): Promise<void> {

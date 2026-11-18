@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -27,6 +26,7 @@ import { SectionLoaderComponent } from '../../../shared/ui/section-loader.compon
 import { OrgChoiceFormComponent } from '../components/org-choice-form.component';
 import { RESELLER_ERRORS, ResellersApi } from '../data/resellers.api';
 import type { Reseller } from '../data/resellers.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const LIMIT = 20;
 const DEBOUNCE_MS = 350;
@@ -206,7 +206,7 @@ export class ResellersComponent {
   }
 
   protected day(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y', this.locale) : '—';
   }
 
   protected async mark(id: string): Promise<void> {

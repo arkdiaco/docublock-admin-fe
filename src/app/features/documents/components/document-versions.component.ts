@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -16,6 +15,7 @@ import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
 import { IconComponent } from '../../../shared/ui/icon.component';
 import type { DocumentVersion, PlatformSigner } from '../data/documents.models';
 import { currentVersionId, shortHash } from '../data/document-view';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const COLUMNS: readonly DataColumn[] = [
   { key: 'index', labelKey: 'docs.version.col.index', width: '120px' },
@@ -214,7 +214,7 @@ export class DocumentVersionsComponent {
               text: comment.comment.trim(),
               meta: [
                 `v${version.index}`,
-                comment.date ? formatDate(comment.date, 'd/MM/y HH:mm', this.locale) : undefined,
+                comment.date ? safeDate(comment.date, 'd/MM/y HH:mm', this.locale) : undefined,
                 name ? signerLabel : undefined,
               ]
                 .filter((part) => !!part)
@@ -227,6 +227,6 @@ export class DocumentVersionsComponent {
   });
 
   private stamp(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y HH:mm', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y HH:mm', this.locale) : '—';
   }
 }

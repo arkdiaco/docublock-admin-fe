@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import { ChangeDetectionStrategy, Component, DestroyRef, LOCALE_ID, computed, inject, signal } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
@@ -19,6 +18,7 @@ import { TasksTabsComponent } from '../components/tasks-tabs.component';
 import { runRowsKey, runStateOf, taskStateOf, type MaintenanceStateView } from '../data/maintenance-view';
 import { TasksApi, maintenanceErrorKey } from '../data/tasks.api';
 import type { MaintenanceRun, MaintenanceTaskKey, MaintenanceTaskView } from '../data/tasks.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const TASK_COLUMNS: readonly DataColumn[] = [
   { key: 'task', labelKey: 'task.mnt.col.task', width: 'minmax(0, 2.4fr)' },
@@ -243,7 +243,7 @@ export class MaintenanceComponent {
   }
 
   protected when(value: string): string {
-    return formatDate(value, 'd/MM/y, HH:mm', this.locale);
+    return safeDate(value, 'd/MM/y, HH:mm', this.locale);
   }
 
   protected refresh(): void {

@@ -1,9 +1,9 @@
-import { formatDate } from '@angular/common';
 import { ChangeDetectionStrategy, Component, LOCALE_ID, computed, inject, input, output, signal } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { FieldComponent } from '../../../shared/ui/field.component';
 import { ModalShellComponent } from '../../../shared/ui/modal-shell.component';
 import type { QueueItem, QueueKey } from '../data/tasks.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 @Component({
   selector: 'dba-queue-retry-confirm',
@@ -43,7 +43,7 @@ export class QueueRetryConfirmComponent {
   protected readonly reason = signal('');
   protected readonly created = computed(() => {
     const value = this.item().createdAt;
-    return value ? formatDate(value, 'd/MM/y', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y', this.locale) : '—';
   });
 
   protected submit(): void {

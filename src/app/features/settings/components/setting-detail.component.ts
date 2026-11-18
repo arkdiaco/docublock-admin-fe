@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -20,6 +19,7 @@ import {
   valueLabelOf,
 } from '../data/settings-view';
 import type { SettingItem, SettingValue } from '../data/settings.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 @Component({
   selector: 'dba-setting-detail',
@@ -98,6 +98,6 @@ export class SettingDetailComponent {
   }
 
   protected when(value: string): string {
-    return formatDate(value, 'd/MM/y, HH:mm', this.locale);
+    return safeDate(value, 'd/MM/y, HH:mm', this.locale);
   }
 }

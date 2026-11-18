@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -37,6 +36,7 @@ import {
   type CodeState,
 } from '../data/promotions-view';
 import type { CountryOption, CreatePromoBody, PromoCode } from '../data/promotions.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 const LIMIT = 20;
 const DEBOUNCE_MS = 350;
@@ -211,7 +211,7 @@ export class PromotionsComponent {
       countryName: row.countryId
         ? (names.get(row.countryId) ?? '—')
         : (this.translate.instant('promo.anyCountry') as string),
-      expiresText: row.expiresAt ? formatDate(row.expiresAt, 'd/MM/y', this.locale) : '—',
+      expiresText: row.expiresAt ? safeDate(row.expiresAt, 'd/MM/y', this.locale) : '—',
     }));
   });
   protected readonly pageCount = computed(() => Math.max(1, Math.ceil(this.total() / LIMIT)));

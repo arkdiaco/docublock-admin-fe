@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -35,6 +34,7 @@ import { UserPasskeysTabComponent } from '../components/user-passkeys-tab.compon
 import { UserSessionsTabComponent } from '../components/user-sessions-tab.component';
 import { USER_ERRORS, UsersApi } from '../data/users.api';
 import type { PlatformUserDetail, UserChanges } from '../data/users.models';
+import { safeDate } from '../../../shared/i18n/safe-date';
 
 type DetailTab = 'organizations' | 'sessions' | 'passkeys' | 'history';
 
@@ -241,7 +241,7 @@ export class UserDetailComponent {
   }
 
   protected day(value?: string): string {
-    return value ? formatDate(value, 'd/MM/y', this.locale) : '—';
+    return value ? safeDate(value, 'd/MM/y', this.locale) : '—';
   }
 
   protected expedition(user: PlatformUserDetail): string {

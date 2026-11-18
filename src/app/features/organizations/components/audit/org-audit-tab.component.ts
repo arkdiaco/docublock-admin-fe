@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -27,6 +26,7 @@ import { SectionLoaderComponent } from '../../../../shared/ui/section-loader.com
 import { OrgAuditApi } from '../../data/org-audit.api';
 import type { OrgAuditEvent } from '../../data/org-audit.models';
 import type { PlatformOrgDetail } from '../../data/organizations.models';
+import { safeDate } from '../../../../shared/i18n/safe-date';
 
 const LIMIT = 20;
 
@@ -223,7 +223,7 @@ export class OrgAuditTabComponent {
 
   protected metaOf(row: OrgAuditEvent): string {
     return row.createdAt
-      ? `${formatDate(row.createdAt, 'd/MM/y HH:mm', this.locale, 'UTC')} UTC`
+      ? `${safeDate(row.createdAt, 'd/MM/y HH:mm', this.locale, 'UTC')} UTC`
       : '';
   }
 
