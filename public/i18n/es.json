@@ -1178,7 +1178,7 @@
       "onTitle": "¿Nombrar a {{name}} representante legal?",
       "onMessage": "Firma por la organización cuando una plantilla lo pide y se le genera el sello. Solo hay un representante legal por organización: si ya había uno, deja de serlo. La firma automática no se enciende; la activa la persona con su código desde Configuración › Usuarios.",
       "offTitle": "¿Quitar a {{name}} como representante legal?",
-      "offMessage": "Deja de firmar por la organización y su firma automática se apaga en esta organización. La marca de representante legal es de la persona: si también lo es en otra organización, allá deja de serlo."
+      "offMessage": "Deja de firmar por esta organización y su firma automática se apaga aquí. Si también es representante legal de otra organización, allá lo sigue siendo."
     },
     "autoSign": {
       "offTitle": "¿Apagar la firma automática de {{name}}?",

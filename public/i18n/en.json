@@ -1178,7 +1178,7 @@
       "onTitle": "Make {{name}} the legal representative?",
       "onMessage": "They sign for the organization when a template asks for it, and their seal is generated. There is only one legal representative per organization: if there was one, they stop being it. Automatic signing is not turned on; the person turns it on with their code from Settings › Users.",
       "offTitle": "Remove {{name}} as legal representative?",
-      "offMessage": "They stop signing for the organization and their automatic signing is turned off in this organization. The legal representative mark belongs to the person: if they are also one in another organization, they stop being it there."
+      "offMessage": "They stop signing for this organization and their automatic signing is turned off here. If they are also legal representative of another organization, they remain so there."
     },
     "autoSign": {
       "offTitle": "Turn off automatic signing for {{name}}?",
