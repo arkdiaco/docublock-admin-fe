@@ -6635,7 +6635,7 @@
       "signing": "Firma"
     },
     "groupLead": {
-      "notices": "Por dónde les llega la invitación a firmar a los firmantes.",
+      "notices": "Por dónde les llegan a los firmantes la invitación a firmar y el documento firmado.",
       "signing": "Lo que se le pide al firmante al firmar o rechazar."
     },
     "option": {
@@ -6645,7 +6645,7 @@
       "documentPhotos": "Fotos del documento"
     },
     "hint": {
-      "whatsapp": "La invitación a firmar también llega por WhatsApp",
+      "whatsapp": "La invitación y el documento firmado también llegan por WhatsApp",
       "skipVisualSign": "Al firmar no se le pide al firmante dibujar su firma",
       "blockComments": "Quien rechaza no tiene que escribir el motivo",
       "documentPhotos": "Frente y reverso del documento en vez de dos selfies sosteniéndolo"
