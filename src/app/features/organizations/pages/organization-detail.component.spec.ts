@@ -60,7 +60,12 @@ describe('OrganizationDetailComponent', () => {
     http = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => http.verify());
+  afterEach(() => {
+    http
+      .match('/platform/organizations/org-1/filing')
+      .forEach((req) => req.flush({ balance: { unlimited: false, remaining: 0 }, prefix: null, example: null }));
+    http.verify();
+  });
 
   const montar = async (body = detail()) => {
     const fixture = TestBed.createComponent(OrganizationDetailComponent);
@@ -85,6 +90,18 @@ describe('OrganizationDetailComponent', () => {
     expect(host.querySelector('db-underline-tabs')?.textContent).not.toContain('Soporte');
     expect(host.querySelector('.tab--on')?.textContent).toContain('Resumen');
     expect(host.querySelector('dba-org-flag .flag--test')?.textContent).toContain('PRUEBA');
+  });
+
+  it('el Resumen muestra la tarjeta de radicación debajo de los módulos', async () => {
+    const { fixture, host } = await montar(detail({ modules: ['radicacion'] }));
+    http
+      .expectOne('/platform/organizations/org-1/filing')
+      .flush({ balance: { unlimited: false, remaining: 7 }, prefix: 'ASN', example: 'ASN-2026-E-000001' });
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(host.querySelector('dba-org-filing-card')?.textContent).toContain('7 radicaciones');
+    });
+    expect(host.querySelector('dba-org-filing-card')?.textContent).toContain('ASN-2026-E-000001');
   });
 
   it('el Resumen trae perfil, módulos contratados y el plan con su consumo', async () => {

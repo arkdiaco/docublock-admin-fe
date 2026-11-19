@@ -38,6 +38,7 @@ import { OrgPurgeComponent } from '../components/purge/org-purge.component';
 import { OrgAuditTabComponent } from '../components/audit/org-audit-tab.component';
 import { OrgBillingTabComponent } from '../components/billing/org-billing-tab.component';
 import { OrgMarketplaceTabComponent } from '../components/marketplace/org-marketplace-tab.component';
+import { OrgFilingCardComponent } from '../components/filing/org-filing-card.component';
 import { OrganizationsApi } from '../data/organizations.api';
 import type { PlatformOrgDetail, PlatformOrgUpdate } from '../data/organizations.models';
 import { orgStateView } from '../data/platform-org-state';
@@ -96,6 +97,7 @@ const ORG_EDIT_ERRORS = ['TRIBUTARY_NUMBER_INVALID', 'NIT_EN_USO', 'CIUDAD_FUERA
     OrgAuditTabComponent,
     OrgBillingTabComponent,
     OrgMarketplaceTabComponent,
+    OrgFilingCardComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -199,6 +201,8 @@ const ORG_EDIT_ERRORS = ['TRIBUTARY_NUMBER_INVALID', 'NIT_EN_USO', 'CIUDAD_FUERA
                   }
                 </div>
               </section>
+
+              <dba-org-filing-card [org]="org" />
             </div>
 
             <div class="od__side">

@@ -6697,5 +6697,37 @@
       "generic": "We could not save the change. Please try again.",
       "SETTINGS_SIN_CAMBIOS": "There are no changes to save."
     }
+  },
+  "orgFiling": {
+    "title": "Document filing",
+    "loading": "Loading filing…",
+    "error": "Could not read this organization’s filing.",
+    "balance": "Balance",
+    "prefix": "Prefix",
+    "unlimited": "Unlimited",
+    "one": "1 filing",
+    "count": "{{count}} filings",
+    "example": "Looks like: {{example}}",
+    "noPrefix": "Assigned with the first filing",
+    "changePrefix": "Change prefix",
+    "done": "The prefix is now {{prefix}}",
+    "form": {
+      "title": "Change filing prefix",
+      "current": "Current prefix: {{prefix}}",
+      "confirm": "Change prefix",
+      "warning": "The prefix is printed on the QR and is never released. Filings already issued keep the previous prefix.",
+      "prefix": "New prefix",
+      "prefixPlaceholder": "E.g.: JURI",
+      "invalid": "2 to 8 letters or numbers, no spaces or symbols.",
+      "same": "That is its current prefix.",
+      "preview": "Will look like: {{example}}",
+      "reason": "Reason",
+      "reasonPlaceholder": "Why the prefix changes"
+    },
+    "errors": {
+      "PREFIJO_INVALIDO": "The prefix must have 2 to 8 letters or numbers.",
+      "PREFIJO_EN_USO": "Another organization already uses that prefix.",
+      "generic": "Could not change the prefix. Try again."
+    }
   }
 }
