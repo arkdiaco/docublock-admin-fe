@@ -21,7 +21,9 @@ import type {
   ProductRow,
   VersionProductBody,
 } from './data/marketplace.models';
-import { bulletsOf, kindLabel, priceText, tiersText } from './data/product-format';
+import { CREDIT_TYPES as VALIDATION_CREDIT_TYPES } from '../organizations/data/validations.models';
+import { CREDIT_TYPES } from './data/marketplace.models';
+import { bulletsOf, kindLabel, priceText, tiersText, unitKey } from './data/product-format';
 import { MarketplaceComponent } from './pages/marketplace.component';
 import { ProductDetailComponent } from './pages/product-detail.component';
 
@@ -139,6 +141,21 @@ describe('Comercial › Marketplace', () => {
       expect(tiersText([{ minQuantity: 100, discountPct: 5 }], t)).toBe('5 % desde 100');
       expect(bulletsOf(' uno \n\n dos ')).toEqual(['uno', 'dos']);
     });
+
+    it('la radicación se rotula aparte y se cobra por documento', () => {
+      const t = TestBed.inject(TranslateService);
+      const radicacion = row({ code: 'VAL_RADICACION', creditType: 'radicacion', fromPrice: 1000 });
+      expect(kindLabel(radicacion)).toBe('mkt.credit.radicacion');
+      expect(t.instant('mkt.credit.radicacion')).toBe('Radicaciones');
+      expect(priceText(radicacion, t, 'es-CO')).toMatch(/\/ documento$/);
+      expect(unitKey(radicacion)).toBe('mkt.filings');
+      expect(unitKey(row())).toBe('mkt.queries');
+    });
+
+    it('la radicación no entra a la lista de validaciones de la organización', () => {
+      expect(CREDIT_TYPES).toContain('radicacion');
+      expect(VALIDATION_CREDIT_TYPES).toEqual(['identity', 'biometric', 'ani']);
+    });
   });
 
   describe('lista', () => {
@@ -158,6 +175,13 @@ describe('Comercial › Marketplace', () => {
           activeAddons: 3,
           visible: false,
         }),
+        row({
+          code: 'VAL_RADICACION',
+          creditType: 'radicacion',
+          level: 4,
+          name: 'Radicación de documentos',
+          fromPrice: 1000,
+        }),
       ]);
       await fixture.whenStable();
       fixture.detectChanges();
@@ -169,6 +193,8 @@ describe('Comercial › Marketplace', () => {
       expect(filas[0]).toContain('1 precios especiales');
       expect(filas[1]).toContain('3 add-ons activos');
       expect(filas[1]).toContain('Oculto en la tienda');
+      expect(filas[2]).toContain('Radicaciones');
+      expect(filas[2]).toContain('/ documento');
       expect(boton(host, 'Nuevo producto')).toBeUndefined();
       expect(host.textContent).not.toMatch(/mkt\./);
     });
@@ -228,6 +254,50 @@ describe('Comercial › Marketplace', () => {
       expect(enviados[0].creditType).toBeUndefined();
     });
 
+    it('radicaciones propone VAL_RADICACION, nivel 4 y descuentos en radicaciones', async () => {
+      const fixture = TestBed.createComponent(ProductFormComponent);
+      fixture.detectChanges();
+      http.expectOne('/catalogs/countries').flush([{ currency: 'COP' }]);
+      const form = fixture.componentInstance as unknown as Interna &
+        Record<string, (v: unknown) => void>;
+      const opciones = form['creditOptions']() as { value: string; label: string }[];
+      expect(opciones.find((o) => o.value === 'radicacion')?.label).toBe('Radicaciones');
+      form['pickCredit']('radicacion');
+      expect(form['code']()).toBe('VAL_RADICACION');
+      expect(form['level']()).toBe('4');
+      await fixture.whenStable();
+      fixture.detectChanges();
+      const host = fixture.nativeElement as HTMLElement;
+      expect(host.querySelector('.tiers__unit')?.textContent?.trim()).toBe('radicaciones');
+      expect(host.textContent).toContain('Tipo de crédito');
+      expect(host.textContent).not.toMatch(/mkt\./);
+      const enviados: CreateProductBody[] = [];
+      fixture.componentInstance.created.subscribe((b) => enviados.push(b));
+      form['name'].set('Radicación de documentos');
+      form['unitPrice'].set('900');
+      form['reason'].set('Alta');
+      form.submit();
+      expect(enviados[0]).toMatchObject({
+        code: 'VAL_RADICACION',
+        kind: 'VALIDATION_PACKAGE',
+        creditType: 'radicacion',
+        level: 4,
+      });
+    });
+
+    it('la versión nueva de radicaciones cuenta los descuentos en radicaciones', async () => {
+      const fixture = TestBed.createComponent(ProductFormComponent);
+      fixture.componentRef.setInput(
+        'product',
+        detail({ code: 'VAL_RADICACION', creditType: 'radicacion', level: 4 }),
+      );
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+      const host = fixture.nativeElement as HTMLElement;
+      expect(host.querySelector('.tiers__unit')?.textContent?.trim()).toBe('radicaciones');
+    });
+
     it('nueva versión manda solo lo que cambió y sin cambios no deja guardar', () => {
       const fixture = TestBed.createComponent(ProductFormComponent);
       fixture.componentRef.setInput('product', detail());
@@ -262,6 +332,23 @@ describe('Comercial › Marketplace', () => {
       expect(host.textContent).toContain('10 % desde 100');
       expect(host.textContent).toContain('no tiene ficha propia');
       expect(boton(host, 'Nueva versión')).toBeUndefined();
+      expect(host.textContent).not.toMatch(/mkt\./);
+    });
+
+    it('radicaciones se rotula, cobra por documento y no avisa de ficha faltante', async () => {
+      perfil(['platform:commercial']);
+      const { host } = await montar(
+        detail({
+          code: 'VAL_RADICACION',
+          creditType: 'radicacion',
+          level: 4,
+          name: 'Radicación de documentos',
+          fromPrice: 1000,
+        }),
+      );
+      expect(host.textContent).toContain('Radicaciones');
+      expect(host.textContent).toContain('/ documento');
+      expect(host.textContent).not.toContain('no tiene ficha propia');
       expect(host.textContent).not.toMatch(/mkt\./);
     });
 

@@ -1879,6 +1879,7 @@
       "ani": "Civil registry lookup",
       "identity": "Document check",
       "biometric": "Advanced biometrics",
+      "radicacion": "Filings",
       "none": "No type"
     },
     "addon": {
@@ -1894,10 +1895,12 @@
     "hidden": "Hidden in the store",
     "perMonth": "{{amount}} / month",
     "perQuery": "{{amount}} / check",
+    "perDocument": "{{amount}} / document",
     "fromPrice": "From {{from}} (base {{unit}})",
     "noTiers": "No volume discount",
     "tierLine": "{{pct}} % from {{from}}",
     "queries": "checks",
+    "filings": "filings",
     "usage": {
       "addons": "{{total}} active add-ons",
       "orders": "{{total}} purchases in 30 days",
@@ -1940,7 +1943,7 @@
     },
     "f": {
       "kind": "Type",
-      "creditType": "Validation",
+      "creditType": "Credit type",
       "addonCode": "Module",
       "currency": "Currency",
       "code": "Code",

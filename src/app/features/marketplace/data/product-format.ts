@@ -8,8 +8,13 @@ export const kindLabel = (row: Pick<ProductRow, 'kind' | 'creditType' | 'addonCo
     ? `mkt.addon.${row.addonCode ?? 'none'}`
     : `mkt.credit.${row.creditType ?? 'none'}`;
 
+const isFiling = (row: Pick<ProductRow, 'creditType'>): boolean => row.creditType === 'radicacion';
+
+export const unitKey = (row: Pick<ProductRow, 'creditType'>): string =>
+  isFiling(row) ? 'mkt.filings' : 'mkt.queries';
+
 export const priceText = (
-  row: Pick<ProductRow, 'kind' | 'unitPrice' | 'fromPrice' | 'currency'>,
+  row: Pick<ProductRow, 'kind' | 'creditType' | 'unitPrice' | 'fromPrice' | 'currency'>,
   translate: TranslateService,
   locale: string,
 ): string => {
@@ -24,7 +29,7 @@ export const priceText = (
       unit: money(row.unitPrice, row.currency, locale),
     }) as string;
   }
-  return translate.instant('mkt.perQuery', {
+  return translate.instant(isFiling(row) ? 'mkt.perDocument' : 'mkt.perQuery', {
     amount: money(row.unitPrice, row.currency, locale),
   }) as string;
 };

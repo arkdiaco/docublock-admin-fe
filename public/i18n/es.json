@@ -1879,6 +1879,7 @@
       "ani": "Consultar Registraduría",
       "identity": "Validación contra documento",
       "biometric": "Biometría avanzada",
+      "radicacion": "Radicaciones",
       "none": "Sin tipo"
     },
     "addon": {
@@ -1894,10 +1895,12 @@
     "hidden": "Oculto en la tienda",
     "perMonth": "{{amount}} / mes",
     "perQuery": "{{amount}} / consulta",
+    "perDocument": "{{amount}} / documento",
     "fromPrice": "Desde {{from}} (base {{unit}})",
     "noTiers": "Sin descuento por volumen",
     "tierLine": "{{pct}} % desde {{from}}",
     "queries": "consultas",
+    "filings": "radicaciones",
     "usage": {
       "addons": "{{total}} add-ons activos",
       "orders": "{{total}} compras en 30 días",
@@ -1940,7 +1943,7 @@
     },
     "f": {
       "kind": "Tipo",
-      "creditType": "Validación",
+      "creditType": "Tipo de crédito",
       "addonCode": "Módulo",
       "currency": "Moneda",
       "code": "Código",
