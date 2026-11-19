@@ -1,6 +1,7 @@
 import en from '../../../../public/i18n/en.json';
 import es from '../../../../public/i18n/es.json';
 import { DOCUMENT_ERRORS } from './data/document-errors';
+import { filingStateOf } from './data/filing-view';
 import {
   canResend,
   chainStateOf,
@@ -1622,6 +1623,68 @@ describe('Documentos: quitar firmante, revocar enlaces y corregir el turno', () 
         for (const name of placeholders(text))
           expect(params, `${item.key} → ${name}`).toContain(name);
       }
+    }
+  });
+});
+
+describe('Documentos: radicación', () => {
+  const event = (type: string, details?: Record<string, unknown>): TraceEvent => ({
+    type,
+    timestamp: '2026-11-19T10:00:00.000Z',
+    actor: { type: 'system' },
+    details,
+  });
+
+  it('sin radicación no hay nada, pedida dice que se asigna al cerrar y radicada da su número', () => {
+    expect(filingStateOf(undefined)).toBeNull();
+    expect(filingStateOf({ requested: true })).toEqual({ kind: 'pending' });
+    expect(filingStateOf({ requested: true, number: 'NT-2026-000123', folios: 4 })).toEqual({
+      kind: 'filed',
+      number: 'NT-2026-000123',
+    });
+  });
+
+  it('el evento de radicado dice número, folios, anexos y si se descontó del saldo', () => {
+    expect(traceKeyOf('document.filed', TRACE_KEYS)).toBe('docs.trace.document_filed');
+    const cobrado = traceReadingOf(
+      event('document.filed', {
+        number: 'NT-2026-000123',
+        folios: 4,
+        annexes: 1,
+        charged: true,
+      }),
+    );
+    expect(cobrado.lines).toEqual([
+      { key: 'docs.traceUi.filing.number', params: { number: 'NT-2026-000123' } },
+      { key: 'docs.traceUi.filing.folios', params: { total: 4 } },
+      { key: 'docs.traceUi.filing.annexes', params: { total: 1 } },
+      { key: 'docs.traceUi.filing.charged' },
+    ]);
+    expect(cobrado.failed).toBe(false);
+
+    const sinSaldo = traceReadingOf(
+      event('document.filed', { number: 'NT-2026-000124', folios: 2, annexes: 0, charged: false }),
+    );
+    expect(sinSaldo.lines.at(-1)).toEqual({ key: 'docs.traceUi.filing.notCharged' });
+    expect(sinSaldo.lines).toContainEqual({
+      key: 'docs.traceUi.filing.annexes',
+      params: { total: 0 },
+    });
+
+    expect(traceReadingOf(event('document.filed', {})).lines).toEqual([]);
+  });
+
+  it('los errores de radicación del core tienen frase y las frases del evento existen', () => {
+    expect(DOCUMENT_ERRORS).toContain('DOCUMENTO_RADICADO');
+    expect(DOCUMENT_ERRORS).toContain('DOCUMENTO_SIN_RADICADO');
+    const usadas = [true, false].flatMap((charged) =>
+      traceReadingOf(
+        event('document.filed', { number: 'X', folios: 1, annexes: 1, charged }),
+      ).lines.map((line) => line.key),
+    );
+    for (const key of usadas) {
+      expect(typeof leaf(es, key), key).toBe('string');
+      expect(typeof leaf(en, key), key).toBe('string');
     }
   });
 });

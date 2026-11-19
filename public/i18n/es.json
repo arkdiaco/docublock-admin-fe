@@ -453,7 +453,8 @@
       "signer_validations_reactivate": "reactivó las validaciones de un firmante",
       "signer_remove": "quitó a un firmante de un documento",
       "signer_links_revoke": "revocó los enlaces de un firmante",
-      "turn_fix": "corrigió el turno de un documento"
+      "turn_fix": "corrigió el turno de un documento",
+      "filing_certificate_view": "descargó la constancia de radicación de un documento"
     },
     "invoices": {
       "create": "creó una factura",
@@ -2134,7 +2135,7 @@
   },
   "docs": {
     "count": "{{total}} documentos",
-    "searchPlaceholder": "Buscar por nombre o código",
+    "searchPlaceholder": "Busca por nombre, código o radicado",
     "regenerateBulk": "Regenerar en lote",
     "view": {
       "todos": "Todos",
@@ -2634,6 +2635,13 @@
       },
       "revoke": {
         "documents": "Documentos del conjunto: {{total}}"
+      },
+      "filing": {
+        "number": "Radicado {{number}}",
+        "folios": "Folios: {{total}}",
+        "annexes": "Anexos: {{total}}",
+        "charged": "Radicación descontada",
+        "notCharged": "No se descontó: la organización no tenía saldo"
       }
     },
     "trace": {
@@ -2736,7 +2744,8 @@
       "admin_validations_reactivated": "Validaciones reactivadas por administración",
       "admin_signer_removed": "Firmante quitado por administración",
       "admin_signer_links_revoked": "Enlaces del firmante revocados por administración",
-      "admin_turn_fixed": "Turno corregido por administración"
+      "admin_turn_fixed": "Turno corregido por administración",
+      "document_filed": "Documento radicado"
     },
     "act": {
       "reasonLabel": "Razón (queda en la trazabilidad)",
@@ -2840,7 +2849,9 @@
       "TURNO_CORRECTO": "El turno abierto ya tiene firmantes pendientes.",
       "SIN_FIRMANTES_PENDIENTES": "Nadie tiene firmas pendientes: el documento está para finalizar.",
       "DOCUMENTO_CAMBIO": "El documento cambió mientras tanto. Revisa la ficha e inténtalo de nuevo.",
-      "COPIA_NO_ENCONTRADA": "No hay copia guardada de ese firmante."
+      "COPIA_NO_ENCONTRADA": "No hay copia guardada de ese firmante.",
+      "DOCUMENTO_RADICADO": "El documento ya está radicado y sellado; regenerarlo desordenaría el foliado.",
+      "DOCUMENTO_SIN_RADICADO": "El documento aún no tiene radicado; la constancia sale cuando se cierra."
     },
     "bulk": {
       "lead": "Solo documentos firmados. Se rehace el PDF con la hoja de firmas y se vuelve a registrar en blockchain. No se avisa a los firmantes ni se descuenta del plan.",
@@ -3066,6 +3077,18 @@
       "doneSet": "Documentos: {{documents}} · Enlaces revocados: {{links}} · Sesiones cerradas: {{sessions}} · Pasos al celular cerrados: {{handoffs}}",
       "none": "No tenía enlaces, sesiones ni pasos al celular vigentes.",
       "removedMessage": "{{name}} ya no está en el documento: se cortan los enlaces, sesiones y pasos al celular que le quedaron vivos."
+    },
+    "filing": {
+      "title": "Radicación",
+      "number": "Radicado",
+      "pending": "Se asigna al cerrar",
+      "filedAt": "Radicado el",
+      "folios": "Folios",
+      "annexes": "Anexos",
+      "certificate": "Constancia de radicación",
+      "certificateError": "No pudimos descargar la constancia de radicación.",
+      "row": "Radicado {{number}}",
+      "rowPending": "Radicado: se asigna al cerrar"
     }
   },
   "orgPicker": {

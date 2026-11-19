@@ -24,6 +24,7 @@ export const ACTIVITY_ACTIONS = [
   'documents.bundle_download',
   'documents.cancel',
   'documents.certificate_view',
+  'documents.filing_certificate_view',
   'documents.finalize',
   'documents.raw_view',
   'documents.regenerate',

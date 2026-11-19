@@ -119,6 +119,16 @@ export class DocumentsApi {
       .pipe(map((response) => exportedFileOf(response, 'expediente.zip')));
   }
 
+  filingCertificate(id: string): Observable<ExportedFile> {
+    return this.http
+      .get(`${BASE}/${id}/filing-certificate`, {
+        responseType: 'blob',
+        observe: 'response',
+        context: silent(),
+      })
+      .pipe(map((response) => exportedFileOf(response, 'constancia-radicacion.pdf')));
+  }
+
   finalize(id: string, reason: string): Observable<unknown> {
     return this.http.post(`${BASE}/${id}/finalize`, { reason }, { context: silent() });
   }

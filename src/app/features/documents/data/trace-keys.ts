@@ -32,6 +32,7 @@ export const TRACE_KEYS: ReadonlySet<string> = new Set([
   'document_close_failed',
   'document_close_requested',
   'document_created',
+  'document_filed',
   'document_lapsed',
   'document_metadata_updated',
   'document_owner_changed',

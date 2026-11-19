@@ -344,6 +344,126 @@ describe('Operación › Documentos › ficha', () => {
     restore();
   });
 
+  it('la ficha muestra el radicado y descarga su constancia también con solo lectura', async () => {
+    conPermisos(['platform:operations']);
+    const { fixture, host } = await montar(
+      detail({
+        status: { progress: 3, state: 0, label: 'firmado' },
+        filing: {
+          requested: true,
+          number: 'NT-2026-000123',
+          filedAt: '2026-11-19T15:30:00.000Z',
+          folios: 4,
+          annexes: 1,
+        },
+      }),
+    );
+    const card = [...host.querySelectorAll<HTMLElement>('dba-document-summary .sm__card')].find(
+      (section) => section.querySelector('h2')?.textContent?.includes('Radicación'),
+    )!;
+    expect(card).toBeDefined();
+    for (const part of ['NT-2026-000123', 'Folios', '4', 'Anexos', '1', 'Radicado el']) {
+      expect(card.textContent, part).toContain(part);
+    }
+    const restore = stubObjectUrls();
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
+    const agregado = vi.spyOn(document.body, 'appendChild');
+    boton(card, 'Constancia de radicación').click();
+    http.expectOne('/platform/documents/d1/filing-certificate').flush(new Blob(['%PDF']), {
+      headers: { 'content-disposition': 'attachment; filename="constancia-NT-2026-000123.pdf"' },
+    });
+    await vi.waitFor(() => {
+      const enlace = agregado.mock.calls
+        .map(([node]) => node)
+        .find((node): node is HTMLAnchorElement => node instanceof HTMLAnchorElement);
+      expect(enlace?.download).toBe('constancia-NT-2026-000123.pdf');
+    });
+
+    const mal = vi.spyOn(TestBed.inject(NotificationService), 'error');
+    fixture.detectChanges();
+    boton(card, 'Constancia de radicación').click();
+    http
+      .expectOne('/platform/documents/d1/filing-certificate')
+      .flush(new Blob([JSON.stringify({ code: 'DOCUMENTO_SIN_RADICADO' })]), {
+        status: 409,
+        statusText: 'Conflict',
+      });
+    await vi.waitFor(() =>
+      expect(mal).toHaveBeenCalledWith(
+        'El documento aún no tiene radicado; la constancia sale cuando se cierra.',
+      ),
+    );
+    expect(host.textContent).not.toMatch(/\b(docs|nav|common)\.[a-zA-Z]/);
+    restore();
+  });
+
+  it('pedida sin cerrar dice que el radicado se asigna al cerrar y no ofrece constancia', async () => {
+    conPermisos(['platform:operations']);
+    const { host } = await montar(detail({ filing: { requested: true } }));
+    const text = host.querySelector('dba-document-summary')?.textContent ?? '';
+    expect(text).toContain('Radicación');
+    expect(text).toContain('Se asigna al cerrar');
+    expect(boton(host, 'Constancia de radicación')).toBeUndefined();
+  });
+
+  it('sin radicación la ficha no pinta la tarjeta', async () => {
+    conPermisos(['platform:operations']);
+    const { host } = await montar();
+    const titles = [...host.querySelectorAll('dba-document-summary .sm__card h2')].map((h) =>
+      h.textContent?.trim(),
+    );
+    expect(titles).not.toContain('Radicación');
+  });
+
+  it('regenerar un radicado dice por qué el core lo niega', async () => {
+    conPermisos(['platform:operations', 'platform:operations:manage']);
+    const { fixture } = await montar(
+      detail({ status: { progress: 3, state: 0, label: 'firmado' } }),
+    );
+    vi.spyOn(TestBed.inject(DialogService), 'confirm').mockResolvedValue(true);
+    const mal = vi.spyOn(TestBed.inject(NotificationService), 'error');
+    (
+      fixture.componentInstance as unknown as { runDocument: (k: string) => Promise<void> }
+    ).runDocument('regenerate');
+    let req!: ReturnType<HttpTestingController['expectOne']>;
+    await vi.waitFor(() => {
+      req = http.expectOne(
+        (r) => r.method === 'POST' && r.url === '/platform/documents/d1/regenerate',
+      );
+    });
+    req.flush({ code: 'DOCUMENTO_RADICADO' }, { status: 409, statusText: 'Conflict' });
+    await vi.waitFor(() =>
+      expect(mal).toHaveBeenCalledWith(
+        'El documento ya está radicado y sellado; regenerarlo desordenaría el foliado.',
+      ),
+    );
+  });
+
+  it('la traza dice el radicado, sus folios y anexos, y si se descontó del saldo', async () => {
+    conPermisos(['platform:operations']);
+    const { fixture, host } = await montar(detail(), [
+      {
+        type: 'document.filed',
+        timestamp: '2026-11-19T15:30:00.000Z',
+        actor: { type: 'system' },
+        details: { number: 'NT-2026-000123', folios: 4, annexes: 1, charged: false },
+      },
+    ]);
+    tab(host, 'Trazabilidad').click();
+    fixture.detectChanges();
+    const text = host.querySelector('dba-document-trace')?.textContent ?? '';
+    for (const part of [
+      'Documento radicado',
+      'Radicado NT-2026-000123',
+      'Folios: 4',
+      'Anexos: 1',
+      'No se descontó: la organización no tenía saldo',
+    ]) {
+      expect(text, part).toContain(part);
+    }
+    expect(text).not.toMatch(/\b(docs|nav|common)\.[a-zA-Z]/);
+  });
+
   it('documento inexistente muestra su estado y vuelve a la lista', async () => {
     conPermisos(['platform:operations']);
     const { host } = await montar(null);

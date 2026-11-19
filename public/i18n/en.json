@@ -453,7 +453,8 @@
       "signer_validations_reactivate": "reactivated a signer's validations",
       "signer_remove": "removed a signer from a document",
       "signer_links_revoke": "revoked a signer's links",
-      "turn_fix": "fixed a document's turn"
+      "turn_fix": "fixed a document's turn",
+      "filing_certificate_view": "downloaded a document's filing certificate"
     },
     "invoices": {
       "create": "created an invoice",
@@ -2134,7 +2135,7 @@
   },
   "docs": {
     "count": "{{total}} documents",
-    "searchPlaceholder": "Search by name or code",
+    "searchPlaceholder": "Search by name, code or filing number",
     "regenerateBulk": "Bulk regenerate",
     "view": {
       "todos": "All",
@@ -2634,6 +2635,13 @@
       },
       "revoke": {
         "documents": "Documents in the set: {{total}}"
+      },
+      "filing": {
+        "number": "Filing number {{number}}",
+        "folios": "Folios: {{total}}",
+        "annexes": "Annexes: {{total}}",
+        "charged": "Filing credit deducted",
+        "notCharged": "Not deducted: the organization had no balance"
       }
     },
     "trace": {
@@ -2736,7 +2744,8 @@
       "admin_validations_reactivated": "Validations reactivated by admin",
       "admin_signer_removed": "Signer removed by admin",
       "admin_signer_links_revoked": "Signer links revoked by admin",
-      "admin_turn_fixed": "Turn fixed by admin"
+      "admin_turn_fixed": "Turn fixed by admin",
+      "document_filed": "Document filed"
     },
     "act": {
       "reasonLabel": "Reason (kept in the traceability)",
@@ -2840,7 +2849,9 @@
       "TURNO_CORRECTO": "The open turn already has pending signers.",
       "SIN_FIRMANTES_PENDIENTES": "Nobody has pending signatures: the document is ready to finalize.",
       "DOCUMENTO_CAMBIO": "The document changed in the meantime. Check the record and try again.",
-      "COPIA_NO_ENCONTRADA": "There's no saved copy of that signer."
+      "COPIA_NO_ENCONTRADA": "There's no saved copy of that signer.",
+      "DOCUMENTO_RADICADO": "The document is already filed and sealed; regenerating it would break the folio numbering.",
+      "DOCUMENTO_SIN_RADICADO": "The document has no filing number yet; the certificate is issued when it closes."
     },
     "bulk": {
       "lead": "Signed documents only. The PDF is rebuilt with the signature sheet and registered on blockchain again. Signers are not notified and nothing is counted against the plan.",
@@ -3066,6 +3077,18 @@
       "doneSet": "Documents: {{documents}} · Links revoked: {{links}} · Sessions closed: {{sessions}} · Phone handoffs closed: {{handoffs}}",
       "none": "They had no live links, sessions or phone handoffs.",
       "removedMessage": "{{name}} is no longer in the document: the links, signing sessions and phone handoffs they still had are cut."
+    },
+    "filing": {
+      "title": "Filing",
+      "number": "Filing number",
+      "pending": "Assigned on closing",
+      "filedAt": "Filed on",
+      "folios": "Folios",
+      "annexes": "Annexes",
+      "certificate": "Filing certificate",
+      "certificateError": "We couldn't download the filing certificate.",
+      "row": "Filing {{number}}",
+      "rowPending": "Filing number: assigned on closing"
     }
   },
   "orgPicker": {

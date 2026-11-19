@@ -45,6 +45,7 @@ import {
   type ListView,
   type StatusView,
 } from '../data/document-view';
+import { filingStateOf, type FilingState } from '../data/filing-view';
 import { originKeyOf } from '../data/summary-view';
 import { safeDate } from '../../../shared/i18n/safe-date';
 
@@ -78,6 +79,7 @@ interface RowView extends PlatformDocumentSummary {
   originKey: string | null;
   ownerText: string;
   createdText: string;
+  filingState: FilingState | null;
 }
 
 const isIssueView = (value: string | null): value is IssueView =>
@@ -207,6 +209,16 @@ const isIssueView = (value: string | null): value is IssueView =>
               <span class="dba-td cell">
                 <span class="cell__label">{{ row.name }}</span>
                 <span class="cell__meta">{{ row.code || '—' }}</span>
+                @switch (row.filingState?.kind) {
+                  @case ('filed') {
+                    <span class="cell__meta">{{
+                      'docs.filing.row' | translate: { number: row.filing?.number }
+                    }}</span>
+                  }
+                  @case ('pending') {
+                    <span class="cell__meta">{{ 'docs.filing.rowPending' | translate }}</span>
+                  }
+                }
               </span>
               <span class="dba-td cell">
                 <span class="cell__text">{{
@@ -572,6 +584,7 @@ export class DocumentsComponent {
       originKey: originKeyOf(doc.kind),
       ownerText: doc.owner?.names || doc.owner?.email || '—',
       createdText: doc.createdAt ? safeDate(doc.createdAt, 'd/MM/y', this.locale) : '—',
+      filingState: filingStateOf(doc.filing),
     };
   }
 
