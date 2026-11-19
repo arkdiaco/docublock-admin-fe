@@ -41,6 +41,7 @@ import { OrgMarketplaceTabComponent } from '../components/marketplace/org-market
 import { OrgFilingCardComponent } from '../components/filing/org-filing-card.component';
 import { OrganizationsApi } from '../data/organizations.api';
 import type { PlatformOrgDetail, PlatformOrgUpdate } from '../data/organizations.models';
+import { orgLanguageKeyOf } from '../data/org-language';
 import { orgStateView } from '../data/platform-org-state';
 import { initialsOf } from '../../../shared/domain/initials';
 import { safeDate } from '../../../shared/i18n/safe-date';
@@ -171,7 +172,8 @@ const ORG_EDIT_ERRORS = ['TRIBUTARY_NUMBER_INVALID', 'NIT_EN_USO', 'CIUDAD_FUERA
                   <dt>{{ 'orgd.f.web' | translate }}</dt>
                   <dd>{{ org.webSite || '—' }}</dd>
                   <dt>{{ 'orgd.f.language' | translate }}</dt>
-                  <dd>{{ org.language ? ('orgEdit.lang.' + org.language | translate) : '—' }}</dd>
+                  @let langKey = languageKey();
+                  <dd>{{ langKey ? (langKey | translate) : org.language || '—' }}</dd>
                   <dt>{{ 'orgd.f.constitution' | translate }}</dt>
                   <dd class="dba-mono">{{ org.constitutionDate || '—' }}</dd>
                   <dt>{{ 'orgd.f.created' | translate }}</dt>
@@ -448,6 +450,7 @@ export class OrganizationDetailComponent {
       .join(' · ');
   });
 
+  protected readonly languageKey = computed(() => orgLanguageKeyOf(this.detail()?.language));
   protected readonly created = computed(() => this.day(this.detail()?.createdAt));
   protected readonly validity = computed(() => {
     const end = this.detail()?.plan?.periodEnd;

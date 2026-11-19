@@ -157,6 +157,22 @@ describe('OrganizationDetailComponent', () => {
     expect(host.querySelector('.od__dl')?.textContent).toContain('Español');
   });
 
+  it('el idioma guardado en mayúscula se lee con su nombre y uno desconocido sale como viene', async () => {
+    conPermisos(['platform:clients']);
+    const { host } = await montar(detail({ language: 'ES' }));
+    const perfil = host.querySelector('.od__dl')?.textContent ?? '';
+    expect(perfil).toContain('Español');
+    expect(perfil).not.toMatch(/orgEdit\./);
+  });
+
+  it('un idioma sin frase sale tal cual, sin llave cruda', async () => {
+    conPermisos(['platform:clients']);
+    const { host } = await montar(detail({ language: 'fr' }));
+    const perfil = host.querySelector('.od__dl')?.textContent ?? '';
+    expect(perfil).toContain('fr');
+    expect(perfil).not.toMatch(/orgEdit\./);
+  });
+
   it('editar manda solo lo que cambió y la ficha queda con la respuesta', async () => {
     conPermisos(['platform:clients', 'platform:clients:manage']);
     const { fixture, host } = await montar();
