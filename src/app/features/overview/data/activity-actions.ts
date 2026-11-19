@@ -83,6 +83,8 @@ export const ACTIVITY_ACTIONS = [
   'organization.suspend',
   'organization.update',
   'organizations.export',
+  'organizations.filing_credits_set',
+  'organizations.filing_prefix_set',
   'organizations.modules_set',
   'organizations.reseller_assign',
   'plan.created',

@@ -499,6 +499,8 @@
     },
     "organizations": {
       "export": "exportó la lista de organizaciones",
+      "filing_credits_set": "ajustó las radicaciones de {{org}}",
+      "filing_prefix_set": "cambió el prefijo de radicación de {{org}}",
       "modules_set": "cambió los módulos de {{org}}",
       "reseller_assign": "cambió el reseller de {{org}}"
     },
@@ -6728,6 +6730,29 @@
       "PREFIJO_INVALIDO": "El prefijo debe tener de 2 a 8 letras o números.",
       "PREFIJO_EN_USO": "Ese prefijo ya lo usa otra organización.",
       "generic": "No se pudo cambiar el prefijo. Inténtalo de nuevo."
+    },
+    "adjustCredits": "Ajustar radicaciones",
+    "credits": {
+      "title": "Ajustar radicaciones",
+      "now": "Disponibles hoy: {{count}}",
+      "confirm": "Guardar radicaciones",
+      "unlimited": "Radicaciones ilimitadas",
+      "mode": "Cómo ajustar",
+      "amount": "Radicaciones a sumar",
+      "remaining": "Dejar disponibles",
+      "modes": {
+        "recharge": "Sumar",
+        "set": "Fijar el saldo"
+      },
+      "wholeNumber": "Escribe un número entero.",
+      "reason": "Motivo",
+      "reasonPlaceholder": "Por qué se ajusta el saldo",
+      "done": "Saldo de radicación actualizado",
+      "errors": {
+        "AJUSTE_VACIO": "Indica cuántas radicaciones sumar, en cuántas dejar el saldo o si son ilimitadas.",
+        "AJUSTE_INVALIDO": "Sumar radicaciones y dejar el saldo en una cantidad no van juntos.",
+        "generic": "No se pudo ajustar el saldo. Inténtalo de nuevo."
+      }
     }
   }
 }

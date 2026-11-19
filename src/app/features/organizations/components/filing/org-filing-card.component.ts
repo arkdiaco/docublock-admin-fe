@@ -20,15 +20,27 @@ import { ButtonComponent } from '../../../../shared/ui/button.component';
 import { SectionLoaderComponent } from '../../../../shared/ui/section-loader.component';
 import { hasFiling } from '../../data/org-filing';
 import { OrgFilingApi } from '../../data/org-filing.api';
-import type { FilingPrefixBody, PlatformFilingView } from '../../data/org-filing.models';
+import type {
+  FilingCreditsBody,
+  FilingPrefixBody,
+  PlatformFilingView,
+} from '../../data/org-filing.models';
 import type { PlatformOrgDetail } from '../../data/organizations.models';
+import { FilingCreditsFormComponent } from './filing-credits-form.component';
 import { FilingPrefixFormComponent } from './filing-prefix-form.component';
 
 const PREFIX_ERRORS = ['PREFIJO_INVALIDO', 'PREFIJO_EN_USO'];
+const CREDIT_ERRORS = ['AJUSTE_VACIO', 'AJUSTE_INVALIDO'];
 
 @Component({
   selector: 'dba-org-filing-card',
-  imports: [TranslatePipe, ButtonComponent, SectionLoaderComponent, FilingPrefixFormComponent],
+  imports: [
+    TranslatePipe,
+    ButtonComponent,
+    SectionLoaderComponent,
+    FilingPrefixFormComponent,
+    FilingCreditsFormComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (visible()) {
@@ -36,9 +48,14 @@ const PREFIX_ERRORS = ['PREFIJO_INVALIDO', 'PREFIJO_EN_USO'];
         <header class="fc__head">
           <h2 class="dba-panel">{{ 'orgFiling.title' | translate }}</h2>
           @if (canManage() && view()) {
-            <button dba-button variant="secondary" (click)="editing.set(true)">
-              {{ 'orgFiling.changePrefix' | translate }}
-            </button>
+            <div class="fc__tools">
+              <button dba-button variant="secondary" (click)="adjusting.set(true)">
+                {{ 'orgFiling.adjustCredits' | translate }}
+              </button>
+              <button dba-button variant="secondary" (click)="editing.set(true)">
+                {{ 'orgFiling.changePrefix' | translate }}
+              </button>
+            </div>
           }
         </header>
         @if (loading()) {
@@ -76,6 +93,15 @@ const PREFIX_ERRORS = ['PREFIJO_INVALIDO', 'PREFIJO_EN_USO'];
         (dismissed)="editing.set(false)"
       />
     }
+
+    @if (adjusting() && view(); as filing) {
+      <dba-filing-credits-form
+        [balance]="filing.balance"
+        [busy]="saving()"
+        (submitted)="adjustCredits($event)"
+        (dismissed)="adjusting.set(false)"
+      />
+    }
   `,
   styles: `
     .fc {
@@ -93,6 +119,12 @@ const PREFIX_ERRORS = ['PREFIJO_INVALIDO', 'PREFIJO_EN_USO'];
       align-items: center;
       justify-content: space-between;
       gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .fc__tools {
+      display: flex;
+      gap: 8px;
       flex-wrap: wrap;
     }
 
@@ -146,6 +178,7 @@ export class OrgFilingCardComponent {
   protected readonly error = signal(false);
   protected readonly saving = signal(false);
   protected readonly editing = signal(false);
+  protected readonly adjusting = signal(false);
   protected readonly view = signal<PlatformFilingView | null>(null);
   protected readonly canManage = computed(() => this.auth.canManage('clients'));
   protected readonly moduleOn = computed(() => this.org().modules.includes('radicacion'));
@@ -193,6 +226,23 @@ export class OrgFilingCardComponent {
       const code = errorCodeOf(error);
       const known = code !== null && PREFIX_ERRORS.includes(code);
       this.notify.error(this.t(known ? `orgFiling.errors.${code}` : 'orgFiling.errors.generic'));
+    } finally {
+      this.saving.set(false);
+    }
+  }
+
+  protected async adjustCredits(body: FilingCreditsBody): Promise<void> {
+    this.saving.set(true);
+    try {
+      this.view.set(await firstValueFrom(this.api.adjustCredits(this.orgId(), body)));
+      this.adjusting.set(false);
+      this.notify.success(this.t('orgFiling.credits.done'));
+    } catch (error) {
+      const code = errorCodeOf(error);
+      const known = code !== null && CREDIT_ERRORS.includes(code);
+      this.notify.error(
+        this.t(known ? `orgFiling.credits.errors.${code}` : 'orgFiling.credits.errors.generic'),
+      );
     } finally {
       this.saving.set(false);
     }

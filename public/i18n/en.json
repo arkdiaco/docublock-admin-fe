@@ -499,6 +499,8 @@
     },
     "organizations": {
       "export": "exported the organization list",
+      "filing_credits_set": "adjusted the filings of {{org}}",
+      "filing_prefix_set": "changed the filing prefix of {{org}}",
       "modules_set": "changed the modules of {{org}}",
       "reseller_assign": "changed the reseller of {{org}}"
     },
@@ -6728,6 +6730,29 @@
       "PREFIJO_INVALIDO": "The prefix must have 2 to 8 letters or numbers.",
       "PREFIJO_EN_USO": "Another organization already uses that prefix.",
       "generic": "Could not change the prefix. Try again."
+    },
+    "adjustCredits": "Adjust filings",
+    "credits": {
+      "title": "Adjust filings",
+      "now": "Available today: {{count}}",
+      "confirm": "Save filings",
+      "unlimited": "Unlimited filings",
+      "mode": "How to adjust",
+      "amount": "Filings to add",
+      "remaining": "Leave available",
+      "modes": {
+        "recharge": "Add",
+        "set": "Set the balance"
+      },
+      "wholeNumber": "Enter a whole number.",
+      "reason": "Reason",
+      "reasonPlaceholder": "Why the balance changes",
+      "done": "Filing balance updated",
+      "errors": {
+        "AJUSTE_VACIO": "Say how many filings to add, what to set the balance to, or whether they are unlimited.",
+        "AJUSTE_INVALIDO": "Adding filings and setting the balance cannot go together.",
+        "generic": "Could not adjust the balance. Try again."
+      }
     }
   }
 }

@@ -20,9 +20,14 @@ import {
   isFilingPrefix,
   normalizeFilingPrefix,
 } from '../../data/org-filing';
-import type { FilingPrefixBody, PlatformFilingView } from '../../data/org-filing.models';
+import type {
+  FilingCreditsBody,
+  FilingPrefixBody,
+  PlatformFilingView,
+} from '../../data/org-filing.models';
 import type { PlatformOrgDetail } from '../../data/organizations.models';
 import { OverrideFormComponent } from '../marketplace/override-form.component';
+import { FilingCreditsFormComponent } from './filing-credits-form.component';
 import { FilingPrefixFormComponent } from './filing-prefix-form.component';
 import { OrgFilingCardComponent } from './org-filing-card.component';
 
@@ -247,5 +252,81 @@ describe('Ficha › Radicación de documentos', () => {
     expect(texto(document.body)).toContain('radicaciones');
     expect(texto(document.body)).not.toContain('consultas');
     fixture.destroy();
+  });
+
+  it('ajustar radicaciones manda el cambio con el motivo y pinta el saldo nuevo', async () => {
+    const { fixture, host } = await montar(vista(), [
+      'platform:clients',
+      'platform:clients:manage',
+    ]);
+    const exito = vi.spyOn(TestBed.inject(NotificationService), 'success');
+    const fallo = vi.spyOn(TestBed.inject(NotificationService), 'error');
+    const card = fixture.componentInstance as unknown as {
+      adjustCredits: (body: FilingCreditsBody) => Promise<void>;
+    };
+    expect(texto(host)).toContain('Ajustar radicaciones');
+    const hecho = card.adjustCredits({ recharge: 10, reason: 'Cortesía' });
+    const req = http.expectOne(`${URL}/credits`);
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual({ recharge: 10, reason: 'Cortesía' });
+    req.flush(vista({ balance: { unlimited: false, remaining: 22 } }));
+    await hecho;
+    fixture.detectChanges();
+    expect(texto(host)).toContain('22 radicaciones');
+    expect(exito).toHaveBeenCalledWith('Saldo de radicación actualizado');
+    const malo = card.adjustCredits({ recharge: 1, remaining: 2, reason: 'x' });
+    http
+      .expectOne(`${URL}/credits`)
+      .flush({ code: 'AJUSTE_INVALIDO' }, { status: 400, statusText: 'Bad Request' });
+    await malo;
+    expect(fallo).toHaveBeenLastCalledWith(
+      'Sumar radicaciones y dejar el saldo en una cantidad no van juntos.',
+    );
+  });
+
+  it('formulario de ajuste: sumar, dejar en o ilimitadas, siempre con motivo', () => {
+    const fixture = TestBed.createComponent(FilingCreditsFormComponent);
+    fixture.componentRef.setInput('balance', { unlimited: false, remaining: 12 });
+    fixture.detectChanges();
+    const form = fixture.componentInstance as unknown as Interna;
+    const enviados: FilingCreditsBody[] = [];
+    fixture.componentInstance.submitted.subscribe((b) => enviados.push(b));
+    form['amount'].set('10');
+    form.submit();
+    expect(enviados).toHaveLength(0);
+    form['reason'].set('Cortesía');
+    form.submit();
+    form['amount'].set('0');
+    form.submit();
+    form['mode'].set('set');
+    form.submit();
+    form['unlimited'].set(true);
+    form.submit();
+    expect(enviados).toEqual([
+      { recharge: 10, reason: 'Cortesía' },
+      { remaining: 0, reason: 'Cortesía' },
+      { unlimited: true, reason: 'Cortesía' },
+    ]);
+    expect(texto(document.body)).toContain('Disponibles hoy: 12');
+    expect(texto(document.body)).not.toMatch(/orgFiling\./);
+    fixture.destroy();
+
+    const ilimitada = TestBed.createComponent(FilingCreditsFormComponent);
+    ilimitada.componentRef.setInput('balance', { unlimited: true, remaining: 0 });
+    ilimitada.detectChanges();
+    const otra = ilimitada.componentInstance as unknown as Interna;
+    const deIlimitada: FilingCreditsBody[] = [];
+    ilimitada.componentInstance.submitted.subscribe((b) => deIlimitada.push(b));
+    otra['reason'].set('Fin de la cortesía');
+    otra.submit();
+    otra['unlimited'].set(false);
+    otra.submit();
+    otra['amount'].set('5');
+    otra.submit();
+    expect(deIlimitada).toEqual([
+      { unlimited: false, reason: 'Fin de la cortesía' },
+      { unlimited: false, recharge: 5, reason: 'Fin de la cortesía' },
+    ]);
+    ilimitada.destroy();
   });
 });
