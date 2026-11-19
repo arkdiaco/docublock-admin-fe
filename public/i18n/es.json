@@ -346,7 +346,9 @@
     "module": {
       "pagares": "Pagarés",
       "consent": "Consentimiento informado",
-      "realEstate": "Bienes raíces"
+      "realEstate": "Bienes raíces",
+      "filing": "Radicación de documentos",
+      "filingMeta": "Se cobra por documento: sin radicaciones compradas no se puede radicar."
     },
     "tab": {
       "summary": "Resumen",

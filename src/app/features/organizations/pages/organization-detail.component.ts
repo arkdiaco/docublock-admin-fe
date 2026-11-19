@@ -59,11 +59,12 @@ const TAB_KEYS = [
   'audit',
 ] as const;
 
-const MODULES = [
+const MODULES: readonly { code: string; abbr: string; labelKey: string; metaKey?: string }[] = [
   { code: 'pagares', abbr: 'PG', labelKey: 'orgd.module.pagares' },
   { code: 'consentimiento_informado', abbr: 'CI', labelKey: 'orgd.module.consent' },
   { code: 'bienes_raices', abbr: 'BR', labelKey: 'orgd.module.realEstate' },
-] as const;
+  { code: 'radicacion', abbr: 'RD', labelKey: 'orgd.module.filing', metaKey: 'orgd.module.filingMeta' },
+];
 
 const MODULE_ERRORS = ['ADDON_COBRADO_POR_STRIPE', 'ADDON_NO_DISPONIBLE_EN_PAIS'];
 
@@ -190,6 +191,7 @@ const ORG_EDIT_ERRORS = ['TRIBUTARY_NUMBER_INVALID', 'NIT_EN_USO', 'CIUDAD_FUERA
                     <dba-module-toggle
                       [abbr]="mod.abbr"
                       [name]="mod.labelKey | translate"
+                      [meta]="mod.metaKey ? (mod.metaKey | translate) : ''"
                       [on]="has(org, mod.code)"
                       [disabled]="!canEdit() || savingModule()"
                       (toggled)="toggleModule(org, mod.code, $event)"

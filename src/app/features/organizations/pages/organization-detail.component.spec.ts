@@ -92,7 +92,7 @@ describe('OrganizationDetailComponent', () => {
     expect(host.querySelector('.od__dl')?.textContent).toContain('900123456');
     expect(host.querySelector('.od__dl')?.textContent).toContain('Colombia');
     const switches = [...host.querySelectorAll('[role="switch"]')].map((s) => s.getAttribute('aria-checked'));
-    expect(switches).toEqual(['true', 'false', 'true']);
+    expect(switches).toEqual(['true', 'false', 'true', 'false']);
     expect(host.querySelector('dba-quota-bar')?.textContent).toContain('190 / 200');
     expect(host.textContent).not.toMatch(/\b(orgd|org|nav|common)\.[a-zA-Z]/);
   });
@@ -381,6 +381,40 @@ describe('OrganizationDetailComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
     expect(host.querySelectorAll('[role="switch"]')[1].getAttribute('aria-checked')).toBe('true');
+  });
+
+  it('radicación de documentos se enciende como los demás módulos y avisa que se cobra por documento', async () => {
+    conPermisos(['platform:clients', 'platform:clients:manage']);
+    const { fixture, host } = await montar();
+    const tarjeta = [...host.querySelectorAll('dba-module-toggle')].find((t) =>
+      t.textContent?.includes('Radicación de documentos'),
+    )!;
+    expect(tarjeta.textContent).toContain('RD');
+    expect(tarjeta.textContent).toContain('Se cobra por documento');
+    expect(host.textContent).not.toMatch(/orgd\.|orgModules\./);
+    const interruptor = tarjeta.querySelector<HTMLButtonElement>('[role="switch"]')!;
+    expect(interruptor.getAttribute('aria-checked')).toBe('false');
+    interruptor.click();
+    const req = http.expectOne((r) => r.method === 'PATCH' && r.url === '/platform/organizations/org-1/modules');
+    expect(req.request.body).toEqual({ modules: ['pagares', 'bienes_raices', 'radicacion'] });
+    req.flush({});
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(interruptor.getAttribute('aria-checked')).toBe('true');
+  });
+
+  it('apagar radicación deja intactos los demás módulos', async () => {
+    conPermisos(['platform:clients', 'platform:clients:manage']);
+    const { fixture, host } = await montar(detail({ modules: ['pagares', 'radicacion'] }));
+    const interruptor = [...host.querySelectorAll('dba-module-toggle')]
+      .find((t) => t.textContent?.includes('Radicación de documentos'))!
+      .querySelector<HTMLButtonElement>('[role="switch"]')!;
+    expect(interruptor.getAttribute('aria-checked')).toBe('true');
+    interruptor.click();
+    const req = http.expectOne((r) => r.method === 'PATCH' && r.url === '/platform/organizations/org-1/modules');
+    expect(req.request.body).toEqual({ modules: ['pagares'] });
+    req.flush({});
+    await fixture.whenStable();
   });
 
   it('sin :manage los módulos quedan de solo lectura y no se ofrece cambiar reseller', async () => {

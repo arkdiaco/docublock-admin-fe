@@ -346,7 +346,9 @@
     "module": {
       "pagares": "Promissory notes",
       "consent": "Informed consent",
-      "realEstate": "Real estate"
+      "realEstate": "Real estate",
+      "filing": "Document filing",
+      "filingMeta": "Charged per document: without purchased filings nothing can be filed."
     },
     "tab": {
       "summary": "Summary",
