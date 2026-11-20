@@ -1,7 +1,8 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import type { Observable } from 'rxjs';
+import { map, type Observable } from 'rxjs';
 import { SILENT_ERRORS } from '../../../core/http/http.interceptors';
+import { exportedFileOf, type ExportedFile } from '../../../shared/http/exported-file';
 import { toParams } from '../../../shared/http/query-params';
 import type {
   DocumentsRequest,
@@ -42,5 +43,27 @@ export class PlatformAnalyticsApi {
       params: toParams(request),
       context: new HttpContext().set(SILENT_ERRORS, true),
     });
+  }
+
+  signaturesCsv(request: SignaturesRequest): Observable<ExportedFile> {
+    return this.http
+      .get('/platform/intelligence/signatures.csv', {
+        params: toParams(request),
+        responseType: 'blob',
+        observe: 'response',
+        context: new HttpContext().set(SILENT_ERRORS, true),
+      })
+      .pipe(map((response) => exportedFileOf(response, 'firmas.csv')));
+  }
+
+  organizationsCsv(request: OrganizationsRequest): Observable<ExportedFile> {
+    return this.http
+      .get('/platform/intelligence/organizations.csv', {
+        params: toParams(request),
+        responseType: 'blob',
+        observe: 'response',
+        context: new HttpContext().set(SILENT_ERRORS, true),
+      })
+      .pipe(map((response) => exportedFileOf(response, 'organizaciones.csv')));
   }
 }

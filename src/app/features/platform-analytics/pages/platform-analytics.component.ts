@@ -11,10 +11,13 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Select } from 'primeng/select';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, type Observable } from 'rxjs';
 import { AuthStore } from '../../../core/auth/auth.store';
+import { NotificationService } from '../../../core/ui/notification.service';
 import { sectionPath } from '../../../core/layout/console-nav';
+import type { ExportedFile } from '../../../shared/http/exported-file';
 import { LatestRequest } from '../../../shared/http/latest-request';
+import { saveBlob } from '../../../shared/http/save-blob';
 import {
   BarChartComponent,
   type BarChartCategory,
@@ -23,6 +26,7 @@ import {
 import { BarListComponent, type BarListItem } from '../../../shared/ui/bar-list.component';
 import { ButtonComponent } from '../../../shared/ui/button.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
+import { IconComponent } from '../../../shared/ui/icon.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
 import { StatBandComponent, type StatCell } from '../../../shared/ui/stat-band.component';
 import { browserTimeZone } from '../../validation-consumption/data/detail-view';
@@ -32,6 +36,7 @@ import { OrganizationsBlockComponent } from '../components/organizations-block.c
 import { SignaturesBlockComponent } from '../components/signatures-block.component';
 import { BlockLoad } from '../data/block-load';
 import type {
+  OrganizationsRequest,
   PlatformDocuments,
   PlatformOrganizationActivity,
 } from '../data/platform-activity.models';
@@ -49,6 +54,7 @@ import {
 } from '../data/signature-filters';
 
 type LoadState = 'loading' | 'ready' | 'failed';
+type ExportKind = 'signatures' | 'organizations';
 
 @Component({
   selector: 'dba-platform-analytics',
@@ -60,6 +66,7 @@ type LoadState = 'loading' | 'ready' | 'failed';
     BarListComponent,
     ButtonComponent,
     EmptyStateComponent,
+    IconComponent,
     SectionLoaderComponent,
     StatBandComponent,
     SignatureFiltersBarComponent,
@@ -88,6 +95,19 @@ type LoadState = 'loading' | 'ready' | 'failed';
           <h2 class="dba-section">{{ 'pan.sig.title' | translate }}</h2>
           @if (!issue() && signatures.state() === 'ready' && signatures.data(); as data) {
             <span class="dba-meta">{{ rangeText(data.from, data.to) }}</span>
+          }
+          @if (!issue()) {
+            <button
+              dba-button
+              variant="secondary"
+              class="pa__export"
+              [busy]="exporting() === 'signatures'"
+              [disabled]="exporting() !== null"
+              (click)="exportSignatures()"
+            >
+              <db-icon name="download" [size]="15" />
+              {{ 'pan.export.signatures' | translate }}
+            </button>
           }
         </header>
         @if (issue(); as code) {
@@ -128,6 +148,19 @@ type LoadState = 'loading' | 'ready' | 'failed';
         <section class="pa__section">
           <header class="pa__section-head">
             <h2 class="dba-section">{{ 'pan.org.title' | translate }}</h2>
+            @if (!filters().organizationId) {
+              <button
+                dba-button
+                variant="secondary"
+                class="pa__export"
+                [busy]="exporting() === 'organizations'"
+                [disabled]="exporting() !== null"
+                (click)="exportOrganizations()"
+              >
+                <db-icon name="download" [size]="15" />
+                {{ 'pan.export.organizations' | translate }}
+              </button>
+            }
           </header>
           @if (filters().organizationId) {
             <p class="dba-meta">{{ 'pan.org.allOnly' | translate }}</p>
@@ -245,6 +278,11 @@ type LoadState = 'loading' | 'ready' | 'failed';
       margin: 0;
     }
 
+    .pa__export {
+      margin-left: auto;
+      align-self: center;
+    }
+
     .pa__section-head--tools {
       align-items: flex-end;
       justify-content: space-between;
@@ -306,6 +344,7 @@ export class PlatformAnalyticsComponent {
   private readonly translate = inject(TranslateService);
   private readonly locale = inject(LOCALE_ID);
   private readonly auth = inject(AuthStore);
+  private readonly notify = inject(NotificationService);
   private readonly latest = new LatestRequest();
   private readonly timeZone = browserTimeZone();
   private readonly currentYear = Number(
@@ -323,6 +362,7 @@ export class PlatformAnalyticsComponent {
   protected readonly signatures = new BlockLoad<PlatformSignatures>();
   protected readonly documents = new BlockLoad<PlatformDocuments>();
   protected readonly organizations = new BlockLoad<PlatformOrganizationActivity>();
+  protected readonly exporting = signal<ExportKind | null>(null);
   protected readonly organizationsPath = computed(() =>
     this.auth.canRead('clients') ? sectionPath('organizations') : null,
   );
@@ -472,8 +512,35 @@ export class PlatformAnalyticsComponent {
       this.organizations.cancel();
       return;
     }
+    void this.organizations.run(() => this.api.organizations(this.organizationsRequest()));
+  }
+
+  protected exportSignatures(): void {
+    void this.download('signatures', () => this.api.signaturesCsv(this.request()));
+  }
+
+  protected exportOrganizations(): void {
+    void this.download('organizations', () =>
+      this.api.organizationsCsv(this.organizationsRequest()),
+    );
+  }
+
+  private async download(kind: ExportKind, request: () => Observable<ExportedFile>): Promise<void> {
+    if (this.exporting()) return;
+    this.exporting.set(kind);
+    try {
+      const file = await firstValueFrom(request());
+      saveBlob(new Blob(['\uFEFF', file.blob], { type: 'text/csv;charset=utf-8' }), file.filename);
+    } catch {
+      this.notify.error(this.text('pan.export.error'));
+    } finally {
+      this.exporting.set(null);
+    }
+  }
+
+  private organizationsRequest(): OrganizationsRequest {
     const { from, to, tz, channel } = this.request();
-    void this.organizations.run(() => this.api.organizations({ from, to, tz, channel }));
+    return { from, to, tz, channel };
   }
 
   private loadRange(): void {

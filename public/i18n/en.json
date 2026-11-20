@@ -651,6 +651,10 @@
       "rehearse": "rehearsed a maintenance task",
       "execute": "executed a maintenance task"
     },
+    "intelligence": {
+      "organizations_export": "exported the analytics organization ranking",
+      "signatures_export": "exported the analytics signatures"
+    },
     "integrations": {
       "replay": "resent a webhook delivery",
       "retry_failed": "retried failed webhook deliveries",
@@ -6473,6 +6477,11 @@
       "todos": "All",
       "plataforma": "Platform",
       "integracion": "Integration"
+    },
+    "export": {
+      "signatures": "Export signatures (CSV)",
+      "organizations": "Export ranking (CSV)",
+      "error": "We couldn't export the CSV."
     },
     "issue": {
       "RANGO_INVERTIDO": "The “From” date is after “To”."

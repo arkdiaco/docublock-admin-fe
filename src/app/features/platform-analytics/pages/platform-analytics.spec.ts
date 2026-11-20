@@ -2,6 +2,7 @@ import type { HttpTestingController, TestRequest } from '@angular/common/http/te
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
+import { NotificationService } from '../../../core/ui/notification.service';
 import { conPermisos, configurar } from '../../catalogs/pages/catalogs-test-kit';
 import { browserTimeZone } from '../../validation-consumption/data/detail-view';
 import type {
@@ -20,6 +21,8 @@ const OVERVIEW = '/platform/intelligence/overview';
 const SIGNATURES = '/platform/intelligence/signatures';
 const DOCUMENTS = '/platform/intelligence/documents';
 const ORGANIZATIONS = '/platform/intelligence/organizations';
+const SIGNATURES_CSV = '/platform/intelligence/signatures.csv';
+const ORGANIZATIONS_CSV = '/platform/intelligence/organizations.csv';
 const HORA = 3_600_000;
 
 const documentos = (over: Partial<PlatformDocuments> = {}): PlatformDocuments => ({
@@ -439,6 +442,75 @@ describe('Analítica de plataforma', () => {
     pedidoDocumentos(http).flush(documentos());
     await asentar(harness);
     expect(root.textContent).toContain('Documentos completados');
+    http.verify();
+  });
+  it('exporta las firmas en CSV con los mismos filtros de la pantalla', async () => {
+    const crear = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:x');
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+    const { harness, http, root } = await montar(
+      `${BASE}?periodo=personalizado&desde=2018-01-01&hasta=2026-10-31&canal=plataforma&organizacion=${ORG}`,
+    );
+    pedido(http).flush(resumen());
+    pedidoFirmas(http).flush(firmas({ organizationId: ORG, channel: 'platform' }));
+    resto(http, { conOrganizaciones: false });
+    await asentar(harness);
+    expect(botonCon(root, 'Exportar ranking')).toBeUndefined();
+
+    botonCon(root, 'Exportar firmas').click();
+    const csv = http.expectOne((req) => req.url.endsWith(SIGNATURES_CSV));
+    expect(csv.request.params.get('from')).toBe('2018-01-01');
+    expect(csv.request.params.get('to')).toBe('2026-10-31');
+    expect(csv.request.params.get('channel')).toBe('platform');
+    expect(csv.request.params.get('organizationId')).toBe(ORG);
+    expect(csv.request.params.get('tz')).toBe(browserTimeZone());
+    csv.flush(new Blob(['Fecha']), {
+      headers: {
+        'content-disposition': 'attachment; filename="firmas-2018-01-01-a-2026-10-31.csv"',
+      },
+    });
+    await asentar(harness);
+    expect(crear).toHaveBeenCalled();
+    http.verify();
+  });
+
+  it('exporta el ranking de organizaciones del período en CSV', async () => {
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:x');
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+    const { harness, http, root } = await montar(
+      `${BASE}?periodo=personalizado&desde=2026-10-01&hasta=2026-10-31`,
+    );
+    pedido(http).flush(resumen());
+    pedidoFirmas(http).flush(firmas());
+    resto(http);
+    await asentar(harness);
+
+    botonCon(root, 'Exportar ranking').click();
+    const csv = http.expectOne((req) => req.url.endsWith(ORGANIZATIONS_CSV));
+    expect(csv.request.params.get('from')).toBe('2026-10-01');
+    expect(csv.request.params.get('to')).toBe('2026-10-31');
+    expect(csv.request.params.get('channel')).toBe('all');
+    expect(csv.request.params.has('organizationId')).toBe(false);
+    csv.flush(new Blob(['Posición']));
+    await asentar(harness);
+    http.verify();
+  });
+
+  it('si la exportación falla lo avisa y deja volver a intentar', async () => {
+    const { harness, http, root } = await montar();
+    const fallo = vi.spyOn(TestBed.inject(NotificationService), 'error');
+    pedido(http).flush(resumen());
+    pedidoFirmas(http).flush(firmas());
+    resto(http);
+    await asentar(harness);
+
+    botonCon(root, 'Exportar firmas').click();
+    http
+      .expectOne((req) => req.url.endsWith(SIGNATURES_CSV))
+      .flush(new Blob(['x']), { status: 500, statusText: 'Error' });
+    await asentar(harness);
+    expect(fallo).toHaveBeenCalledWith('No pudimos exportar el CSV.');
+    expect(botonCon(root, 'Exportar firmas').disabled).toBe(false);
+    expect(root.textContent).not.toMatch(LLAVE_CRUDA);
     http.verify();
   });
 });

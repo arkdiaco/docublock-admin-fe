@@ -651,6 +651,10 @@
       "rehearse": "ensayó una tarea de mantenimiento",
       "execute": "ejecutó una tarea de mantenimiento"
     },
+    "intelligence": {
+      "organizations_export": "exportó el ranking de organizaciones de la analítica",
+      "signatures_export": "exportó las firmas de la analítica"
+    },
     "integrations": {
       "replay": "reenvió una entrega de webhook",
       "retry_failed": "reintentó entregas de webhook fallidas",
@@ -6473,6 +6477,11 @@
       "todos": "Todos",
       "plataforma": "Plataforma",
       "integracion": "Integración"
+    },
+    "export": {
+      "signatures": "Exportar firmas (CSV)",
+      "organizations": "Exportar ranking (CSV)",
+      "error": "No pudimos exportar el CSV."
     },
     "issue": {
       "RANGO_INVERTIDO": "La fecha «Desde» va después de «Hasta»."
