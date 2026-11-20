@@ -162,6 +162,7 @@ export const bucketLabelOf = (
   const [year, month, day] = bucket.split('-').map(Number);
   if (granularity === 'day') return String(day);
   if (granularity === 'week') return `${day}/${month}`;
+  if (granularity === 'year') return String(year);
   const name = new Intl.DateTimeFormat(locale, { month: 'short', timeZone: 'UTC' })
     .format(new Date(Date.UTC(year, month - 1, 15)))
     .replace('.', '');

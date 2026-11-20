@@ -6511,7 +6511,8 @@
       "chart": {
         "day": "Signatures by day",
         "week": "Signatures by week",
-        "month": "Signatures by month"
+        "month": "Signatures by month",
+        "year": "Signatures by year"
       },
       "breakdown": {
         "origin": {
@@ -6567,7 +6568,8 @@
       "chart": {
         "day": "Created and completed by day",
         "week": "Created and completed by week",
-        "month": "Created and completed by month"
+        "month": "Created and completed by month",
+        "year": "Created and completed by year"
       },
       "cohort": {
         "title": "Where the documents created in the period stand today",

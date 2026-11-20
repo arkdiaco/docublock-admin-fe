@@ -6511,7 +6511,8 @@
       "chart": {
         "day": "Firmas por día",
         "week": "Firmas por semana",
-        "month": "Firmas por mes"
+        "month": "Firmas por mes",
+        "year": "Firmas por año"
       },
       "breakdown": {
         "origin": {
@@ -6567,7 +6568,8 @@
       "chart": {
         "day": "Creados y completados por día",
         "week": "Creados y completados por semana",
-        "month": "Creados y completados por mes"
+        "month": "Creados y completados por mes",
+        "year": "Creados y completados por año"
       },
       "cohort": {
         "title": "Cómo están hoy los creados en el período",

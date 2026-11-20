@@ -167,5 +167,6 @@ describe('Analítica: filtros de firmas', () => {
     expect(bucketLabelOf('2026-11-03', 'week', 'es', false)).toBe('3/11');
     expect(bucketLabelOf('2026-11-01', 'month', 'es', false)).toBe('nov');
     expect(bucketLabelOf('2026-01-01', 'month', 'es', true)).toBe('ene 26');
+    expect(bucketLabelOf('2024-01-01', 'year', 'es', true)).toBe('2024');
   });
 });

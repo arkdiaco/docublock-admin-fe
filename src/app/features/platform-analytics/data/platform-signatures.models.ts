@@ -1,5 +1,5 @@
 export type SignatureChannel = 'all' | 'platform' | 'integration';
-export type SeriesGranularity = 'day' | 'week' | 'month';
+export type SeriesGranularity = 'day' | 'week' | 'month' | 'year';
 
 export interface SignatureTotals {
   signatures: number;
