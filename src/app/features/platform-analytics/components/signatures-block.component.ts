@@ -187,7 +187,9 @@ export class SignaturesBlockComponent {
       {
         key: 'mode',
         items: list('mode', breakdown.mode),
-        note: this.text('pan.sig.legalRep', { value: this.count(breakdown.legalRep) }),
+        note: this.text(breakdown.legalRep === 1 ? 'pan.sig.legalRepOne' : 'pan.sig.legalRep', {
+          value: this.count(breakdown.legalRep),
+        }),
       },
       {
         key: 'otp',

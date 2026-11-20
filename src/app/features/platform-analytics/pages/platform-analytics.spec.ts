@@ -281,6 +281,20 @@ describe('Analítica de plataforma', () => {
     http.verify();
   });
 
+  it('una sola firma como representante legal se dice en singular', async () => {
+    const { harness, http, root } = await montar();
+    pedido(http).flush(resumen());
+    const una = firmas();
+    pedidoFirmas(http).flush({ ...una, breakdown: { ...una.breakdown, legalRep: 1 } });
+    resto(http);
+    await asentar(harness);
+
+    const texto = root.textContent ?? '';
+    expect(texto).toContain('1 firma como representante legal');
+    expect(texto).not.toContain('1 firmas');
+    http.verify();
+  });
+
   it('lee período, organización y canal de la URL y los manda al core', async () => {
     const { harness, http, root } = await montar(
       `${BASE}?periodo=personalizado&desde=2026-10-01&hasta=2026-10-31&canal=integracion&organizacion=${ORG}`,

@@ -6495,6 +6495,7 @@
       "previous": "Previous period: {{value}}",
       "share": "{{share}}% of signatures",
       "legalRep": "{{value}} signatures as legal representative",
+      "legalRepOne": "1 signature as legal representative",
       "emptyTitle": "No signatures in the period",
       "emptyLead": "Try another period, organization or channel.",
       "stat": {

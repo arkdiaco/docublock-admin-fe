@@ -6495,6 +6495,7 @@
       "previous": "Período anterior: {{value}}",
       "share": "{{share}} % de las firmas",
       "legalRep": "{{value}} firmas como representante legal",
+      "legalRepOne": "1 firma como representante legal",
       "emptyTitle": "Sin firmas en el período",
       "emptyLead": "Prueba con otro período, otra organización u otro canal.",
       "stat": {
