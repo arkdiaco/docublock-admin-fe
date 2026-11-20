@@ -3,6 +3,7 @@ import type { PriceTier } from '../../../shared/domain/price-tiers';
 export interface OrgProductPrice {
   productCode: string;
   kind: 'VALIDATION_PACKAGE' | 'ADDON';
+  creditType?: string;
   name: string;
   currency: string;
   generalUnitPrice: number;

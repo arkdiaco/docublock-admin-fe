@@ -30,6 +30,7 @@ import { MarketplaceApi } from '../data/marketplace.api';
 import {
   STORE_ADDON_CHANGES,
   STORE_DETAIL_CODES,
+  STORE_OWN_CARD_CREDITS,
   type ProductDetail,
   type ProductTexts,
   type VersionProductBody,
@@ -403,6 +404,7 @@ export class ProductDetailComponent {
         ? null
         : 'mkt.storeAddonMissing';
     }
+    if (product.creditType && STORE_OWN_CARD_CREDITS.includes(product.creditType)) return null;
     return STORE_DETAIL_CODES.includes(product.code) ? null : 'mkt.storeDetailMissing';
   });
 

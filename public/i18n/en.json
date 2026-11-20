@@ -346,7 +346,9 @@
     "module": {
       "pagares": "Promissory notes",
       "consent": "Informed consent",
-      "realEstate": "Real estate"
+      "realEstate": "Real estate",
+      "filing": "Document filing",
+      "filingMeta": "Charged per document: without purchased filings nothing can be filed."
     },
     "tab": {
       "summary": "Summary",
@@ -451,7 +453,8 @@
       "signer_validations_reactivate": "reactivated a signer's validations",
       "signer_remove": "removed a signer from a document",
       "signer_links_revoke": "revoked a signer's links",
-      "turn_fix": "fixed a document's turn"
+      "turn_fix": "fixed a document's turn",
+      "filing_certificate_view": "downloaded a document's filing certificate"
     },
     "invoices": {
       "create": "created an invoice",
@@ -497,6 +500,8 @@
     },
     "organizations": {
       "export": "exported the organization list",
+      "filing_credits_set": "adjusted the filings of {{org}}",
+      "filing_prefix_set": "changed the filing prefix of {{org}}",
       "modules_set": "changed the modules of {{org}}",
       "reseller_assign": "changed the reseller of {{org}}"
     },
@@ -1879,6 +1884,7 @@
       "ani": "Civil registry lookup",
       "identity": "Document check",
       "biometric": "Advanced biometrics",
+      "radicacion": "Filings",
       "none": "No type"
     },
     "addon": {
@@ -1894,10 +1900,12 @@
     "hidden": "Hidden in the store",
     "perMonth": "{{amount}} / month",
     "perQuery": "{{amount}} / check",
+    "perDocument": "{{amount}} / document",
     "fromPrice": "From {{from}} (base {{unit}})",
     "noTiers": "No volume discount",
     "tierLine": "{{pct}} % from {{from}}",
     "queries": "checks",
+    "filings": "filings",
     "usage": {
       "addons": "{{total}} active add-ons",
       "orders": "{{total}} purchases in 30 days",
@@ -1940,7 +1948,7 @@
     },
     "f": {
       "kind": "Type",
-      "creditType": "Validation",
+      "creditType": "Credit type",
       "addonCode": "Module",
       "currency": "Currency",
       "code": "Code",
@@ -2127,7 +2135,7 @@
   },
   "docs": {
     "count": "{{total}} documents",
-    "searchPlaceholder": "Search by name or code",
+    "searchPlaceholder": "Search by name, code or filing number",
     "regenerateBulk": "Bulk regenerate",
     "view": {
       "todos": "All",
@@ -2627,6 +2635,13 @@
       },
       "revoke": {
         "documents": "Documents in the set: {{total}}"
+      },
+      "filing": {
+        "number": "Filing number {{number}}",
+        "folios": "Folios: {{total}}",
+        "annexes": "Annexes: {{total}}",
+        "charged": "Filing credit deducted",
+        "notCharged": "Not deducted: the organization had no balance"
       }
     },
     "trace": {
@@ -2729,7 +2744,8 @@
       "admin_validations_reactivated": "Validations reactivated by admin",
       "admin_signer_removed": "Signer removed by admin",
       "admin_signer_links_revoked": "Signer links revoked by admin",
-      "admin_turn_fixed": "Turn fixed by admin"
+      "admin_turn_fixed": "Turn fixed by admin",
+      "document_filed": "Document filed"
     },
     "act": {
       "reasonLabel": "Reason (kept in the traceability)",
@@ -2833,7 +2849,9 @@
       "TURNO_CORRECTO": "The open turn already has pending signers.",
       "SIN_FIRMANTES_PENDIENTES": "Nobody has pending signatures: the document is ready to finalize.",
       "DOCUMENTO_CAMBIO": "The document changed in the meantime. Check the record and try again.",
-      "COPIA_NO_ENCONTRADA": "There's no saved copy of that signer."
+      "COPIA_NO_ENCONTRADA": "There's no saved copy of that signer.",
+      "DOCUMENTO_RADICADO": "The document is already filed and sealed; regenerating it would break the folio numbering.",
+      "DOCUMENTO_SIN_RADICADO": "The document has no filing number yet; the certificate is issued when it closes."
     },
     "bulk": {
       "lead": "Signed documents only. The PDF is rebuilt with the signature sheet and registered on blockchain again. Signers are not notified and nothing is counted against the plan.",
@@ -3059,6 +3077,18 @@
       "doneSet": "Documents: {{documents}} · Links revoked: {{links}} · Sessions closed: {{sessions}} · Phone handoffs closed: {{handoffs}}",
       "none": "They had no live links, sessions or phone handoffs.",
       "removedMessage": "{{name}} is no longer in the document: the links, signing sessions and phone handoffs they still had are cut."
+    },
+    "filing": {
+      "title": "Filing",
+      "number": "Filing number",
+      "pending": "Assigned on closing",
+      "filedAt": "Filed on",
+      "folios": "Folios",
+      "annexes": "Annexes",
+      "certificate": "Filing certificate",
+      "certificateError": "We couldn't download the filing certificate.",
+      "row": "Filing {{number}}",
+      "rowPending": "Filing number: assigned on closing"
     }
   },
   "orgPicker": {
@@ -6713,6 +6743,61 @@
     "error": {
       "generic": "We could not save the change. Please try again.",
       "SETTINGS_SIN_CAMBIOS": "There are no changes to save."
+    }
+  },
+  "orgFiling": {
+    "title": "Document filing",
+    "loading": "Loading filing…",
+    "error": "Could not read this organization’s filing.",
+    "balance": "Balance",
+    "prefix": "Prefix",
+    "unlimited": "Unlimited",
+    "one": "1 filing",
+    "count": "{{count}} filings",
+    "example": "Looks like: {{example}}",
+    "noPrefix": "Assigned with the first filing",
+    "changePrefix": "Change prefix",
+    "done": "The prefix is now {{prefix}}",
+    "form": {
+      "title": "Change filing prefix",
+      "current": "Current prefix: {{prefix}}",
+      "confirm": "Change prefix",
+      "warning": "The prefix is printed on the QR and is never released. Filings already issued keep the previous prefix.",
+      "prefix": "New prefix",
+      "prefixPlaceholder": "E.g.: JURI",
+      "invalid": "2 to 8 letters or numbers, no spaces or symbols.",
+      "same": "That is its current prefix.",
+      "preview": "Will look like: {{example}}",
+      "reason": "Reason",
+      "reasonPlaceholder": "Why the prefix changes"
+    },
+    "errors": {
+      "PREFIJO_INVALIDO": "The prefix must have 2 to 8 letters or numbers.",
+      "PREFIJO_EN_USO": "Another organization already uses that prefix.",
+      "generic": "Could not change the prefix. Try again."
+    },
+    "adjustCredits": "Adjust filings",
+    "credits": {
+      "title": "Adjust filings",
+      "now": "Available today: {{count}}",
+      "confirm": "Save filings",
+      "unlimited": "Unlimited filings",
+      "mode": "How to adjust",
+      "amount": "Filings to add",
+      "remaining": "Leave available",
+      "modes": {
+        "recharge": "Add",
+        "set": "Set the balance"
+      },
+      "wholeNumber": "Enter a whole number.",
+      "reason": "Reason",
+      "reasonPlaceholder": "Why the balance changes",
+      "done": "Filing balance updated",
+      "errors": {
+        "AJUSTE_VACIO": "Say how many filings to add, what to set the balance to, or whether they are unlimited.",
+        "AJUSTE_INVALIDO": "Adding filings and setting the balance cannot go together.",
+        "generic": "Could not adjust the balance. Try again."
+      }
     }
   }
 }

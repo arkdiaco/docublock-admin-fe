@@ -37,13 +37,13 @@ import {
   type ProductKind,
   type VersionProductBody,
 } from '../data/marketplace.models';
-import { bulletsOf, tiersText } from '../data/product-format';
+import { bulletsOf, tiersText, unitKey } from '../data/product-format';
 
 const CODE = /^[A-Z_]{3,40}$/;
 const WHOLE = /^\d{1,10}$/;
 const DEFAULT_CURRENCY = 'COP';
 
-const LEVEL_OF: Record<CreditType, number> = { ani: 1, identity: 2, biometric: 3 };
+const LEVEL_OF: Record<CreditType, number> = { ani: 1, identity: 2, biometric: 3, radicacion: 4 };
 
 @Component({
   selector: 'dba-product-form',
@@ -212,7 +212,7 @@ const LEVEL_OF: Record<CreditType, number> = { ani: 1, identity: 2, biometric: 3
             [error]="minQuantityError()"
             [(value)]="minQuantity"
           />
-          <dba-tier-editor label="mkt.f.tiers" unit="mkt.queries" [(tiers)]="tiers" />
+          <dba-tier-editor label="mkt.f.tiers" [unit]="tierUnit()" [(tiers)]="tiers" />
         }
 
         @if (!editing()) {
@@ -298,6 +298,9 @@ export class ProductFormComponent implements OnInit {
       value,
       label: this.translate.instant(`mkt.addon.${value}`) as string,
     })),
+  );
+  protected readonly tierUnit = computed(() =>
+    unitKey({ creditType: this.product()?.creditType ?? this.creditType() }),
   );
   protected readonly currencyOptions = computed(() =>
     this.currencies().map((value) => ({ value, label: value })),

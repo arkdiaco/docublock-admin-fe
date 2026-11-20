@@ -3,7 +3,7 @@ import type { PriceTier } from '../../../shared/domain/price-tiers';
 export const PRODUCT_KINDS = ['VALIDATION_PACKAGE', 'ADDON'] as const;
 export type ProductKind = (typeof PRODUCT_KINDS)[number];
 
-export const CREDIT_TYPES = ['ani', 'identity', 'biometric'] as const;
+export const CREDIT_TYPES = ['ani', 'identity', 'biometric', 'radicacion'] as const;
 export type CreditType = (typeof CREDIT_TYPES)[number];
 
 export const ADDON_CODES = ['pagares', 'consentimiento_informado', 'bienes_raices'] as const;
@@ -11,6 +11,7 @@ export type AddonCode = (typeof ADDON_CODES)[number];
 
 export const STORE_DETAIL_CODES: readonly string[] = ['VAL_ANI', 'VAL_IDENTITY', 'VAL_BIOMETRIC'];
 export const STORE_ADDON_CHANGES: readonly string[] = ['pagares', 'consentimiento_informado'];
+export const STORE_OWN_CARD_CREDITS: readonly string[] = ['radicacion'];
 
 export type ProductListState = 'active' | 'retired' | 'all';
 export type ProductState = 'ACTIVE' | 'RETIRED';

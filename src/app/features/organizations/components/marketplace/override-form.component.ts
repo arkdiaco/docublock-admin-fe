@@ -89,7 +89,7 @@ const WHOLE = /^\d{1,10}$/;
           @if (ownTiers()) {
             <dba-tier-editor
               label="orgMkt.override.tiers"
-              unit="orgMkt.queries"
+              [unit]="tierUnit()"
               emptyKey="orgMkt.override.noDiscount"
               [(tiers)]="tiers"
             />
@@ -123,6 +123,9 @@ export class OverrideFormComponent implements OnInit {
   protected readonly reason = signal('');
 
   protected readonly addon = computed(() => this.price().kind === 'ADDON');
+  protected readonly tierUnit = computed(() =>
+    this.price().creditType === 'radicacion' ? 'mkt.filings' : 'orgMkt.queries',
+  );
   protected readonly general = computed(() =>
     money(this.price().generalUnitPrice, this.price().currency, this.locale),
   );

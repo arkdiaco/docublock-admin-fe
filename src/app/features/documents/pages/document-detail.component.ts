@@ -190,6 +190,7 @@ const REASON: DialogReason = {
               [canOpenOrg]="canOpenOrg()"
               [busy]="pending.key()"
               (certificate)="viewCertificate()"
+              (filingCertificate)="downloadFilingCertificate()"
               (attachment)="viewAttachment($event)"
             />
           }
@@ -459,6 +460,19 @@ export class DocumentDetailComponent {
         saveBlob(file.blob, file.filename);
       } catch (error) {
         await this.failFile(error, 'docs.act.bundleError');
+      }
+    });
+  }
+
+  protected async downloadFilingCertificate(): Promise<void> {
+    const doc = this.detail();
+    if (!doc) return;
+    await this.pending.run('filing', async () => {
+      try {
+        const file = await firstValueFrom(this.api.filingCertificate(doc.id));
+        saveBlob(file.blob, file.filename);
+      } catch (error) {
+        await this.failFile(error, 'docs.filing.certificateError');
       }
     });
   }
