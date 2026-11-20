@@ -268,6 +268,7 @@ export class SignerDetailComponent {
   constructor() {
     effect(() => {
       const id = this.id();
+      this.closeEdit();
       if (id) void this.load(id);
     });
   }

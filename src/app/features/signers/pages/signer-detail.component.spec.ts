@@ -115,6 +115,16 @@ describe('Firmantes › Ficha', () => {
     });
     expect(host.querySelector('dba-signer-edit-form a[href*="s7"]')).not.toBeNull();
     http.match(() => true).forEach((r) => r.flush([]));
+    fixture.componentRef.setInput('id', 's7');
+    fixture.detectChanges();
+    await fixture.whenStable();
+    http.expectOne('/platform/signers/s7').flush(ficha({ id: 's7', fullName: 'Otra Persona' }));
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(host.textContent).toContain('Otra Persona');
+    });
+    expect(host.querySelector('dba-signer-edit-form')).toBeNull();
+    expect(host.textContent).not.toContain('Ese número ya es de otro firmante');
   });
 
   it('un firmante que no existe ofrece volver', async () => {
