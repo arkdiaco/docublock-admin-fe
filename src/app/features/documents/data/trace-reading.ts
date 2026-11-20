@@ -424,6 +424,23 @@ const turnFixed = (details: Details): Part => {
   };
 };
 
+const filed = (details: Details): Part => {
+  const number = text(details['number']);
+  const folios = amount(details['folios']);
+  const annexes = amount(details['annexes']);
+  const charged = details['charged'];
+  return {
+    lines: [
+      number ? { key: 'docs.traceUi.filing.number', params: { number } } : null,
+      folios === null ? null : { key: 'docs.traceUi.filing.folios', params: { total: folios } },
+      annexes === null ? null : { key: 'docs.traceUi.filing.annexes', params: { total: annexes } },
+      typeof charged === 'boolean'
+        ? { key: charged ? 'docs.traceUi.filing.charged' : 'docs.traceUi.filing.notCharged' }
+        : null,
+    ],
+  };
+};
+
 const READERS: ReadonlyMap<string, (details: Details) => Part> = new Map([
   ['notification.sent', (details: Details) => invitation(details, false)],
   ['notification.resent', (details: Details) => invitation(details, true)],
@@ -441,6 +458,7 @@ const READERS: ReadonlyMap<string, (details: Details) => Part> = new Map([
   ['admin.signer_removed', signerRemoved],
   ['admin.signer_links_revoked', linksRevoked],
   ['admin.turn_fixed', turnFixed],
+  ['document.filed', filed],
 ]);
 
 export const traceReadingOf = (event: TraceEvent): TraceReading => {

@@ -346,7 +346,9 @@
     "module": {
       "pagares": "Pagarés",
       "consent": "Consentimiento informado",
-      "realEstate": "Bienes raíces"
+      "realEstate": "Bienes raíces",
+      "filing": "Radicación de documentos",
+      "filingMeta": "Se cobra por documento: sin radicaciones compradas no se puede radicar."
     },
     "tab": {
       "summary": "Resumen",
@@ -451,7 +453,8 @@
       "signer_validations_reactivate": "reactivó las validaciones de un firmante",
       "signer_remove": "quitó a un firmante de un documento",
       "signer_links_revoke": "revocó los enlaces de un firmante",
-      "turn_fix": "corrigió el turno de un documento"
+      "turn_fix": "corrigió el turno de un documento",
+      "filing_certificate_view": "descargó la constancia de radicación de un documento"
     },
     "invoices": {
       "create": "creó una factura",
@@ -497,6 +500,8 @@
     },
     "organizations": {
       "export": "exportó la lista de organizaciones",
+      "filing_credits_set": "ajustó las radicaciones de {{org}}",
+      "filing_prefix_set": "cambió el prefijo de radicación de {{org}}",
       "modules_set": "cambió los módulos de {{org}}",
       "reseller_assign": "cambió el reseller de {{org}}"
     },
@@ -1879,6 +1884,7 @@
       "ani": "Consultar Registraduría",
       "identity": "Validación contra documento",
       "biometric": "Biometría avanzada",
+      "radicacion": "Radicaciones",
       "none": "Sin tipo"
     },
     "addon": {
@@ -1894,10 +1900,12 @@
     "hidden": "Oculto en la tienda",
     "perMonth": "{{amount}} / mes",
     "perQuery": "{{amount}} / consulta",
+    "perDocument": "{{amount}} / documento",
     "fromPrice": "Desde {{from}} (base {{unit}})",
     "noTiers": "Sin descuento por volumen",
     "tierLine": "{{pct}} % desde {{from}}",
     "queries": "consultas",
+    "filings": "radicaciones",
     "usage": {
       "addons": "{{total}} add-ons activos",
       "orders": "{{total}} compras en 30 días",
@@ -1940,7 +1948,7 @@
     },
     "f": {
       "kind": "Tipo",
-      "creditType": "Validación",
+      "creditType": "Tipo de crédito",
       "addonCode": "Módulo",
       "currency": "Moneda",
       "code": "Código",
@@ -2127,7 +2135,7 @@
   },
   "docs": {
     "count": "{{total}} documentos",
-    "searchPlaceholder": "Buscar por nombre o código",
+    "searchPlaceholder": "Busca por nombre, código o radicado",
     "regenerateBulk": "Regenerar en lote",
     "view": {
       "todos": "Todos",
@@ -2627,6 +2635,13 @@
       },
       "revoke": {
         "documents": "Documentos del conjunto: {{total}}"
+      },
+      "filing": {
+        "number": "Radicado {{number}}",
+        "folios": "Folios: {{total}}",
+        "annexes": "Anexos: {{total}}",
+        "charged": "Radicación descontada",
+        "notCharged": "No se descontó: la organización no tenía saldo"
       }
     },
     "trace": {
@@ -2729,7 +2744,8 @@
       "admin_validations_reactivated": "Validaciones reactivadas por administración",
       "admin_signer_removed": "Firmante quitado por administración",
       "admin_signer_links_revoked": "Enlaces del firmante revocados por administración",
-      "admin_turn_fixed": "Turno corregido por administración"
+      "admin_turn_fixed": "Turno corregido por administración",
+      "document_filed": "Documento radicado"
     },
     "act": {
       "reasonLabel": "Razón (queda en la trazabilidad)",
@@ -2833,7 +2849,9 @@
       "TURNO_CORRECTO": "El turno abierto ya tiene firmantes pendientes.",
       "SIN_FIRMANTES_PENDIENTES": "Nadie tiene firmas pendientes: el documento está para finalizar.",
       "DOCUMENTO_CAMBIO": "El documento cambió mientras tanto. Revisa la ficha e inténtalo de nuevo.",
-      "COPIA_NO_ENCONTRADA": "No hay copia guardada de ese firmante."
+      "COPIA_NO_ENCONTRADA": "No hay copia guardada de ese firmante.",
+      "DOCUMENTO_RADICADO": "El documento ya está radicado y sellado; regenerarlo desordenaría el foliado.",
+      "DOCUMENTO_SIN_RADICADO": "El documento aún no tiene radicado; la constancia sale cuando se cierra."
     },
     "bulk": {
       "lead": "Solo documentos firmados. Se rehace el PDF con la hoja de firmas y se vuelve a registrar en blockchain. No se avisa a los firmantes ni se descuenta del plan.",
@@ -3059,6 +3077,18 @@
       "doneSet": "Documentos: {{documents}} · Enlaces revocados: {{links}} · Sesiones cerradas: {{sessions}} · Pasos al celular cerrados: {{handoffs}}",
       "none": "No tenía enlaces, sesiones ni pasos al celular vigentes.",
       "removedMessage": "{{name}} ya no está en el documento: se cortan los enlaces, sesiones y pasos al celular que le quedaron vivos."
+    },
+    "filing": {
+      "title": "Radicación",
+      "number": "Radicado",
+      "pending": "Se asigna al cerrar",
+      "filedAt": "Radicado el",
+      "folios": "Folios",
+      "annexes": "Anexos",
+      "certificate": "Constancia de radicación",
+      "certificateError": "No pudimos descargar la constancia de radicación.",
+      "row": "Radicado {{number}}",
+      "rowPending": "Radicado: se asigna al cerrar"
     }
   },
   "orgPicker": {
@@ -4538,6 +4568,24 @@
       "cityEmpty": "Sin ciudades con ese nombre",
       "noCountry": "Primero elige el país",
       "catalogRequired": "Elige el tipo de persona y el tipo de documento: dependen del país y del tipo de persona.",
+      "identification": "Número de documento",
+      "identificationRequired": "Escribe el número de documento: sin él no se puede guardar.",
+      "duplicate": "Ese número ya es de otro firmante.",
+      "duplicateLink": "Abrir ese firmante",
+      "repLegalType": "Tipo de documento del representante legal",
+      "repLegalNumber": "Número del representante legal",
+      "impact": {
+        "title": "Al cambiar el número:",
+        "loading": "Revisando a quién afecta el cambio",
+        "userOne": "1 usuario de organizaciones entra con el número anterior; no se cambia.",
+        "users": "{{count}} usuarios de organizaciones entran con el número anterior; no se cambian.",
+        "companyOne": "1 empresa lo tiene como representante legal; pasa al número nuevo.",
+        "companies": "{{count}} empresas lo tienen como representante legal; pasan al número nuevo.",
+        "documentOne": "Tiene 1 documento en curso; sigue y el cierre usará el número nuevo.",
+        "documents": "Tiene {{count}} documentos en curso; siguen y el cierre usará el número nuevo.",
+        "history": "El número anterior queda en el historial y los documentos ya firmados siguen verificados.",
+        "error": "No pudimos revisar a quién afecta el cambio. Puedes guardar igual."
+      },
       "reasonRequired": "Escribe el motivo: sin él no se puede guardar.",
       "expeditionDate": "Fecha de expedición",
       "birthDate": "Fecha de nacimiento",
@@ -4564,7 +4612,11 @@
       "FIRMANTE_YA_VINCULADO": "Ya está vinculado a esa organización.",
       "FIRMANTE_NO_VINCULADO": "Ya no está vinculado a esa organización.",
       "FIRMA_AUTOMATICA_INACTIVA": "La firma automática ya estaba inactiva.",
-      "LLAVE_NO_ENCONTRADA": "Esa llave ya no existe."
+      "LLAVE_NO_ENCONTRADA": "Esa llave ya no existe.",
+      "IDENTIFICACION_INVALIDA": "El número no cumple el formato de ese tipo de documento.",
+      "IDENTIFICACION_REQUERIDA": "Escribe el número de documento.",
+      "FIRMANTE_EXISTE": "Ese número ya es de otro firmante.",
+      "TIPO_IDENTIFICACION_REP_LEGAL_INVALIDO": "El documento del representante legal debe ser de persona natural."
     },
     "legalEntities": {
       "loading": "Cargando empresas",
@@ -6691,6 +6743,61 @@
     "error": {
       "generic": "No pudimos guardar el cambio. Inténtalo de nuevo.",
       "SETTINGS_SIN_CAMBIOS": "No hay cambios que guardar."
+    }
+  },
+  "orgFiling": {
+    "title": "Radicación de documentos",
+    "loading": "Cargando la radicación…",
+    "error": "No se pudo leer la radicación de esta organización.",
+    "balance": "Saldo",
+    "prefix": "Prefijo",
+    "unlimited": "Ilimitadas",
+    "one": "1 radicación",
+    "count": "{{count}} radicaciones",
+    "example": "Así se ve: {{example}}",
+    "noPrefix": "Se asigna con el primer radicado",
+    "changePrefix": "Cambiar prefijo",
+    "done": "El prefijo quedó en {{prefix}}",
+    "form": {
+      "title": "Cambiar prefijo de radicación",
+      "current": "Prefijo actual: {{prefix}}",
+      "confirm": "Cambiar prefijo",
+      "warning": "El prefijo va impreso en el QR y nunca se libera. Los radicados ya emitidos conservan el prefijo anterior.",
+      "prefix": "Nuevo prefijo",
+      "prefixPlaceholder": "Ej.: JURI",
+      "invalid": "De 2 a 8 letras o números, sin espacios ni símbolos.",
+      "same": "Es el prefijo que ya tiene.",
+      "preview": "Así se verá: {{example}}",
+      "reason": "Motivo",
+      "reasonPlaceholder": "Por qué se cambia el prefijo"
+    },
+    "errors": {
+      "PREFIJO_INVALIDO": "El prefijo debe tener de 2 a 8 letras o números.",
+      "PREFIJO_EN_USO": "Ese prefijo ya lo usa otra organización.",
+      "generic": "No se pudo cambiar el prefijo. Inténtalo de nuevo."
+    },
+    "adjustCredits": "Ajustar radicaciones",
+    "credits": {
+      "title": "Ajustar radicaciones",
+      "now": "Disponibles hoy: {{count}}",
+      "confirm": "Guardar radicaciones",
+      "unlimited": "Radicaciones ilimitadas",
+      "mode": "Cómo ajustar",
+      "amount": "Radicaciones a sumar",
+      "remaining": "Dejar disponibles",
+      "modes": {
+        "recharge": "Sumar",
+        "set": "Fijar el saldo"
+      },
+      "wholeNumber": "Escribe un número entero.",
+      "reason": "Motivo",
+      "reasonPlaceholder": "Por qué se ajusta el saldo",
+      "done": "Saldo de radicación actualizado",
+      "errors": {
+        "AJUSTE_VACIO": "Indica cuántas radicaciones sumar, en cuántas dejar el saldo o si son ilimitadas.",
+        "AJUSTE_INVALIDO": "Sumar radicaciones y dejar el saldo en una cantidad no van juntos.",
+        "generic": "No se pudo ajustar el saldo. Inténtalo de nuevo."
+      }
     }
   }
 }

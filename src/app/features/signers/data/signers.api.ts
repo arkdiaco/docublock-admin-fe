@@ -7,11 +7,13 @@ import type { TargetHistoryEvent } from '../../../shared/ui/target-history.compo
 import type {
   CountryOption,
   IdentificationTypeOption,
+  KindPersonOption,
   NamedOption,
   PageOf,
   PlatformSignerDetail,
   SignerChanges,
   SignerDocument,
+  SignerIdentificationImpact,
   SignerLegalEntity,
   SignerOneTouch,
   SignersPage,
@@ -40,6 +42,10 @@ export const SIGNER_ERRORS: readonly string[] = [
   'FIRMANTE_NO_VINCULADO',
   'FIRMA_AUTOMATICA_INACTIVA',
   'LLAVE_NO_ENCONTRADA',
+  'IDENTIFICACION_INVALIDA',
+  'IDENTIFICACION_REQUERIDA',
+  'FIRMANTE_EXISTE',
+  'TIPO_IDENTIFICACION_REP_LEGAL_INVALIDO',
 ];
 
 @Injectable({ providedIn: 'root' })
@@ -66,6 +72,12 @@ export class SignersApi {
       { ...changes, reason },
       { context: silent() },
     );
+  }
+
+  identificationImpact(id: string): Observable<SignerIdentificationImpact> {
+    return this.http.get<SignerIdentificationImpact>(`${BASE}/${id}/identification-impact`, {
+      context: silent(),
+    });
   }
 
   addOrganization(id: string, orgId: string, reason: string): Observable<PlatformSignerDetail> {
@@ -128,8 +140,8 @@ export class SignersApi {
     });
   }
 
-  kindPersons(countryId: string): Observable<NamedOption[]> {
-    return this.http.get<NamedOption[]>(`/catalogs/countries/${countryId}/kind-persons`);
+  kindPersons(countryId: string): Observable<KindPersonOption[]> {
+    return this.http.get<KindPersonOption[]>(`/catalogs/countries/${countryId}/kind-persons`);
   }
 
   identificationTypes(countryId: string): Observable<IdentificationTypeOption[]> {

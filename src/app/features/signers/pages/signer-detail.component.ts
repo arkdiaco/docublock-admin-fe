@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -41,6 +42,14 @@ import type { PlatformSignerDetail, SignerChanges } from '../data/signers.models
 import { safeDate } from '../../../shared/i18n/safe-date';
 
 type DetailTab = 'organizations' | 'legalEntities' | 'documents' | 'oneTouch' | 'history';
+
+const duplicateSignerOf = (error: unknown): string | null => {
+  if (errorCodeOf(error) !== 'FIRMANTE_EXISTE' || !(error instanceof HttpErrorResponse)) {
+    return null;
+  }
+  const signerId = (error.error as { signerId?: unknown } | null)?.signerId;
+  return typeof signerId === 'string' ? signerId : null;
+};
 
 @Component({
   selector: 'dba-signer-detail',
@@ -200,8 +209,9 @@ type DetailTab = 'organizations' | 'legalEntities' | 'documents' | 'oneTouch' | 
         <dba-signer-edit-form
           [signer]="item"
           [busy]="pending.key() === 'edit'"
+          [duplicateOf]="duplicateOf()"
           (submitted)="save($event)"
-          (dismissed)="editing.set(false)"
+          (dismissed)="closeEdit()"
         />
       }
     }
@@ -226,6 +236,7 @@ export class SignerDetailComponent {
   protected readonly error = signal(false);
   protected readonly missing = signal(false);
   protected readonly editing = signal(false);
+  protected readonly duplicateOf = signal<string | null>(null);
   protected readonly tab = signal<DetailTab>('organizations');
   protected readonly signer = signal<PlatformSignerDetail | null>(null);
   protected readonly displayName = computed(() => {
@@ -257,6 +268,7 @@ export class SignerDetailComponent {
   constructor() {
     effect(() => {
       const id = this.id();
+      this.closeEdit();
       if (id) void this.load(id);
     });
   }
@@ -291,17 +303,24 @@ export class SignerDetailComponent {
   }
 
   protected async save(value: { changes: SignerChanges; reason: string }): Promise<void> {
+    this.duplicateOf.set(null);
     await this.pending.run('edit', async () => {
       try {
         this.signer.set(
           await firstValueFrom(this.api.update(this.id(), value.changes, value.reason)),
         );
-        this.editing.set(false);
+        this.closeEdit();
         this.notify.success(this.label('sig.edit.done'));
       } catch (error) {
+        this.duplicateOf.set(duplicateSignerOf(error));
         this.notifyFailure(error);
       }
     });
+  }
+
+  protected closeEdit(): void {
+    this.editing.set(false);
+    this.duplicateOf.set(null);
   }
 
   protected async disableAutoSign(): Promise<void> {

@@ -54,6 +54,8 @@ export interface PlatformSignerDetail extends PlatformSigner {
   kindPersonName?: string;
   identificationTypeId?: string;
   identificationTypeName?: string;
+  identificationRepLegal?: string;
+  identificationTypeRepLegalId?: string;
   expeditionCityId?: string;
   expeditionCityName?: string;
   expeditionDate?: string;
@@ -74,6 +76,9 @@ export interface SignerChanges {
   countryId?: string;
   kindPersonId?: string;
   identificationTypeId?: string;
+  identification?: string;
+  identificationRepLegal?: string | null;
+  identificationTypeRepLegalId?: string;
   expeditionCityId?: string | null;
   expeditionDate?: string | null;
   birthDate?: string | null;
@@ -87,6 +92,16 @@ export interface CountryOption {
 export interface NamedOption {
   id: string;
   name: string;
+}
+
+export interface KindPersonOption extends NamedOption {
+  type?: 'natural' | 'legal';
+}
+
+export interface SignerIdentificationImpact {
+  usersWithNumber: number;
+  legalRepCompanies: number;
+  documentsInProgress: number;
 }
 
 export interface IdentificationTypeOption extends NamedOption {

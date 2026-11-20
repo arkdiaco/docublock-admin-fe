@@ -65,6 +65,14 @@ export interface DocumentStatus {
   label: string;
 }
 
+export interface DocumentFiling {
+  requested: true;
+  number?: string;
+  filedAt?: string;
+  folios?: number;
+  annexes?: number;
+}
+
 export interface PlatformDocumentSummary {
   id: string;
   name: string;
@@ -78,6 +86,7 @@ export interface PlatformDocumentSummary {
   signerCount: number;
   blockchainUrl?: string;
   anchored: boolean;
+  filing?: DocumentFiling;
   createdAt?: string;
   updatedAt?: string;
 }

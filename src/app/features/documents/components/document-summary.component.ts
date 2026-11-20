@@ -256,6 +256,39 @@ import { safeDate } from '../../../shared/i18n/safe-date';
           }
         </section>
 
+        @if (doc.filing; as filing) {
+          <section class="sm__card">
+            <h2 class="dba-panel">{{ 'docs.filing.title' | translate }}</h2>
+            <dl class="sm__dl">
+              <dt>{{ 'docs.filing.number' | translate }}</dt>
+              @if (filing.number) {
+                <dd class="dba-mono">{{ filing.number }}</dd>
+                <dt>{{ 'docs.filing.filedAt' | translate }}</dt>
+                <dd class="dba-mono">{{ stamp(filing.filedAt) }}</dd>
+                <dt>{{ 'docs.filing.folios' | translate }}</dt>
+                <dd class="dba-mono">{{ filing.folios ?? '—' }}</dd>
+                <dt>{{ 'docs.filing.annexes' | translate }}</dt>
+                <dd class="dba-mono">{{ filing.annexes ?? '—' }}</dd>
+              } @else {
+                <dd>{{ 'docs.filing.pending' | translate }}</dd>
+              }
+            </dl>
+            @if (filing.number) {
+              <div class="sm__tools">
+                <button
+                  dba-button
+                  variant="secondary"
+                  [busy]="busy() === 'filing'"
+                  (click)="filingCertificate.emit()"
+                >
+                  <db-icon name="download" [size]="15" />
+                  {{ 'docs.filing.certificate' | translate }}
+                </button>
+              </div>
+            }
+          </section>
+        }
+
         <section class="sm__card">
           <h2 class="dba-panel">{{ 'docs.sum.infoTitle' | translate }}</h2>
           @if (info().length) {
@@ -444,6 +477,7 @@ export class DocumentSummaryComponent {
   readonly canOpenOrg = input(false);
   readonly busy = input<string | null>(null);
   readonly certificate = output<void>();
+  readonly filingCertificate = output<void>();
   readonly attachment = output<IntegrationAttachment>();
 
   protected readonly docsPath = sectionPath('documents');

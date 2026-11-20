@@ -135,4 +135,53 @@ describe('Operación › Documentos › regenerar en lote', () => {
     expect(host.textContent).toContain('almacenamiento caído');
     expect(host.textContent).not.toMatch(/\b(docs|nav|common)\.[a-zA-Z]/);
   });
+
+  it('un radicado del lote sale omitido con la razón del core y se queda en el lote', async () => {
+    conPermisos(['platform:operations', 'platform:operations:manage']);
+    const fixture = TestBed.createComponent(DocumentRegenerateComponent);
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    const input = host.querySelector<HTMLInputElement>('input[type="search"]')!;
+    input.value = 'NT-2026';
+    input.dispatchEvent(new Event('input'));
+    await vi.advanceTimersByTimeAsync(400);
+    http.expectOne((r) => r.url === '/platform/documents').flush({ total: 1, items: [doc('r')] });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    host
+      .querySelector<HTMLButtonElement>('.rg__cols section [aria-label="Agregar al lote"]')!
+      .click();
+    fixture.detectChanges();
+    vi.spyOn(TestBed.inject(DialogService), 'confirm').mockResolvedValue(true);
+    [...host.querySelectorAll<HTMLButtonElement>('aside button')]
+      .find((b) => b.textContent?.includes('Regenerar 1'))!
+      .click();
+    let run!: ReturnType<HttpTestingController['expectOne']>;
+    await vi.waitFor(() => {
+      run = http.expectOne(
+        (r) => r.method === 'POST' && r.url === '/platform/documents/regenerate',
+      );
+    });
+    run.flush({
+      processed: 1,
+      ok: 0,
+      skipped: 1,
+      failed: 0,
+      results: [
+        {
+          id: 'r',
+          name: 'Contrato r',
+          status: 'skipped',
+          message: 'El documento ya está radicado y sellado; regenerarlo desordenaría el foliado',
+        },
+      ],
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(host.textContent).toContain('0 regenerado(s), 0 con error, 1 omitido(s)');
+    expect(host.textContent).toContain(
+      'El documento ya está radicado y sellado; regenerarlo desordenaría el foliado',
+    );
+    expect(host.textContent).not.toMatch(/\b(docs|nav|common)\.[a-zA-Z]/);
+  });
 });

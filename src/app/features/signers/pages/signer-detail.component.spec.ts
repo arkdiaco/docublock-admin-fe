@@ -94,6 +94,39 @@ describe('Firmantes › Ficha', () => {
     http.expectNone('/platform/signers/s1/auto-sign/disable');
   });
 
+  it('si el número ya es de otro firmante, el formulario sigue abierto con el enlace a ese firmante', async () => {
+    const host = await abrir(['platform:clients:manage']);
+    pulsar(host, 'Editar datos');
+    fixture.detectChanges();
+    const formulario = fixture.debugElement.query((el) => el.name === 'dba-signer-edit-form');
+    (formulario.componentInstance as { submitted: { emit: (v: unknown) => void } }).submitted.emit({
+      changes: { identification: '1032456780' },
+      reason: 'Número mal digitado',
+    });
+    const pedido = await vi.waitFor(() => http.expectOne('/platform/signers/s1'));
+    expect(pedido.request.method).toBe('PATCH');
+    pedido.flush(
+      { code: 'FIRMANTE_EXISTE', signerId: 's7', message: 'x' },
+      { status: 409, statusText: 'Conflict' },
+    );
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(host.textContent).toContain('Ese número ya es de otro firmante');
+    });
+    expect(host.querySelector('dba-signer-edit-form a[href*="s7"]')).not.toBeNull();
+    http.match(() => true).forEach((r) => r.flush([]));
+    fixture.componentRef.setInput('id', 's7');
+    fixture.detectChanges();
+    await fixture.whenStable();
+    http.expectOne('/platform/signers/s7').flush(ficha({ id: 's7', fullName: 'Otra Persona' }));
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(host.textContent).toContain('Otra Persona');
+    });
+    expect(host.querySelector('dba-signer-edit-form')).toBeNull();
+    expect(host.textContent).not.toContain('Ese número ya es de otro firmante');
+  });
+
   it('un firmante que no existe ofrece volver', async () => {
     conPermisos(['platform:clients:read']);
     fixture = TestBed.createComponent(SignerDetailComponent);
