@@ -411,6 +411,7 @@
     "actionsLead": "Organizations with their quota used up or nearly used up, support tickets past their target, expiring subscriptions and documents with issues show up here.",
     "action": {
       "quotaExhausted": "document quota exhausted · {{used}} / {{limit}}",
+      "quotaDebtExpired": "plan expired · owes {{debt}} documents · {{used}} / {{limit}}",
       "quotaWarning": "document quota at {{pct}} % · {{used}} / {{limit}}",
       "expiring": "the subscription ends in {{n}} days",
       "expiringTomorrow": "the subscription ends tomorrow",

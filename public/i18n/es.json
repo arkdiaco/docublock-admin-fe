@@ -411,6 +411,7 @@
     "actionsLead": "Aquí aparecen las organizaciones con el cupo agotado o cerca de agotarse, los tickets de soporte que pasaron su plazo, las suscripciones por vencer y los documentos con incidencias.",
     "action": {
       "quotaExhausted": "cupo de documentos agotado · {{used}} / {{limit}}",
+      "quotaDebtExpired": "plan vencido · debe {{debt}} documentos · {{used}} / {{limit}}",
       "quotaWarning": "cupo de documentos al {{pct}} % · {{used}} / {{limit}}",
       "expiring": "la suscripción vence en {{n}} días",
       "expiringTomorrow": "la suscripción vence mañana",

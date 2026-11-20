@@ -8,6 +8,7 @@ export interface QuotaAction {
   organization: DashboardOrgRef;
   used: number;
   limit: number;
+  expired?: true;
 }
 
 export interface ExpiringAction {

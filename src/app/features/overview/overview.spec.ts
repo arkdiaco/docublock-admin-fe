@@ -84,6 +84,22 @@ describe('Visión general: filas de «Requiere acción»', () => {
     });
   });
 
+  it('un plan vencido con deuda sale entre los agotados con lo que debe y lleva a Suscripción', () => {
+    const [row] = actionRowsOf(
+      [{ kind: 'QUOTA_EXHAUSTED', total: 1, items: [{ ...quota('v', 107, 100), expired: true }] }],
+      PATHS,
+    ).rows;
+    expect(row).toMatchObject({
+      tone: 'bad',
+      textKey: 'overview.action.quotaDebtExpired',
+      textParams: { debt: 7, used: 107, limit: 100 },
+      link: ['/o', 'v'],
+      query: { tab: 'subscription' },
+    });
+    expect(typeof leaf(es, row.textKey)).toBe('string');
+    expect(typeof leaf(en, row.textKey)).toBe('string');
+  });
+
   it('el porcentaje del aviso nunca redondea hacia arriba hasta el 100', () => {
     const [row] = actionRowsOf(
       [{ kind: 'QUOTA_WARNING', total: 1, items: [quota('z', 999, 1000)] }],

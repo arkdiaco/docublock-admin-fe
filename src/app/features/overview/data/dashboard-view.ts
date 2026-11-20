@@ -1,6 +1,11 @@
 import type { Params } from '@angular/router';
 import type { ActionRowTone } from '../../../shared/ui/action-row.component';
-import type { DashboardActionGroup, DashboardActionKind, MonthRevenue } from './dashboard.models';
+import type {
+  DashboardActionGroup,
+  DashboardActionKind,
+  MonthRevenue,
+  QuotaAction,
+} from './dashboard.models';
 
 export const SHOWN_KINDS: readonly DashboardActionKind[] = [
   'ERROR_SPIKE',
@@ -45,6 +50,38 @@ export interface ActionPaths {
   errors: string;
 }
 
+const quotaRow = (
+  kind: 'QUOTA_EXHAUSTED' | 'QUOTA_WARNING',
+  item: QuotaAction,
+  paths: ActionPaths,
+): ActionRowView => {
+  const base = {
+    key: `${kind}:${item.organization.id}`,
+    reference: item.organization.tributaryNumber,
+    subject: item.organization.businessName,
+    ctaKey: 'overview.cta.review',
+    link: [paths.orgs, item.organization.id],
+  };
+  if (item.expired)
+    return {
+      ...base,
+      tone: 'bad',
+      textKey: 'overview.action.quotaDebtExpired',
+      textParams: { debt: item.used - item.limit, used: item.used, limit: item.limit },
+      query: { tab: 'subscription' },
+    };
+  return {
+    ...base,
+    tone: kind === 'QUOTA_EXHAUSTED' ? 'bad' : 'warn',
+    textKey:
+      kind === 'QUOTA_EXHAUSTED'
+        ? 'overview.action.quotaExhausted'
+        : 'overview.action.quotaWarning',
+    textParams: { used: item.used, limit: item.limit, pct: percent(item.used, item.limit) },
+    query: { tab: 'quotas' },
+  };
+};
+
 const rowsOf = (group: DashboardActionGroup, paths: ActionPaths): ActionRowView[] => {
   switch (group.kind) {
     case 'ERROR_SPIKE':
@@ -61,20 +98,7 @@ const rowsOf = (group: DashboardActionGroup, paths: ActionPaths): ActionRowView[
       }));
     case 'QUOTA_EXHAUSTED':
     case 'QUOTA_WARNING':
-      return group.items.map((item) => ({
-        key: `${group.kind}:${item.organization.id}`,
-        tone: group.kind === 'QUOTA_EXHAUSTED' ? 'bad' : 'warn',
-        reference: item.organization.tributaryNumber,
-        subject: item.organization.businessName,
-        textKey:
-          group.kind === 'QUOTA_EXHAUSTED'
-            ? 'overview.action.quotaExhausted'
-            : 'overview.action.quotaWarning',
-        textParams: { used: item.used, limit: item.limit, pct: percent(item.used, item.limit) },
-        ctaKey: 'overview.cta.review',
-        link: [paths.orgs, item.organization.id],
-        query: { tab: 'quotas' },
-      }));
+      return group.items.map((item) => quotaRow(group.kind, item, paths));
     case 'SUBSCRIPTION_EXPIRING':
       return group.items.map((item) => ({
         key: `${group.kind}:${item.organization.id}`,
