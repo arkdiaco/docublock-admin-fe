@@ -4538,6 +4538,24 @@
       "cityEmpty": "Sin ciudades con ese nombre",
       "noCountry": "Primero elige el país",
       "catalogRequired": "Elige el tipo de persona y el tipo de documento: dependen del país y del tipo de persona.",
+      "identification": "Número de documento",
+      "identificationRequired": "Escribe el número de documento: sin él no se puede guardar.",
+      "duplicate": "Ese número ya es de otro firmante.",
+      "duplicateLink": "Abrir ese firmante",
+      "repLegalType": "Tipo de documento del representante legal",
+      "repLegalNumber": "Número del representante legal",
+      "impact": {
+        "title": "Al cambiar el número:",
+        "loading": "Revisando a quién afecta el cambio",
+        "userOne": "1 usuario de organizaciones entra con el número anterior; no se cambia.",
+        "users": "{{count}} usuarios de organizaciones entran con el número anterior; no se cambian.",
+        "companyOne": "1 empresa lo tiene como representante legal; pasa al número nuevo.",
+        "companies": "{{count}} empresas lo tienen como representante legal; pasan al número nuevo.",
+        "documentOne": "Tiene 1 documento en curso; sigue y el cierre usará el número nuevo.",
+        "documents": "Tiene {{count}} documentos en curso; siguen y el cierre usará el número nuevo.",
+        "history": "El número anterior queda en el historial y los documentos ya firmados siguen verificados.",
+        "error": "No pudimos revisar a quién afecta el cambio. Puedes guardar igual."
+      },
       "reasonRequired": "Escribe el motivo: sin él no se puede guardar.",
       "expeditionDate": "Fecha de expedición",
       "birthDate": "Fecha de nacimiento",
@@ -4564,7 +4582,11 @@
       "FIRMANTE_YA_VINCULADO": "Ya está vinculado a esa organización.",
       "FIRMANTE_NO_VINCULADO": "Ya no está vinculado a esa organización.",
       "FIRMA_AUTOMATICA_INACTIVA": "La firma automática ya estaba inactiva.",
-      "LLAVE_NO_ENCONTRADA": "Esa llave ya no existe."
+      "LLAVE_NO_ENCONTRADA": "Esa llave ya no existe.",
+      "IDENTIFICACION_INVALIDA": "El número no cumple el formato de ese tipo de documento.",
+      "IDENTIFICACION_REQUERIDA": "Escribe el número de documento.",
+      "FIRMANTE_EXISTE": "Ese número ya es de otro firmante.",
+      "TIPO_IDENTIFICACION_REP_LEGAL_INVALIDO": "El documento del representante legal debe ser de persona natural."
     },
     "legalEntities": {
       "loading": "Cargando empresas",

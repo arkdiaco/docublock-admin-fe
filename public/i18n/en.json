@@ -4538,6 +4538,24 @@
       "cityEmpty": "No cities with that name",
       "noCountry": "Choose the country first",
       "catalogRequired": "Choose the person type and document type: they depend on the country and the person type.",
+      "identification": "Document number",
+      "identificationRequired": "Enter the document number: it cannot be saved without it.",
+      "duplicate": "That number already belongs to another signer.",
+      "duplicateLink": "Open that signer",
+      "repLegalType": "Legal representative document type",
+      "repLegalNumber": "Legal representative number",
+      "impact": {
+        "title": "When the number changes:",
+        "loading": "Checking who the change affects",
+        "userOne": "1 organization user signs in with the previous number; it is not changed.",
+        "users": "{{count}} organization users sign in with the previous number; they are not changed.",
+        "companyOne": "1 company has them as legal representative; it moves to the new number.",
+        "companies": "{{count}} companies have them as legal representative; they move to the new number.",
+        "documentOne": "They have 1 document in progress; it continues and closing uses the new number.",
+        "documents": "They have {{count}} documents in progress; they continue and closing uses the new number.",
+        "history": "The previous number stays in the history and already signed documents stay verified.",
+        "error": "We could not check who the change affects. You can still save."
+      },
       "reasonRequired": "Write the reason: without it the changes cannot be saved.",
       "expeditionDate": "Date of issue",
       "birthDate": "Date of birth",
@@ -4564,7 +4582,11 @@
       "FIRMANTE_YA_VINCULADO": "Already linked to that organization.",
       "FIRMANTE_NO_VINCULADO": "No longer linked to that organization.",
       "FIRMA_AUTOMATICA_INACTIVA": "Automatic signing was already off.",
-      "LLAVE_NO_ENCONTRADA": "That key no longer exists."
+      "LLAVE_NO_ENCONTRADA": "That key no longer exists.",
+      "IDENTIFICACION_INVALIDA": "The number does not match the format of that document type.",
+      "IDENTIFICACION_REQUERIDA": "Enter the document number.",
+      "FIRMANTE_EXISTE": "That number already belongs to another signer.",
+      "TIPO_IDENTIFICACION_REP_LEGAL_INVALIDO": "The legal representative document must be for a natural person."
     },
     "legalEntities": {
       "loading": "Loading companies",

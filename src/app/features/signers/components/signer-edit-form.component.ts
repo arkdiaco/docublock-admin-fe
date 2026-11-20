@@ -2,26 +2,33 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   input,
   output,
   signal,
+  untracked,
   type OnInit,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Select, type SelectFilterEvent } from 'primeng/select';
 import { firstValueFrom } from 'rxjs';
+import { sectionPath } from '../../../core/layout/console-nav';
 import { LatestRequest } from '../../../shared/http/latest-request';
 import { FieldComponent } from '../../../shared/ui/field.component';
+import { LoaderComponent } from '../../../shared/ui/loader.component';
 import { ModalShellComponent } from '../../../shared/ui/modal-shell.component';
 import { SignersApi } from '../data/signers.api';
 import type {
   CountryOption,
   IdentificationTypeOption,
+  KindPersonOption,
   NamedOption,
   PlatformSignerDetail,
   SignerChanges,
+  SignerIdentificationImpact,
 } from '../data/signers.models';
 
 export interface SignerFormValue {
@@ -37,6 +44,9 @@ export interface SignerFormValue {
   kindPersonId: string | null;
   identificationTypeId: string | null;
   expeditionCityId: string | null;
+  identification: string;
+  identificationRepLegal: string;
+  identificationTypeRepLegalId: string | null;
 }
 
 const dayOf = (value?: string): string => value?.slice(0, 10) ?? '';
@@ -77,12 +87,34 @@ export const changesOf = (signer: PlatformSignerDetail, form: SignerFormValue): 
   if (form.expeditionCityId !== (signer.expeditionCityId ?? null)) {
     changes.expeditionCityId = form.expeditionCityId;
   }
+  const identification = form.identification.trim();
+  if (identification && identification !== (signer.identification ?? '').trim()) {
+    changes.identification = identification;
+  }
+  const repLegal = form.identificationRepLegal.trim();
+  if (repLegal !== (signer.identificationRepLegal ?? '').trim()) {
+    changes.identificationRepLegal = repLegal || null;
+  }
+  if (
+    form.identificationTypeRepLegalId &&
+    form.identificationTypeRepLegalId !== signer.identificationTypeRepLegalId
+  ) {
+    changes.identificationTypeRepLegalId = form.identificationTypeRepLegalId;
+  }
   return changes;
 };
 
 @Component({
   selector: 'dba-signer-edit-form',
-  imports: [TranslatePipe, FormsModule, ModalShellComponent, FieldComponent, Select],
+  imports: [
+    TranslatePipe,
+    FormsModule,
+    RouterLink,
+    ModalShellComponent,
+    FieldComponent,
+    LoaderComponent,
+    Select,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <db-modal-shell
@@ -197,6 +229,56 @@ export const changesOf = (signer: PlatformSignerDetail, form: SignerFormValue): 
         @if (catalogMissing()) {
           <p class="form__note">{{ 'sig.edit.catalogRequired' | translate }}</p>
         }
+        <dba-field label="sig.edit.identification" [maxlength]="30" [(value)]="identification" />
+        @if (identificationMissing()) {
+          <p class="form__note">{{ 'sig.edit.identificationRequired' | translate }}</p>
+        }
+        @if (duplicateOf(); as other) {
+          <p class="form__note">
+            {{ 'sig.edit.duplicate' | translate }}
+            <a [routerLink]="[path, other]">{{ 'sig.edit.duplicateLink' | translate }}</a>
+          </p>
+        }
+        @if (numberMoved()) {
+          <div class="form__summary">
+            @if (impactLoading()) {
+              <db-loader size="20px" [label]="'sig.edit.impact.loading' | translate" />
+            } @else {
+              <strong>{{ 'sig.edit.impact.title' | translate }}</strong>
+              @for (line of impactLines(); track line.key) {
+                <span>{{ line.key | translate: { count: line.count } }}</span>
+              }
+            }
+          </div>
+        }
+        @if (isLegal()) {
+          <div class="form__pair">
+            <div class="form__control">
+              <label class="form__label" for="signer-rep-type">{{
+                'sig.edit.repLegalType' | translate
+              }}</label>
+              <p-select
+                inputId="signer-rep-type"
+                [options]="repLegalTypes()"
+                optionLabel="name"
+                optionValue="id"
+                [disabled]="!countryId()"
+                [placeholder]="
+                  (countryId() ? 'sig.edit.typePlaceholder' : 'sig.edit.noCountry') | translate
+                "
+                [ngModel]="identificationTypeRepLegalId()"
+                (ngModelChange)="identificationTypeRepLegalId.set($event)"
+                appendTo="body"
+                styleClass="form__select"
+              />
+            </div>
+            <dba-field
+              label="sig.edit.repLegalNumber"
+              [maxlength]="30"
+              [(value)]="identificationRepLegal"
+            />
+          </div>
+        }
         <div class="form__pair">
           <dba-field
             label="sig.edit.expeditionDate"
@@ -228,12 +310,14 @@ export const changesOf = (signer: PlatformSignerDetail, form: SignerFormValue): 
 export class SignerEditFormComponent implements OnInit {
   readonly signer = input.required<PlatformSignerDetail>();
   readonly busy = input(false);
+  readonly duplicateOf = input<string | null>(null);
   readonly submitted = output<{ changes: SignerChanges; reason: string }>();
   readonly dismissed = output<void>();
 
   private readonly api = inject(SignersApi);
   private readonly latestCities = new LatestRequest();
   private readonly latestCatalog = new LatestRequest();
+  protected readonly path = sectionPath('signers');
 
   protected readonly firstName = signal('');
   protected readonly lastName = signal('');
@@ -247,11 +331,17 @@ export class SignerEditFormComponent implements OnInit {
   protected readonly kindPersonId = signal<string | null>(null);
   protected readonly identificationTypeId = signal<string | null>(null);
   protected readonly expeditionCityId = signal<string | null>(null);
+  protected readonly identification = signal('');
+  protected readonly identificationRepLegal = signal('');
+  protected readonly identificationTypeRepLegalId = signal<string | null>(null);
   protected readonly reason = signal('');
   protected readonly countries = signal<CountryOption[]>([]);
-  protected readonly kinds = signal<NamedOption[]>([]);
+  protected readonly kinds = signal<KindPersonOption[]>([]);
   private readonly types = signal<IdentificationTypeOption[]>([]);
   protected readonly cities = signal<NamedOption[]>([]);
+  private readonly impact = signal<SignerIdentificationImpact | null>(null);
+  protected readonly impactLoading = signal(false);
+  private readonly impactFailed = signal(false);
 
   private readonly typesForKind = computed(() => {
     const kind = this.kindPersonId();
@@ -260,6 +350,23 @@ export class SignerEditFormComponent implements OnInit {
   protected readonly typeOptions = computed(() => {
     const options = this.typesForKind();
     const selected = this.types().find((type) => type.id === this.identificationTypeId());
+    return selected && !options.includes(selected) ? [selected, ...options] : options;
+  });
+  protected readonly isLegal = computed(
+    () =>
+      this.kinds().find((kind) => kind.id === this.kindPersonId())?.type === 'legal' ||
+      !!this.signer().identificationRepLegal,
+  );
+  protected readonly repLegalTypes = computed(() => {
+    const natural = new Set(
+      this.kinds()
+        .filter((kind) => kind.type === 'natural')
+        .map((kind) => kind.id),
+    );
+    const options = this.types().filter(
+      (type) => !!type.kindPersonId && natural.has(type.kindPersonId),
+    );
+    const selected = this.types().find((type) => type.id === this.identificationTypeRepLegalId());
     return selected && !options.includes(selected) ? [selected, ...options] : options;
   });
   private readonly changes = computed(() =>
@@ -276,8 +383,25 @@ export class SignerEditFormComponent implements OnInit {
       kindPersonId: this.kindPersonId(),
       identificationTypeId: this.identificationTypeId(),
       expeditionCityId: this.expeditionCityId(),
+      identification: this.identification(),
+      identificationRepLegal: this.identificationRepLegal(),
+      identificationTypeRepLegalId: this.identificationTypeRepLegalId(),
     }),
   );
+  protected readonly identificationMissing = computed(() => !this.identification().trim());
+  protected readonly numberMoved = computed(() => !!this.changes().identification);
+  protected readonly impactLines = computed(() => {
+    if (this.impactFailed()) return [{ key: 'sig.edit.impact.error', count: 0 }];
+    const impact = this.impact();
+    const lines: { key: string; count: number }[] = [];
+    const add = (count: number | undefined, one: string, many: string): void => {
+      if (count) lines.push({ key: `sig.edit.impact.${count === 1 ? one : many}`, count });
+    };
+    add(impact?.usersWithNumber, 'userOne', 'users');
+    add(impact?.legalRepCompanies, 'companyOne', 'companies');
+    add(impact?.documentsInProgress, 'documentOne', 'documents');
+    return [...lines, { key: 'sig.edit.impact.history', count: 0 }];
+  });
   protected readonly catalogMissing = computed(() => {
     const changes = this.changes();
     const moved = !!changes.countryId;
@@ -289,8 +413,17 @@ export class SignerEditFormComponent implements OnInit {
     return kindMissing || typeMissing;
   });
   private readonly ready = computed(
-    () => Object.keys(this.changes()).length > 0 && !this.catalogMissing(),
+    () =>
+      Object.keys(this.changes()).length > 0 &&
+      !this.catalogMissing() &&
+      !this.identificationMissing(),
   );
+
+  constructor() {
+    effect(() => {
+      if (this.numberMoved()) untracked(() => void this.loadImpact());
+    });
+  }
   protected readonly reasonMissing = computed(() => this.ready() && !this.reason().trim());
   protected readonly canSave = computed(() => this.ready() && !!this.reason().trim());
 
@@ -308,6 +441,9 @@ export class SignerEditFormComponent implements OnInit {
     this.kindPersonId.set(signer.kindPersonId ?? null);
     this.identificationTypeId.set(signer.identificationTypeId ?? null);
     this.expeditionCityId.set(signer.expeditionCityId ?? null);
+    this.identification.set(signer.identification ?? '');
+    this.identificationRepLegal.set(signer.identificationRepLegal ?? '');
+    this.identificationTypeRepLegalId.set(signer.identificationTypeRepLegalId ?? null);
     if (signer.kindPersonId && signer.kindPersonName) {
       this.kinds.set([{ id: signer.kindPersonId, name: signer.kindPersonName }]);
     }
@@ -353,6 +489,19 @@ export class SignerEditFormComponent implements OnInit {
   protected submit(): void {
     if (this.canSave()) {
       this.submitted.emit({ changes: this.changes(), reason: this.reason().trim() });
+    }
+  }
+
+  private async loadImpact(): Promise<void> {
+    if (this.impact() || this.impactLoading()) return;
+    this.impactLoading.set(true);
+    this.impactFailed.set(false);
+    try {
+      this.impact.set(await firstValueFrom(this.api.identificationImpact(this.signer().id)));
+    } catch {
+      this.impactFailed.set(true);
+    } finally {
+      this.impactLoading.set(false);
     }
   }
 
