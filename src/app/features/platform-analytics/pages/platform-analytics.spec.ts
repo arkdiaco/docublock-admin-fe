@@ -2,8 +2,13 @@ import type { HttpTestingController, TestRequest } from '@angular/common/http/te
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
+import { NotificationService } from '../../../core/ui/notification.service';
 import { conPermisos, configurar } from '../../catalogs/pages/catalogs-test-kit';
 import { browserTimeZone } from '../../validation-consumption/data/detail-view';
+import type {
+  PlatformDocuments,
+  PlatformOrganizationActivity,
+} from '../data/platform-activity.models';
 import type { PlatformOverview } from '../data/platform-analytics.models';
 import { shareOf, yearOf, yearOptionsOf, yearQueryParamsOf } from '../data/platform-analytics-view';
 import type { PlatformSignatures } from '../data/platform-signatures.models';
@@ -14,6 +19,60 @@ const LLAVE_CRUDA = /\b(pan|nav|common)\.[a-zA-Z]/;
 const BASE = '/inteligencia/analitica';
 const OVERVIEW = '/platform/intelligence/overview';
 const SIGNATURES = '/platform/intelligence/signatures';
+const DOCUMENTS = '/platform/intelligence/documents';
+const ORGANIZATIONS = '/platform/intelligence/organizations';
+const SIGNATURES_CSV = '/platform/intelligence/signatures.csv';
+const ORGANIZATIONS_CSV = '/platform/intelligence/organizations.csv';
+const HORA = 3_600_000;
+
+const documentos = (over: Partial<PlatformDocuments> = {}): PlatformDocuments => ({
+  from: '2026-10-01',
+  to: '2026-10-31',
+  timeZone: 'America/Bogota',
+  granularity: 'day',
+  organizationId: null,
+  channel: 'all',
+  totals: { created: 120, completed: 80, averageCompletionMs: 52 * HORA },
+  cohort: { completed: 60, inProgress: 40, rejected: 15, cancelled: 5 },
+  previous: {
+    created: 100,
+    completed: 80,
+    averageCompletionMs: 48 * HORA,
+    from: '2026-08-31',
+    to: '2026-09-30',
+  },
+  series: [
+    { bucket: '2026-10-01', created: 4, completed: 2 },
+    { bucket: '2026-10-02', created: 0, completed: 1 },
+  ],
+  ...over,
+});
+
+const sinDocumentos = (): PlatformDocuments =>
+  documentos({
+    totals: { created: 0, completed: 0, averageCompletionMs: null },
+    cohort: { completed: 0, inProgress: 0, rejected: 0, cancelled: 0 },
+    series: [],
+  });
+
+const organizaciones = (): PlatformOrganizationActivity => ({
+  from: '2026-10-01',
+  to: '2026-10-31',
+  timeZone: 'America/Bogota',
+  channel: 'all',
+  active: 45,
+  previous: { from: '2026-08-31', to: '2026-09-30', active: 41 },
+  top: [
+    {
+      organizationId: '64b000000000000000000001',
+      businessName: 'Inmobiliaria Andes',
+      tributaryNumber: '900123456',
+      signatures: 400,
+      documents: 120,
+      people: 95,
+    },
+  ],
+});
 const ORG = '64b000000000000000000001';
 
 const firmas = (over: Partial<PlatformSignatures> = {}): PlatformSignatures => ({
@@ -111,6 +170,20 @@ const pedido = (http: HttpTestingController): TestRequest =>
 const pedidoFirmas = (http: HttpTestingController): TestRequest =>
   http.expectOne((req) => req.url.endsWith(SIGNATURES) && req.method === 'GET');
 
+const pedidoDocumentos = (http: HttpTestingController): TestRequest =>
+  http.expectOne((req) => req.url.endsWith(DOCUMENTS) && req.method === 'GET');
+
+const pedidoOrganizaciones = (http: HttpTestingController): TestRequest =>
+  http.expectOne((req) => req.url.endsWith(ORGANIZATIONS) && req.method === 'GET');
+
+const resto = (
+  http: HttpTestingController,
+  { vacio = false, conOrganizaciones = true } = {},
+): void => {
+  pedidoDocumentos(http).flush(vacio ? sinDocumentos() : documentos());
+  if (conOrganizaciones) pedidoOrganizaciones(http).flush(organizaciones());
+};
+
 const botonCon = (root: HTMLElement, texto: string): HTMLButtonElement =>
   [...root.querySelectorAll<HTMLButtonElement>('button')].find((b) =>
     (b.textContent ?? '').includes(texto),
@@ -139,6 +212,7 @@ describe('Analítica de plataforma', () => {
     expect(conFirmas.request.params.get('channel')).toBe('all');
     expect(conFirmas.request.params.has('organizationId')).toBe(false);
     conFirmas.flush(firmas());
+    resto(http);
     await asentar(harness);
 
     const texto = root.textContent ?? '';
@@ -151,7 +225,7 @@ describe('Analítica de plataforma', () => {
     expect(texto).toContain('280 aprobadas');
     expect(texto).toContain('Transacciones por mes · 2025');
     expect(texto).toContain('Documentos por mes · 2025');
-    expect(root.querySelectorAll('dba-bar-chart')).toHaveLength(3);
+    expect(root.querySelectorAll('dba-bar-chart')).toHaveLength(4);
     expect(texto).toContain('Profesional');
     expect(texto).toContain('75 % de las organizaciones activas');
     expect(texto).not.toMatch(LLAVE_CRUDA);
@@ -162,6 +236,7 @@ describe('Analítica de plataforma', () => {
     const { harness, http, root } = await montar(BASE);
     pedido(http).flush({}, { status: 500, statusText: 'Error' });
     pedidoFirmas(http).flush(sinFirmas());
+    resto(http, { vacio: true });
     await asentar(harness);
     expect(root.textContent).toContain('No pudimos cargar la analítica');
     expect(root.textContent).toContain('Sin firmas en el período');
@@ -180,6 +255,7 @@ describe('Analítica de plataforma', () => {
     const { harness, http, root } = await montar();
     pedido(http).flush(resumen());
     pedidoFirmas(http).flush(firmas());
+    resto(http);
     await asentar(harness);
 
     const texto = root.textContent ?? '';
@@ -205,6 +281,20 @@ describe('Analítica de plataforma', () => {
     http.verify();
   });
 
+  it('una sola firma como representante legal se dice en singular', async () => {
+    const { harness, http, root } = await montar();
+    pedido(http).flush(resumen());
+    const una = firmas();
+    pedidoFirmas(http).flush({ ...una, breakdown: { ...una.breakdown, legalRep: 1 } });
+    resto(http);
+    await asentar(harness);
+
+    const texto = root.textContent ?? '';
+    expect(texto).toContain('1 firma como representante legal');
+    expect(texto).not.toContain('1 firmas');
+    http.verify();
+  });
+
   it('lee período, organización y canal de la URL y los manda al core', async () => {
     const { harness, http, root } = await montar(
       `${BASE}?periodo=personalizado&desde=2026-10-01&hasta=2026-10-31&canal=integracion&organizacion=${ORG}`,
@@ -216,7 +306,13 @@ describe('Analítica de plataforma', () => {
     expect(conFirmas.request.params.get('channel')).toBe('integration');
     expect(conFirmas.request.params.get('organizationId')).toBe(ORG);
     conFirmas.flush(firmas({ channel: 'integration', organizationId: ORG }));
+    const conDocumentos = pedidoDocumentos(http);
+    expect(conDocumentos.request.params.get('organizationId')).toBe(ORG);
+    expect(conDocumentos.request.params.get('channel')).toBe('integration');
+    conDocumentos.flush(documentos({ organizationId: ORG, channel: 'integration' }));
+    http.expectNone((req) => req.url.endsWith(ORGANIZATIONS));
     await asentar(harness);
+    expect(root.textContent).toContain('Elige «Todas las organizaciones» para ver las activas');
     expect(root.querySelectorAll('dba-field')).toHaveLength(2);
     expect(root.querySelector('dba-org-picker')).toBeNull();
     expect(root.textContent).not.toMatch(LLAVE_CRUDA);
@@ -227,6 +323,7 @@ describe('Analítica de plataforma', () => {
     const { harness, http, root } = await montar();
     pedido(http).flush(resumen());
     pedidoFirmas(http).flush(firmas());
+    resto(http);
     await asentar(harness);
 
     botonCon(root, 'Plataforma').click();
@@ -234,6 +331,12 @@ describe('Analítica de plataforma', () => {
     const conFirmas = pedidoFirmas(http);
     expect(conFirmas.request.params.get('channel')).toBe('platform');
     conFirmas.flush(firmas({ channel: 'platform' }));
+    expect(pedidoDocumentos(http).request.params.get('channel')).toBe('platform');
+    http.match((req) => req.url.endsWith(DOCUMENTS)).forEach((req) => req.flush(documentos()));
+    const conOrganizaciones = pedidoOrganizaciones(http);
+    expect(conOrganizaciones.request.params.get('channel')).toBe('platform');
+    expect(conOrganizaciones.request.params.has('organizationId')).toBe(false);
+    conOrganizaciones.flush(organizaciones());
     await asentar(harness);
     const url = TestBed.inject(Router).url;
     expect(url).toContain('canal=plataforma');
@@ -248,6 +351,7 @@ describe('Analítica de plataforma', () => {
     ]);
     pedido(http).flush(resumen());
     pedidoFirmas(http).flush(firmas());
+    resto(http);
     await asentar(harness);
     expect(root.querySelector('dba-org-picker')).not.toBeNull();
   });
@@ -259,6 +363,8 @@ describe('Analítica de plataforma', () => {
     pedido(http).flush(resumen());
     await asentar(harness);
     http.expectNone((req) => req.url.endsWith(SIGNATURES));
+    http.expectNone((req) => req.url.endsWith(DOCUMENTS));
+    http.expectNone((req) => req.url.endsWith(ORGANIZATIONS));
     expect(root.textContent).toContain('La fecha «Desde» va después de «Hasta».');
     http.verify();
   });
@@ -267,6 +373,7 @@ describe('Analítica de plataforma', () => {
     const { harness, http, root } = await montar();
     pedido(http).flush(resumen());
     pedidoFirmas(http).flush({}, { status: 500, statusText: 'Error' });
+    resto(http);
     await asentar(harness);
     expect(root.textContent).toContain('No pudimos cargar las firmas');
     expect(root.textContent).toContain('Documentos por mes · 2025');
@@ -275,6 +382,149 @@ describe('Analítica de plataforma', () => {
     pedidoFirmas(http).flush(firmas());
     await asentar(harness);
     expect(root.textContent).toContain('3,905');
+    http.verify();
+  });
+
+  it('muestra documentos y organizaciones del período con su comparación', async () => {
+    const { harness, http, root } = await montar();
+    pedido(http).flush(resumen());
+    pedidoFirmas(http).flush(firmas());
+    resto(http);
+    await asentar(harness);
+
+    const texto = root.textContent ?? '';
+    expect(texto).toContain('Documentos creados');
+    expect(texto).toContain('120');
+    expect(texto).toContain('+20 %');
+    expect(texto).toContain('Documentos completados');
+    expect(texto).toContain('Tiempo medio para completar');
+    expect(texto).toContain('2 d 4 h');
+    expect(texto).toContain('Período anterior: 2 d 0 h');
+    expect(texto).toContain('+8 %');
+    expect(texto).toContain('Creados y completados por día');
+    expect(texto).toContain('Cómo están hoy los creados en el período');
+    expect(texto).toContain('Rechazados');
+    expect(texto).toContain('12.5 % de los creados');
+    expect(texto).toContain('Anulados o vencidos');
+    expect(texto).toContain('Organizaciones activas');
+    expect(texto).toContain('Período anterior: 41');
+    expect(texto).toContain('Las 10 que más firmaron');
+    expect(texto).toContain('Inmobiliaria Andes');
+    expect(texto).toContain('900123456');
+    expect(root.querySelector('dba-organizations-block a.dba-ref')).toBeNull();
+    expect(texto).not.toMatch(LLAVE_CRUDA);
+    http.verify();
+  });
+
+  it('un tiempo medio más largo que antes se marca como peor', async () => {
+    const { harness, http, root } = await montar();
+    pedido(http).flush(resumen());
+    pedidoFirmas(http).flush(firmas());
+    resto(http);
+    await asentar(harness);
+    const tiempo = [...root.querySelectorAll('dba-documents-block .band__trend')].map(
+      (el) => el.className,
+    );
+    expect(tiempo[2]).toContain('band__trend--down');
+  });
+
+  it('con permiso de clientes el top enlaza a la ficha de la organización', async () => {
+    const { harness, http, root } = await montar(BASE, [
+      'platform:intelligence',
+      'platform:clients',
+    ]);
+    pedido(http).flush(resumen());
+    pedidoFirmas(http).flush(firmas());
+    resto(http);
+    await asentar(harness);
+    const enlace = root.querySelector<HTMLAnchorElement>('dba-organizations-block a.dba-ref');
+    expect(enlace?.getAttribute('href')).toContain('64b000000000000000000001');
+  });
+
+  it('si fallan los documentos solo ese bloque deja reintentar', async () => {
+    const { harness, http, root } = await montar();
+    pedido(http).flush(resumen());
+    pedidoFirmas(http).flush(firmas());
+    pedidoDocumentos(http).flush({}, { status: 500, statusText: 'Error' });
+    pedidoOrganizaciones(http).flush(organizaciones());
+    await asentar(harness);
+    expect(root.textContent).toContain('No pudimos cargar los documentos');
+    expect(root.textContent).toContain('3,905');
+    expect(root.textContent).toContain('Inmobiliaria Andes');
+
+    botonCon(root, 'Reintentar').click();
+    pedidoDocumentos(http).flush(documentos());
+    await asentar(harness);
+    expect(root.textContent).toContain('Documentos completados');
+    http.verify();
+  });
+  it('exporta las firmas en CSV con los mismos filtros de la pantalla', async () => {
+    const crear = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:x');
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+    const { harness, http, root } = await montar(
+      `${BASE}?periodo=personalizado&desde=2018-01-01&hasta=2026-10-31&canal=plataforma&organizacion=${ORG}`,
+    );
+    pedido(http).flush(resumen());
+    pedidoFirmas(http).flush(firmas({ organizationId: ORG, channel: 'platform' }));
+    resto(http, { conOrganizaciones: false });
+    await asentar(harness);
+    expect(botonCon(root, 'Exportar ranking')).toBeUndefined();
+
+    botonCon(root, 'Exportar firmas').click();
+    const csv = http.expectOne((req) => req.url.endsWith(SIGNATURES_CSV));
+    expect(csv.request.params.get('from')).toBe('2018-01-01');
+    expect(csv.request.params.get('to')).toBe('2026-10-31');
+    expect(csv.request.params.get('channel')).toBe('platform');
+    expect(csv.request.params.get('organizationId')).toBe(ORG);
+    expect(csv.request.params.get('tz')).toBe(browserTimeZone());
+    csv.flush(new Blob(['Fecha']), {
+      headers: {
+        'content-disposition': 'attachment; filename="firmas-2018-01-01-a-2026-10-31.csv"',
+      },
+    });
+    await asentar(harness);
+    expect(crear).toHaveBeenCalled();
+    http.verify();
+  });
+
+  it('exporta el ranking de organizaciones del período en CSV', async () => {
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:x');
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+    const { harness, http, root } = await montar(
+      `${BASE}?periodo=personalizado&desde=2026-10-01&hasta=2026-10-31`,
+    );
+    pedido(http).flush(resumen());
+    pedidoFirmas(http).flush(firmas());
+    resto(http);
+    await asentar(harness);
+
+    botonCon(root, 'Exportar ranking').click();
+    const csv = http.expectOne((req) => req.url.endsWith(ORGANIZATIONS_CSV));
+    expect(csv.request.params.get('from')).toBe('2026-10-01');
+    expect(csv.request.params.get('to')).toBe('2026-10-31');
+    expect(csv.request.params.get('channel')).toBe('all');
+    expect(csv.request.params.has('organizationId')).toBe(false);
+    csv.flush(new Blob(['Posición']));
+    await asentar(harness);
+    http.verify();
+  });
+
+  it('si la exportación falla lo avisa y deja volver a intentar', async () => {
+    const { harness, http, root } = await montar();
+    const fallo = vi.spyOn(TestBed.inject(NotificationService), 'error');
+    pedido(http).flush(resumen());
+    pedidoFirmas(http).flush(firmas());
+    resto(http);
+    await asentar(harness);
+
+    botonCon(root, 'Exportar firmas').click();
+    http
+      .expectOne((req) => req.url.endsWith(SIGNATURES_CSV))
+      .flush(new Blob(['x']), { status: 500, statusText: 'Error' });
+    await asentar(harness);
+    expect(fallo).toHaveBeenCalledWith('No pudimos exportar el CSV.');
+    expect(botonCon(root, 'Exportar firmas').disabled).toBe(false);
+    expect(root.textContent).not.toMatch(LLAVE_CRUDA);
     http.verify();
   });
 });

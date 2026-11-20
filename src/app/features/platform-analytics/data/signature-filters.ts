@@ -26,7 +26,7 @@ const CHANNEL_OF: Record<SignatureChannelKey, SignatureChannel> = {
   integracion: 'integration',
 };
 
-export type SignatureRangeIssue = 'RANGO_INVERTIDO' | 'RANGO_MUY_LARGO';
+export type SignatureRangeIssue = 'RANGO_INVERTIDO';
 
 export interface SignatureFilters {
   period: SignaturePeriod;
@@ -50,7 +50,6 @@ const PARAM = {
 } as const;
 
 const DEFAULT_PERIOD: SignaturePeriod = '30-dias';
-const MAX_RANGE_DAYS = 731;
 const DAY_MS = 86_400_000;
 const DAY = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
 const MONGO_ID = /^[a-f\d]{24}$/i;
@@ -61,8 +60,6 @@ const dayOf = (value: unknown): string | null =>
 const dayMs = (day: string): number => Date.parse(`${day}T00:00:00.000Z`);
 const isoDay = (ms: number): string => new Date(ms).toISOString().slice(0, 10);
 const shiftDay = (day: string, days: number): string => isoDay(dayMs(day) + days * DAY_MS);
-const daysIn = (from: string, to: string): number =>
-  Math.round((dayMs(to) - dayMs(from)) / DAY_MS) + 1;
 const monthStart = (day: string): string => `${day.slice(0, 7)}-01`;
 
 export const signatureFiltersOf = (params: Params): SignatureFilters => {
@@ -131,8 +128,7 @@ export const signatureRangeIssue = (
 ): SignatureRangeIssue | null => {
   const { from, to } = periodRangeOf(filters, today);
   if (!from || !to) return null;
-  if (from > to) return 'RANGO_INVERTIDO';
-  return daysIn(from, to) > MAX_RANGE_DAYS ? 'RANGO_MUY_LARGO' : null;
+  return from > to ? 'RANGO_INVERTIDO' : null;
 };
 
 export const signaturesRequestOf = (
@@ -166,6 +162,7 @@ export const bucketLabelOf = (
   const [year, month, day] = bucket.split('-').map(Number);
   if (granularity === 'day') return String(day);
   if (granularity === 'week') return `${day}/${month}`;
+  if (granularity === 'year') return String(year);
   const name = new Intl.DateTimeFormat(locale, { month: 'short', timeZone: 'UTC' })
     .format(new Date(Date.UTC(year, month - 1, 15)))
     .replace('.', '');

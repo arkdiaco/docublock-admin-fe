@@ -651,6 +651,10 @@
       "rehearse": "rehearsed a maintenance task",
       "execute": "executed a maintenance task"
     },
+    "intelligence": {
+      "organizations_export": "exported the analytics organization ranking",
+      "signatures_export": "exported the analytics signatures"
+    },
     "integrations": {
       "replay": "resent a webhook delivery",
       "retry_failed": "retried failed webhook deliveries",
@@ -6474,9 +6478,13 @@
       "plataforma": "Platform",
       "integracion": "Integration"
     },
+    "export": {
+      "signatures": "Export signatures (CSV)",
+      "organizations": "Export ranking (CSV)",
+      "error": "We couldn't export the CSV."
+    },
     "issue": {
-      "RANGO_INVERTIDO": "The “From” date is after “To”.",
-      "RANGO_MUY_LARGO": "The period cannot be longer than two years."
+      "RANGO_INVERTIDO": "The “From” date is after “To”."
     },
     "sig": {
       "title": "Signatures",
@@ -6487,6 +6495,7 @@
       "previous": "Previous period: {{value}}",
       "share": "{{share}}% of signatures",
       "legalRep": "{{value}} signatures as legal representative",
+      "legalRepOne": "1 signature as legal representative",
       "emptyTitle": "No signatures in the period",
       "emptyLead": "Try another period, organization or channel.",
       "stat": {
@@ -6503,7 +6512,8 @@
       "chart": {
         "day": "Signatures by day",
         "week": "Signatures by week",
-        "month": "Signatures by month"
+        "month": "Signatures by month",
+        "year": "Signatures by year"
       },
       "breakdown": {
         "origin": {
@@ -6533,6 +6543,67 @@
           "none": "None",
           "note": "If the document required biometrics, the signature counts only there."
         }
+      }
+    },
+    "duration": {
+      "daysHours": "{{days}} d {{hours}} h",
+      "hoursMinutes": "{{hours}} h {{minutes}} min",
+      "minutes": "{{minutes}} min"
+    },
+    "doc": {
+      "title": "Documents",
+      "loading": "Loading documents…",
+      "errorTitle": "We could not load the documents",
+      "statsLabel": "Document summary for the period",
+      "emptyTitle": "No documents in the period",
+      "emptyLead": "Try another period, organization or channel.",
+      "stat": {
+        "created": "Documents created",
+        "completed": "Documents completed",
+        "average": "Average time to complete",
+        "averageNote": "From creation to the last signature"
+      },
+      "series": {
+        "completed": "Completed"
+      },
+      "chart": {
+        "day": "Created and completed by day",
+        "week": "Created and completed by week",
+        "month": "Created and completed by month",
+        "year": "Created and completed by year"
+      },
+      "cohort": {
+        "title": "Where the documents created in the period stand today",
+        "lead": "Today's status of each document created in the period.",
+        "completed": "Completed",
+        "inProgress": "In progress",
+        "rejected": "Rejected",
+        "cancelled": "Cancelled or expired",
+        "share": "{{share}}% of those created",
+        "emptyTitle": "No documents created",
+        "emptyLead": "No document was created in this period."
+      }
+    },
+    "org": {
+      "title": "Organizations",
+      "loading": "Loading organizations…",
+      "errorTitle": "We could not load the organizations",
+      "statsLabel": "Active organizations in the period",
+      "allOnly": "Choose “All organizations” to see the active ones and the ranking.",
+      "stat": {
+        "active": "Active organizations"
+      },
+      "top": "The 10 that signed the most",
+      "topLead": "Active are those that created a document or had a signature in the period.",
+      "noName": "No business name",
+      "emptyTitle": "No signatures in the period",
+      "emptyLead": "When there are signatures in the period, the organizations that signed the most will show here.",
+      "col": {
+        "rank": "#",
+        "organization": "Organization",
+        "signatures": "Signatures",
+        "documents": "Documents",
+        "people": "People"
       }
     }
   },

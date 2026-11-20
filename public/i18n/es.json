@@ -651,6 +651,10 @@
       "rehearse": "ensayó una tarea de mantenimiento",
       "execute": "ejecutó una tarea de mantenimiento"
     },
+    "intelligence": {
+      "organizations_export": "exportó el ranking de organizaciones de la analítica",
+      "signatures_export": "exportó las firmas de la analítica"
+    },
     "integrations": {
       "replay": "reenvió una entrega de webhook",
       "retry_failed": "reintentó entregas de webhook fallidas",
@@ -6474,9 +6478,13 @@
       "plataforma": "Plataforma",
       "integracion": "Integración"
     },
+    "export": {
+      "signatures": "Exportar firmas (CSV)",
+      "organizations": "Exportar ranking (CSV)",
+      "error": "No pudimos exportar el CSV."
+    },
     "issue": {
-      "RANGO_INVERTIDO": "La fecha «Desde» va después de «Hasta».",
-      "RANGO_MUY_LARGO": "El período no puede pasar de dos años."
+      "RANGO_INVERTIDO": "La fecha «Desde» va después de «Hasta»."
     },
     "sig": {
       "title": "Firmas",
@@ -6487,6 +6495,7 @@
       "previous": "Período anterior: {{value}}",
       "share": "{{share}} % de las firmas",
       "legalRep": "{{value}} firmas como representante legal",
+      "legalRepOne": "1 firma como representante legal",
       "emptyTitle": "Sin firmas en el período",
       "emptyLead": "Prueba con otro período, otra organización u otro canal.",
       "stat": {
@@ -6503,7 +6512,8 @@
       "chart": {
         "day": "Firmas por día",
         "week": "Firmas por semana",
-        "month": "Firmas por mes"
+        "month": "Firmas por mes",
+        "year": "Firmas por año"
       },
       "breakdown": {
         "origin": {
@@ -6533,6 +6543,67 @@
           "none": "Ninguna",
           "note": "Si el documento exigía biometría, la firma cuenta solo ahí."
         }
+      }
+    },
+    "duration": {
+      "daysHours": "{{days}} d {{hours}} h",
+      "hoursMinutes": "{{hours}} h {{minutes}} min",
+      "minutes": "{{minutes}} min"
+    },
+    "doc": {
+      "title": "Documentos",
+      "loading": "Cargando los documentos…",
+      "errorTitle": "No pudimos cargar los documentos",
+      "statsLabel": "Resumen de documentos del período",
+      "emptyTitle": "Sin documentos en el período",
+      "emptyLead": "Prueba con otro período, otra organización u otro canal.",
+      "stat": {
+        "created": "Documentos creados",
+        "completed": "Documentos completados",
+        "average": "Tiempo medio para completar",
+        "averageNote": "Desde que se crea hasta la última firma"
+      },
+      "series": {
+        "completed": "Completados"
+      },
+      "chart": {
+        "day": "Creados y completados por día",
+        "week": "Creados y completados por semana",
+        "month": "Creados y completados por mes",
+        "year": "Creados y completados por año"
+      },
+      "cohort": {
+        "title": "Cómo están hoy los creados en el período",
+        "lead": "El estado de hoy de cada documento creado en el período.",
+        "completed": "Completados",
+        "inProgress": "En curso",
+        "rejected": "Rechazados",
+        "cancelled": "Anulados o vencidos",
+        "share": "{{share}} % de los creados",
+        "emptyTitle": "Sin documentos creados",
+        "emptyLead": "En este período no se creó ningún documento."
+      }
+    },
+    "org": {
+      "title": "Organizaciones",
+      "loading": "Cargando las organizaciones…",
+      "errorTitle": "No pudimos cargar las organizaciones",
+      "statsLabel": "Organizaciones activas del período",
+      "allOnly": "Elige «Todas las organizaciones» para ver las activas y el ranking.",
+      "stat": {
+        "active": "Organizaciones activas"
+      },
+      "top": "Las 10 que más firmaron",
+      "topLead": "Activas son las que crearon un documento o tuvieron alguna firma en el período.",
+      "noName": "Sin razón social",
+      "emptyTitle": "Sin firmas en el período",
+      "emptyLead": "Cuando haya firmas en el período, verás aquí las organizaciones que más firmaron.",
+      "col": {
+        "rank": "#",
+        "organization": "Organización",
+        "signatures": "Firmas",
+        "documents": "Documentos",
+        "people": "Personas"
       }
     }
   },

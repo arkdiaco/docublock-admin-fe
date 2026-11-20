@@ -141,6 +141,8 @@ export const ACTIVITY_ACTIONS = [
   'integrations.retry_failed',
   'integrations.key_revoke',
   'integrations.endpoint_toggle',
+  'intelligence.organizations_export',
+  'intelligence.signatures_export',
   'transactions.invoiced_set',
   'transactions.manual_create',
   'transactions.reconcile',

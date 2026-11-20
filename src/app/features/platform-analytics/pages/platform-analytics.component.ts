@@ -11,9 +11,13 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Select } from 'primeng/select';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, type Observable } from 'rxjs';
 import { AuthStore } from '../../../core/auth/auth.store';
+import { NotificationService } from '../../../core/ui/notification.service';
+import { sectionPath } from '../../../core/layout/console-nav';
+import type { ExportedFile } from '../../../shared/http/exported-file';
 import { LatestRequest } from '../../../shared/http/latest-request';
+import { saveBlob } from '../../../shared/http/save-blob';
 import {
   BarChartComponent,
   type BarChartCategory,
@@ -22,15 +26,24 @@ import {
 import { BarListComponent, type BarListItem } from '../../../shared/ui/bar-list.component';
 import { ButtonComponent } from '../../../shared/ui/button.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
+import { IconComponent } from '../../../shared/ui/icon.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
 import { StatBandComponent, type StatCell } from '../../../shared/ui/stat-band.component';
 import { browserTimeZone } from '../../validation-consumption/data/detail-view';
 import { SignatureFiltersBarComponent } from '../components/signature-filters-bar.component';
+import { DocumentsBlockComponent } from '../components/documents-block.component';
+import { OrganizationsBlockComponent } from '../components/organizations-block.component';
 import { SignaturesBlockComponent } from '../components/signatures-block.component';
+import { BlockLoad } from '../data/block-load';
+import type {
+  OrganizationsRequest,
+  PlatformDocuments,
+  PlatformOrganizationActivity,
+} from '../data/platform-activity.models';
 import { PlatformAnalyticsApi } from '../data/platform-analytics.api';
 import type { PlatformOverview } from '../data/platform-analytics.models';
 import { shareOf, yearOf, yearOptionsOf, yearQueryParamsOf } from '../data/platform-analytics-view';
-import type { PlatformSignatures } from '../data/platform-signatures.models';
+import type { PlatformSignatures, SignaturesRequest } from '../data/platform-signatures.models';
 import {
   signatureFiltersOf,
   signatureQueryParamsOf,
@@ -41,6 +54,7 @@ import {
 } from '../data/signature-filters';
 
 type LoadState = 'loading' | 'ready' | 'failed';
+type ExportKind = 'signatures' | 'organizations';
 
 @Component({
   selector: 'dba-platform-analytics',
@@ -52,10 +66,13 @@ type LoadState = 'loading' | 'ready' | 'failed';
     BarListComponent,
     ButtonComponent,
     EmptyStateComponent,
+    IconComponent,
     SectionLoaderComponent,
     StatBandComponent,
     SignatureFiltersBarComponent,
     SignaturesBlockComponent,
+    DocumentsBlockComponent,
+    OrganizationsBlockComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -76,25 +93,91 @@ type LoadState = 'loading' | 'ready' | 'failed';
       <section class="pa__section">
         <header class="pa__section-head">
           <h2 class="dba-section">{{ 'pan.sig.title' | translate }}</h2>
-          @if (!issue() && signatureState() === 'ready' && signatures(); as data) {
+          @if (!issue() && signatures.state() === 'ready' && signatures.data(); as data) {
             <span class="dba-meta">{{ rangeText(data.from, data.to) }}</span>
+          }
+          @if (!issue()) {
+            <button
+              dba-button
+              variant="secondary"
+              class="pa__export"
+              [busy]="exporting() === 'signatures'"
+              [disabled]="exporting() !== null"
+              (click)="exportSignatures()"
+            >
+              <db-icon name="download" [size]="15" />
+              {{ 'pan.export.signatures' | translate }}
+            </button>
           }
         </header>
         @if (issue(); as code) {
           <p class="dba-meta">{{ 'pan.issue.' + code | translate }}</p>
-        } @else if (signatureState() === 'loading') {
+        } @else if (signatures.state() === 'loading') {
           <db-section-loader [label]="'pan.sig.loading' | translate" />
-        } @else if (signatureState() === 'failed') {
+        } @else if (signatures.state() === 'failed') {
           <div class="bl__panel">
             <dba-empty-state titleKey="pan.sig.errorTitle" leadKey="pan.errorLead" />
             <button dba-button variant="secondary" (click)="loadSignatures()">
               {{ 'common.retry' | translate }}
             </button>
           </div>
-        } @else if (signatures(); as data) {
+        } @else if (signatures.data(); as data) {
           <dba-signatures-block [data]="data" />
         }
       </section>
+
+      @if (!issue()) {
+        <section class="pa__section">
+          <header class="pa__section-head">
+            <h2 class="dba-section">{{ 'pan.doc.title' | translate }}</h2>
+          </header>
+          @if (documents.state() === 'loading') {
+            <db-section-loader [label]="'pan.doc.loading' | translate" />
+          } @else if (documents.state() === 'failed') {
+            <div class="bl__panel">
+              <dba-empty-state titleKey="pan.doc.errorTitle" leadKey="pan.errorLead" />
+              <button dba-button variant="secondary" (click)="loadDocuments()">
+                {{ 'common.retry' | translate }}
+              </button>
+            </div>
+          } @else if (documents.data(); as data) {
+            <dba-documents-block [data]="data" />
+          }
+        </section>
+
+        <section class="pa__section">
+          <header class="pa__section-head">
+            <h2 class="dba-section">{{ 'pan.org.title' | translate }}</h2>
+            @if (!filters().organizationId) {
+              <button
+                dba-button
+                variant="secondary"
+                class="pa__export"
+                [busy]="exporting() === 'organizations'"
+                [disabled]="exporting() !== null"
+                (click)="exportOrganizations()"
+              >
+                <db-icon name="download" [size]="15" />
+                {{ 'pan.export.organizations' | translate }}
+              </button>
+            }
+          </header>
+          @if (filters().organizationId) {
+            <p class="dba-meta">{{ 'pan.org.allOnly' | translate }}</p>
+          } @else if (organizations.state() === 'loading') {
+            <db-section-loader [label]="'pan.org.loading' | translate" />
+          } @else if (organizations.state() === 'failed') {
+            <div class="bl__panel">
+              <dba-empty-state titleKey="pan.org.errorTitle" leadKey="pan.errorLead" />
+              <button dba-button variant="secondary" (click)="loadOrganizations()">
+                {{ 'common.retry' | translate }}
+              </button>
+            </div>
+          } @else if (organizations.data(); as data) {
+            <dba-organizations-block [data]="data" [organizationsPath]="organizationsPath()" />
+          }
+        </section>
+      }
 
       <section class="pa__section">
         <header class="pa__section-head pa__section-head--tools">
@@ -195,6 +278,11 @@ type LoadState = 'loading' | 'ready' | 'failed';
       margin: 0;
     }
 
+    .pa__export {
+      margin-left: auto;
+      align-self: center;
+    }
+
     .pa__section-head--tools {
       align-items: flex-end;
       justify-content: space-between;
@@ -256,8 +344,8 @@ export class PlatformAnalyticsComponent {
   private readonly translate = inject(TranslateService);
   private readonly locale = inject(LOCALE_ID);
   private readonly auth = inject(AuthStore);
+  private readonly notify = inject(NotificationService);
   private readonly latest = new LatestRequest();
-  private readonly latestSignatures = new LatestRequest();
   private readonly timeZone = browserTimeZone();
   private readonly currentYear = Number(
     new Intl.DateTimeFormat('en-US', { timeZone: this.timeZone, year: 'numeric' }).format(
@@ -271,8 +359,13 @@ export class PlatformAnalyticsComponent {
   protected readonly filters = signal<SignatureFilters>(
     signatureFiltersOf(this.route.snapshot.queryParams),
   );
-  protected readonly signatureState = signal<LoadState>('loading');
-  protected readonly signatures = signal<PlatformSignatures | null>(null);
+  protected readonly signatures = new BlockLoad<PlatformSignatures>();
+  protected readonly documents = new BlockLoad<PlatformDocuments>();
+  protected readonly organizations = new BlockLoad<PlatformOrganizationActivity>();
+  protected readonly exporting = signal<ExportKind | null>(null);
+  protected readonly organizationsPath = computed(() =>
+    this.auth.canRead('clients') ? sectionPath('organizations') : null,
+  );
   protected readonly issue = computed(() =>
     signatureRangeIssue(this.filters(), todayIn(new Date(), this.timeZone)),
   );
@@ -379,7 +472,7 @@ export class PlatformAnalyticsComponent {
 
   constructor() {
     void this.load();
-    void this.loadSignatures();
+    this.loadRange();
   }
 
   protected pick(year: number): void {
@@ -403,27 +496,67 @@ export class PlatformAnalyticsComponent {
       queryParamsHandling: 'merge',
       replaceUrl: true,
     });
-    void this.loadSignatures();
+    this.loadRange();
   }
 
-  protected async loadSignatures(): Promise<void> {
-    const current = this.latestSignatures.start();
-    if (this.issue()) return;
-    this.signatureState.set('loading');
-    try {
-      const request = signaturesRequestOf(
-        this.filters(),
-        todayIn(new Date(), this.timeZone),
-        this.timeZone,
-      );
-      const signatures = await firstValueFrom(this.api.signatures(request));
-      if (!current()) return;
-      this.signatures.set(signatures);
-      this.signatureState.set('ready');
-    } catch {
-      if (!current()) return;
-      this.signatureState.set('failed');
+  protected loadSignatures(): void {
+    void this.signatures.run(() => this.api.signatures(this.request()));
+  }
+
+  protected loadDocuments(): void {
+    void this.documents.run(() => this.api.documents(this.request()));
+  }
+
+  protected loadOrganizations(): void {
+    if (this.filters().organizationId) {
+      this.organizations.cancel();
+      return;
     }
+    void this.organizations.run(() => this.api.organizations(this.organizationsRequest()));
+  }
+
+  protected exportSignatures(): void {
+    void this.download('signatures', () => this.api.signaturesCsv(this.request()));
+  }
+
+  protected exportOrganizations(): void {
+    void this.download('organizations', () =>
+      this.api.organizationsCsv(this.organizationsRequest()),
+    );
+  }
+
+  private async download(kind: ExportKind, request: () => Observable<ExportedFile>): Promise<void> {
+    if (this.exporting()) return;
+    this.exporting.set(kind);
+    try {
+      const file = await firstValueFrom(request());
+      saveBlob(new Blob(['\uFEFF', file.blob], { type: 'text/csv;charset=utf-8' }), file.filename);
+    } catch {
+      this.notify.error(this.text('pan.export.error'));
+    } finally {
+      this.exporting.set(null);
+    }
+  }
+
+  private organizationsRequest(): OrganizationsRequest {
+    const { from, to, tz, channel } = this.request();
+    return { from, to, tz, channel };
+  }
+
+  private loadRange(): void {
+    if (this.issue()) {
+      this.signatures.cancel();
+      this.documents.cancel();
+      this.organizations.cancel();
+      return;
+    }
+    this.loadSignatures();
+    this.loadDocuments();
+    this.loadOrganizations();
+  }
+
+  private request(): SignaturesRequest {
+    return signaturesRequestOf(this.filters(), todayIn(new Date(), this.timeZone), this.timeZone);
   }
 
   protected rangeText(from: string, to: string): string {
