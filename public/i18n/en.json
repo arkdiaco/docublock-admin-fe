@@ -64,6 +64,7 @@
     },
     "signers": "Signers",
     "legalEntities": "Legal entities",
+    "inactiveClients": "Inactive clients",
     "documents": "Documents",
     "support": "Support & SLA",
     "integrations": "Integrations",
@@ -5436,7 +5437,9 @@
         "custody": "In custody",
         "renotified": "Renotified",
         "requeued": "Requeued",
-        "waiting": "Waiting"
+        "waiting": "Waiting",
+        "organizations": "Organizations",
+        "removed": "Removed"
       },
       "closing": {
         "name": "Document closing",
@@ -5498,6 +5501,11 @@
       "digestWeekly": {
         "name": "Weekly email digest",
         "schedule": "Mondays, 8:00"
+      },
+      "organizationActivity": {
+        "name": "Organization activity",
+        "schedule": "Daily, 3:00",
+        "notice": "Works out, for each organization, the date of its last document and its last signature. The Inactive clients list is built from it. It sends no messages and changes no documents."
       }
     },
     "mnt": {
@@ -6965,6 +6973,46 @@
         "AJUSTE_INVALIDO": "Adding filings and setting the balance cannot go together.",
         "generic": "Could not adjust the balance. Try again."
       }
+    }
+  },
+  "inactive": {
+    "lead": "Organizations with signed documents that have gone more than {{months}} months without creating documents or receiving signatures.",
+    "searchPlaceholder": "Search by name, tax ID or email",
+    "loading": "Loading inactive clients…",
+    "errorTitle": "We could not load the inactive clients",
+    "notComputedTitle": "Activity has not been calculated yet",
+    "notComputedLead": "The job runs every day at 3:00. It can also be run from Operations › Tasks.",
+    "emptyTitle": "There are no inactive clients",
+    "emptyLead": "No organization with signed documents meets the period, or none matches the search.",
+    "col": {
+      "org": "Organization",
+      "state": "Status",
+      "last": "Last activity",
+      "signed": "Signed",
+      "plan": "Plan",
+      "email": "Email"
+    },
+    "state": {
+      "active": "Active",
+      "suspended": "Suspended"
+    },
+    "monthsAgo": "{{n}} months ago",
+    "monthsAgoOne": "1 month ago",
+    "signedOf": "{{signed}} of {{total}}",
+    "signedMeta": "signed documents",
+    "noPlan": "No plan",
+    "planState": {
+      "ACTIVE": "Current",
+      "EXPIRED": "Expired",
+      "CANCELLED": "Cancelled"
+    },
+    "band": {
+      "total": "Inactive",
+      "totalNote": "With signed documents",
+      "cutoff": "No activity since",
+      "cutoffNote": "More than {{months}} months",
+      "computed": "Last calculation",
+      "computedNote": "Recalculated every day at 3:00"
     }
   }
 }

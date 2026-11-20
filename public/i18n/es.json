@@ -64,6 +64,7 @@
     },
     "signers": "Firmantes",
     "legalEntities": "Entidades jurídicas",
+    "inactiveClients": "Clientes inactivos",
     "documents": "Documentos",
     "support": "Soporte y SLA",
     "integrations": "Integraciones",
@@ -5436,7 +5437,9 @@
         "custody": "En custodia",
         "renotified": "Reavisados",
         "requeued": "Devueltos a la cola",
-        "waiting": "En espera"
+        "waiting": "En espera",
+        "organizations": "Organizaciones",
+        "removed": "Retiradas"
       },
       "closing": {
         "name": "Cierre de documentos",
@@ -5498,6 +5501,11 @@
       "digestWeekly": {
         "name": "Resumen semanal por correo",
         "schedule": "Lunes, 8:00"
+      },
+      "organizationActivity": {
+        "name": "Actividad por organización",
+        "schedule": "Cada día, 3:00",
+        "notice": "Calcula, por organización, la fecha de su último documento y de su última firma. Con eso se arma la lista de Clientes inactivos. No envía mensajes ni cambia documentos."
       }
     },
     "mnt": {
@@ -6965,6 +6973,46 @@
         "AJUSTE_INVALIDO": "Sumar radicaciones y dejar el saldo en una cantidad no van juntos.",
         "generic": "No se pudo ajustar el saldo. Inténtalo de nuevo."
       }
+    }
+  },
+  "inactive": {
+    "lead": "Organizaciones con documentos firmados que llevan más de {{months}} meses sin crear documentos ni recibir firmas.",
+    "searchPlaceholder": "Buscar por nombre, NIT o correo",
+    "loading": "Cargando los clientes inactivos…",
+    "errorTitle": "No pudimos cargar los clientes inactivos",
+    "notComputedTitle": "Todavía no se ha calculado la actividad",
+    "notComputedLead": "La tarea corre cada día a las 3:00. También se puede correr desde Operación › Tareas.",
+    "emptyTitle": "No hay clientes inactivos",
+    "emptyLead": "Ninguna organización con documentos firmados cumple el plazo, o ninguna coincide con la búsqueda.",
+    "col": {
+      "org": "Organización",
+      "state": "Estado",
+      "last": "Última actividad",
+      "signed": "Firmados",
+      "plan": "Plan",
+      "email": "Correo"
+    },
+    "state": {
+      "active": "Activa",
+      "suspended": "Suspendida"
+    },
+    "monthsAgo": "Hace {{n}} meses",
+    "monthsAgoOne": "Hace 1 mes",
+    "signedOf": "{{signed}} de {{total}}",
+    "signedMeta": "documentos firmados",
+    "noPlan": "Sin plan",
+    "planState": {
+      "ACTIVE": "Vigente",
+      "EXPIRED": "Vencido",
+      "CANCELLED": "Cancelado"
+    },
+    "band": {
+      "total": "Inactivas",
+      "totalNote": "Con documentos firmados",
+      "cutoff": "Sin actividad desde",
+      "cutoffNote": "Más de {{months}} meses",
+      "computed": "Último cálculo",
+      "computedNote": "Se recalcula cada día a las 3:00"
     }
   }
 }

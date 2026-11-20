@@ -24,6 +24,8 @@ const METRICS = new Set([
   'renotified',
   'requeued',
   'waiting',
+  'organizations',
+  'removed',
 ]);
 
 const RESULT_STATES: Record<JobResult, OrgState> = {
