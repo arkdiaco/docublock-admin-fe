@@ -6534,6 +6534,66 @@
           "note": "If the document required biometrics, the signature counts only there."
         }
       }
+    },
+    "duration": {
+      "daysHours": "{{days}} d {{hours}} h",
+      "hoursMinutes": "{{hours}} h {{minutes}} min",
+      "minutes": "{{minutes}} min"
+    },
+    "doc": {
+      "title": "Documents",
+      "loading": "Loading documents…",
+      "errorTitle": "We could not load the documents",
+      "statsLabel": "Document summary for the period",
+      "emptyTitle": "No documents in the period",
+      "emptyLead": "Try another period, organization or channel.",
+      "stat": {
+        "created": "Documents created",
+        "completed": "Documents completed",
+        "average": "Average time to complete",
+        "averageNote": "From creation to the last signature"
+      },
+      "series": {
+        "completed": "Completed"
+      },
+      "chart": {
+        "day": "Created and completed by day",
+        "week": "Created and completed by week",
+        "month": "Created and completed by month"
+      },
+      "cohort": {
+        "title": "Where the documents created in the period stand today",
+        "lead": "Today's status of each document created in the period.",
+        "completed": "Completed",
+        "inProgress": "In progress",
+        "rejected": "Rejected",
+        "cancelled": "Cancelled or expired",
+        "share": "{{share}}% of those created",
+        "emptyTitle": "No documents created",
+        "emptyLead": "No document was created in this period."
+      }
+    },
+    "org": {
+      "title": "Organizations",
+      "loading": "Loading organizations…",
+      "errorTitle": "We could not load the organizations",
+      "statsLabel": "Active organizations in the period",
+      "allOnly": "Choose “All organizations” to see the active ones and the ranking.",
+      "stat": {
+        "active": "Active organizations"
+      },
+      "top": "The 10 that signed the most",
+      "topLead": "Active are those that created a document or had a signature in the period.",
+      "noName": "No business name",
+      "emptyTitle": "No signatures in the period",
+      "emptyLead": "When there are signatures in the period, the organizations that signed the most will show here.",
+      "col": {
+        "rank": "#",
+        "organization": "Organization",
+        "signatures": "Signatures",
+        "documents": "Documents",
+        "people": "People"
+      }
     }
   },
   "vhis": {

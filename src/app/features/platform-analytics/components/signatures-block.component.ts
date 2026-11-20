@@ -15,14 +15,11 @@ import {
 } from '../../../shared/ui/bar-chart.component';
 import { BarListComponent, type BarListItem } from '../../../shared/ui/bar-list.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
-import {
-  StatBandComponent,
-  type StatCell,
-  type StatTrend,
-} from '../../../shared/ui/stat-band.component';
+import { StatBandComponent, type StatCell } from '../../../shared/ui/stat-band.component';
+import { statTrendOf } from '../data/analytics-format';
 import { shareOf } from '../data/platform-analytics-view';
 import type { PlatformSignatures, SignatureTotals } from '../data/platform-signatures.models';
-import { bucketLabelOf, changeOf } from '../data/signature-filters';
+import { bucketLabelOf } from '../data/signature-filters';
 
 const TOTAL_KEYS: (keyof SignatureTotals)[] = [
   'signatures',
@@ -135,7 +132,7 @@ export class SignaturesBlockComponent {
       key,
       label: this.text(`pan.sig.stat.${key}`),
       value: this.count(totals[key]),
-      trend: this.trend(totals[key], previous[key]),
+      trend: statTrendOf(totals[key], previous[key], this.locale),
       note: this.text('pan.sig.previous', { value: this.count(previous[key]) }),
     }));
   });
@@ -204,16 +201,6 @@ export class SignaturesBlockComponent {
       },
     ];
   });
-
-  private trend(current: number, previous: number): StatTrend | undefined {
-    const change = changeOf(current, previous);
-    if (change === null) return undefined;
-    const sign = change > 0 ? '+' : change < 0 ? '−' : '';
-    return {
-      label: `${sign}${formatNumber(Math.abs(change), this.locale, '1.0-0')} %`,
-      tone: change > 0 ? 'up' : change < 0 ? 'down' : 'flat',
-    };
-  }
 
   private count(value: number): string {
     return formatNumber(value, this.locale, '1.0-0');
