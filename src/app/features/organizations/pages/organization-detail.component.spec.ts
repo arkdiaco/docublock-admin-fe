@@ -142,6 +142,37 @@ describe('OrganizationDetailComponent', () => {
     expect(host.querySelector('.rec__card .st--closed')).not.toBeNull();
   });
 
+  it('con deuda en el plan vigente la barra dice cuánto debe', async () => {
+    const { host } = await montar(detail({ documents: { used: 212, limit: 200 } }));
+    expect(host.querySelector('dba-quota-bar')?.textContent).toContain('212 / 200 · debe 12');
+  });
+
+  it('sin plan vigente muestra el último con lo firmado y la deuda', async () => {
+    const { host } = await montar(
+      detail({
+        state: 'no_subscription',
+        plan: undefined,
+        documents: { used: 0, limit: null },
+        lastPlan: {
+          code: 'PRO',
+          name: 'Profesional',
+          state: 'EXPIRED',
+          periodEnd: '2026-10-31T12:00:00.000Z',
+          documents: { used: 107, limit: 100 },
+        },
+      }),
+    );
+    const card = [...host.querySelectorAll('.od__card')].find((c) =>
+      c.textContent?.includes('Plan y consumo'),
+    )!;
+    expect(card.textContent).toContain('Sin suscripción');
+    expect(card.textContent).toContain('Último plan');
+    expect(card.textContent).toContain('Profesional');
+    expect(card.textContent).toContain('Vencido el 31/10/2026');
+    expect(card.querySelector('dba-quota-bar')?.textContent).toContain('107 / 100 · debe 7');
+    expect(host.textContent).not.toMatch(/\b(orgd|org|nav|common|sub)\.[a-zA-Z]/);
+  });
+
   const conPermisos = (permisos: string[]) =>
     TestBed.inject(AuthStore).setProfile({
       user: { id: 'u1', names: 'Marta', surNames: 'Vidal', email: 'marta@docublock.co', identification: '', imageProfile: null },

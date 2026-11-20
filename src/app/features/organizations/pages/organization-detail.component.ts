@@ -222,6 +222,15 @@ const ORG_EDIT_ERRORS = ['TRIBUTARY_NUMBER_INVALID', 'NIT_EN_USO', 'CIUDAD_FUERA
                   <dba-quota-bar label="orgd.f.documents" [used]="org.documents.used" [limit]="org.documents.limit" [valueText]="docsText()" />
                 } @else {
                   <p class="dba-body od__muted">{{ 'orgd.noPlan' | translate }}</p>
+                  @if (org.lastPlan; as last) {
+                    <dl class="od__dl">
+                      <dt>{{ 'orgd.lastPlan' | translate }}</dt>
+                      <dd>{{ last.name }}</dd>
+                      <dt>{{ 'orgd.f.validity' | translate }}</dt>
+                      <dd class="dba-mono">{{ lastValidity() }}</dd>
+                    </dl>
+                    <dba-quota-bar label="orgd.f.documents" [used]="last.documents.used" [limit]="last.documents.limit" [valueText]="lastDocsText()" />
+                  }
                 }
                 <dl class="od__dl od__dl--tight">
                   <dt>{{ 'orgd.f.members' | translate }}</dt>
@@ -456,11 +465,22 @@ export class OrganizationDetailComponent {
     const end = this.detail()?.plan?.periodEnd;
     return end ? this.day(end) : (this.translate.instant('orgd.noExpiry') as string);
   });
-  protected readonly docsText = computed(() => {
-    const docs = this.detail()?.documents;
-    if (!docs) return '';
-    return `${docs.used} / ${docs.limit === null ? '∞' : docs.limit}`;
+  protected readonly docsText = computed(() => this.usageText(this.detail()?.documents));
+  protected readonly lastDocsText = computed(() => this.usageText(this.detail()?.lastPlan?.documents));
+  protected readonly lastValidity = computed(() => {
+    const last = this.detail()?.lastPlan;
+    if (!last?.periodEnd) return this.translate.instant('orgd.noExpiry') as string;
+    const key = last.state === 'CANCELLED' ? 'orgd.lastCancelled' : 'orgd.lastEnded';
+    return this.translate.instant(key, { date: this.day(last.periodEnd) }) as string;
   });
+
+  private usageText(docs: { used: number; limit: number | null } | undefined): string {
+    if (!docs) return '';
+    const text = `${docs.used} / ${docs.limit === null ? '∞' : docs.limit}`;
+    return docs.limit !== null && docs.used > docs.limit
+      ? (this.translate.instant('sub.owes', { text, count: docs.used - docs.limit }) as string)
+      : text;
+  }
 
   private readonly latest = new LatestRequest();
   private readonly auth = inject(AuthStore);

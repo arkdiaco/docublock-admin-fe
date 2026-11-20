@@ -29,7 +29,9 @@ type Mode = 'recharge' | 'set';
       [subtitle]="
         balance().unlimited
           ? ('val.unlimited' | translate)
-          : ('val.credit.now' | translate: { count: balance().remaining })
+          : balance().remaining < 0
+            ? ('val.credit.owes' | translate: { count: -balance().remaining })
+            : ('val.credit.now' | translate: { count: balance().remaining })
       "
       confirmLabel="val.credit.confirm"
       [confirmDisabled]="!valid()"

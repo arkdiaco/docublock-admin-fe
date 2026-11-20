@@ -395,9 +395,11 @@ export class ValidationsTabComponent {
         label: this.t('val.creditType.' + type),
         value: balance.unlimited
           ? this.t('val.unlimited')
-          : formatNumber(balance.remaining, this.locale),
-        note: balance.unlimited ? undefined : this.t('val.remaining'),
-        tone: !balance.unlimited && balance.remaining === 0 ? 'warn' : 'plain',
+          : balance.remaining < 0
+            ? this.t('val.owes', { count: formatNumber(-balance.remaining, this.locale) })
+            : formatNumber(balance.remaining, this.locale),
+        note: balance.unlimited || balance.remaining < 0 ? undefined : this.t('val.remaining'),
+        tone: !balance.unlimited && balance.remaining <= 0 ? 'warn' : 'plain',
       };
     });
   });

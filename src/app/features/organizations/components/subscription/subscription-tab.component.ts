@@ -171,6 +171,45 @@ type Open =
             </div>
           } @else {
             <p class="dba-body sub__muted">{{ 'sub.none' | translate }}</p>
+            @if (data.last; as last) {
+              <h3 class="dba-eyebrow sub__eyebrow">{{ 'sub.last.title' | translate }}</h3>
+              <dl class="sub__dl">
+                <dt>{{ 'sub.f.plan' | translate }}</dt>
+                <dd>
+                  {{ last.plan?.name || '—' }}
+                  @if (last.plan) {
+                    <span class="dba-mono sub__muted"
+                      >{{ last.plan.code }} · v{{ last.plan.version }}</span
+                    >
+                  }
+                </dd>
+                <dt>{{ 'sub.f.period' | translate }}</dt>
+                <dd class="dba-mono">
+                  {{ day(last.periodStart) }} →
+                  {{ last.periodEnd ? day(last.periodEnd) : ('sub.noExpiry.label' | translate) }}
+                  <dba-org-state
+                    [state]="last.state === 'ACTIVE' ? 'active' : 'closed'"
+                    [labelKey]="'sub.state.' + last.state"
+                    variant="inline"
+                  />
+                </dd>
+              </dl>
+              <div class="sub__counters">
+                @for (counter of last.counters; track counter.resource) {
+                  <dba-quota-bar
+                    [label]="'sub.resource.' + counter.resource"
+                    [used]="counter.used"
+                    [limit]="counter.limit"
+                    [valueText]="counterText(counter)"
+                  />
+                }
+              </div>
+              @if (lastDebt() > 0) {
+                <p class="dba-meta sub__muted">
+                  {{ 'sub.last.debt' | translate: { count: lastDebt() } }}
+                </p>
+              }
+            }
           }
         </section>
 
@@ -329,6 +368,10 @@ type Open =
       margin: -8px 0 0;
     }
 
+    .sub__eyebrow {
+      margin: 4px 0 0;
+    }
+
     .sub__counters {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -413,13 +456,19 @@ export class SubscriptionTabComponent {
   });
 
   protected readonly carryable = computed(() => {
-    const documents = this.view()?.current?.counters.find((c) => c.resource === 'DOCUMENTS');
-    return documents?.remaining ?? 0;
+    const view = this.view();
+    const documents = view?.current?.counters.find((c) => c.resource === 'DOCUMENTS');
+    return view?.carry?.keep ?? documents?.remaining ?? 0;
   });
 
   protected readonly transferable = computed(() => {
     const documents = this.view()?.current?.counters.find((c) => c.resource === 'DOCUMENTS');
-    return documents && documents.limit !== null ? (documents.remaining ?? 0) : 0;
+    return documents && documents.limit !== null ? Math.max(0, documents.remaining ?? 0) : 0;
+  });
+
+  protected readonly lastDebt = computed(() => {
+    const documents = this.view()?.last?.counters.find((c) => c.resource === 'DOCUMENTS');
+    return documents && documents.remaining !== null ? Math.max(0, -documents.remaining) : 0;
   });
 
   protected readonly moreItems = computed<ActionMenuItem[]>(() => {
@@ -485,7 +534,10 @@ export class SubscriptionTabComponent {
   }
 
   protected counterText(counter: SubscriptionCounter): string {
-    return `${counter.used} / ${counter.limit === null ? '∞' : counter.limit}`;
+    const text = `${counter.used} / ${counter.limit === null ? '∞' : counter.limit}`;
+    return counter.remaining !== null && counter.remaining < 0
+      ? (this.translate.instant('sub.owes', { text, count: -counter.remaining }) as string)
+      : text;
   }
 
   protected async reload(): Promise<void> {
@@ -505,8 +557,10 @@ export class SubscriptionTabComponent {
   protected async assign(body: AssignPlanBody): Promise<void> {
     const view = await this.run(this.api.assign(this.org().id, body));
     if (view) {
-      const key = view.carriedOver ? 'sub.done.assignCarried' : 'sub.done.assign';
-      this.notify.success(this.translate.instant(key, { count: view.carriedOver }) as string);
+      const carried = view.carriedOver ?? 0;
+      const key =
+        carried > 0 ? 'sub.done.assignCarried' : carried < 0 ? 'sub.done.assignDebt' : 'sub.done.assign';
+      this.notify.success(this.translate.instant(key, { count: Math.abs(carried) }) as string);
     }
   }
 

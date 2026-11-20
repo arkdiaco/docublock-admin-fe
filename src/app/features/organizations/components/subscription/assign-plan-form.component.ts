@@ -85,11 +85,10 @@ type Validity = 'plan' | 'date' | 'none';
           />
           <span class="form__switchCopy">
             <label class="form__label" for="sub-carry">{{
-              'sub.assign.carry' | translate: { count: carryable() }
+              (debt() > 0 ? 'sub.assign.carryDebt' : 'sub.assign.carry')
+                | translate: { count: debt() > 0 ? debt() : carryable() }
             }}</label>
-            <span class="dba-meta">{{
-              (carry() ? 'sub.assign.carryOn' : 'sub.assign.carryOff') | translate
-            }}</span>
+            <span class="dba-meta">{{ carryHint() | translate: { count: debt() > 0 ? debt() : carryable() } }}</span>
           </span>
         </div>
 
@@ -123,6 +122,18 @@ export class AssignPlanFormComponent {
   protected readonly documents = signal('');
   protected readonly carry = signal(true);
   protected readonly reason = signal('');
+
+  protected readonly debt = computed(() => Math.max(0, -this.carryable()));
+
+  protected readonly carryHint = computed(() =>
+    this.debt() > 0
+      ? this.carry()
+        ? 'sub.assign.debtOn'
+        : 'sub.assign.debtOff'
+      : this.carry()
+        ? 'sub.assign.carryOn'
+        : 'sub.assign.carryOff',
+  );
 
   protected readonly plan = computed(
     () => this.plans().find((p) => p.code === this.planCode()) ?? null,
