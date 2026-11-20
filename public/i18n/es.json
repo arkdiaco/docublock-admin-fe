@@ -6453,7 +6453,88 @@
     "noTransactionsTitle": "Sin transacciones en el año",
     "noTransactionsLead": "Cuando haya pagos registrados en este año, verás aquí su reparto por mes.",
     "noDocumentsTitle": "Sin documentos en el año",
-    "noDocumentsLead": "Cuando se creen o firmen documentos en este año, verás aquí su reparto por mes."
+    "noDocumentsLead": "Cuando se creen o firmen documentos en este año, verás aquí su reparto por mes.",
+    "yearSummary": "Resumen del año",
+    "from": "Desde",
+    "to": "Hasta",
+    "period": {
+      "label": "Período",
+      "hoy": "Hoy",
+      "7-dias": "Últimos 7 días",
+      "30-dias": "Últimos 30 días",
+      "este-mes": "Este mes",
+      "mes-pasado": "Mes pasado",
+      "este-anio": "Este año",
+      "anio-pasado": "Año pasado",
+      "personalizado": "Personalizado"
+    },
+    "channel": {
+      "label": "Canal",
+      "todos": "Todos",
+      "plataforma": "Plataforma",
+      "integracion": "Integración"
+    },
+    "issue": {
+      "RANGO_INVERTIDO": "La fecha «Desde» va después de «Hasta».",
+      "RANGO_MUY_LARGO": "El período no puede pasar de dos años."
+    },
+    "sig": {
+      "title": "Firmas",
+      "loading": "Cargando las firmas…",
+      "errorTitle": "No pudimos cargar las firmas",
+      "statsLabel": "Resumen de firmas del período",
+      "definitions": "Una firma es cada vez que alguien firma un documento. Si una persona firma diez documentos, cuenta como una persona. «Nuevas» son las que firmaron por primera vez en la plataforma. El porcentaje compara con el período anterior del mismo largo.",
+      "previous": "Período anterior: {{value}}",
+      "share": "{{share}} % de las firmas",
+      "legalRep": "{{value}} firmas como representante legal",
+      "emptyTitle": "Sin firmas en el período",
+      "emptyLead": "Prueba con otro período, otra organización u otro canal.",
+      "stat": {
+        "signatures": "Firmas",
+        "people": "Personas que firmaron",
+        "newPeople": "Personas nuevas",
+        "documents": "Documentos con firmas",
+        "organizations": "Organizaciones"
+      },
+      "series": {
+        "signatures": "Firmas",
+        "people": "Personas"
+      },
+      "chart": {
+        "day": "Firmas por día",
+        "week": "Firmas por semana",
+        "month": "Firmas por mes"
+      },
+      "breakdown": {
+        "origin": {
+          "title": "Por dónde entró el documento",
+          "platform": "Plataforma",
+          "integration": "Integración",
+          "other": "Otros"
+        },
+        "mode": {
+          "title": "Tipo de firma",
+          "manual": "Manual",
+          "automatic": "Automática"
+        },
+        "otp": {
+          "title": "Clave usada para firmar",
+          "email": "Correo",
+          "sms": "SMS",
+          "whatsapp": "WhatsApp",
+          "passkey": "Passkey",
+          "none": "Sin clave",
+          "note": "Una firma puede haber recibido la clave por más de un canal."
+        },
+        "identity": {
+          "title": "Validación de identidad exigida",
+          "biometric": "Biometría",
+          "registry": "Validación contra Registraduría",
+          "none": "Ninguna",
+          "note": "Si el documento exigía biometría, la firma cuenta solo ahí."
+        }
+      }
+    }
   },
   "vhis": {
     "lead": "Validaciones guardadas por firmante antes del cambio del 20 de abril de 2026",

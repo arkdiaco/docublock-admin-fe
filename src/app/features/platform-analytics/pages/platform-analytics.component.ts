@@ -12,6 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Select } from 'primeng/select';
 import { firstValueFrom } from 'rxjs';
+import { AuthStore } from '../../../core/auth/auth.store';
 import { LatestRequest } from '../../../shared/http/latest-request';
 import {
   BarChartComponent,
@@ -24,9 +25,20 @@ import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
 import { StatBandComponent, type StatCell } from '../../../shared/ui/stat-band.component';
 import { browserTimeZone } from '../../validation-consumption/data/detail-view';
+import { SignatureFiltersBarComponent } from '../components/signature-filters-bar.component';
+import { SignaturesBlockComponent } from '../components/signatures-block.component';
 import { PlatformAnalyticsApi } from '../data/platform-analytics.api';
 import type { PlatformOverview } from '../data/platform-analytics.models';
 import { shareOf, yearOf, yearOptionsOf, yearQueryParamsOf } from '../data/platform-analytics-view';
+import type { PlatformSignatures } from '../data/platform-signatures.models';
+import {
+  signatureFiltersOf,
+  signatureQueryParamsOf,
+  signatureRangeIssue,
+  signaturesRequestOf,
+  todayIn,
+  type SignatureFilters,
+} from '../data/signature-filters';
 
 type LoadState = 'loading' | 'ready' | 'failed';
 
@@ -42,6 +54,8 @@ type LoadState = 'loading' | 'ready' | 'failed';
     EmptyStateComponent,
     SectionLoaderComponent,
     StatBandComponent,
+    SignatureFiltersBarComponent,
+    SignaturesBlockComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -53,84 +67,139 @@ type LoadState = 'loading' | 'ready' | 'failed';
         </div>
       </header>
 
-      <div class="bl__tools">
-        <div class="pa__control">
-          <label class="pa__label" for="pan-year">{{ 'pan.year' | translate }}</label>
-          <p-select
-            inputId="pan-year"
-            [options]="yearOptions()"
-            optionLabel="label"
-            optionValue="id"
-            [ngModel]="year()"
-            (ngModelChange)="pick($event)"
-            appendTo="body"
-            styleClass="bl__select"
-          />
-        </div>
-      </div>
+      <dba-signature-filters-bar
+        [filters]="filters()"
+        [pickerScope]="pickerScope()"
+        (changed)="apply($event)"
+      />
 
-      @if (state() === 'loading') {
-        <db-section-loader [label]="'pan.loading' | translate" />
-      } @else if (state() === 'failed') {
-        <div class="bl__panel">
-          <dba-empty-state titleKey="pan.errorTitle" leadKey="pan.errorLead" />
-          <button dba-button variant="secondary" (click)="load()">
-            {{ 'common.retry' | translate }}
-          </button>
-        </div>
-      } @else if (overview(); as data) {
-        <db-stat-band [cells]="cells()" [label]="'pan.statsLabel' | translate" />
-
-        <div class="pa__grid">
-          <section class="pa__card">
-            <h2 class="dba-panel">
-              {{ 'pan.transactionsByMonth' | translate: { year: data.year } }}
-            </h2>
-            @if (data.transactions.total === 0) {
-              <dba-empty-state
-                titleKey="pan.noTransactionsTitle"
-                leadKey="pan.noTransactionsLead"
-              />
-            } @else {
-              <dba-bar-chart
-                [categories]="months()"
-                [series]="transactionSeries()"
-                [integers]="true"
-                [label]="'pan.transactionsByMonth' | translate: { year: data.year }"
-              />
-            }
-          </section>
-          <section class="pa__card">
-            <h2 class="dba-panel">
-              {{ 'pan.documentsByMonth' | translate: { year: data.year } }}
-            </h2>
-            @if (data.documents.created === 0 && data.documents.signed === 0) {
-              <dba-empty-state titleKey="pan.noDocumentsTitle" leadKey="pan.noDocumentsLead" />
-            } @else {
-              <dba-bar-chart
-                [categories]="months()"
-                [series]="documentSeries()"
-                [integers]="true"
-                [label]="'pan.documentsByMonth' | translate: { year: data.year }"
-              />
-            }
-          </section>
-        </div>
-
-        <section class="pa__card">
-          <h2 class="dba-panel">{{ 'pan.plans' | translate }}</h2>
-          <span class="dba-meta">{{ 'pan.plansLead' | translate }}</span>
-          @if (plans().length === 0) {
-            <dba-empty-state titleKey="pan.noPlansTitle" leadKey="pan.noPlansLead" />
-          } @else {
-            <dba-bar-list [items]="plans()" [label]="'pan.plans' | translate" />
+      <section class="pa__section">
+        <header class="pa__section-head">
+          <h2 class="dba-section">{{ 'pan.sig.title' | translate }}</h2>
+          @if (!issue() && signatureState() === 'ready' && signatures(); as data) {
+            <span class="dba-meta">{{ rangeText(data.from, data.to) }}</span>
           }
-        </section>
-      }
+        </header>
+        @if (issue(); as code) {
+          <p class="dba-meta">{{ 'pan.issue.' + code | translate }}</p>
+        } @else if (signatureState() === 'loading') {
+          <db-section-loader [label]="'pan.sig.loading' | translate" />
+        } @else if (signatureState() === 'failed') {
+          <div class="bl__panel">
+            <dba-empty-state titleKey="pan.sig.errorTitle" leadKey="pan.errorLead" />
+            <button dba-button variant="secondary" (click)="loadSignatures()">
+              {{ 'common.retry' | translate }}
+            </button>
+          </div>
+        } @else if (signatures(); as data) {
+          <dba-signatures-block [data]="data" />
+        }
+      </section>
+
+      <section class="pa__section">
+        <header class="pa__section-head pa__section-head--tools">
+          <h2 class="dba-section">{{ 'pan.yearSummary' | translate }}</h2>
+          <div class="pa__control">
+            <label class="pa__label" for="pan-year">{{ 'pan.year' | translate }}</label>
+            <p-select
+              inputId="pan-year"
+              [options]="yearOptions()"
+              optionLabel="label"
+              optionValue="id"
+              [ngModel]="year()"
+              (ngModelChange)="pick($event)"
+              appendTo="body"
+              styleClass="bl__select"
+            />
+          </div>
+        </header>
+
+        @if (state() === 'loading') {
+          <db-section-loader [label]="'pan.loading' | translate" />
+        } @else if (state() === 'failed') {
+          <div class="bl__panel">
+            <dba-empty-state titleKey="pan.errorTitle" leadKey="pan.errorLead" />
+            <button dba-button variant="secondary" (click)="load()">
+              {{ 'common.retry' | translate }}
+            </button>
+          </div>
+        } @else if (overview(); as data) {
+          <db-stat-band [cells]="cells()" [label]="'pan.statsLabel' | translate" />
+
+          <div class="pa__grid">
+            <section class="pa__card">
+              <h2 class="dba-panel">
+                {{ 'pan.transactionsByMonth' | translate: { year: data.year } }}
+              </h2>
+              @if (data.transactions.total === 0) {
+                <dba-empty-state
+                  titleKey="pan.noTransactionsTitle"
+                  leadKey="pan.noTransactionsLead"
+                />
+              } @else {
+                <dba-bar-chart
+                  [categories]="months()"
+                  [series]="transactionSeries()"
+                  [integers]="true"
+                  [label]="'pan.transactionsByMonth' | translate: { year: data.year }"
+                />
+              }
+            </section>
+            <section class="pa__card">
+              <h2 class="dba-panel">
+                {{ 'pan.documentsByMonth' | translate: { year: data.year } }}
+              </h2>
+              @if (data.documents.created === 0 && data.documents.signed === 0) {
+                <dba-empty-state titleKey="pan.noDocumentsTitle" leadKey="pan.noDocumentsLead" />
+              } @else {
+                <dba-bar-chart
+                  [categories]="months()"
+                  [series]="documentSeries()"
+                  [integers]="true"
+                  [label]="'pan.documentsByMonth' | translate: { year: data.year }"
+                />
+              }
+            </section>
+          </div>
+
+          <section class="pa__card">
+            <h2 class="dba-panel">{{ 'pan.plans' | translate }}</h2>
+            <span class="dba-meta">{{ 'pan.plansLead' | translate }}</span>
+            @if (plans().length === 0) {
+              <dba-empty-state titleKey="pan.noPlansTitle" leadKey="pan.noPlansLead" />
+            } @else {
+              <dba-bar-list [items]="plans()" [label]="'pan.plans' | translate" />
+            }
+          </section>
+        }
+      </section>
     </section>
   `,
   styleUrl: '../../../shared/ui/list-page.scss',
   styles: `
+    .pa__section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .pa__section-head {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+    }
+
+    .pa__section-head h2 {
+      margin: 0;
+    }
+
+    .pa__section-head--tools {
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
     .pa__control {
       display: flex;
       flex-direction: column;
@@ -186,7 +255,9 @@ export class PlatformAnalyticsComponent {
   private readonly router = inject(Router);
   private readonly translate = inject(TranslateService);
   private readonly locale = inject(LOCALE_ID);
+  private readonly auth = inject(AuthStore);
   private readonly latest = new LatestRequest();
+  private readonly latestSignatures = new LatestRequest();
   private readonly timeZone = browserTimeZone();
   private readonly currentYear = Number(
     new Intl.DateTimeFormat('en-US', { timeZone: this.timeZone, year: 'numeric' }).format(
@@ -197,6 +268,19 @@ export class PlatformAnalyticsComponent {
   protected readonly year = signal(yearOf(this.route.snapshot.queryParams, this.currentYear));
   protected readonly state = signal<LoadState>('loading');
   protected readonly overview = signal<PlatformOverview | null>(null);
+  protected readonly filters = signal<SignatureFilters>(
+    signatureFiltersOf(this.route.snapshot.queryParams),
+  );
+  protected readonly signatureState = signal<LoadState>('loading');
+  protected readonly signatures = signal<PlatformSignatures | null>(null);
+  protected readonly issue = computed(() =>
+    signatureRangeIssue(this.filters(), todayIn(new Date(), this.timeZone)),
+  );
+  protected readonly pickerScope = computed(() => {
+    if (this.auth.canRead('clients')) return 'clients' as const;
+    if (this.auth.canRead('commercial')) return 'commercial' as const;
+    return null;
+  });
 
   protected readonly yearOptions = computed(() =>
     yearOptionsOf(this.overview()?.firstYear ?? this.year(), this.currentYear, this.year()),
@@ -295,6 +379,7 @@ export class PlatformAnalyticsComponent {
 
   constructor() {
     void this.load();
+    void this.loadSignatures();
   }
 
   protected pick(year: number): void {
@@ -303,9 +388,53 @@ export class PlatformAnalyticsComponent {
     void this.router.navigate([], {
       relativeTo: this.route,
       queryParams: yearQueryParamsOf(year, this.currentYear),
+      queryParamsHandling: 'merge',
       replaceUrl: true,
     });
     void this.load();
+  }
+
+  protected apply(change: Partial<SignatureFilters>): void {
+    const next = { ...this.filters(), ...change };
+    this.filters.set(next);
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: signatureQueryParamsOf(next),
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+    void this.loadSignatures();
+  }
+
+  protected async loadSignatures(): Promise<void> {
+    const current = this.latestSignatures.start();
+    if (this.issue()) return;
+    this.signatureState.set('loading');
+    try {
+      const request = signaturesRequestOf(
+        this.filters(),
+        todayIn(new Date(), this.timeZone),
+        this.timeZone,
+      );
+      const signatures = await firstValueFrom(this.api.signatures(request));
+      if (!current()) return;
+      this.signatures.set(signatures);
+      this.signatureState.set('ready');
+    } catch {
+      if (!current()) return;
+      this.signatureState.set('failed');
+    }
+  }
+
+  protected rangeText(from: string, to: string): string {
+    const format = new Intl.DateTimeFormat(this.locale, {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      timeZone: 'UTC',
+    });
+    const day = (value: string) => format.format(new Date(`${value}T12:00:00Z`));
+    return from === to ? day(from) : `${day(from)} – ${day(to)}`;
   }
 
   protected async load(): Promise<void> {
