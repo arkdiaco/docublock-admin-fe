@@ -6475,8 +6475,7 @@
       "integracion": "Integration"
     },
     "issue": {
-      "RANGO_INVERTIDO": "The “From” date is after “To”.",
-      "RANGO_MUY_LARGO": "The period cannot be longer than two years."
+      "RANGO_INVERTIDO": "The “From” date is after “To”."
     },
     "sig": {
       "title": "Signatures",

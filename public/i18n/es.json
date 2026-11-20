@@ -6475,8 +6475,7 @@
       "integracion": "Integración"
     },
     "issue": {
-      "RANGO_INVERTIDO": "La fecha «Desde» va después de «Hasta».",
-      "RANGO_MUY_LARGO": "El período no puede pasar de dos años."
+      "RANGO_INVERTIDO": "La fecha «Desde» va después de «Hasta»."
     },
     "sig": {
       "title": "Firmas",

@@ -116,11 +116,11 @@ describe('Analítica: filtros de firmas', () => {
     expect(periodRangeOf(filtros({ period: 'personalizado' }), HOY)).toEqual({});
   });
 
-  it('avisa del rango al revés o de más de dos años antes de pedirlo', () => {
+  it('avisa del rango al revés antes de pedirlo; el largo no tiene tope', () => {
     const personal = (from: string, to: string) =>
       signatureRangeIssue(filtros({ period: 'personalizado', from, to }), HOY);
     expect(personal('2026-10-31', '2026-10-01')).toBe('RANGO_INVERTIDO');
-    expect(personal('2024-01-01', '2026-01-02')).toBe('RANGO_MUY_LARGO');
+    expect(personal('2018-01-01', '2026-11-19')).toBeNull();
     expect(personal('2024-11-19', '2026-11-19')).toBeNull();
     expect(signatureRangeIssue(filtros(), HOY)).toBeNull();
   });
