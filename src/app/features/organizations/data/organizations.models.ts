@@ -71,6 +71,13 @@ export interface PlatformOrgDetail {
     periodStart: string;
     periodEnd: string | null;
   };
+  lastPlan?: {
+    code: string;
+    name: string;
+    state: 'ACTIVE' | 'EXPIRED' | 'CANCELLED';
+    periodEnd: string | null;
+    documents: { used: number; limit: number | null };
+  };
   documents: { used: number; limit: number | null };
   members: number;
   modules: string[];

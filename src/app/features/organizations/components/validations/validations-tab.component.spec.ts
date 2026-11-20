@@ -74,9 +74,9 @@ describe('ValidationsTabComponent', () => {
 
   afterEach(() => http.verify());
 
-  const responder = () => {
+  const responder = (creditos: OrgCredits = CREDITS) => {
     http.expectOne('/platform/organizations/org-1/settings').flush(SETTINGS);
-    http.expectOne('/platform/validation-credits/org-1').flush(CREDITS);
+    http.expectOne('/platform/validation-credits/org-1').flush(creditos);
     http.expectOne('/platform/validation-credits/org-1/pricing').flush(PRICING);
     http
       .expectOne((r) => r.url === '/platform/validation-credits/org-1/log')
@@ -96,7 +96,10 @@ describe('ValidationsTabComponent', () => {
       });
   };
 
-  const montar = async (permisos: string[] = ['platform:clients', 'platform:clients:manage']) => {
+  const montar = async (
+    permisos: string[] = ['platform:clients', 'platform:clients:manage'],
+    creditos: OrgCredits = CREDITS,
+  ) => {
     TestBed.inject(AuthStore).setProfile({
       user: {
         id: 'x',
@@ -112,7 +115,7 @@ describe('ValidationsTabComponent', () => {
     const fixture = TestBed.createComponent(ValidationsTabComponent);
     fixture.componentRef.setInput('org', ORG);
     fixture.detectChanges();
-    responder();
+    responder(creditos);
     const host = fixture.nativeElement as HTMLElement;
     await vi.waitFor(() => {
       fixture.detectChanges();
@@ -139,6 +142,17 @@ describe('ValidationsTabComponent', () => {
     expect(texto).toContain('Recarga');
     expect(host.querySelectorAll('[role="switch"][aria-checked="true"]').length).toBe(2);
     expect(texto).not.toMatch(/\b(val|common|sub|tbl)\.[a-zA-Z]/);
+  });
+
+  it('un saldo en cero o en deuda sale con aviso, y la deuda dice cuánto se debe', async () => {
+    const { host } = await montar(undefined, {
+      identity: { unlimited: false, remaining: 40 },
+      biometric: { unlimited: false, remaining: -3 },
+      ani: { unlimited: false, remaining: 0 },
+    });
+    const valores = [...host.querySelectorAll('db-stat-band .band__value')];
+    expect(valores.map((v) => v.textContent?.trim())).toEqual(['40', 'Debe 3', '0']);
+    expect(valores.map((v) => v.classList.contains('band__value--warn'))).toEqual([false, true, true]);
   });
 
   it('sin clients:manage los interruptores quedan bloqueados y no hay ajustes', async () => {

@@ -325,6 +325,9 @@
     "planUsage": "Plan and usage",
     "noPlan": "No subscription",
     "noExpiry": "No expiry",
+    "lastPlan": "Last plan",
+    "lastEnded": "Expired on {{date}}",
+    "lastCancelled": "Cancelled, ran until {{date}}",
     "f": {
       "nit": "Tax ID",
       "country": "Country",
@@ -408,6 +411,7 @@
     "actionsLead": "Organizations with their quota used up or nearly used up, support tickets past their target, expiring subscriptions and documents with issues show up here.",
     "action": {
       "quotaExhausted": "document quota exhausted · {{used}} / {{limit}}",
+      "quotaDebtExpired": "plan expired · owes {{debt}} documents · {{used}} / {{limit}}",
       "quotaWarning": "document quota at {{pct}} % · {{used}} / {{limit}}",
       "expiring": "the subscription ends in {{n}} days",
       "expiringTomorrow": "the subscription ends tomorrow",
@@ -931,6 +935,11 @@
     "history": "History",
     "noHistory": "No subscriptions yet.",
     "lapsed": "Lapsed by date",
+    "owes": "{{text}} · owes {{count}}",
+    "last": {
+      "title": "Last plan",
+      "debt": "Owes {{count}} documents: they carry over as used to the next plan assigned."
+    },
     "unlimited": "unlimited",
     "f": {
       "plan": "Plan",
@@ -967,8 +976,11 @@
       "planDocuments": "Empty: the plan's amount.",
       "planUnlimited": "Empty: the plan is unlimited.",
       "carry": "Carry over the balance ({{count}} documents)",
-      "carryOn": "Added to the new plan; branches keep their usage.",
-      "carryOff": "Start from zero: the balance is lost and branches reset.",
+      "carryDebt": "Carry over the balance (owes {{count}} documents)",
+      "carryOn": "{{count}} documents are added to the new plan; branches keep their usage.",
+      "carryOff": "Start from zero: the credit balance is lost and branches reset. Any debt still carries over.",
+      "debtOn": "A debt of {{count}} documents carries over: they count as used in the new plan. Branches keep their usage.",
+      "debtOff": "A debt of {{count}} documents carries over: they count as used in the new plan. Branches reset.",
       "planMonths": "The plan's ({{months}} months)",
       "planDefault": "The plan's (1 month)",
       "untilDate": "Until a date"
@@ -1013,6 +1025,7 @@
     "done": {
       "assign": "Plan assigned",
       "assignCarried": "Plan assigned with {{count}} documents carried over",
+      "assignDebt": "Plan assigned. A debt of {{count}} documents carried over as used.",
       "period": "Validity updated",
       "noExpiry": "Subscription without expiry",
       "counter": "Counter updated",
@@ -1283,9 +1296,11 @@
     },
     "unlimited": "Unlimited",
     "remaining": "available",
+    "owes": "Owes {{count}}",
     "credit": {
       "title": "{{type}} credits",
       "now": "Available today: {{count}}",
+      "owes": "Owes today: {{count}}",
       "confirm": "Save credits",
       "unlimited": "Unlimited credits",
       "mode": "How to adjust",

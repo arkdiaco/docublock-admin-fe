@@ -74,6 +74,41 @@ describe('Formularios de suscripción', () => {
     expect(enviados[1].periodEnd).toMatch(/^2099-0[67]-/);
   });
 
+  const armarAsignar = (carryable: number) => {
+    const fixture = TestBed.createComponent(AssignPlanFormComponent);
+    fixture.componentRef.setInput('plans', []);
+    fixture.componentRef.setInput('orgName', 'Sierra');
+    fixture.componentRef.setInput('carryable', carryable);
+    fixture.componentRef.setInput('labels', { planValidity: () => 'del plan', until: 'hasta', none: 'sin' });
+    fixture.detectChanges();
+    const texto = () => (fixture.nativeElement as HTMLElement).querySelector('.form__switchCopy')?.textContent ?? '';
+    const form = fixture.componentInstance as unknown as Interna;
+    return { fixture, texto, form };
+  };
+
+  it('asignar con saldo a favor: dice cuántos se suman y que al empezar en cero la deuda pasaría igual', () => {
+    const { fixture, texto, form } = armarAsignar(50);
+    expect(texto()).toContain('Arrastrar el saldo (50 documentos)');
+    expect(texto()).toContain('Se suman 50 documentos al plan nuevo');
+    form['carry'].set(false);
+    fixture.detectChanges();
+    expect(texto()).toContain(
+      'Empieza en cero: el saldo a favor se pierde y las ramas se reinician. La deuda pasa igual.',
+    );
+  });
+
+  it('asignar con deuda: la deuda pasa como usada con el arrastre y sin él', () => {
+    const { fixture, texto, form } = armarAsignar(-12);
+    expect(texto()).toContain('Arrastrar el saldo (debe 12 documentos)');
+    expect(texto()).toContain('Pasa una deuda de 12 documentos: entran como usados en el plan nuevo.');
+    expect(texto()).toContain('Las ramas conservan su consumo.');
+    form['carry'].set(false);
+    fixture.detectChanges();
+    expect(texto()).toContain('Pasa una deuda de 12 documentos: entran como usados en el plan nuevo.');
+    expect(texto()).toContain('Las ramas se reinician.');
+    expect(texto()).not.toMatch(/\bsub\.[a-zA-Z]/);
+  });
+
   it('contador: ilimitado manda limit null; sin cambios no deja guardar', () => {
     const fixture = TestBed.createComponent(CounterFormComponent);
     fixture.componentRef.setInput('counter', {

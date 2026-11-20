@@ -213,6 +213,84 @@ describe('SubscriptionTabComponent', () => {
     );
   });
 
+  it('con deuda dice cuánto debe, no ofrece transferir y el formulario recibe la deuda que pasa', async () => {
+    const { fixture, host } = await montar(undefined, {
+      ...VISTA,
+      current: {
+        ...VISTA.current!,
+        counters: [{ resource: 'DOCUMENTS', limit: 200, used: 212, remaining: -12 }],
+      },
+      carry: { keep: -12, reset: -12 },
+    });
+    expect(host.querySelector('dba-quota-bar')?.textContent).toContain('212 / 200 · debe 12');
+    boton(host, 'Más acciones')!.click();
+    fixture.detectChanges();
+    let items: string[] = [];
+    await vi.waitFor(() => {
+      items = [...document.querySelectorAll<HTMLButtonElement>('.item')].map(
+        (b) => b.textContent?.trim() ?? '',
+      );
+      expect(items.length).toBeGreaterThan(0);
+    });
+    expect(items).not.toContain('Transferir documentos');
+    boton(host, 'Más acciones')!.click();
+    boton(host, 'Asignar plan')!.click();
+    fixture.detectChanges();
+    expect(
+      fixture.debugElement.query(By.directive(AssignPlanFormComponent)).componentInstance.carryable(),
+    ).toBe(-12);
+  });
+
+  it('sin plan vigente muestra el último con su deuda, sin acciones sobre sus contadores', async () => {
+    const { fixture, host } = await montar(undefined, {
+      ...VISTA,
+      current: null,
+      last: {
+        id: 'sub-1',
+        plan: { id: 'p1', code: 'PRO', name: 'Profesional', version: 1 },
+        state: 'EXPIRED',
+        source: 'MANUAL',
+        periodStart: '2026-09-01T12:00:00.000Z',
+        periodEnd: '2026-10-31T12:00:00.000Z',
+        counters: [{ resource: 'DOCUMENTS', limit: 100, used: 107, remaining: -7 }],
+      },
+      carry: { keep: -7, reset: -7 },
+    });
+    const card = host.querySelector('.sub__card')!;
+    expect(card.textContent).toContain('Último plan');
+    expect(card.textContent).toContain('Profesional');
+    expect(card.textContent).toContain('PRO · v1');
+    expect(card.textContent).toContain('Expirada');
+    expect(card.querySelector('dba-quota-bar')?.textContent).toContain('107 / 100 · debe 7');
+    expect(card.textContent).toContain('Debe 7 documentos: pasan como usados al plan que se asigne.');
+    expect(card.querySelector('.sub__link')).toBeNull();
+    expect(host.textContent).not.toMatch(/\b(sub|orgd|common|tbl)\.[a-zA-Z]/);
+    boton(host, 'Asignar plan')!.click();
+    fixture.detectChanges();
+    expect(
+      fixture.debugElement.query(By.directive(AssignPlanFormComponent)).componentInstance.carryable(),
+    ).toBe(-7);
+  });
+
+  it('asignar con deuda avisa que la deuda pasó como usada', async () => {
+    const { fixture, host } = await montar();
+    const avisos = vi.spyOn(TestBed.inject(MessageService), 'add');
+    boton(host, 'Asignar plan')!.click();
+    fixture.detectChanges();
+    fixture.debugElement
+      .query(By.directive(AssignPlanFormComponent))
+      .componentInstance.submitted.emit({ planCode: 'CORP', carry: false, reason: 'Cambio' });
+    http
+      .expectOne((r) => r.method === 'POST' && r.url.endsWith('/subscription/assign'))
+      .flush({ ...VISTA, carriedOver: -12 });
+    await fixture.whenStable();
+    expect(avisos).toHaveBeenCalledWith(
+      expect.objectContaining({
+        detail: 'Plan asignado. Pasó una deuda de 12 documentos, que entran como usados.',
+      }),
+    );
+  });
+
   it('fijar un contador manda solo lo que cambió', async () => {
     const { fixture, host } = await montar();
     host.querySelector<HTMLButtonElement>('.sub__link')!.click();

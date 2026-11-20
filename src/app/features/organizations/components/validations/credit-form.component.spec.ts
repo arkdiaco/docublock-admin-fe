@@ -66,6 +66,12 @@ describe('CreditFormComponent', () => {
     expect(form.change()).toEqual({ remaining: 0 });
   });
 
+  it('con saldo en deuda el encabezado dice cuánto se debe', () => {
+    montar({ unlimited: false, remaining: -3 });
+    expect(document.body.textContent).toContain('Debe hoy: 3');
+    expect(document.body.textContent).not.toContain('Disponibles hoy: -3');
+  });
+
   it('pasar a ilimitado y volver a limitado', () => {
     const limited = montar({ unlimited: false, remaining: 5 });
     limited.unlimited.set(true);

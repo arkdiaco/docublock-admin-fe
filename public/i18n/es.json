@@ -325,6 +325,9 @@
     "planUsage": "Plan y consumo",
     "noPlan": "Sin suscripción",
     "noExpiry": "Sin vencimiento",
+    "lastPlan": "Último plan",
+    "lastEnded": "Vencido el {{date}}",
+    "lastCancelled": "Cancelado, iba hasta el {{date}}",
     "f": {
       "nit": "NIT",
       "country": "País",
@@ -408,6 +411,7 @@
     "actionsLead": "Aquí aparecen las organizaciones con el cupo agotado o cerca de agotarse, los tickets de soporte que pasaron su plazo, las suscripciones por vencer y los documentos con incidencias.",
     "action": {
       "quotaExhausted": "cupo de documentos agotado · {{used}} / {{limit}}",
+      "quotaDebtExpired": "plan vencido · debe {{debt}} documentos · {{used}} / {{limit}}",
       "quotaWarning": "cupo de documentos al {{pct}} % · {{used}} / {{limit}}",
       "expiring": "la suscripción vence en {{n}} días",
       "expiringTomorrow": "la suscripción vence mañana",
@@ -931,6 +935,11 @@
     "history": "Historial",
     "noHistory": "Todavía no ha tenido suscripciones.",
     "lapsed": "Venció por fecha",
+    "owes": "{{text}} · debe {{count}}",
+    "last": {
+      "title": "Último plan",
+      "debt": "Debe {{count}} documentos: pasan como usados al plan que se asigne."
+    },
     "unlimited": "ilimitado",
     "f": {
       "plan": "Plan",
@@ -967,8 +976,11 @@
       "planDocuments": "Vacío: los que trae el plan.",
       "planUnlimited": "Vacío: el plan es ilimitado.",
       "carry": "Arrastrar el saldo ({{count}} documentos)",
-      "carryOn": "Se suman al plan nuevo y las ramas conservan su consumo.",
-      "carryOff": "Empieza en cero: el saldo se pierde y las ramas se reinician.",
+      "carryDebt": "Arrastrar el saldo (debe {{count}} documentos)",
+      "carryOn": "Se suman {{count}} documentos al plan nuevo y las ramas conservan su consumo.",
+      "carryOff": "Empieza en cero: el saldo a favor se pierde y las ramas se reinician. La deuda pasa igual.",
+      "debtOn": "Pasa una deuda de {{count}} documentos: entran como usados en el plan nuevo. Las ramas conservan su consumo.",
+      "debtOff": "Pasa una deuda de {{count}} documentos: entran como usados en el plan nuevo. Las ramas se reinician.",
       "planMonths": "La del plan ({{months}} meses)",
       "planDefault": "La del plan (1 mes)",
       "untilDate": "Hasta una fecha"
@@ -1013,6 +1025,7 @@
     "done": {
       "assign": "Plan asignado",
       "assignCarried": "Plan asignado con {{count}} documentos arrastrados",
+      "assignDebt": "Plan asignado. Pasó una deuda de {{count}} documentos, que entran como usados.",
       "period": "Vigencia actualizada",
       "noExpiry": "Suscripción sin vencimiento",
       "counter": "Contador actualizado",
@@ -1283,9 +1296,11 @@
     },
     "unlimited": "Ilimitado",
     "remaining": "disponibles",
+    "owes": "Debe {{count}}",
     "credit": {
       "title": "Créditos de {{type}}",
       "now": "Disponibles hoy: {{count}}",
+      "owes": "Debe hoy: {{count}}",
       "confirm": "Guardar créditos",
       "unlimited": "Créditos ilimitados",
       "mode": "Cómo ajustar",

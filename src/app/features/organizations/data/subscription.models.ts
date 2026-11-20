@@ -50,6 +50,16 @@ export interface SubscriptionView {
   }[];
   mirror: { documents?: number; remainingDocuments?: number; expiration?: string } | null;
   plans: CatalogPlan[];
+  last?: {
+    id: string;
+    plan: PlanRef | null;
+    state: 'ACTIVE' | 'EXPIRED' | 'CANCELLED';
+    source: string;
+    periodStart: string;
+    periodEnd: string | null;
+    counters: SubscriptionCounter[];
+  } | null;
+  carry?: { keep: number; reset: number };
   carriedOver?: number;
 }
 
