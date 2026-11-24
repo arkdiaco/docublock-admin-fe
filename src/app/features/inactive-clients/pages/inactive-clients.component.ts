@@ -6,15 +6,18 @@ import {
   computed,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
+import { AuthStore } from '../../../core/auth/auth.store';
 import { sectionPath } from '../../../core/layout/console-nav';
 import { DensityService } from '../../../core/preferences/density.service';
 import { LatestRequest } from '../../../shared/http/latest-request';
 import { PluralKeyPipe } from '../../../shared/i18n/plural-key.pipe';
 import { safeDate } from '../../../shared/i18n/safe-date';
+import { ActionMenuComponent, type ActionMenuItem } from '../../../shared/ui/action-menu.component';
 import { ButtonComponent } from '../../../shared/ui/button.component';
 import { DataTableComponent, type DataColumn } from '../../../shared/ui/data-table.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
@@ -22,11 +25,17 @@ import { IconComponent } from '../../../shared/ui/icon.component';
 import { OrgStateComponent } from '../../../shared/ui/org-state.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
 import { StatBandComponent, type StatCell } from '../../../shared/ui/stat-band.component';
+import { InactiveExportDialogComponent } from '../components/inactive-export-dialog.component';
 import { InactiveClientsApi } from '../data/inactive-clients.api';
 import type {
   InactiveOrganizationRow,
   InactiveOrganizationsPage,
 } from '../data/inactive-clients.models';
+
+const ACTION_ITEMS: readonly ActionMenuItem[] = [
+  { key: 'export', labelKey: 'inactive.action.export' },
+  { key: 'open', labelKey: 'inactive.action.open' },
+];
 
 const LIMIT = 20;
 const DEBOUNCE_MS = 350;
@@ -38,7 +47,7 @@ const COLUMNS: readonly DataColumn[] = [
   { key: 'signed', labelKey: 'inactive.col.signed', width: '150px' },
   { key: 'plan', labelKey: 'inactive.col.plan', width: '180px' },
   { key: 'email', labelKey: 'inactive.col.email', width: 'minmax(0, 1fr)' },
-  { key: 'chevron', width: '40px', align: 'end' },
+  { key: 'actions', width: '48px', align: 'end' },
 ];
 
 @Component({
@@ -53,6 +62,8 @@ const COLUMNS: readonly DataColumn[] = [
     EmptyStateComponent,
     SectionLoaderComponent,
     StatBandComponent,
+    ActionMenuComponent,
+    InactiveExportDialogComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -112,7 +123,12 @@ const COLUMNS: readonly DataColumn[] = [
           (pageChange)="goPage($event)"
         >
           @for (row of rows(); track row.organization.id) {
-            <button type="button" class="dba-tr" (click)="open(row)">
+            <div
+              class="dba-tr inactive__row"
+              tabindex="0"
+              (click)="open(row)"
+              (keydown.enter)="open(row)"
+            >
               <span class="dba-td cell">
                 <span class="cell__label">{{ row.organization.businessName }}</span>
                 <span class="cell__meta">{{ row.organization.tributaryNumber }}</span>
@@ -158,12 +174,41 @@ const COLUMNS: readonly DataColumn[] = [
                   row.organization.email || '—'
                 }}</span>
               </span>
-              <db-icon class="dba-td dba-td--end" name="chevronRight" [size]="15" />
-            </button>
+              <span class="dba-td dba-td--end">
+                <button
+                  type="button"
+                  class="inactive__more"
+                  [attr.aria-label]="
+                    'inactive.action.for' | translate: { name: row.organization.businessName }
+                  "
+                  (click)="openMenu($event, row)"
+                  (keydown.enter)="$event.stopPropagation()"
+                >
+                  <db-icon name="moreVertical" [size]="16" />
+                </button>
+              </span>
+            </div>
           }
         </dba-data-table>
       }
     </section>
+
+    <dba-action-menu
+      #actions
+      label="inactive.action.label"
+      [heading]="acting()?.organization?.businessName ?? ''"
+      [items]="actionItems"
+      (picked)="onAction($event)"
+    />
+
+    @if (exporting(); as row) {
+      <dba-inactive-export-dialog
+        [organizationId]="row.organization.id"
+        [orgName]="row.organization.businessName"
+        [canManage]="canManage()"
+        (closed)="exporting.set(null)"
+      />
+    }
   `,
   styles: `
     .inactive {
@@ -223,6 +268,33 @@ const COLUMNS: readonly DataColumn[] = [
       background: var(--dba-surface);
     }
 
+    .inactive__row {
+      cursor: pointer;
+    }
+
+    .inactive__more {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border: 0;
+      border-radius: var(--dba-radius-control);
+      background: transparent;
+      color: var(--dba-text-muted);
+      cursor: pointer;
+    }
+
+    .inactive__more:hover {
+      background: var(--dba-surface-hover);
+      color: var(--dba-ink);
+    }
+
+    .inactive__more:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--dba-focus-halo);
+    }
+
     .cell {
       display: flex;
       flex-direction: column;
@@ -256,6 +328,7 @@ const COLUMNS: readonly DataColumn[] = [
 })
 export class InactiveClientsComponent {
   private readonly api = inject(InactiveClientsApi);
+  private readonly auth = inject(AuthStore);
   private readonly router = inject(Router);
   private readonly translate = inject(TranslateService);
   private readonly locale = inject(LOCALE_ID);
@@ -263,6 +336,11 @@ export class InactiveClientsComponent {
 
   protected readonly density = inject(DensityService);
   protected readonly columns = COLUMNS;
+  protected readonly actionItems = ACTION_ITEMS;
+  protected readonly canManage = computed(() => this.auth.canManage('clients'));
+  protected readonly acting = signal<InactiveOrganizationRow | null>(null);
+  protected readonly exporting = signal<InactiveOrganizationRow | null>(null);
+  private readonly menu = viewChild.required<ActionMenuComponent>('actions');
 
   protected readonly loading = signal(true);
   protected readonly error = signal(false);
@@ -327,6 +405,19 @@ export class InactiveClientsComponent {
   protected goPage(page: number): void {
     this.pageNumber.set(page);
     void this.reload();
+  }
+
+  protected openMenu(event: Event, row: InactiveOrganizationRow): void {
+    event.stopPropagation();
+    this.acting.set(row);
+    this.menu().toggle(event);
+  }
+
+  protected onAction(key: string): void {
+    const row = this.acting();
+    if (!row) return;
+    if (key === 'export') this.exporting.set(row);
+    if (key === 'open') this.open(row);
   }
 
   protected open(row: InactiveOrganizationRow): void {
