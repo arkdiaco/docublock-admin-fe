@@ -35,7 +35,7 @@ const READONLY = [
 describe('menú de la consola', () => {
   it('son los seis grupos, con sus secciones en orden', () => {
     expect(CONSOLE_GROUPS.map((group) => [group.path, group.items.map((item) => item.path)])).toEqual([
-      ['clientes', ['organizaciones', 'usuarios', 'firmantes', 'juridicas']],
+      ['clientes', ['organizaciones', 'usuarios', 'firmantes', 'juridicas', 'inactivos']],
       ['operacion', ['documentos', 'soporte', 'integraciones', 'envios-codigos', 'tareas']],
       ['comercial', ['planes', 'suscripciones', 'marketplace', 'promocionales', 'referidos', 'resellers', 'facturacion']],
       [
@@ -56,7 +56,7 @@ describe('menú de la consola', () => {
   });
 
   it('superadmin ve todo', () => {
-    expect(visibleGroups(SUPERADMIN).flatMap((group) => group.items).length).toBe(35);
+    expect(visibleGroups(SUPERADMIN).flatMap((group) => group.items).length).toBe(36);
   });
 
   it('support ve los seis grupos, pero Plataforma sin Personal', () => {

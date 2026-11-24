@@ -63,6 +63,7 @@ export const JOB_KEYS = [
   'planReminders',
   'digestDaily',
   'digestWeekly',
+  'organizationActivity',
 ] as const;
 export type JobKey = (typeof JOB_KEYS)[number];
 

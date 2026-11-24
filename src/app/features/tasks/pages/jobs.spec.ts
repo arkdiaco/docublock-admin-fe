@@ -93,6 +93,25 @@ describe('Tareas: trabajos automáticos', () => {
     expect(texto).not.toMatch(LLAVE_CRUDA);
   });
 
+  it('la actividad por organización sale con su nombre, su horario y sus cifras', async () => {
+    const { root } = await montar(
+      ['platform:operations'],
+      [
+        job({
+          key: 'organizationActivity',
+          manual: true,
+          last: { ...CORRIDA, metrics: { organizations: 41, removed: 2 } },
+        }),
+      ],
+    );
+    const texto = root.textContent ?? '';
+    expect(texto).toContain('Actividad por organización');
+    expect(texto).toContain('Cada día, 3:00');
+    expect(texto).toContain('Organizaciones 41');
+    expect(texto).toContain('Retiradas 2');
+    expect(texto).not.toMatch(LLAVE_CRUDA);
+  });
+
   it('muestra error con reintento si la lista falla', async () => {
     const http = await configurar();
     conPermisos(['platform:operations']);

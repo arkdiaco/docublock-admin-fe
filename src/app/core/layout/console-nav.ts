@@ -5,6 +5,7 @@ export type ConsoleSection =
   | 'users'
   | 'signers'
   | 'legalEntities'
+  | 'inactiveClients'
   | 'documents'
   | 'support'
   | 'integrations'
@@ -66,6 +67,7 @@ export const CONSOLE_GROUPS: readonly ConsoleGroup[] = [
       { key: 'users', path: 'usuarios', labelKey: 'nav.users' },
       { key: 'signers', path: 'firmantes', labelKey: 'nav.signers' },
       { key: 'legalEntities', path: 'juridicas', labelKey: 'nav.legalEntities' },
+      { key: 'inactiveClients', path: 'inactivos', labelKey: 'nav.inactiveClients' },
     ],
   },
   {

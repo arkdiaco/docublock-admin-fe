@@ -79,6 +79,15 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
         ),
     },
   ],
+  inactiveClients: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/inactive-clients/pages/inactive-clients.component').then(
+          (m) => m.InactiveClientsComponent,
+        ),
+    },
+  ],
   documents: [
     {
       path: '',
