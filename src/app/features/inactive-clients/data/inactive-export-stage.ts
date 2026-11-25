@@ -1,4 +1,4 @@
-import type { InactiveExportView } from './inactive-clients.models';
+import type { InactiveExportView, InactiveRowExport } from './inactive-clients.models';
 
 export type ExportStage = 'none' | 'running' | 'ready' | 'expired' | 'failed';
 
@@ -7,6 +7,13 @@ export const exportStageOf = (view: InactiveExportView | null): ExportStage => {
   if (view.state === 'running') return 'running';
   if (view.state === 'failed') return 'failed';
   return view.expired || !view.url ? 'expired' : 'ready';
+};
+
+export const rowExportStageOf = (row: InactiveRowExport | null): ExportStage => {
+  if (!row) return 'none';
+  if (row.state === 'running') return 'running';
+  if (row.state === 'failed') return 'failed';
+  return row.expired ? 'expired' : 'ready';
 };
 
 export const exportPercentOf = (view: InactiveExportView): number =>

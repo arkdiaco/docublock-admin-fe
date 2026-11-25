@@ -280,6 +280,8 @@ describe('Clientes inactivos › acciones de la fila', () => {
     signedDocuments: 3,
     monthsInactive: 7,
     plan: null,
+    lastNotice: null,
+    lastExport: null,
   };
 
   const pagina: InactiveOrganizationsPage = {
@@ -312,7 +314,11 @@ describe('Clientes inactivos › acciones de la fila', () => {
     await asentar(fixture);
     expect(navegar).not.toHaveBeenCalled();
     const opciones = [...document.querySelectorAll('[role="menuitem"]')].map((i) => texto(i));
-    expect(opciones).toEqual(['Descargar documentos', 'Ver organización']);
+    expect(opciones).toEqual([
+      'Descargar documentos',
+      'Enviar aviso de eliminación No tiene correo registrado',
+      'Ver organización',
+    ]);
     document.querySelector<HTMLElement>('[role="menuitem"]')!.click();
     await asentar(fixture);
     http.expectOne(RUTA).flush(null);

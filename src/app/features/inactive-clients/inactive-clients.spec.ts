@@ -45,6 +45,8 @@ const fila = (over: Partial<InactiveOrganizationRow> = {}): InactiveOrganization
     state: 'EXPIRED',
     periodEnd: '2026-06-30T05:00:00.000Z',
   },
+  lastNotice: null,
+  lastExport: null,
   ...over,
 });
 

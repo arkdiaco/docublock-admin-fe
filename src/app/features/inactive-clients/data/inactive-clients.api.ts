@@ -4,6 +4,7 @@ import type { Observable } from 'rxjs';
 import { toParams } from '../../../shared/http/query-params';
 import type {
   InactiveExportView,
+  InactiveNoticeSent,
   InactiveOrganizationsPage,
   InactiveOrganizationsQuery,
 } from './inactive-clients.models';
@@ -24,6 +25,16 @@ export class InactiveClientsApi {
 
   startExport(organizationId: string, reason: string): Observable<InactiveExportView> {
     return this.http.post<InactiveExportView>(this.exportPath(organizationId), { reason });
+  }
+
+  sendNotice(
+    organizationId: string,
+    body: { reason: string; tributaryNumber: string },
+  ): Observable<InactiveNoticeSent> {
+    return this.http.post<InactiveNoticeSent>(
+      `/platform/inactive-organizations/${encodeURIComponent(organizationId)}/notices`,
+      body,
+    );
   }
 
   private exportPath(organizationId: string): string {

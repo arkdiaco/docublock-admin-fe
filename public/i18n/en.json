@@ -6995,7 +6995,9 @@
       "last": "Last activity",
       "signed": "Signed",
       "plan": "Plan",
-      "email": "Email"
+      "email": "Email",
+      "notice": "Notice",
+      "export": "Download"
     },
     "state": {
       "active": "Active",
@@ -7023,7 +7025,9 @@
       "label": "Client actions",
       "for": "Actions for {{name}}",
       "export": "Download documents",
-      "open": "View organization"
+      "open": "View organization",
+      "notice": "Send deletion notice",
+      "noEmail": "No email on file"
     },
     "export": {
       "title": "Download documents",
@@ -7055,6 +7059,38 @@
       "done": "Done",
       "alreadyRunning": "A download is already being prepared for this organization.",
       "startError": "We couldn't start the download. Try again."
+    },
+    "noticeCell": {
+      "sent": "Sent on {{date}}",
+      "sentMany": "Sent on {{date}} · {{n}} sends",
+      "meta": "Deleted from {{date}}",
+      "none": "No notice"
+    },
+    "exportCell": {
+      "none": "No download",
+      "running": "Building",
+      "ready": "Ready",
+      "readyMeta": "Until {{date}}",
+      "expired": "Expired",
+      "expiredMeta": "Since {{date}}",
+      "failed": "Failed"
+    },
+    "notice": {
+      "title": "Send the deletion notice to {{name}}?",
+      "message": "It goes to {{email}}: their information will be deleted starting {{date}}. The notice deletes nothing and does not block the account.",
+      "withLink": "The email includes the current download link, valid until {{date}}.",
+      "withoutLink": "There is no current download: the email includes the button to sign in to Docublock. If you want it to include the link, generate the download first.",
+      "alreadySent": "They were already notified on {{date}}. This will be send number {{n}}.",
+      "reasonPlaceholder": "Why they are being notified",
+      "confirm": "Send notice",
+      "verb": "send the notice",
+      "sent": "Notice sent to {{email}}.",
+      "error": {
+        "CONFIRMACION_INVALIDA": "The tax ID does not match the organization.",
+        "ORGANIZACION_SIN_CORREO": "The organization has no email on file.",
+        "ORGANIZACION_NO_ENCONTRADA": "The organization no longer exists.",
+        "generic": "The notice could not be sent. Try again."
+      }
     }
   }
 }

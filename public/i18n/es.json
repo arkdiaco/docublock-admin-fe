@@ -6995,7 +6995,9 @@
       "last": "Última actividad",
       "signed": "Firmados",
       "plan": "Plan",
-      "email": "Correo"
+      "email": "Correo",
+      "notice": "Aviso",
+      "export": "Descarga"
     },
     "state": {
       "active": "Activa",
@@ -7023,7 +7025,9 @@
       "label": "Acciones del cliente",
       "for": "Acciones de {{name}}",
       "export": "Descargar documentos",
-      "open": "Ver organización"
+      "open": "Ver organización",
+      "notice": "Enviar aviso de eliminación",
+      "noEmail": "No tiene correo registrado"
     },
     "export": {
       "title": "Descargar documentos",
@@ -7055,6 +7059,38 @@
       "done": "Listo",
       "alreadyRunning": "Ya se está armando una descarga para esta organización.",
       "startError": "No pudimos iniciar la descarga. Inténtalo de nuevo."
+    },
+    "noticeCell": {
+      "sent": "Enviado el {{date}}",
+      "sentMany": "Enviado el {{date}} · {{n}} envíos",
+      "meta": "Se elimina desde {{date}}",
+      "none": "Sin aviso"
+    },
+    "exportCell": {
+      "none": "Sin descarga",
+      "running": "Armando",
+      "ready": "Lista",
+      "readyMeta": "Hasta {{date}}",
+      "expired": "Vencida",
+      "expiredMeta": "Desde {{date}}",
+      "failed": "Falló"
+    },
+    "notice": {
+      "title": "¿Enviar el aviso de eliminación a {{name}}?",
+      "message": "Le llega a {{email}}: su información se eliminará a partir del {{date}}. El aviso no borra nada ni bloquea la cuenta.",
+      "withLink": "El correo lleva el enlace de descarga vigente, que sirve hasta el {{date}}.",
+      "withoutLink": "No hay una descarga vigente: el correo lleva el botón para entrar a Docublock. Si quieres que lleve el enlace, genera primero la descarga.",
+      "alreadySent": "Ya se le avisó el {{date}}. Este será el envío número {{n}}.",
+      "reasonPlaceholder": "Por qué se le avisa",
+      "confirm": "Enviar aviso",
+      "verb": "enviar el aviso",
+      "sent": "Aviso enviado a {{email}}.",
+      "error": {
+        "CONFIRMACION_INVALIDA": "El NIT no coincide con el de la organización.",
+        "ORGANIZACION_SIN_CORREO": "La organización no tiene correo registrado.",
+        "ORGANIZACION_NO_ENCONTRADA": "La organización ya no existe.",
+        "generic": "No se pudo enviar el aviso. Inténtalo de nuevo."
+      }
     }
   }
 }

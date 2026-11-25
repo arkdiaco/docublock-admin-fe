@@ -15,6 +15,30 @@ export interface InactiveOrganizationRow {
   signedDocuments: number;
   monthsInactive: number;
   plan: { code: string; name: string; state: InactivePlanState; periodEnd: string | null } | null;
+  lastNotice: InactiveNoticeSummary | null;
+  lastExport: InactiveRowExport | null;
+}
+
+export interface InactiveNoticeSummary {
+  sentAt: string;
+  deletionDate: string;
+  count: number;
+}
+
+export interface InactiveRowExport {
+  state: InactiveExportState;
+  createdAt: string;
+  expiresAt: string | null;
+  expired: boolean;
+}
+
+export interface InactiveNoticeSent {
+  id: string;
+  organizationId: string;
+  email: string;
+  sentAt: string;
+  deletionDate: string;
+  downloadUrl: string | null;
 }
 
 export interface InactiveOrganizationsPage {

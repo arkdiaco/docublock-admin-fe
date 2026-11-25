@@ -16,7 +16,7 @@ import { sectionPath } from '../../../core/layout/console-nav';
 import { DensityService } from '../../../core/preferences/density.service';
 import { LatestRequest } from '../../../shared/http/latest-request';
 import { PluralKeyPipe } from '../../../shared/i18n/plural-key.pipe';
-import { safeDate } from '../../../shared/i18n/safe-date';
+import { safeDate, type DateInput } from '../../../shared/i18n/safe-date';
 import { ActionMenuComponent, type ActionMenuItem } from '../../../shared/ui/action-menu.component';
 import { ButtonComponent } from '../../../shared/ui/button.component';
 import { DataTableComponent, type DataColumn } from '../../../shared/ui/data-table.component';
@@ -31,11 +31,11 @@ import type {
   InactiveOrganizationRow,
   InactiveOrganizationsPage,
 } from '../data/inactive-clients.models';
+import { rowExportStageOf, type ExportStage } from '../data/inactive-export-stage';
+import { InactiveNoticeFlow } from '../data/inactive-notice.flow';
 
-const ACTION_ITEMS: readonly ActionMenuItem[] = [
-  { key: 'export', labelKey: 'inactive.action.export' },
-  { key: 'open', labelKey: 'inactive.action.open' },
-];
+const EXPORT_ITEM: ActionMenuItem = { key: 'export', labelKey: 'inactive.action.export' };
+const OPEN_ITEM: ActionMenuItem = { key: 'open', labelKey: 'inactive.action.open' };
 
 const LIMIT = 20;
 const DEBOUNCE_MS = 350;
@@ -45,7 +45,9 @@ const COLUMNS: readonly DataColumn[] = [
   { key: 'state', labelKey: 'inactive.col.state', width: '130px' },
   { key: 'last', labelKey: 'inactive.col.last', width: '160px' },
   { key: 'signed', labelKey: 'inactive.col.signed', width: '150px' },
-  { key: 'plan', labelKey: 'inactive.col.plan', width: '180px' },
+  { key: 'plan', labelKey: 'inactive.col.plan', width: '170px' },
+  { key: 'notice', labelKey: 'inactive.col.notice', width: '230px' },
+  { key: 'export', labelKey: 'inactive.col.export', width: '140px' },
   { key: 'email', labelKey: 'inactive.col.email', width: 'minmax(0, 1fr)' },
   { key: 'actions', width: '48px', align: 'end' },
 ];
@@ -114,7 +116,7 @@ const COLUMNS: readonly DataColumn[] = [
           [columns]="columns"
           [label]="'nav.inactiveClients' | translate"
           [dense]="density.compact()"
-          minWidth="1080px"
+          minWidth="1430px"
           [total]="total()"
           [from]="from()"
           [to]="to()"
@@ -170,6 +172,50 @@ const COLUMNS: readonly DataColumn[] = [
                 }
               </span>
               <span class="dba-td cell">
+                @if (row.lastNotice; as notice) {
+                  <span class="cell__label">{{
+                    (notice.count > 1 ? 'inactive.noticeCell.sentMany' : 'inactive.noticeCell.sent')
+                      | translate: { date: day(notice.sentAt), n: notice.count }
+                  }}</span>
+                  <span class="cell__meta">{{
+                    'inactive.noticeCell.meta' | translate: { date: day(notice.deletionDate) }
+                  }}</span>
+                } @else {
+                  <span class="dba-meta">{{ 'inactive.noticeCell.none' | translate }}</span>
+                }
+              </span>
+              <span class="dba-td cell">
+                @switch (exportStage(row)) {
+                  @case ('none') {
+                    <span class="dba-meta">{{ 'inactive.exportCell.none' | translate }}</span>
+                  }
+                  @case ('ready') {
+                    <span class="cell__label">{{ 'inactive.exportCell.ready' | translate }}</span>
+                    <span class="cell__meta">{{
+                      'inactive.exportCell.readyMeta'
+                        | translate: { date: day(row.lastExport?.expiresAt) }
+                    }}</span>
+                  }
+                  @case ('expired') {
+                    <span class="cell__label cell__label--plain">{{
+                      'inactive.exportCell.expired' | translate
+                    }}</span>
+                    <span class="cell__meta">{{
+                      'inactive.exportCell.expiredMeta'
+                        | translate: { date: day(row.lastExport?.expiresAt) }
+                    }}</span>
+                  }
+                  @case ('running') {
+                    <span class="cell__label">{{ 'inactive.exportCell.running' | translate }}</span>
+                  }
+                  @case ('failed') {
+                    <span class="cell__label cell__label--warn">{{
+                      'inactive.exportCell.failed' | translate
+                    }}</span>
+                  }
+                }
+              </span>
+              <span class="dba-td cell">
                 <span class="cell__label cell__label--plain">{{
                   row.organization.email || '—'
                 }}</span>
@@ -197,7 +243,7 @@ const COLUMNS: readonly DataColumn[] = [
       #actions
       label="inactive.action.label"
       [heading]="acting()?.organization?.businessName ?? ''"
-      [items]="actionItems"
+      [items]="actionItems()"
       (picked)="onAction($event)"
     />
 
@@ -321,13 +367,15 @@ const COLUMNS: readonly DataColumn[] = [
       color: var(--dba-text-muted);
     }
 
-    .cell__meta--warn {
+    .cell__meta--warn,
+    .cell__label--warn {
       color: var(--dba-state-suspended-fg);
     }
   `,
 })
 export class InactiveClientsComponent {
   private readonly api = inject(InactiveClientsApi);
+  private readonly notices = inject(InactiveNoticeFlow);
   private readonly auth = inject(AuthStore);
   private readonly router = inject(Router);
   private readonly translate = inject(TranslateService);
@@ -336,9 +384,20 @@ export class InactiveClientsComponent {
 
   protected readonly density = inject(DensityService);
   protected readonly columns = COLUMNS;
-  protected readonly actionItems = ACTION_ITEMS;
   protected readonly canManage = computed(() => this.auth.canManage('clients'));
   protected readonly acting = signal<InactiveOrganizationRow | null>(null);
+  protected readonly actionItems = computed<ActionMenuItem[]>(() => {
+    const row = this.acting();
+    if (!row || !this.canManage()) return [EXPORT_ITEM, OPEN_ITEM];
+    const reachable = !!row.organization.email;
+    const notice: ActionMenuItem = {
+      key: 'notice',
+      labelKey: 'inactive.action.notice',
+      disabled: !reachable,
+      ...(reachable ? {} : { hintKey: 'inactive.action.noEmail' }),
+    };
+    return [EXPORT_ITEM, notice, OPEN_ITEM];
+  });
   protected readonly exporting = signal<InactiveOrganizationRow | null>(null);
   private readonly menu = viewChild.required<ActionMenuComponent>('actions');
 
@@ -417,6 +476,7 @@ export class InactiveClientsComponent {
     const row = this.acting();
     if (!row) return;
     if (key === 'export') this.exporting.set(row);
+    if (key === 'notice') void this.sendNotice(row);
     if (key === 'open') this.open(row);
   }
 
@@ -441,8 +501,16 @@ export class InactiveClientsComponent {
     }
   }
 
-  protected day(value: string): string {
+  protected day(value: DateInput): string {
     return safeDate(value, 'd/MM/y', this.locale);
+  }
+
+  protected exportStage(row: InactiveOrganizationRow): ExportStage {
+    return rowExportStageOf(row.lastExport);
+  }
+
+  private async sendNotice(row: InactiveOrganizationRow): Promise<void> {
+    if (await this.notices.send(row)) await this.reload();
   }
 
   private label(key: string, params?: Record<string, unknown>): string {
