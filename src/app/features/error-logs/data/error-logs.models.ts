@@ -79,6 +79,7 @@ export interface ErrorLogsQuery {
   service: ErrorService | null;
   state: ErrorGroupState | null;
   search: string | null;
+  document: string | null;
   from: string | null;
   page: number;
   limit: number;
@@ -89,6 +90,7 @@ export interface ErrorLogFilters {
   service: ErrorService | null;
   search: string | null;
   period: string | null;
+  document: string | null;
   group: string | null;
   page: number;
 }

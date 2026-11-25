@@ -2261,7 +2261,8 @@
       "certNone": "Sin certificado emitido.",
       "signedOf": "{{signed}} de {{total}}",
       "menu": "Acciones del documento",
-      "bundle": "Expediente"
+      "bundle": "Expediente",
+      "errors": "Ver fallos"
     },
     "signer": {
       "col": {
@@ -6896,6 +6897,11 @@
       "signer": "Firmante",
       "organization": "Organización",
       "nit": "NIT {{nit}}"
+    },
+    "scope": {
+      "document": "Solo los fallos de un documento",
+      "open": "Ver documento",
+      "clear": "Quitar filtro"
     }
   },
   "ost": {

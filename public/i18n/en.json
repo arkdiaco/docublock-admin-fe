@@ -2261,7 +2261,8 @@
       "certNone": "No certificate issued.",
       "signedOf": "{{signed}} of {{total}}",
       "menu": "Document actions",
-      "bundle": "Evidence file"
+      "bundle": "Evidence file",
+      "errors": "View failures"
     },
     "signer": {
       "col": {
@@ -6896,6 +6897,11 @@
       "signer": "Signer",
       "organization": "Organization",
       "nit": "Tax ID {{nit}}"
+    },
+    "scope": {
+      "document": "Only the failures of one document",
+      "open": "View document",
+      "clear": "Clear filter"
     }
   },
   "ost": {

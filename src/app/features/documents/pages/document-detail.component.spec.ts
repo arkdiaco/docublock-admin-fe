@@ -203,6 +203,21 @@ describe('Operación › Documentos › ficha', () => {
     expect(host.textContent).not.toMatch(/\b(docs|nav|common)\.[a-zA-Z]/);
   });
 
+  it('con acceso a Plataforma ofrece «Ver fallos», que abre Fallos filtrado por este documento', async () => {
+    conPermisos(['platform:operations', 'platform:platform']);
+    const { host } = await montar();
+    const enlace = [...host.querySelectorAll<HTMLAnchorElement>('.dd__actions a')].find((a) =>
+      a.textContent?.includes('Ver fallos'),
+    );
+    expect(enlace?.getAttribute('href')).toBe('/plataforma/fallos?documento=d1');
+  });
+
+  it('sin acceso a Plataforma no ofrece «Ver fallos»', async () => {
+    conPermisos(['platform:operations']);
+    const { host } = await montar();
+    expect(host.querySelector('.dd__actions')?.textContent).not.toContain('Ver fallos');
+  });
+
   it('el resumen dice origen, plantilla, agrupación, turno del core, plazo, campos, integración y adjuntos', async () => {
     conPermisos(['platform:operations']);
     const { host } = await montar(

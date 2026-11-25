@@ -386,6 +386,39 @@ describe('Plataforma › Fallos', () => {
     expect(enlacesDelDetalle()).toEqual([]);
   });
 
+  it('desde un documento, la lista trae solo sus fallos, lo avisa y deja quitar el filtro', async () => {
+    const { root, http, fixture, primero } = await montar(
+      `/?documento=${DOC_ID}`,
+      [FIRMA],
+      SOPORTE,
+    );
+    expect(primero.request.params.get('document')).toBe(DOC_ID);
+    const aviso = root.querySelector('.bl__scope');
+    expect(aviso?.textContent).toContain('Solo los fallos de un documento');
+    const verDocumento = aviso?.querySelector<HTMLAnchorElement>('a');
+    expect(verDocumento?.textContent?.trim()).toBe('Ver documento');
+    expect(verDocumento?.getAttribute('href')).toBe(`/operacion/documentos/${DOC_ID}`);
+    expect(root.textContent).not.toMatch(LLAVE_CRUDA);
+
+    [...(aviso?.querySelectorAll<HTMLButtonElement>('button') ?? [])]
+      .find((b) => b.textContent?.trim() === 'Quitar filtro')!
+      .click();
+    const siguiente = pedido(http);
+    expect(siguiente.request.params.has('document')).toBe(false);
+    siguiente.flush(reporte([FIRMA]));
+    await asentar(fixture);
+    expect(root.querySelector('.bl__scope')).toBeNull();
+  });
+
+  it('filtrado por un documento sin fallos dice que nada coincide; sin permiso no enlaza al documento', async () => {
+    const { root } = await montar(`/?documento=${DOC_ID}`, [], LECTOR);
+    expect(root.textContent).toContain('Ningún fallo coincide con los filtros');
+    expect(root.querySelector('.bl__scope')?.textContent).toContain(
+      'Solo los fallos de un documento',
+    );
+    expect(root.querySelector('.bl__scope a')).toBeNull();
+  });
+
   it('la vista arma los renglones del contexto aunque falten nombres', () => {
     expect(contextLinesOf(CONTEXTO)).toEqual([
       {
@@ -440,6 +473,7 @@ describe('Plataforma › Fallos', () => {
       servicio: 'bridge',
       buscar: ' push ',
       periodo: '7d',
+      documento: DOC_ID,
       grupo: ID,
       pagina: '4',
     });
@@ -448,6 +482,7 @@ describe('Plataforma › Fallos', () => {
       service: 'bridge',
       search: 'push',
       period: '7d',
+      document: DOC_ID,
       group: ID,
       page: 4,
     });
@@ -456,14 +491,24 @@ describe('Plataforma › Fallos', () => {
       servicio: 'bridge',
       buscar: 'push',
       periodo: '7d',
+      documento: DOC_ID,
       grupo: ID,
       pagina: 4,
     });
-    expect(filtersOf({ estado: 'otro', servicio: 'x', grupo: 'no-es-id', pagina: '-1' })).toEqual({
+    expect(
+      filtersOf({
+        estado: 'otro',
+        servicio: 'x',
+        documento: 'NI-0004',
+        grupo: 'no-es-id',
+        pagina: '-1',
+      }),
+    ).toEqual({
       state: null,
       service: null,
       search: null,
       period: null,
+      document: null,
       group: null,
       page: 1,
     });

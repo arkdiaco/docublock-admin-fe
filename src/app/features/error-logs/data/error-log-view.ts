@@ -27,6 +27,7 @@ const PARAM = {
   service: 'servicio',
   search: 'buscar',
   period: 'periodo',
+  document: 'documento',
   group: 'grupo',
   page: 'pagina',
 } as const;
@@ -39,20 +40,23 @@ export const SEARCH_MAX = 200;
 const oneOf = <T extends string>(allowed: readonly T[], value: unknown): T | null =>
   typeof value === 'string' && (allowed as readonly string[]).includes(value) ? (value as T) : null;
 
+const idOf = (value: unknown): string | null =>
+  typeof value === 'string' && MONGO_ID.test(value) ? value : null;
+
 const searchOf = (value: unknown): string | null => {
   const text = typeof value === 'string' ? value.trim() : '';
   return text && text.length <= SEARCH_MAX ? text : null;
 };
 
 export const filtersOf = (params: Params): ErrorLogFilters => {
-  const group = params[PARAM.group];
   const page = Number(params[PARAM.page]);
   return {
     state: oneOf(ERROR_GROUP_STATES, params[PARAM.state]),
     service: oneOf(ERROR_SERVICES, params[PARAM.service]),
     search: searchOf(params[PARAM.search]),
     period: oneOf(Object.keys(PERIODS), params[PARAM.period]),
-    group: typeof group === 'string' && MONGO_ID.test(group) ? group : null,
+    document: idOf(params[PARAM.document]),
+    group: idOf(params[PARAM.group]),
     page: Number.isSafeInteger(page) && page > 1 ? page : 1,
   };
 };
@@ -62,6 +66,7 @@ export const queryParamsOf = (filters: ErrorLogFilters): Params => ({
   [PARAM.service]: filters.service,
   [PARAM.search]: filters.search,
   [PARAM.period]: filters.period,
+  [PARAM.document]: filters.document,
   [PARAM.group]: filters.group,
   [PARAM.page]: filters.page > 1 ? filters.page : null,
 });
