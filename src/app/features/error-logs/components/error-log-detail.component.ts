@@ -7,18 +7,24 @@ import {
   input,
   output,
 } from '@angular/core';
-import { TranslatePipe } from '@ngx-translate/core';
+import { RouterLink } from '@angular/router';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AuthStore } from '../../../core/auth/auth.store';
+import { canSeeSection, sectionPath } from '../../../core/layout/console-nav';
 import { ButtonComponent } from '../../../shared/ui/button.component';
 import { ModalShellComponent } from '../../../shared/ui/modal-shell.component';
 import { OrgStateComponent } from '../../../shared/ui/org-state.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
 import {
   actorPartsOf,
+  affectedOf,
+  contextLinesOf,
   groupLabelKeyOf,
   groupStateOf,
   prettyJson,
   stateActionsOf,
+  type ContextLine,
+  type ContextSection,
   type StateAction,
 } from '../data/error-log-view';
 import type { ErrorGroupDetail, ErrorGroupRow, ErrorSample } from '../data/error-logs.models';
@@ -27,6 +33,7 @@ import { safeDate } from '../../../shared/i18n/safe-date';
 @Component({
   selector: 'dba-error-log-detail',
   imports: [
+    RouterLink,
     TranslatePipe,
     ButtonComponent,
     ModalShellComponent,
@@ -84,6 +91,10 @@ import { safeDate } from '../../../shared/i18n/safe-date';
         <dd>{{ row().message }}</dd>
         <dt>{{ 'errl.col.count' | translate }}</dt>
         <dd class="dba-mono">{{ row().count }}</dd>
+        @if (affected(); as affected) {
+          <dt>{{ 'errl.field.affected' | translate }}</dt>
+          <dd>{{ affected.key | translate: { n: affected.n } }}</dd>
+        }
         <dt>{{ 'errl.field.firstSeen' | translate }}</dt>
         <dd class="dba-mono">{{ when(row().firstSeen) }}</dd>
         <dt>{{ 'errl.col.lastSeen' | translate }}</dt>
@@ -112,6 +123,18 @@ import { safeDate } from '../../../shared/i18n/safe-date';
               @if (sample.path) {
                 <dt>{{ 'errl.field.path' | translate }}</dt>
                 <dd class="dba-mono">{{ sample.path }}</dd>
+              }
+              @for (line of contextOf(sample); track line.key) {
+                <dt>{{ 'errl.context.' + line.key | translate }}</dt>
+                <dd>
+                  @if (canOpen(line)) {
+                    <a class="item__link" [routerLink]="[pathOf(line.section), line.id]">{{
+                      contextText(line)
+                    }}</a>
+                  } @else {
+                    {{ contextText(line) }}
+                  }
+                </dd>
               }
               @for (part of actorOf(sample); track part.key) {
                 <dt>{{ 'errl.actor.' + part.key | translate }}</dt>
@@ -172,6 +195,16 @@ export class ErrorLogDetailComponent {
 
   private readonly auth = inject(AuthStore);
   private readonly locale = inject(LOCALE_ID);
+  private readonly translate = inject(TranslateService);
+
+  private readonly openable = computed(
+    () =>
+      new Set(
+        (['documents', 'signers', 'organizations'] as const).filter((section) =>
+          canSeeSection(this.auth.platformPermissions(), section),
+        ),
+      ),
+  );
 
   private readonly actions = computed(() =>
     this.auth.canManage('platform') ? stateActionsOf(this.row().state) : [],
@@ -180,8 +213,22 @@ export class ErrorLogDetailComponent {
   protected readonly secondary = computed(() => this.actions().slice(1));
   protected readonly stateOf = groupStateOf;
   protected readonly labelOf = groupLabelKeyOf;
-  protected readonly actorOf = (sample: ErrorSample) => actorPartsOf(sample.actor);
+  protected readonly affected = computed(() => affectedOf(this.row().affected));
+  protected readonly actorOf = (sample: ErrorSample) => actorPartsOf(sample.actor, sample.context);
+  protected readonly contextOf = (sample: ErrorSample) => contextLinesOf(sample.context);
+  protected readonly pathOf = (section: ContextSection) => sectionPath(section);
   protected readonly pretty = prettyJson;
+
+  protected canOpen(line: ContextLine): boolean {
+    return !!line.id && this.openable().has(line.section);
+  }
+
+  protected contextText(line: ContextLine): string {
+    const nit = line.nit
+      ? (this.translate.instant('errl.context.nit', { nit: line.nit }) as string)
+      : null;
+    return [line.title, line.detail, nit].filter(Boolean).join(' · ');
+  }
 
   protected when(value: string): string {
     return safeDate(value, 'd/MM/y, HH:mm:ss', this.locale);

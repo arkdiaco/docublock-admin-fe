@@ -10,6 +10,11 @@ export interface ErrorGroupTriage {
   at: string;
 }
 
+export interface ErrorGroupAffected {
+  documents: number;
+  capped: boolean;
+}
+
 export interface ErrorGroupRow {
   id: string;
   service: ErrorService;
@@ -24,6 +29,7 @@ export interface ErrorGroupRow {
   lastSeen: string;
   reopenedAt?: string;
   triage?: ErrorGroupTriage;
+  affected?: ErrorGroupAffected;
 }
 
 export interface ErrorActor {
@@ -32,6 +38,12 @@ export interface ErrorActor {
   platformAdminId?: string;
   integrationKeyId?: string;
   callerService?: string;
+}
+
+export interface ErrorContext {
+  organization?: { id: string; name?: string; tributaryNumber?: string };
+  document?: { id: string; code?: string; name?: string };
+  signer?: { id?: string; identityId?: string; name?: string; identification?: string };
 }
 
 export interface ErrorSample {
@@ -46,6 +58,7 @@ export interface ErrorSample {
   actor?: ErrorActor;
   requestId?: string;
   stack?: string;
+  context?: ErrorContext;
 }
 
 export interface ErrorGroupDetail extends ErrorGroupRow {
