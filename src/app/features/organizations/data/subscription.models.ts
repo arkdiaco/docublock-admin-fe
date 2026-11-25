@@ -26,6 +26,7 @@ export interface CatalogPlan {
   name: string;
   family: string;
   kind: string;
+  currency?: string;
   validityMonths: number | null;
   limits: PlanLimits;
 }
@@ -82,4 +83,24 @@ export interface CounterBody {
   limit?: number | null;
   used?: number;
   reason: string;
+}
+
+export interface PaygLinkBody {
+  planCode: string;
+  documents: number;
+  unitPrice: number;
+}
+
+export interface PaygLink {
+  url: string;
+  paymentLinkId: string;
+  reference: string;
+  transactionId: string;
+  planCode: string;
+  planName: string;
+  documents: number;
+  unitPrice: number;
+  amount: number;
+  currency: string;
+  validityMonths: number | null;
 }

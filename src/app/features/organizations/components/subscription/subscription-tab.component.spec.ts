@@ -18,6 +18,7 @@ import type { PlatformOrgDetail } from '../../data/organizations.models';
 import type { SubscriptionView } from '../../data/subscription.models';
 import { AssignPlanFormComponent } from './assign-plan-form.component';
 import { CounterFormComponent } from './counter-form.component';
+import { PaygLinkFormComponent } from './payg-link-form.component';
 import { SubscriptionTabComponent } from './subscription-tab.component';
 
 class CatalogoEspanol implements TranslateLoader {
@@ -186,6 +187,80 @@ describe('SubscriptionTabComponent', () => {
     const { host } = await montar(['platform:clients']);
     expect(boton(host, 'Asignar plan')).toBeUndefined();
     expect(host.querySelector('.sub__link')).toBeNull();
+  });
+
+  const CON_PAYG: SubscriptionView = {
+    ...VISTA,
+    plans: [
+      ...VISTA.plans,
+      {
+        code: 'PAYG_CO',
+        name: 'Pago por documento',
+        family: 'PAYG',
+        kind: 'PACKAGE',
+        currency: 'COP',
+        validityMonths: 12,
+        limits: { documents: 10, idBiometric: 0, idAni: 0, idIdentity: 0 },
+      },
+    ],
+  };
+
+  it('sin plan de pago por documento en el catálogo no ofrece el enlace', async () => {
+    const { host } = await montar();
+    expect(boton(host, 'Enlace de pago por documento')).toBeUndefined();
+  });
+
+  it('el enlace de pago por documento pide el enlace al core y lo muestra para copiar', async () => {
+    const { fixture, host } = await montar(undefined, CON_PAYG);
+    boton(host, 'Enlace de pago por documento')!.click();
+    fixture.detectChanges();
+    fixture.debugElement
+      .query(By.directive(PaygLinkFormComponent))
+      .componentInstance.submitted.emit({ planCode: 'PAYG_CO', documents: 150, unitPrice: 2500 });
+    const req = http.expectOne(
+      (r) => r.method === 'POST' && r.url.endsWith('/organizations/org-1/subscription/payg-link'),
+    );
+    expect(req.request.body).toEqual({ planCode: 'PAYG_CO', documents: 150, unitPrice: 2500 });
+    req.flush({
+      url: 'https://pay.test/lnk-1',
+      paymentLinkId: 'lnk-1',
+      reference: 'DOC-1-ab',
+      transactionId: 'tx-1',
+      planCode: 'PAYG_CO',
+      planName: 'Pago por documento',
+      documents: 150,
+      unitPrice: 2500,
+      amount: 375000,
+      currency: 'COP',
+      validityMonths: 12,
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(host.querySelector('.pg__link')?.textContent?.trim()).toBe('https://pay.test/lnk-1');
+    expect(host.textContent).toContain('Referencia DOC-1-ab');
+    expect(boton(host, 'Copiar enlace')).toBeDefined();
+  });
+
+  it('si el core rechaza el enlace dice por qué y deja el formulario abierto', async () => {
+    const { fixture, host } = await montar(undefined, CON_PAYG);
+    const avisos = vi.spyOn(TestBed.inject(MessageService), 'add');
+    boton(host, 'Enlace de pago por documento')!.click();
+    fixture.detectChanges();
+    fixture.debugElement
+      .query(By.directive(PaygLinkFormComponent))
+      .componentInstance.submitted.emit({ planCode: 'PAYG_CO', documents: 1, unitPrice: 1 });
+    http
+      .expectOne((r) => r.url.endsWith('/subscription/payg-link'))
+      .flush({ code: 'PLAN_NO_DISPONIBLE_EN_PAIS' }, { status: 422, statusText: 'Unprocessable' });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(avisos).toHaveBeenCalledWith(
+      expect.objectContaining({
+        detail: 'Ese plan no está disponible en el país de la organización.',
+      }),
+    );
+    expect(host.querySelector('dba-payg-link-form')).not.toBeNull();
+    expect(host.querySelector('.pg__link')).toBeNull();
   });
 
   it('asignar manda el plan con el arrastre y muestra cuánto se arrastró', async () => {

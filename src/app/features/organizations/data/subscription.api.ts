@@ -5,6 +5,8 @@ import { SILENT_ERRORS } from '../../../core/http/http.interceptors';
 import type {
   AssignPlanBody,
   CounterBody,
+  PaygLink,
+  PaygLinkBody,
   PeriodBody,
   PlanResource,
   SubscriptionView,
@@ -23,6 +25,14 @@ export class SubscriptionApi {
   assign(orgId: string, body: AssignPlanBody): Observable<SubscriptionView> {
     return this.http.post<SubscriptionView>(
       `/platform/organizations/${orgId}/subscription/assign`,
+      body,
+      { context: silent() },
+    );
+  }
+
+  paygLink(orgId: string, body: PaygLinkBody): Observable<PaygLink> {
+    return this.http.post<PaygLink>(
+      `/platform/organizations/${orgId}/subscription/payg-link`,
       body,
       { context: silent() },
     );

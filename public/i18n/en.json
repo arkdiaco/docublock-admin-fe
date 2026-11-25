@@ -1067,7 +1067,36 @@
         "SIN_CUPO": "Not enough documents available."
       }
     },
-    "more": "More actions"
+    "more": "More actions",
+    "payg": {
+      "open": "Per-document payment link",
+      "title": "Per-document payment link",
+      "confirm": "Generate link",
+      "plan": "Pay-per-document plan",
+      "documents": "Number of documents",
+      "unitPrice": "Price per document",
+      "total": "Total to pay",
+      "validity": "Documents are valid for {{months}} months from payment.",
+      "validityDefault": "Documents are valid for the plan's term from payment.",
+      "replaces": "Once paid, this plan replaces the organization's current plan.",
+      "readyTitle": "Payment link ready",
+      "readyLead": "Alohapay link for {{documents}} documents. Total: {{total}}.",
+      "reference": "Reference {{reference}}",
+      "copy": "Copy link",
+      "copied": "Copied",
+      "done": "Done",
+      "error": {
+        "documents": "Enter a whole number greater than zero",
+        "unitPrice": "Enter an amount greater than zero, with at most two decimals",
+        "PLAN_NO_ENCONTRADO": "That plan no longer exists or was retired.",
+        "PLAN_NO_DISPONIBLE_EN_PAIS": "That plan isn't available in the organization's country.",
+        "PLAN_NO_ES_PAYG": "The chosen plan isn't a pay-per-document plan.",
+        "ORGANIZACION_NO_ENCONTRADA": "The organization no longer exists.",
+        "CANTIDAD_INVALIDA": "The number of documents must be a whole number greater than zero.",
+        "VALOR_INVALIDO": "The price per document must be greater than zero, with at most two decimals.",
+        "generic": "The link couldn't be generated. Try again."
+      }
+    }
   },
   "quota": {
     "loading": "Loading quotas…",
