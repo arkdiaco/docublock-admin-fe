@@ -36,6 +36,7 @@ import { TicketHistoryComponent } from '../components/ticket-history.component';
 import { TicketSlaComponent } from '../components/ticket-sla.component';
 import { TicketThreadComponent, type ReplyDraft } from '../components/ticket-thread.component';
 import { automaticFailureOf } from '../data/automatic-failure';
+import { whatsappChatOf } from '../data/whatsapp-chat';
 import { SupportApi } from '../data/support.api';
 import { SUPPORT_ERRORS } from '../data/support-errors';
 import {
@@ -210,6 +211,7 @@ interface Option {
               [sending]="pending.key() === 'reply'"
               [opening]="opening()"
               [closed]="!open()"
+              [whatsapp]="whatsapp()"
               (send)="reply($event)"
               (open)="openAttachment($event)"
             />
@@ -464,6 +466,10 @@ export class TicketDetailComponent {
   protected readonly priorityDraft = signal<TicketPriority | null>(null);
   protected readonly agentDraft = signal<string | null>(null);
 
+  protected readonly whatsapp = computed(() => {
+    const ticket = this.detail();
+    return ticket ? whatsappChatOf(ticket, new Date()) : null;
+  });
   protected readonly failure = computed(() => {
     const ticket = this.detail();
     return ticket ? automaticFailureOf(ticket) : null;

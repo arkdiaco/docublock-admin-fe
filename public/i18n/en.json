@@ -3445,6 +3445,20 @@
         "RECAPTURE": "The photo seems taken from a screen, not from the person or the ID card",
         "other": "Technical failure while signing"
       }
+    },
+    "whatsapp": {
+      "mark": {
+        "received": "Received via WhatsApp",
+        "sent": "Sent via WhatsApp",
+        "failed": "Not sent via WhatsApp"
+      },
+      "error": {
+        "WHATSAPP_VENTANA_CERRADA": "More than 24 hours have passed since the person last wrote, and WhatsApp does not allow messaging them. The reply stays in the ticket only.",
+        "WHATSAPP_NO_ENVIADO": "WhatsApp did not accept it. The reply stays in the ticket only."
+      },
+      "openHint": "It is also sent via WhatsApp to {{phone}}. You can message them there until {{until}}.",
+      "closedHint": "The reply stays in the ticket.",
+      "closedWarning": "More than 24 hours have passed since {{phone}} last wrote: this reply stays in the ticket but will not be sent via WhatsApp. If the person writes again, you can reply again."
     }
   },
   "billing": {

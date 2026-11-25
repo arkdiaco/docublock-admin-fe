@@ -99,7 +99,12 @@ export interface TicketMessage {
   attachments: string[];
   internalNote: boolean;
   createdAt: string;
+  channel?: 'whatsapp';
+  externalId?: string;
+  deliveryError?: WhatsappDeliveryError;
 }
+
+export type WhatsappDeliveryError = 'WHATSAPP_VENTANA_CERRADA' | 'WHATSAPP_NO_ENVIADO';
 
 export type TicketAuditAction =
   | 'created'

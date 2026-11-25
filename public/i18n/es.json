@@ -3445,6 +3445,20 @@
         "RECAPTURE": "La foto parece tomada de una pantalla y no de la persona o la cédula",
         "other": "Falla técnica en la firma"
       }
+    },
+    "whatsapp": {
+      "mark": {
+        "received": "Llegó por WhatsApp",
+        "sent": "Enviado por WhatsApp",
+        "failed": "No salió por WhatsApp"
+      },
+      "error": {
+        "WHATSAPP_VENTANA_CERRADA": "Pasaron más de 24 horas desde el último mensaje de la persona y WhatsApp no deja escribirle. La respuesta quedó solo en el ticket.",
+        "WHATSAPP_NO_ENVIADO": "WhatsApp no la aceptó. La respuesta quedó solo en el ticket."
+      },
+      "openHint": "También sale por WhatsApp a {{phone}}. Puedes escribirle por ahí hasta el {{until}}.",
+      "closedHint": "La respuesta queda en el ticket.",
+      "closedWarning": "Pasaron más de 24 horas desde el último mensaje de {{phone}}: esta respuesta queda en el ticket pero no saldrá por WhatsApp. Si la persona vuelve a escribir, se puede contestar de nuevo."
     }
   },
   "billing": {
