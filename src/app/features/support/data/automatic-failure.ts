@@ -36,6 +36,8 @@ const TARGETS: readonly NoticeTarget[] = ['signer', 'owner'];
 export const KNOWN_FAILURE_CODES: readonly string[] = [
   'SELFIE_BAJA_CALIDAD',
   'CEDULA_ILEGIBLE',
+  'DOCUMENTO_SIN_ROSTRO',
+  'FOTO_NO_VALIDA',
   'IDENTIDAD_NO_COINCIDE',
   'CEDULA_NO_COINCIDE',
   'ROSTRO_NO_COINCIDE',

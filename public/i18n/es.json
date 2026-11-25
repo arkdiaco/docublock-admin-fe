@@ -3433,6 +3433,8 @@
       "reason": {
         "SELFIE_BAJA_CALIDAD": "La selfie no quedó clara",
         "CEDULA_ILEGIBLE": "No se pudo leer el reverso de la cédula",
+        "DOCUMENTO_SIN_ROSTRO": "No se vio un rostro en la foto del frente de la cédula",
+        "FOTO_NO_VALIDA": "La foto del frente de la cédula no sirvió para comparar el rostro",
         "IDENTIDAD_NO_COINCIDE": "Los datos escritos no coinciden con los registrados",
         "CEDULA_NO_COINCIDE": "El número de cédula leído no coincide con el registrado",
         "ROSTRO_NO_COINCIDE": "El rostro no coincide con el de la cédula",

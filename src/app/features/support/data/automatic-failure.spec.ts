@@ -80,6 +80,12 @@ describe('Fallo de firma de un ticket automático', () => {
     expect(failureReasonKeyOf({ code: 'CEDULA_ILEGIBLE', hint: 'recapture' })).toBe(
       'support.failure.reason.RECAPTURE',
     );
+    expect(failureReasonKeyOf({ code: 'DOCUMENTO_SIN_ROSTRO' })).toBe(
+      'support.failure.reason.DOCUMENTO_SIN_ROSTRO',
+    );
+    expect(failureReasonKeyOf({ code: 'FOTO_NO_VALIDA' })).toBe(
+      'support.failure.reason.FOTO_NO_VALIDA',
+    );
     expect(failureReasonKeyOf({ code: 'OTRA_COSA' })).toBe('support.failure.reason.other');
   });
 });

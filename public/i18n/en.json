@@ -3433,6 +3433,8 @@
       "reason": {
         "SELFIE_BAJA_CALIDAD": "The selfie was not clear",
         "CEDULA_ILEGIBLE": "The back of the ID card could not be read",
+        "DOCUMENTO_SIN_ROSTRO": "No face was found in the photo of the front of the ID card",
+        "FOTO_NO_VALIDA": "The photo of the front of the ID card could not be used to compare faces",
         "IDENTIDAD_NO_COINCIDE": "The typed data does not match the registered data",
         "CEDULA_NO_COINCIDE": "The ID number read does not match the registered one",
         "ROSTRO_NO_COINCIDE": "The face does not match the ID card",
