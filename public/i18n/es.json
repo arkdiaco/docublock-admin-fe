@@ -2261,7 +2261,8 @@
       "certNone": "Sin certificado emitido.",
       "signedOf": "{{signed}} de {{total}}",
       "menu": "Acciones del documento",
-      "bundle": "Expediente"
+      "bundle": "Expediente",
+      "errors": "Ver fallos"
     },
     "signer": {
       "col": {
@@ -2765,6 +2766,7 @@
       "admin_signer_removed": "Firmante quitado por administración",
       "admin_signer_links_revoked": "Enlaces del firmante revocados por administración",
       "admin_turn_fixed": "Turno corregido por administración",
+      "document_turn_reopened": "Turno abierto para el siguiente firmante",
       "document_filed": "Documento radicado"
     },
     "act": {
@@ -6794,8 +6796,8 @@
     "detailFailed": "No se pudo cargar el detalle de este fallo.",
     "filter": {
       "all": "Todos",
-      "search": "Buscar en mensaje, ruta o tipo",
-      "searchPlaceholder": "Mensaje, ruta o tipo de error",
+      "search": "Buscar por mensaje, ruta, documento, firmante u organización",
+      "searchPlaceholder": "Mensaje, ruta, código del documento, identificación o NIT",
       "service": "Servicio",
       "anyService": "Cualquier servicio",
       "period": "Última vez",
@@ -6839,7 +6841,8 @@
       "requestId": "Id de la petición",
       "query": "Parámetros",
       "body": "Cuerpo recibido",
-      "stack": "Traza"
+      "stack": "Traza",
+      "affected": "Documentos afectados"
     },
     "triageText": "{{admin}} · {{when}}",
     "samples": "Últimas muestras ({{n}})",
@@ -6883,7 +6886,23 @@
       "ERROR_GROUP_CHANGED": "Alguien cambió este fallo mientras lo revisabas. Recarga y vuelve a intentar."
     },
     "failed": "No se pudo cambiar el estado: {{message}}",
-    "failedGeneric": "No se pudo cambiar el estado. Inténtalo de nuevo."
+    "failedGeneric": "No se pudo cambiar el estado. Inténtalo de nuevo.",
+    "affected": {
+      "one": "{{n}} documento",
+      "many": "{{n}} documentos",
+      "capped": "{{n}} o más documentos"
+    },
+    "context": {
+      "document": "Documento",
+      "signer": "Firmante",
+      "organization": "Organización",
+      "nit": "NIT {{nit}}"
+    },
+    "scope": {
+      "document": "Solo los fallos de un documento",
+      "open": "Ver documento",
+      "clear": "Quitar filtro"
+    }
   },
   "ost": {
     "loading": "Cargando los ajustes",

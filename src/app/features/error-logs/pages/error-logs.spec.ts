@@ -6,13 +6,20 @@ import { NotificationService } from '../../../core/ui/notification.service';
 import { conPermisos, configurar } from '../../catalogs/pages/catalogs-test-kit';
 import {
   actorPartsOf,
+  affectedOf,
+  contextLinesOf,
   filtersOf,
   groupStateOf,
   queryParamsOf,
   stateActionsOf,
   statePills,
 } from '../data/error-log-view';
-import type { ErrorGroupDetail, ErrorGroupReport, ErrorGroupRow } from '../data/error-logs.models';
+import type {
+  ErrorContext,
+  ErrorGroupDetail,
+  ErrorGroupReport,
+  ErrorGroupRow,
+} from '../data/error-logs.models';
 import {
   ERROR_LOGS_DEBOUNCE_MS,
   ERROR_LOGS_LIMIT,
@@ -69,6 +76,48 @@ const DETALLE: ErrorGroupDetail = {
   ],
 };
 
+const DOC_ID = '0000000000000000000000c8';
+const FIRMANTE_ID = '0000000000000000000000f1';
+const ORG_ID = '0000000000000000000000d1';
+
+const CONTEXTO: ErrorContext = {
+  organization: { id: ORG_ID, name: 'Notaría Central', tributaryNumber: '900100001' },
+  document: { id: DOC_ID, code: 'NI-0004', name: 'Contrato de arriendo' },
+  signer: {
+    id: FIRMANTE_ID,
+    identityId: '0000000000000000000000a9',
+    name: 'Ana Ruiz',
+    identification: '1020304050',
+  },
+};
+
+const FIRMA: ErrorGroupRow = {
+  ...ABIERTO,
+  service: 'core',
+  route: 'POST /public/signing/sign',
+  message: 'El servicio de firma rechazó la petición',
+  affected: { documents: 3, capped: false },
+};
+
+const DETALLE_FIRMA: ErrorGroupDetail = {
+  ...FIRMA,
+  samples: [
+    {
+      ...DETALLE.samples[0],
+      method: 'POST',
+      path: '/public/signing/sign',
+      actor: { organizationId: ORG_ID },
+      context: CONTEXTO,
+    },
+  ],
+};
+
+const enlacesDelDetalle = () =>
+  [...document.querySelectorAll<HTMLAnchorElement>('dba-error-log-detail a')].map((a) => ({
+    texto: a.textContent?.trim(),
+    href: a.getAttribute('href'),
+  }));
+
 const reporte = (items: ErrorGroupRow[]): ErrorGroupReport => ({
   total: items.length,
   page: 1,
@@ -87,6 +136,7 @@ const pedido = (http: HttpTestingController): TestRequest =>
 
 const LECTOR = ['platform:platform'];
 const GESTOR = ['platform:platform', 'platform:platform:manage'];
+const SOPORTE = ['platform:platform', 'platform:clients', 'platform:operations'];
 
 const montar = async (url = '/', items = [ABIERTO, RESUELTO], permisos = LECTOR) => {
   const http = await configurar();
@@ -145,7 +195,7 @@ describe('Plataforma › Fallos', () => {
     vi.useFakeTimers();
     try {
       const input = root.querySelector<HTMLInputElement>(
-        'input[aria-label="Buscar en mensaje, ruta o tipo"]',
+        'input[aria-label="Buscar por mensaje, ruta, documento, firmante u organización"]',
       );
       input!.value = ' fianza ';
       input!.dispatchEvent(new Event('input'));
@@ -271,12 +321,159 @@ describe('Plataforma › Fallos', () => {
     expect(root.textContent).toContain('GET /fianza-credito/digital/ciudades');
   });
 
+  it('el buscador dice que encuentra por código del documento, identificación o NIT', async () => {
+    const { root } = await montar();
+    const input = root.querySelector<HTMLInputElement>('.bl__search input');
+    expect(input?.placeholder).toBe('Mensaje, ruta, código del documento, identificación o NIT');
+  });
+
+  it('cada grupo dice cuántos documentos afectó', async () => {
+    const { root } = await montar('/', [
+      FIRMA,
+      { ...RESUELTO, id: '65a0000000000000000000e3', affected: { documents: 1, capped: false } },
+      { ...RESUELTO, id: '65a0000000000000000000e4', affected: { documents: 500, capped: true } },
+      { ...RESUELTO, id: '65a0000000000000000000e5', affected: { documents: 0, capped: false } },
+    ]);
+    const filas = [...root.querySelectorAll('button.dba-tr')].map((f) => f.textContent ?? '');
+    expect(filas[0]).toContain('3 documentos');
+    expect(filas[1]).toContain('1 documento');
+    expect(filas[1]).not.toContain('1 documentos');
+    expect(filas[2]).toContain('500 o más documentos');
+    expect(filas[3]).not.toContain('documento');
+  });
+
+  it('el detalle dice a qué documento, firmante y organización le pasó, con enlaces', async () => {
+    const { root, http, fixture } = await montar('/', [FIRMA], SOPORTE);
+    root.querySelector<HTMLButtonElement>('button.dba-tr')!.click();
+    http.expectOne((req) => req.url.endsWith(`${BASE}/${ID}`)).flush(DETALLE_FIRMA);
+    await asentar(fixture);
+
+    const texto = document.querySelector('dba-error-log-detail')?.textContent ?? '';
+    expect(texto).toContain('Documentos afectados');
+    expect(texto).toContain('Documento');
+    expect(texto).toContain('Firmante');
+    expect(texto).not.toContain(ORG_ID);
+    expect(texto).not.toMatch(LLAVE_CRUDA);
+    expect(enlacesDelDetalle()).toEqual([
+      { texto: 'NI-0004 · Contrato de arriendo', href: `/operacion/documentos/${DOC_ID}` },
+      { texto: 'Ana Ruiz · 1020304050', href: `/clientes/firmantes/${FIRMANTE_ID}` },
+      { texto: 'Notaría Central · NIT 900100001', href: `/clientes/organizaciones/${ORG_ID}` },
+    ]);
+  });
+
+  it('sin permiso para Documentos ni Clientes, el contexto se lee pero no se enlaza', async () => {
+    const { root, http, fixture } = await montar('/', [FIRMA], LECTOR);
+    root.querySelector<HTMLButtonElement>('button.dba-tr')!.click();
+    http.expectOne((req) => req.url.endsWith(`${BASE}/${ID}`)).flush(DETALLE_FIRMA);
+    await asentar(fixture);
+
+    const texto = document.querySelector('dba-error-log-detail')?.textContent ?? '';
+    expect(texto).toContain('NI-0004 · Contrato de arriendo');
+    expect(texto).toContain('Ana Ruiz · 1020304050');
+    expect(texto).toContain('Notaría Central · NIT 900100001');
+    expect(enlacesDelDetalle()).toEqual([]);
+  });
+
+  it('las muestras viejas, sin contexto, siguen mostrando la organización del actor', async () => {
+    const { root, http, fixture } = await montar('/', [ABIERTO], SOPORTE);
+    root.querySelector<HTMLButtonElement>('button.dba-tr')!.click();
+    http.expectOne((req) => req.url.endsWith(`${BASE}/${ID}`)).flush(DETALLE);
+    await asentar(fixture);
+
+    const texto = document.querySelector('dba-error-log-detail')?.textContent ?? '';
+    expect(texto).toContain('org-1');
+    expect(texto).not.toContain('Documentos afectados');
+    expect(enlacesDelDetalle()).toEqual([]);
+  });
+
+  it('desde un documento, la lista trae solo sus fallos, lo avisa y deja quitar el filtro', async () => {
+    const { root, http, fixture, primero } = await montar(
+      `/?documento=${DOC_ID}`,
+      [FIRMA],
+      SOPORTE,
+    );
+    expect(primero.request.params.get('document')).toBe(DOC_ID);
+    const aviso = root.querySelector('.bl__scope');
+    expect(aviso?.textContent).toContain('Solo los fallos de un documento');
+    const verDocumento = aviso?.querySelector<HTMLAnchorElement>('a');
+    expect(verDocumento?.textContent?.trim()).toBe('Ver documento');
+    expect(verDocumento?.getAttribute('href')).toBe(`/operacion/documentos/${DOC_ID}`);
+    expect(root.textContent).not.toMatch(LLAVE_CRUDA);
+
+    [...(aviso?.querySelectorAll<HTMLButtonElement>('button') ?? [])]
+      .find((b) => b.textContent?.trim() === 'Quitar filtro')!
+      .click();
+    const siguiente = pedido(http);
+    expect(siguiente.request.params.has('document')).toBe(false);
+    siguiente.flush(reporte([FIRMA]));
+    await asentar(fixture);
+    expect(root.querySelector('.bl__scope')).toBeNull();
+  });
+
+  it('filtrado por un documento sin fallos dice que nada coincide; sin permiso no enlaza al documento', async () => {
+    const { root } = await montar(`/?documento=${DOC_ID}`, [], LECTOR);
+    expect(root.textContent).toContain('Ningún fallo coincide con los filtros');
+    expect(root.querySelector('.bl__scope')?.textContent).toContain(
+      'Solo los fallos de un documento',
+    );
+    expect(root.querySelector('.bl__scope a')).toBeNull();
+  });
+
+  it('la vista arma los renglones del contexto aunque falten nombres', () => {
+    expect(contextLinesOf(CONTEXTO)).toEqual([
+      {
+        key: 'document',
+        section: 'documents',
+        id: DOC_ID,
+        title: 'NI-0004',
+        detail: 'Contrato de arriendo',
+        nit: null,
+      },
+      {
+        key: 'signer',
+        section: 'signers',
+        id: FIRMANTE_ID,
+        title: 'Ana Ruiz',
+        detail: '1020304050',
+        nit: null,
+      },
+      {
+        key: 'organization',
+        section: 'organizations',
+        id: ORG_ID,
+        title: 'Notaría Central',
+        detail: null,
+        nit: '900100001',
+      },
+    ]);
+    expect(contextLinesOf({ document: { id: DOC_ID }, signer: { identityId: 'idn-9' } })).toEqual([
+      { key: 'document', section: 'documents', id: DOC_ID, title: DOC_ID, detail: null, nit: null },
+      { key: 'signer', section: 'signers', id: null, title: 'idn-9', detail: null, nit: null },
+    ]);
+    expect(contextLinesOf(undefined)).toEqual([]);
+    expect(affectedOf(undefined)).toBeNull();
+    expect(affectedOf({ documents: 0, capped: false })).toBeNull();
+    expect(affectedOf({ documents: 1, capped: false })).toEqual({
+      key: 'errl.affected.one',
+      n: 1,
+    });
+    expect(affectedOf({ documents: 4, capped: false })).toEqual({
+      key: 'errl.affected.many',
+      n: 4,
+    });
+    expect(affectedOf({ documents: 500, capped: true })).toEqual({
+      key: 'errl.affected.capped',
+      n: 500,
+    });
+  });
+
   it('la vista traduce filtros, estados y acciones sin perder datos', () => {
     const filtros = filtersOf({
       estado: 'silenced',
       servicio: 'bridge',
       buscar: ' push ',
       periodo: '7d',
+      documento: DOC_ID,
       grupo: ID,
       pagina: '4',
     });
@@ -285,6 +482,7 @@ describe('Plataforma › Fallos', () => {
       service: 'bridge',
       search: 'push',
       period: '7d',
+      document: DOC_ID,
       group: ID,
       page: 4,
     });
@@ -293,14 +491,24 @@ describe('Plataforma › Fallos', () => {
       servicio: 'bridge',
       buscar: 'push',
       periodo: '7d',
+      documento: DOC_ID,
       grupo: ID,
       pagina: 4,
     });
-    expect(filtersOf({ estado: 'otro', servicio: 'x', grupo: 'no-es-id', pagina: '-1' })).toEqual({
+    expect(
+      filtersOf({
+        estado: 'otro',
+        servicio: 'x',
+        documento: 'NI-0004',
+        grupo: 'no-es-id',
+        pagina: '-1',
+      }),
+    ).toEqual({
       state: null,
       service: null,
       search: null,
       period: null,
+      document: null,
       group: null,
       page: 1,
     });

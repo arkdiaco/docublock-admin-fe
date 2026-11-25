@@ -12,7 +12,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom, type Observable } from 'rxjs';
 import { AuthStore } from '../../../core/auth/auth.store';
-import { sectionPath } from '../../../core/layout/console-nav';
+import { canSeeSection, sectionPath } from '../../../core/layout/console-nav';
 import { DialogService } from '../../../core/ui/dialog.service';
 import { NotificationService } from '../../../core/ui/notification.service';
 import { PendingAction } from '../../../shared/domain/pending-action';
@@ -148,6 +148,17 @@ const REASON: DialogReason = {
           [meta]="meta()"
         >
           <div actions class="dd__actions">
+            @if (canSeeErrors()) {
+              <a
+                dba-button
+                variant="secondary"
+                [routerLink]="errorsPath"
+                [queryParams]="{ documento: doc.id }"
+              >
+                <db-icon name="triangleAlert" [size]="15" />
+                {{ 'docs.d.errors' | translate }}
+              </a>
+            }
             <button dba-button variant="secondary" (click)="openRaw()">
               <db-icon name="listBullets" [size]="15" />
               {{ 'docs.raw.open' | translate }}
@@ -326,6 +337,10 @@ export class DocumentDetailComponent {
   private readonly rawLatest = new LatestRequest();
 
   protected readonly docsPath = sectionPath('documents');
+  protected readonly errorsPath = sectionPath('errors');
+  protected readonly canSeeErrors = computed(() =>
+    canSeeSection(this.auth.platformPermissions(), 'errors'),
+  );
   protected readonly pending = new PendingAction();
   protected readonly canManage = computed(() => this.auth.canManage('operations'));
   protected readonly canOpenOrg = computed(() => this.auth.canRead('clients'));

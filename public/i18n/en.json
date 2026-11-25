@@ -2261,7 +2261,8 @@
       "certNone": "No certificate issued.",
       "signedOf": "{{signed}} of {{total}}",
       "menu": "Document actions",
-      "bundle": "Evidence file"
+      "bundle": "Evidence file",
+      "errors": "View failures"
     },
     "signer": {
       "col": {
@@ -2765,6 +2766,7 @@
       "admin_signer_removed": "Signer removed by admin",
       "admin_signer_links_revoked": "Signer links revoked by admin",
       "admin_turn_fixed": "Turn fixed by admin",
+      "document_turn_reopened": "Turn opened for the next signer",
       "document_filed": "Document filed"
     },
     "act": {
@@ -6794,8 +6796,8 @@
     "detailFailed": "The details of this failure could not be loaded.",
     "filter": {
       "all": "All",
-      "search": "Search message, route or type",
-      "searchPlaceholder": "Message, route or error type",
+      "search": "Search by message, route, document, signer or organization",
+      "searchPlaceholder": "Message, route, document code, ID number or tax ID",
       "service": "Service",
       "anyService": "Any service",
       "period": "Last seen",
@@ -6839,7 +6841,8 @@
       "requestId": "Request id",
       "query": "Parameters",
       "body": "Received body",
-      "stack": "Stack trace"
+      "stack": "Stack trace",
+      "affected": "Affected documents"
     },
     "triageText": "{{admin}} · {{when}}",
     "samples": "Latest samples ({{n}})",
@@ -6883,7 +6886,23 @@
       "ERROR_GROUP_CHANGED": "Someone changed this failure while you were reviewing it. Reload and try again."
     },
     "failed": "The state could not be changed: {{message}}",
-    "failedGeneric": "The state could not be changed. Try again."
+    "failedGeneric": "The state could not be changed. Try again.",
+    "affected": {
+      "one": "{{n}} document",
+      "many": "{{n}} documents",
+      "capped": "{{n}} or more documents"
+    },
+    "context": {
+      "document": "Document",
+      "signer": "Signer",
+      "organization": "Organization",
+      "nit": "Tax ID {{nit}}"
+    },
+    "scope": {
+      "document": "Only the failures of one document",
+      "open": "View document",
+      "clear": "Clear filter"
+    }
   },
   "ost": {
     "loading": "Loading settings",

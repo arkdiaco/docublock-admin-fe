@@ -8,10 +8,12 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Select } from 'primeng/select';
 import { firstValueFrom } from 'rxjs';
+import { AuthStore } from '../../../core/auth/auth.store';
+import { canSeeSection, sectionPath } from '../../../core/layout/console-nav';
 import { DensityService } from '../../../core/preferences/density.service';
 import { DialogService } from '../../../core/ui/dialog.service';
 import { NotificationService } from '../../../core/ui/notification.service';
@@ -30,6 +32,7 @@ import {
   ALL,
   PERIODS,
   STATE_ERRORS,
+  affectedOf,
   filtersOf,
   fromOf,
   groupLabelKeyOf,
@@ -56,7 +59,7 @@ const COLUMNS: readonly DataColumn[] = [
   { key: 'service', labelKey: 'errl.col.service', width: '110px' },
   { key: 'route', labelKey: 'errl.col.route', width: 'minmax(0, 1.3fr)' },
   { key: 'message', labelKey: 'errl.col.message', width: 'minmax(0, 2fr)' },
-  { key: 'count', labelKey: 'errl.col.count', width: '88px', align: 'end' },
+  { key: 'count', labelKey: 'errl.col.count', width: '150px', align: 'end' },
   { key: 'state', labelKey: 'errl.col.state', width: '130px' },
   { key: 'chevron', width: '24px', align: 'end' },
 ];
@@ -68,6 +71,7 @@ type FilterChange = Partial<Omit<ErrorLogFilters, 'page'>> & { page?: number };
   imports: [
     TranslatePipe,
     FormsModule,
+    RouterLink,
     Select,
     ButtonComponent,
     DataTableComponent,
@@ -94,6 +98,21 @@ type FilterChange = Partial<Omit<ErrorLogFilters, 'page'>> & { page?: number };
         [label]="'errl.col.state' | translate"
         (activeChange)="apply({ state: $any($event) || null })"
       />
+
+      @if (filters().document; as document) {
+        <div class="bl__scope">
+          <db-icon name="filter" [size]="15" />
+          <span>{{ 'errl.scope.document' | translate }}</span>
+          @if (canOpenDocument()) {
+            <a class="bl__scope-link" [routerLink]="[documentsPath, document]">{{
+              'errl.scope.open' | translate
+            }}</a>
+          }
+          <button dba-button variant="secondary" type="button" (click)="apply({ document: null })">
+            {{ 'errl.scope.clear' | translate }}
+          </button>
+        </div>
+      }
 
       <div class="bl__tools">
         <label class="bl__search">
@@ -173,7 +192,12 @@ type FilterChange = Partial<Omit<ErrorLogFilters, 'page'>> & { page?: number };
               <span class="dba-td cell"
                 ><span class="cell__text">{{ row.message }}</span></span
               >
-              <span class="dba-td cell cell--end dba-mono">{{ row.count }}</span>
+              <span class="dba-td cell cell--end">
+                <span class="dba-mono">{{ row.count }}</span>
+                @if (affectedOf(row.affected); as affected) {
+                  <span class="cell__muted">{{ affected.key | translate: { n: affected.n } }}</span>
+                }
+              </span>
               <span class="dba-td cell">
                 <dba-org-state
                   [state]="stateOf(row.state)"
@@ -200,9 +224,28 @@ type FilterChange = Partial<Omit<ErrorLogFilters, 'page'>> & { page?: number };
     }
   `,
   styleUrl: '../../../shared/ui/list-page.scss',
+  styles: `
+    .cell--end {
+      align-items: flex-end;
+    }
+
+    .bl__scope {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      color: var(--dba-text-muted);
+    }
+
+    .bl__scope-link {
+      color: var(--dba-violet-600);
+      font-weight: 600;
+    }
+  `,
 })
 export class ErrorLogsComponent {
   private readonly api = inject(ErrorLogsApi);
+  private readonly auth = inject(AuthStore);
   private readonly locale = inject(LOCALE_ID);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -214,12 +257,17 @@ export class ErrorLogsComponent {
   private searchTimer: ReturnType<typeof setTimeout> | null = null;
 
   protected readonly density = inject(DensityService);
+  protected readonly documentsPath = sectionPath('documents');
+  protected readonly canOpenDocument = computed(() =>
+    canSeeSection(this.auth.platformPermissions(), 'documents'),
+  );
   protected readonly pending = new PendingAction();
   protected readonly columns = COLUMNS;
   protected readonly limit = ERROR_LOGS_LIMIT;
   protected readonly all = ALL;
   protected readonly stateOf = groupStateOf;
   protected readonly labelOf = groupLabelKeyOf;
+  protected readonly affectedOf = affectedOf;
   protected readonly filters = signal<ErrorLogFilters>(filtersOf(this.route.snapshot.queryParams));
   protected readonly loading = signal(true);
   protected readonly failed = signal(false);
@@ -239,8 +287,8 @@ export class ErrorLogsComponent {
     Math.min(this.total(), this.filters().page * ERROR_LOGS_LIMIT),
   );
   protected readonly filtered = computed(() => {
-    const { state, service, search, period } = this.filters();
-    return !!(state || service || search || period);
+    const { state, service, search, period, document } = this.filters();
+    return !!(state || service || search || period || document);
   });
   protected readonly serviceOptions = computed(() =>
     this.options('errl.filter.anyService', ERROR_SERVICES, 'errl.service'),
@@ -334,6 +382,7 @@ export class ErrorLogsComponent {
           state: filters.state,
           service: filters.service,
           search: filters.search,
+          document: filters.document,
           from: fromOf(filters.period, Date.now()),
           page: filters.page,
           limit: ERROR_LOGS_LIMIT,
