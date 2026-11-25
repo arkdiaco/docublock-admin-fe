@@ -12,3 +12,9 @@ export const wholeNumber = (value: string): number | null => {
   if (!/^\d+$/.test(text)) return null;
   return Number(text);
 };
+
+export const moneyAmount = (value: string): number | null => {
+  const text = value.trim();
+  if (!/^\d+([.,]\d{1,2})?$/.test(text)) return null;
+  return Number(text.replace(',', '.'));
+};

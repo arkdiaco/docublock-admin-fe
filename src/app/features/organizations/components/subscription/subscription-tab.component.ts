@@ -31,12 +31,15 @@ import { SubscriptionApi } from '../../data/subscription.api';
 import type {
   AssignPlanBody,
   CounterBody,
+  PaygLink,
+  PaygLinkBody,
   PeriodBody,
   SubscriptionCounter,
   SubscriptionView,
 } from '../../data/subscription.models';
 import { AssignPlanFormComponent } from './assign-plan-form.component';
 import { CounterFormComponent } from './counter-form.component';
+import { PAYG_FAMILY, PaygLinkFormComponent } from './payg-link-form.component';
 import { PeriodFormComponent } from './period-form.component';
 import {
   TransferDocumentsFormComponent,
@@ -59,6 +62,15 @@ const KNOWN_ERRORS = [
   'CONTADOR_NO_EXISTE',
 ];
 
+const PAYG_ERRORS = [
+  'PLAN_NO_ENCONTRADO',
+  'PLAN_NO_DISPONIBLE_EN_PAIS',
+  'PLAN_NO_ES_PAYG',
+  'ORGANIZACION_NO_ENCONTRADA',
+  'CANTIDAD_INVALIDA',
+  'VALOR_INVALIDO',
+];
+
 const TRANSFER_ERRORS = [
   'TRANSFERENCIA_MISMA_ORG',
   'ORIGEN_SIN_PLAN',
@@ -70,6 +82,7 @@ const TRANSFER_ERRORS = [
 
 type Open =
   | { kind: 'assign' }
+  | { kind: 'payg' }
   | { kind: 'transfer' }
   | { kind: 'period' }
   | { kind: 'counter'; counter: SubscriptionCounter }
@@ -90,6 +103,7 @@ type Open =
     PeriodFormComponent,
     CounterFormComponent,
     TransferDocumentsFormComponent,
+    PaygLinkFormComponent,
     ActionMenuComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -113,6 +127,11 @@ type Open =
                 <button dba-button (click)="open.set({ kind: 'assign' })">
                   {{ 'sub.assign.open' | translate }}
                 </button>
+                @if (hasPayg()) {
+                  <button dba-button variant="secondary" (click)="openPayg()">
+                    {{ 'sub.payg.open' | translate }}
+                  </button>
+                }
                 @if (data.current) {
                   <button dba-button variant="secondary" [busy]="working()" (click)="moreMenu.toggle($event)">
                     {{ 'sub.more' | translate }}
@@ -275,6 +294,16 @@ type Open =
             [busy]="working()"
             (submitted)="assign($event)"
             (dismissed)="open.set(null)"
+          />
+        }
+        @case ('payg') {
+          <dba-payg-link-form
+            [plans]="data.plans"
+            [orgName]="org().businessName"
+            [result]="paygLink()"
+            [busy]="working()"
+            (submitted)="generatePayg($event)"
+            (dismissed)="closePayg()"
           />
         }
         @case ('transfer') {
@@ -449,6 +478,10 @@ export class SubscriptionTabComponent {
   protected readonly view = signal<SubscriptionView | null>(null);
   protected readonly open = signal<Open>(null);
   protected readonly canManage = computed(() => this.auth.canManage('commercial'));
+  protected readonly paygLink = signal<PaygLink | null>(null);
+  protected readonly hasPayg = computed(
+    () => this.view()?.plans.some((plan) => plan.family === PAYG_FAMILY) ?? false,
+  );
 
   protected readonly openCounter = computed(() => {
     const open = this.open();
@@ -561,6 +594,31 @@ export class SubscriptionTabComponent {
       const key =
         carried > 0 ? 'sub.done.assignCarried' : carried < 0 ? 'sub.done.assignDebt' : 'sub.done.assign';
       this.notify.success(this.translate.instant(key, { count: Math.abs(carried) }) as string);
+    }
+  }
+
+  protected openPayg(): void {
+    this.paygLink.set(null);
+    this.open.set({ kind: 'payg' });
+  }
+
+  protected closePayg(): void {
+    this.paygLink.set(null);
+    this.open.set(null);
+  }
+
+  protected async generatePayg(body: PaygLinkBody): Promise<void> {
+    this.working.set(true);
+    try {
+      this.paygLink.set(await firstValueFrom(this.api.paygLink(this.org().id, body)));
+    } catch (error) {
+      const code = errorCodeOf(error);
+      const known = code !== null && PAYG_ERRORS.includes(code);
+      this.notify.error(
+        this.translate.instant(known ? `sub.payg.error.${code}` : 'sub.payg.error.generic') as string,
+      );
+    } finally {
+      this.working.set(false);
     }
   }
 

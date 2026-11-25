@@ -1067,7 +1067,36 @@
         "SIN_CUPO": "No alcanzan los documentos disponibles."
       }
     },
-    "more": "Más acciones"
+    "more": "Más acciones",
+    "payg": {
+      "open": "Enlace de pago por documento",
+      "title": "Enlace de pago por documento",
+      "confirm": "Generar enlace",
+      "plan": "Plan de pago por documento",
+      "documents": "Número de documentos",
+      "unitPrice": "Valor por documento",
+      "total": "Total a pagar",
+      "validity": "Los documentos valen {{months}} meses desde el pago.",
+      "validityDefault": "Los documentos valen la vigencia del plan desde el pago.",
+      "replaces": "Al pagarse, este plan reemplaza el plan actual de la organización.",
+      "readyTitle": "Enlace de pago listo",
+      "readyLead": "Enlace de Alohapay por {{documents}} documentos. Total: {{total}}.",
+      "reference": "Referencia {{reference}}",
+      "copy": "Copiar enlace",
+      "copied": "Copiado",
+      "done": "Listo",
+      "error": {
+        "documents": "Escribe un número entero mayor que cero",
+        "unitPrice": "Escribe un valor mayor que cero, con máximo dos decimales",
+        "PLAN_NO_ENCONTRADO": "Ese plan ya no existe o está retirado.",
+        "PLAN_NO_DISPONIBLE_EN_PAIS": "Ese plan no está disponible en el país de la organización.",
+        "PLAN_NO_ES_PAYG": "El plan elegido no es de pago por documento.",
+        "ORGANIZACION_NO_ENCONTRADA": "La organización ya no existe.",
+        "CANTIDAD_INVALIDA": "El número de documentos debe ser un entero mayor que cero.",
+        "VALOR_INVALIDO": "El valor por documento debe ser mayor que cero y con máximo dos decimales.",
+        "generic": "No se pudo generar el enlace. Inténtalo de nuevo."
+      }
+    }
   },
   "quota": {
     "loading": "Cargando los cupos…",
