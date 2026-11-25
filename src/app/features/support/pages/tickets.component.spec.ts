@@ -100,4 +100,29 @@ describe('Operación › Soporte › bandeja', () => {
     expect(req.request.params.get('organizationId')).toBe('o9');
     req.flush({ total: 0, items: [] });
   });
+
+  it('el origen separa los tickets automáticos de los que abrió una persona', async () => {
+    conPermisos(['platform:operations']);
+    const { fixture } = await montar();
+    const cmp = fixture.componentInstance as unknown as {
+      setFilter: (target: unknown, value: string) => void;
+      origin: unknown;
+    };
+    cmp.setFilter(cmp.origin, 'automatic');
+    let req = http.expectOne((r) => isList(r) && r.params.get('limit') === '20');
+    expect(req.request.params.get('automatic')).toBe('true');
+    req.flush({
+      total: 1,
+      items: [resumen({ createdByType: 'system', requesterName: 'Julián Ruiz' })],
+    });
+    const host = fixture.nativeElement as HTMLElement;
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(host.querySelector('dba-data-table')?.textContent).toContain('Automático');
+    });
+    cmp.setFilter(cmp.origin, 'manual');
+    req = http.expectOne((r) => isList(r) && r.params.get('limit') === '20');
+    expect(req.request.params.get('automatic')).toBe('false');
+    req.flush({ total: 0, items: [] });
+  });
 });

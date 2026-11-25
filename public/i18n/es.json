@@ -3153,7 +3153,9 @@
       "anyPriority": "Todas las prioridades",
       "anyCategory": "Todas las categorías",
       "anyChannel": "Todos los canales",
-      "anyAgent": "Todos los agentes"
+      "anyAgent": "Todos los agentes",
+      "origin": "Origen",
+      "anyOrigin": "Todos los orígenes"
     },
     "status": {
       "open": "Abierto",
@@ -3246,7 +3248,8 @@
         "conversation": "Conversación",
         "sla": "SLA",
         "history": "Historial",
-        "data": "Datos"
+        "data": "Datos",
+        "failure": "Fallo en la firma"
       },
       "requester": "Solicitante",
       "context": "Contexto",
@@ -3397,6 +3400,51 @@
       "title": "Tickets de soporte de la organización",
       "lead": "Los tickets se atienden en Soporte y SLA. Abre la bandeja filtrada por esta organización.",
       "open": "Ver sus tickets"
+    },
+    "origin": {
+      "automatic": "Automático",
+      "manual": "Creado por una persona"
+    },
+    "failure": {
+      "summary": "Resumen",
+      "signer": "Firmante",
+      "phone": "Celular",
+      "email": "Correo",
+      "document": "Documento",
+      "lastFailure": "Último fallo",
+      "state": "Estado",
+      "blocked": "Quedó bloqueado: necesita un enlace nuevo",
+      "canRetry": "Puede volver a intentarlo",
+      "failures": "Fallos",
+      "failuresEmpty": "Este ticket no tiene fallos registrados.",
+      "attempt": "Intento {{attempts}} de {{max}}",
+      "code": "Código {{code}}",
+      "blockedTag": "Quedó bloqueado",
+      "notices": "WhatsApp",
+      "noticesEmpty": "No se ha enviado ningún WhatsApp por este fallo.",
+      "to": {
+        "signer": "Al firmante",
+        "owner": "Al creador del documento"
+      },
+      "sent": "Enviado a {{phone}}",
+      "sentNoPhone": "Enviado",
+      "notSent": "No se envió: {{error}}",
+      "messageId": "Id del mensaje",
+      "reason": {
+        "SELFIE_BAJA_CALIDAD": "La selfie no quedó clara",
+        "CEDULA_ILEGIBLE": "No se pudo leer el reverso de la cédula",
+        "IDENTIDAD_NO_COINCIDE": "Los datos escritos no coinciden con los registrados",
+        "CEDULA_NO_COINCIDE": "El número de cédula leído no coincide con el registrado",
+        "ROSTRO_NO_COINCIDE": "El rostro no coincide con el de la cédula",
+        "IDENTIDAD_NO_VERIFICADA": "La validación contra Registraduría no reconoció el rostro",
+        "PRUEBA_DE_VIDA_FALLIDA": "La prueba de vida no pasó",
+        "OTP_AGOTADA": "Escribió la clave equivocada demasiadas veces",
+        "OTP_NO_ENVIADO": "La clave no se pudo entregar por ningún canal",
+        "FIRMA_RECHAZADA": "El servicio de firma rechazó la firma",
+        "BIOMETRIA_NO_DISPONIBLE": "La comparación de rostros no estaba disponible",
+        "RECAPTURE": "La foto parece tomada de una pantalla y no de la persona o la cédula",
+        "other": "Falla técnica en la firma"
+      }
     }
   },
   "billing": {

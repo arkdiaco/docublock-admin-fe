@@ -4,7 +4,7 @@ import { DialogService } from '../../../core/ui/dialog.service';
 import { NotificationService } from '../../../core/ui/notification.service';
 import type { TicketDetail } from '../data/support.models';
 import { TicketDetailComponent } from './ticket-detail.component';
-import { conPermisos, configurar, ficha } from './support-test-kit';
+import { automatico, conPermisos, configurar, ficha } from './support-test-kit';
 
 describe('Operación › Soporte › ficha del ticket', () => {
   let http: HttpTestingController;
@@ -141,5 +141,43 @@ describe('Operación › Soporte › ficha del ticket', () => {
       expect(mal).toHaveBeenCalledWith('Esa persona no es agente activo de la plataforma.'),
     );
     expect(cmp.agentDraft()).toBeNull();
+  });
+
+  it('un ticket automático abre en el fallo: resumen, cada fallo en palabras y cada WhatsApp', async () => {
+    conPermisos(['platform:operations']);
+    const { host } = await montar(automatico());
+    expect(host.querySelector('db-underline-tabs')?.textContent).toContain('Fallo en la firma2');
+    const fallo = host.querySelector('.tf')!;
+    const resumen = fallo.querySelector('.tf__summary')!.textContent!;
+    expect(resumen).toContain('Julián Ruiz');
+    expect(resumen).toContain('+573001112233');
+    expect(resumen).toContain('julian@x.co');
+    expect(resumen).toContain('Quedó bloqueado');
+    expect(fallo.querySelector('.tf__summary a')?.getAttribute('href')).toBe('/operacion/documentos/d1');
+    expect(fallo.querySelector('.tf__summary a')?.textContent).toContain('Contrato de obra');
+    const fallos = fallo.querySelector('.tf__failures')!.textContent!;
+    expect(fallos).toContain('El número de cédula leído no coincide con el registrado');
+    expect(fallos).toContain('Intento 3 de 3');
+    expect(fallos).toContain('CEDULA_NO_COINCIDE');
+    const envios = fallo.querySelector('.tf__notices')!.textContent!;
+    expect(envios).toContain('Al creador del documento');
+    expect(envios).toContain('Enviado a +573109998877');
+    expect(envios).toContain('wamid.HBgM');
+    expect(envios).toContain('No se envió: Plantilla no aprobada');
+    expect(host.textContent).not.toMatch(/\b(support|nav|common)\.[a-zA-Z]/);
+  });
+
+  it('un ticket automático sin WhatsApp lo dice, y uno normal no tiene la pestaña', async () => {
+    conPermisos(['platform:operations']);
+    const sinEnvios = automatico();
+    sinEnvios.metadata = { ...sinEnvios.metadata, notices: [] };
+    const { host } = await montar(sinEnvios);
+    expect(host.querySelector('.tf__notices')?.textContent).toContain('No se ha enviado ningún WhatsApp');
+    TestBed.resetTestingModule();
+    http = await configurar();
+    conPermisos(['platform:operations']);
+    const normal = await montar(ficha());
+    expect(normal.host.querySelector('db-underline-tabs')?.textContent).not.toContain('Fallo');
+    expect(normal.host.querySelector('.tf')).toBeNull();
   });
 });

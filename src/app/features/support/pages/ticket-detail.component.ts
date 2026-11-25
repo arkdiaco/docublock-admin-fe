@@ -31,9 +31,11 @@ import {
   UnderlineTabsComponent,
   type UnderlineTab,
 } from '../../../shared/ui/underline-tabs.component';
+import { TicketFailureComponent } from '../components/ticket-failure.component';
 import { TicketHistoryComponent } from '../components/ticket-history.component';
 import { TicketSlaComponent } from '../components/ticket-sla.component';
 import { TicketThreadComponent, type ReplyDraft } from '../components/ticket-thread.component';
+import { automaticFailureOf } from '../data/automatic-failure';
 import { SupportApi } from '../data/support.api';
 import { SUPPORT_ERRORS } from '../data/support-errors';
 import {
@@ -54,7 +56,8 @@ import {
 } from '../data/ticket-view';
 import { safeDate } from '../../../shared/i18n/safe-date';
 
-const TAB_KEYS = ['conversation', 'sla', 'history', 'data'] as const;
+const TAB_KEYS = ['failure', 'conversation', 'sla', 'history', 'data'] as const;
+const FAILURE_TAB = 'failure';
 
 interface Option {
   id: string;
@@ -77,6 +80,7 @@ interface Option {
     TicketThreadComponent,
     TicketSlaComponent,
     TicketHistoryComponent,
+    TicketFailureComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -194,6 +198,11 @@ interface Option {
         <db-underline-tabs [tabs]="tabs()" [active]="tab()" (picked)="tab.set($event)" />
 
         @switch (tab()) {
+          @case ('failure') {
+            @if (failure(); as failure) {
+              <dba-ticket-failure [ticket]="ticket" [failure]="failure" />
+            }
+          }
           @case ('conversation') {
             <dba-ticket-thread
               [messages]="ticket.messages"
@@ -455,6 +464,10 @@ export class TicketDetailComponent {
   protected readonly priorityDraft = signal<TicketPriority | null>(null);
   protected readonly agentDraft = signal<string | null>(null);
 
+  protected readonly failure = computed(() => {
+    const ticket = this.detail();
+    return ticket ? automaticFailureOf(ticket) : null;
+  });
   protected readonly open = computed(() => {
     const ticket = this.detail();
     return ticket ? isOpenStatus(ticket.status) : true;
@@ -498,20 +511,25 @@ export class TicketDetailComponent {
 
   protected readonly tabs = computed<UnderlineTab[]>(() => {
     const ticket = this.detail();
+    const failure = this.failure();
     const counts: Record<string, number | undefined> = {
+      failure: failure?.failures.length,
       conversation: ticket?.messages.length,
       history: ticket?.auditLog.length,
     };
-    return TAB_KEYS.map((key) => ({
+    return TAB_KEYS.filter((key) => key !== FAILURE_TAB || failure !== null).map((key) => ({
       key,
       label: this.label(`support.d.tab.${key}`),
       count: counts[key],
     }));
   });
 
+  private readonly wantedTab: string | null;
+
   constructor() {
     const wanted = inject(ActivatedRoute).snapshot.queryParamMap.get('tab');
-    if (wanted && (TAB_KEYS as readonly string[]).includes(wanted)) this.tab.set(wanted);
+    this.wantedTab = wanted && (TAB_KEYS as readonly string[]).includes(wanted) ? wanted : null;
+    if (this.wantedTab) this.tab.set(this.wantedTab);
     effect(() => {
       const id = this.id();
       if (id) void this.load(id, true);
@@ -674,6 +692,7 @@ export class TicketDetailComponent {
       const ticket = await firstValueFrom(this.api.detail(id));
       if (!current()) return;
       this.detail.set(ticket);
+      this.pickTab(initial);
       this.statusDraft.set(ticket.status);
       this.priorityDraft.set(ticket.priority);
       this.agentDraft.set(ticket.assignedToId ?? null);
@@ -687,6 +706,12 @@ export class TicketDetailComponent {
       }
     }
     this.loading.set(false);
+  }
+
+  private pickTab(initial: boolean): void {
+    const automatic = this.failure() !== null;
+    if (initial && automatic && !this.wantedTab) this.tab.set(FAILURE_TAB);
+    else if (!automatic && this.tab() === FAILURE_TAB) this.tab.set('conversation');
   }
 
   private label(key: string, params?: Record<string, unknown>): string {

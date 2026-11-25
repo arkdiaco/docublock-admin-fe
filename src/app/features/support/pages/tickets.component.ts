@@ -29,6 +29,7 @@ import { SupportApi } from '../data/support.api';
 import {
   TICKET_CATEGORIES,
   TICKET_CHANNELS,
+  TICKET_ORIGINS,
   TICKET_PRIORITIES,
   TICKET_STATUSES,
   type SupportAgent,
@@ -175,6 +176,16 @@ interface Option {
           appendTo="body"
           styleClass="tk__select"
         />
+        <p-select
+          [options]="originOptions()"
+          optionLabel="label"
+          optionValue="id"
+          [ngModel]="origin()"
+          (ngModelChange)="setFilter(origin, $event)"
+          [ariaLabel]="'support.f.origin' | translate"
+          appendTo="body"
+          styleClass="tk__select"
+        />
         @if (view() !== 'sin-asignar') {
           <p-select
             [options]="agentOptions()"
@@ -226,7 +237,10 @@ interface Option {
                 <span class="cell__label">{{ row.subject }}</span>
                 <span class="cell__meta"
                   >{{ row.requester }} ·
-                  {{ 'support.channel.' + row.sourceChannel | translate }}</span
+                  {{ 'support.channel.' + row.sourceChannel | translate
+                  }}@if (row.createdByType === 'system') {
+                    · {{ 'support.origin.automatic' | translate }}
+                  }</span
                 >
               </span>
               <span class="dba-td cell">
@@ -416,6 +430,7 @@ export class TicketsComponent {
   protected readonly priority = signal<string>(ANY);
   protected readonly category = signal<string>(ANY);
   protected readonly channel = signal<string>(ANY);
+  protected readonly origin = signal<string>(ANY);
   protected readonly agent = signal<string>(ANY);
   protected readonly total = signal(0);
   private readonly items = signal<TicketSummary[]>([]);
@@ -479,6 +494,10 @@ export class TicketsComponent {
   protected readonly channelOptions = computed<Option[]>(() => [
     { id: ANY, label: this.label('support.f.anyChannel') },
     ...TICKET_CHANNELS.map((c) => ({ id: c, label: this.label(`support.channel.${c}`) })),
+  ]);
+  protected readonly originOptions = computed<Option[]>(() => [
+    { id: ANY, label: this.label('support.f.anyOrigin') },
+    ...TICKET_ORIGINS.map((o) => ({ id: o, label: this.label(`support.origin.${o}`) })),
   ]);
   protected readonly agentOptions = computed<Option[]>(() => [
     { id: ANY, label: this.label('support.f.anyAgent') },
@@ -607,6 +626,7 @@ export class TicketsComponent {
       priority: pick<TicketPriority>(this.priority()),
       category: pick<TicketCategory>(this.category()),
       sourceChannel: pick<TicketChannel>(this.channel()),
+      automatic: this.origin() === ANY ? undefined : this.origin() === 'automatic',
       assignedToId: this.view() === 'sin-asignar' ? undefined : pick<string>(this.agent()),
       page: this.page(),
       limit: LIMIT,
