@@ -37,6 +37,7 @@ const vista = (over: Partial<InactiveExportView> = {}): InactiveExportView => ({
     { index: 2, bytes: 62916854, documents: 2 },
   ],
   omitted: [],
+  incomplete: [],
   createdAt: '2026-11-20T20:58:00.000Z',
   finishedAt: '2026-11-20T20:59:00.000Z',
   expiresAt: '2026-12-20T20:59:00.000Z',
@@ -223,6 +224,51 @@ describe('Clientes inactivos › ventana de descarga', () => {
     expect(lista).toContain('Contrato grande · CI3-G — su expediente pesa más de 100 MB');
     expect(lista).toContain('d2 — su expediente no se pudo armar');
     expect(lista).not.toMatch(LLAVE_CRUDA);
+  });
+
+  it('lista los documentos que van en la descarga sin alguno de sus archivos', async () => {
+    const { root } = await abrir(
+      ['platform:clients'],
+      vista({
+        incomplete: [
+          {
+            id: 'd4',
+            code: 'NI-0004',
+            name: 'Archivo perdido',
+            missing: ['01-documento-firmado.pdf'],
+          },
+          {
+            id: 'd9',
+            code: null,
+            name: '',
+            missing: ['01-documento-firmado.pdf', '02-certificado.pdf'],
+          },
+        ],
+      }),
+    );
+    const lista = texto(root);
+    expect(lista).toContain('2 documentos van sin alguno de sus archivos');
+    expect(lista).toContain('Archivo perdido · NI-0004 — falta 01-documento-firmado.pdf');
+    expect(lista).toContain('d9 — faltan 01-documento-firmado.pdf, 02-certificado.pdf');
+    expect(lista).not.toMatch(LLAVE_CRUDA);
+  });
+
+  it('un solo documento incompleto se nombra en singular y no aparece mientras se arma', async () => {
+    const incompleto = {
+      id: 'd4',
+      code: 'NI-0004',
+      name: 'Archivo perdido',
+      missing: ['01-documento-firmado.pdf'],
+    };
+    const lista = await abrir(['platform:clients'], vista({ incomplete: [incompleto] }));
+    expect(texto(lista.root)).toContain('1 documento va sin alguno de sus archivos');
+    lista.fixture.destroy();
+    const enCurso = await abrir(
+      ['platform:clients'],
+      vista({ state: 'running', processed: 2, url: null, incomplete: [incompleto] }),
+    );
+    expect(texto(enCurso.root)).not.toContain('Archivo perdido');
+    enCurso.fixture.destroy();
   });
 
   it('si ya hay una en curso lo avisa y muestra su avance', async () => {

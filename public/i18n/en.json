@@ -7050,6 +7050,11 @@
         "MUY_GRANDE": "its record is larger than 100 MB",
         "NO_DISPONIBLE": "its record could not be built"
       },
+      "incompleteTitle": "{{n}} documents are missing some of their files",
+      "incompleteTitleOne": "1 document is missing some of its files",
+      "incompleteHint": "They are included with the rest of their record; the missing file was not found in storage.",
+      "missing": "missing {{files}}",
+      "missingOne": "missing {{files}}",
       "lead": "A link is prepared with the full record of every document of the organization, in ZIP files of up to 100 MB. The link is valid for 30 days after it finishes.",
       "keepsWorking": "The current link keeps working until it expires.",
       "reasonPlaceholder": "Why their documents are being downloaded",

@@ -7050,6 +7050,11 @@
         "MUY_GRANDE": "su expediente pesa más de 100 MB",
         "NO_DISPONIBLE": "su expediente no se pudo armar"
       },
+      "incompleteTitle": "{{n}} documentos van sin alguno de sus archivos",
+      "incompleteTitleOne": "1 documento va sin alguno de sus archivos",
+      "incompleteHint": "Entran en la descarga con el resto de su expediente; el archivo que falta no se encontró en el almacenamiento.",
+      "missing": "faltan {{files}}",
+      "missingOne": "falta {{files}}",
       "lead": "Se arma un enlace con el expediente completo de cada documento de la organización, en archivos ZIP de hasta 100 MB. El enlace sirve 30 días desde que termina.",
       "keepsWorking": "El enlace actual sigue sirviendo hasta que venza.",
       "reasonPlaceholder": "Por qué se descargan sus documentos",

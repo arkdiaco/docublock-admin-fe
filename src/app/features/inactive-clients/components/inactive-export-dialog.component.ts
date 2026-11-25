@@ -151,6 +151,37 @@ export const EXPORT_POLL_MS = 3000;
                 </ul>
               </div>
             }
+
+            @if (incomplete().length && stage() !== 'running') {
+              <div class="export__block">
+                <p class="export__title">
+                  {{
+                    'inactive.export.incompleteTitle'
+                      | pluralKey: incomplete().length
+                      | translate: { n: incomplete().length }
+                  }}
+                </p>
+                <p class="dba-meta">{{ 'inactive.export.incompleteHint' | translate }}</p>
+                <ul class="export__omitted">
+                  @for (doc of incomplete(); track doc.id) {
+                    <li>
+                      <span class="export__docName">{{ doc.name || doc.code || doc.id }}</span>
+                      @if (doc.code && doc.name) {
+                        <span class="dba-mono"> · {{ doc.code }}</span>
+                      }
+                      <span class="dba-meta">
+                        —
+                        {{
+                          'inactive.export.missing'
+                            | pluralKey: doc.missing.length
+                            | translate: { files: doc.missing.join(', ') }
+                        }}</span
+                      >
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
           }
 
           @if (composing()) {
@@ -297,6 +328,7 @@ export class InactiveExportDialogComponent implements OnInit {
   protected readonly reason = signal('');
 
   protected readonly stage = computed(() => exportStageOf(this.view()));
+  protected readonly incomplete = computed(() => this.view()?.incomplete ?? []);
   protected readonly percent = computed(() => {
     const job = this.view();
     return job ? exportPercentOf(job) : 0;

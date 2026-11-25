@@ -71,6 +71,13 @@ export interface OmittedDocument {
   reason: OmittedReason;
 }
 
+export interface IncompleteDocument {
+  id: string;
+  code: string | null;
+  name: string;
+  missing: string[];
+}
+
 export interface InactiveExportView {
   id: string;
   state: InactiveExportState;
@@ -78,6 +85,7 @@ export interface InactiveExportView {
   processed: number;
   parts: InactiveExportPart[];
   omitted: OmittedDocument[];
+  incomplete: IncompleteDocument[];
   createdAt: string;
   finishedAt: string | null;
   expiresAt: string | null;
