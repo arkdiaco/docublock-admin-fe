@@ -14,6 +14,7 @@ import type {
   SignerChanges,
   SignerDocument,
   SignerIdentificationImpact,
+  SignerIntegrationChange,
   SignerLegalEntity,
   SignerOneTouch,
   SignersPage,
@@ -123,6 +124,17 @@ export class SignersApi {
   documents(identity: string, page: number, limit: number): Observable<PageOf<SignerDocument>> {
     return this.http.get<PageOf<SignerDocument>>('/platform/documents', {
       params: toParams({ identity, page, limit }),
+      context: silent(),
+    });
+  }
+
+  integrationChanges(
+    id: string,
+    page: number,
+    limit: number,
+  ): Observable<PageOf<SignerIntegrationChange>> {
+    return this.http.get<PageOf<SignerIntegrationChange>>(`${BASE}/${id}/changes`, {
+      params: toParams({ page, limit }),
       context: silent(),
     });
   }

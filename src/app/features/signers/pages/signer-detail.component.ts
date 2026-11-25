@@ -34,6 +34,7 @@ import {
 } from '../../../shared/ui/underline-tabs.component';
 import { SignerDocumentsTabComponent } from '../components/signer-documents-tab.component';
 import { SignerEditFormComponent } from '../components/signer-edit-form.component';
+import { SignerIntegrationChangesTabComponent } from '../components/signer-integration-changes-tab.component';
 import { SignerLegalEntitiesTabComponent } from '../components/signer-legal-entities-tab.component';
 import { SignerOneTouchTabComponent } from '../components/signer-one-touch-tab.component';
 import { SignerOrganizationsTabComponent } from '../components/signer-organizations-tab.component';
@@ -41,7 +42,8 @@ import { SIGNER_ERRORS, SignersApi } from '../data/signers.api';
 import type { PlatformSignerDetail, SignerChanges } from '../data/signers.models';
 import { safeDate } from '../../../shared/i18n/safe-date';
 
-type DetailTab = 'organizations' | 'legalEntities' | 'documents' | 'oneTouch' | 'history';
+type DetailTab =
+  'organizations' | 'legalEntities' | 'documents' | 'oneTouch' | 'integrationChanges' | 'history';
 
 const duplicateSignerOf = (error: unknown): string | null => {
   if (errorCodeOf(error) !== 'FIRMANTE_EXISTE' || !(error instanceof HttpErrorResponse)) {
@@ -62,6 +64,7 @@ const duplicateSignerOf = (error: unknown): string | null => {
     SectionLoaderComponent,
     SignerDocumentsTabComponent,
     SignerEditFormComponent,
+    SignerIntegrationChangesTabComponent,
     SignerLegalEntitiesTabComponent,
     SignerOneTouchTabComponent,
     SignerOrganizationsTabComponent,
@@ -199,6 +202,9 @@ const duplicateSignerOf = (error: unknown): string | null => {
               (changed)="refresh()"
             />
           }
+          @case ('integrationChanges') {
+            <dba-signer-integration-changes-tab [signerId]="item.id" />
+          }
           @case ('history') {
             <dba-target-history [load]="history()" />
           }
@@ -260,6 +266,7 @@ export class SignerDetailComponent {
       ? [{ key: 'documents', label: this.label('sig.tab.documents') }]
       : []),
     { key: 'oneTouch', label: this.label('sig.tab.oneTouch') },
+    { key: 'integrationChanges', label: this.label('sig.tab.integrationChanges') },
     ...(this.auth.canRead('platform')
       ? [{ key: 'history', label: this.label('sig.tab.history') }]
       : []),

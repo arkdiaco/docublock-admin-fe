@@ -2,10 +2,8 @@ import type { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { DialogService } from '../../../core/ui/dialog.service';
 import { conPermisos, configurar, ficha } from '../pages/signers-test-kit';
-import {
-  SignerDocumentsTabComponent,
-  signerStateOf,
-} from './signer-documents-tab.component';
+import { SignerDocumentsTabComponent, signerStateOf } from './signer-documents-tab.component';
+import { SignerIntegrationChangesTabComponent } from './signer-integration-changes-tab.component';
 import { SignerLegalEntitiesTabComponent } from './signer-legal-entities-tab.component';
 import { SignerOneTouchTabComponent } from './signer-one-touch-tab.component';
 import { SignerOrganizationsTabComponent } from './signer-organizations-tab.component';
@@ -25,9 +23,17 @@ describe('Firmantes › Pestañas de la ficha', () => {
     fixture.componentRef.setInput('signerId', 's1');
     fixture.detectChanges();
     await fixture.whenStable();
-    http.expectOne('/platform/legal-entities/by-signer/s1').flush([
-      { id: 'e1', businessName: 'Acme SAS', identification: '900', active: false, isLegalRep: true },
-    ]);
+    http
+      .expectOne('/platform/legal-entities/by-signer/s1')
+      .flush([
+        {
+          id: 'e1',
+          businessName: 'Acme SAS',
+          identification: '900',
+          active: false,
+          isLegalRep: true,
+        },
+      ]);
     const host = fixture.nativeElement as HTMLElement;
     await vi.waitFor(() => {
       fixture.detectChanges();
@@ -49,6 +55,86 @@ describe('Firmantes › Pestañas de la ficha', () => {
     await vi.waitFor(() => {
       fixture.detectChanges();
       expect(host.textContent).toContain('No representa a ninguna empresa');
+    });
+  });
+
+  describe('Cambios por integración', () => {
+    const abrir = async () => {
+      conPermisos(['platform:clients']);
+      const fixture = TestBed.createComponent(SignerIntegrationChangesTabComponent);
+      fixture.componentRef.setInput('signerId', 's1');
+      fixture.detectChanges();
+      await fixture.whenStable();
+      return { fixture, host: fixture.nativeElement as HTMLElement };
+    };
+
+    it('muestra quién lo envió, cuándo y cada campo con su antes y después', async () => {
+      const { fixture, host } = await abrir();
+      const pedido = http.expectOne((req) => req.url === '/platform/signers/s1/changes');
+      expect(pedido.request.params.get('page')).toBe('1');
+      expect(pedido.request.params.get('limit')).toBe('20');
+      pedido.flush({
+        total: 2,
+        items: [
+          {
+            id: 'l2',
+            source: 'integracion',
+            organization: { id: 'o1', name: 'Constructora Uno' },
+            changes: [
+              { field: 'email', before: 'vale@correo.co', after: 'valentina@correo.co' },
+              { field: 'expeditionDate', after: '1995-06-13' },
+            ],
+            createdAt: '2026-11-25T15:30:00Z',
+          },
+          {
+            id: 'l1',
+            source: 'integracion',
+            organization: { id: 'o2', name: null },
+            changes: [{ field: 'firstName', before: 'Vale', after: 'Valentina' }],
+            createdAt: '2026-11-24T10:00:00Z',
+          },
+        ],
+      });
+      await vi.waitFor(() => {
+        fixture.detectChanges();
+        expect(host.textContent).toContain('Constructora Uno');
+      });
+      const texto = host.textContent ?? '';
+      expect(texto).toContain('actualizó los datos por la integración');
+      expect(texto).toContain('Correo');
+      expect(texto).toContain('vale@correo.co');
+      expect(texto).toContain('valentina@correo.co');
+      expect(texto).toContain('Fecha de expedición');
+      expect(texto).toContain('13/06/1995');
+      expect(texto).toContain('Organización eliminada');
+      expect(texto).toContain('25/11/2026 15:30 UTC');
+      expect(texto).toContain('2 de 2');
+      expect(texto).not.toMatch(/\bsig\.[a-z]/);
+    });
+
+    it('sin cambios lo explica', async () => {
+      const { fixture, host } = await abrir();
+      http
+        .expectOne((req) => req.url === '/platform/signers/s1/changes')
+        .flush({
+          total: 0,
+          items: [],
+        });
+      await vi.waitFor(() => {
+        fixture.detectChanges();
+        expect(host.textContent).toContain('Sin cambios por integración');
+      });
+    });
+
+    it('si falla deja reintentar', async () => {
+      const { fixture, host } = await abrir();
+      http
+        .expectOne((req) => req.url === '/platform/signers/s1/changes')
+        .flush({ code: 'X' }, { status: 500, statusText: 'Error' });
+      await vi.waitFor(() => {
+        fixture.detectChanges();
+        expect(host.textContent).toContain('No pudimos cargar los cambios por integración');
+      });
     });
   });
 

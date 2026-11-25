@@ -4569,6 +4569,7 @@
       "legalEntities": "Empresas",
       "documents": "Documentos",
       "oneTouch": "One Touch",
+      "integrationChanges": "Cambios por integración",
       "history": "Historial"
     },
     "organizations": {
@@ -4718,6 +4719,24 @@
         "document": "NIT",
         "role": "Rol",
         "state": "Estado"
+      }
+    },
+    "changes": {
+      "loading": "Cargando los cambios por integración",
+      "errorTitle": "No pudimos cargar los cambios por integración.",
+      "emptyTitle": "Sin cambios por integración.",
+      "emptyLead": "Cuando un integrador reenvíe a este firmante con datos distintos, cada cambio aparecerá aquí con la organización que lo envió.",
+      "count": "{{shown}} de {{total}}",
+      "more": "Ver más",
+      "unknownOrg": "Organización eliminada",
+      "sent": "actualizó los datos por la integración",
+      "field": {
+        "firstName": "Nombres",
+        "lastName": "Apellidos",
+        "email": "Correo",
+        "cellphone": "Celular",
+        "expeditionCity": "Ciudad de expedición",
+        "expeditionDate": "Fecha de expedición"
       }
     }
   },

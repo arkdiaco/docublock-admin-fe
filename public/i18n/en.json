@@ -4569,6 +4569,7 @@
       "legalEntities": "Companies",
       "documents": "Documents",
       "oneTouch": "One Touch",
+      "integrationChanges": "Integration changes",
       "history": "History"
     },
     "organizations": {
@@ -4718,6 +4719,24 @@
         "document": "Tax ID",
         "role": "Role",
         "state": "State"
+      }
+    },
+    "changes": {
+      "loading": "Loading integration changes",
+      "errorTitle": "We could not load the integration changes.",
+      "emptyTitle": "No integration changes.",
+      "emptyLead": "When an integrator resends this signer with different data, each change will show up here with the organization that sent it.",
+      "count": "{{shown}} of {{total}}",
+      "more": "Show more",
+      "unknownOrg": "Deleted organization",
+      "sent": "updated the data through the integration",
+      "field": {
+        "firstName": "First names",
+        "lastName": "Last names",
+        "email": "Email",
+        "cellphone": "Mobile",
+        "expeditionCity": "Issuing city",
+        "expeditionDate": "Issue date"
       }
     }
   },

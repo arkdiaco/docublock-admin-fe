@@ -143,3 +143,14 @@ export interface SignerLegalEntity {
   active: boolean;
   isLegalRep: boolean;
 }
+
+export type SignerChangeField =
+  'firstName' | 'lastName' | 'email' | 'cellphone' | 'expeditionCity' | 'expeditionDate';
+
+export interface SignerIntegrationChange {
+  id: string;
+  source: string;
+  organization: { id: string; name: string | null };
+  changes: { field: SignerChangeField; before?: string; after: string }[];
+  createdAt?: string;
+}
