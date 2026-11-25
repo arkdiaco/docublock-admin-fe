@@ -4,7 +4,7 @@ import { DialogService } from '../../../core/ui/dialog.service';
 import { NotificationService } from '../../../core/ui/notification.service';
 import type { TicketDetail } from '../data/support.models';
 import { TicketDetailComponent } from './ticket-detail.component';
-import { conPermisos, configurar, ficha } from './support-test-kit';
+import { automatico, conPermisos, configurar, ficha } from './support-test-kit';
 
 describe('Operación › Soporte › ficha del ticket', () => {
   let http: HttpTestingController;
@@ -141,5 +141,148 @@ describe('Operación › Soporte › ficha del ticket', () => {
       expect(mal).toHaveBeenCalledWith('Esa persona no es agente activo de la plataforma.'),
     );
     expect(cmp.agentDraft()).toBeNull();
+  });
+
+  it('un ticket automático abre en el fallo: resumen, cada fallo en palabras y cada WhatsApp', async () => {
+    conPermisos(['platform:operations']);
+    const { host } = await montar(automatico());
+    expect(host.querySelector('db-underline-tabs')?.textContent).toContain('Fallo en la firma2');
+    const fallo = host.querySelector('.tf')!;
+    const resumen = fallo.querySelector('.tf__summary')!.textContent!;
+    expect(resumen).toContain('Julián Ruiz');
+    expect(resumen).toContain('+573001112233');
+    expect(resumen).toContain('julian@x.co');
+    expect(resumen).toContain('Quedó bloqueado');
+    expect(fallo.querySelector('.tf__summary a')?.getAttribute('href')).toBe('/operacion/documentos/d1');
+    expect(fallo.querySelector('.tf__summary a')?.textContent).toContain('Contrato de obra');
+    const fallos = fallo.querySelector('.tf__failures')!.textContent!;
+    expect(fallos).toContain('El número de cédula leído no coincide con el registrado');
+    expect(fallos).toContain('Intento 3 de 3');
+    expect(fallos).toContain('CEDULA_NO_COINCIDE');
+    const envios = fallo.querySelector('.tf__notices')!.textContent!;
+    expect(envios).toContain('Al creador del documento');
+    expect(envios).toContain('Enviado a +573109998877');
+    expect(envios).toContain('wamid.HBgM');
+    expect(envios).toContain('No se envió: Plantilla no aprobada');
+    expect(host.textContent).not.toMatch(/\b(support|nav|common)\.[a-zA-Z]/);
+  });
+
+  it('un ticket automático sin WhatsApp lo dice, y uno normal no tiene la pestaña', async () => {
+    conPermisos(['platform:operations']);
+    const sinEnvios = automatico();
+    sinEnvios.metadata = { ...sinEnvios.metadata, notices: [] };
+    const { host } = await montar(sinEnvios);
+    expect(host.querySelector('.tf__notices')?.textContent).toContain('No se ha enviado ningún WhatsApp');
+    TestBed.resetTestingModule();
+    http = await configurar();
+    conPermisos(['platform:operations']);
+    const normal = await montar(ficha());
+    expect(normal.host.querySelector('db-underline-tabs')?.textContent).not.toContain('Fallo');
+    expect(normal.host.querySelector('.tf')).toBeNull();
+  });
+
+  describe('conversación por WhatsApp', () => {
+    const haceHoras = (horas: number) => new Date(Date.now() - horas * 3_600_000).toISOString();
+    const conversando = (ultimo: string): TicketDetail => {
+      const base = automatico();
+      return {
+        ...base,
+        metadata: {
+          ...base.metadata,
+          whatsappChat: {
+            phone: '+573001112233',
+            to: 'signer',
+            lastInboundAt: ultimo,
+            lastInboundId: 'wamid.in2',
+          },
+        },
+        messages: [
+          {
+            authorType: 'signer',
+            authorName: 'Julián Ruiz',
+            body: 'No me deja tomar la foto',
+            attachments: [],
+            internalNote: false,
+            createdAt: '2026-11-25T16:00:00.000Z',
+            channel: 'whatsapp',
+            externalId: 'wamid.in2',
+          },
+          {
+            authorType: 'agent',
+            authorName: 'Sam Soporte',
+            body: 'Prueba con más luz',
+            attachments: [],
+            internalNote: false,
+            createdAt: '2026-11-25T16:05:00.000Z',
+            channel: 'whatsapp',
+            externalId: 'wamid.out',
+          },
+          {
+            authorType: 'agent',
+            authorName: 'Sam Soporte',
+            body: '¿Pudiste?',
+            attachments: [],
+            internalNote: false,
+            createdAt: '2026-11-26T17:00:00.000Z',
+            channel: 'whatsapp',
+            deliveryError: 'WHATSAPP_VENTANA_CERRADA',
+          },
+          {
+            authorType: 'agent',
+            authorName: 'Sam Soporte',
+            body: 'Reintento',
+            attachments: [],
+            internalNote: false,
+            createdAt: '2026-11-26T17:01:00.000Z',
+            channel: 'whatsapp',
+            deliveryError: 'WHATSAPP_NO_ENVIADO',
+          },
+        ],
+      };
+    };
+
+    it('cada mensaje dice si llegó o salió por WhatsApp, y por qué no salió', async () => {
+      conPermisos(['platform:operations']);
+      const { host } = await montar(conversando(haceHoras(2)));
+      tab(host, 'Conversación').click();
+      await vi.waitFor(() => expect(host.querySelectorAll('.msg').length).toBe(4));
+      const msgs = [...host.querySelectorAll('.msg')].map((m) => m.textContent ?? '');
+      expect(msgs[0]).toContain('Llegó por WhatsApp');
+      expect(msgs[1]).toContain('Enviado por WhatsApp');
+      expect(msgs[2]).toContain('No salió por WhatsApp');
+      expect(msgs[2]).toContain('Pasaron más de 24 horas');
+      expect(msgs[3]).toContain('No salió por WhatsApp');
+      expect(msgs[3]).toContain('WhatsApp no la aceptó');
+      expect(host.textContent).not.toMatch(/\b(support|nav|common)\.[a-zA-Z]/);
+    });
+
+    it('dentro de las 24 horas el composer avisa que la respuesta también sale por WhatsApp', async () => {
+      conPermisos(['platform:operations', 'platform:operations:manage']);
+      const { fixture, host } = await montar(conversando(haceHoras(2)), true);
+      tab(host, 'Conversación').click();
+      fixture.detectChanges();
+      const composer = host.querySelector('.th__composer')!;
+      expect(composer.textContent).toContain('También sale por WhatsApp a +573001112233');
+      expect(composer.querySelector('.th__warn')).toBeNull();
+      expect(host.querySelector<HTMLButtonElement>('.th__bar button[dba-button]')).not.toBeNull();
+    });
+
+    it('pasadas las 24 horas avisa que no saldrá por WhatsApp, sin bloquear el envío', async () => {
+      conPermisos(['platform:operations', 'platform:operations:manage']);
+      const { fixture, host } = await montar(conversando(haceHoras(30)), true);
+      tab(host, 'Conversación').click();
+      fixture.detectChanges();
+      const aviso = host.querySelector('.th__composer .th__warn');
+      expect(aviso?.textContent).toContain('no saldrá por WhatsApp');
+      const area = host.querySelector<HTMLTextAreaElement>('.th__composer textarea')!;
+      area.value = 'Hola';
+      area.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+      expect(host.querySelector<HTMLButtonElement>('.th__bar button[dba-button]')!.disabled).toBe(false);
+      host.querySelector<HTMLElement>('#ticket-internal')!.click();
+      fixture.detectChanges();
+      expect(host.querySelector('.th__composer .th__warn')).toBeNull();
+      expect(host.querySelector('.th__composer')?.textContent).not.toContain('WhatsApp');
+    });
   });
 });

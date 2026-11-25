@@ -2719,6 +2719,7 @@
       "approval_decided": "Approval decided",
       "signer_unblocked": "Signer unblocked",
       "notification_reminder": "Reminder sent",
+      "notification_failure_whatsapp": "WhatsApp about a signing failure",
       "document_signed": "Signature recorded",
       "document_signed_pending_approval": "Signed, awaiting approval",
       "signature_auto_completed": "Automatic signature applied",
@@ -3152,7 +3153,9 @@
       "anyPriority": "All priorities",
       "anyCategory": "All categories",
       "anyChannel": "All channels",
-      "anyAgent": "All agents"
+      "anyAgent": "All agents",
+      "origin": "Origin",
+      "anyOrigin": "All origins"
     },
     "status": {
       "open": "Open",
@@ -3245,7 +3248,8 @@
         "conversation": "Conversation",
         "sla": "SLA",
         "history": "History",
-        "data": "Details"
+        "data": "Details",
+        "failure": "Signing failure"
       },
       "requester": "Requester",
       "context": "Context",
@@ -3396,6 +3400,67 @@
       "title": "The organization's support tickets",
       "lead": "Tickets are handled in Support & SLA. Open the inbox filtered by this organization.",
       "open": "View its tickets"
+    },
+    "origin": {
+      "automatic": "Automatic",
+      "manual": "Opened by a person"
+    },
+    "failure": {
+      "summary": "Summary",
+      "signer": "Signer",
+      "phone": "Mobile",
+      "email": "Email",
+      "document": "Document",
+      "lastFailure": "Last failure",
+      "state": "State",
+      "blocked": "Blocked: needs a new link",
+      "canRetry": "Can try again",
+      "failures": "Failures",
+      "failuresEmpty": "This ticket has no recorded failures.",
+      "attempt": "Attempt {{attempts}} of {{max}}",
+      "code": "Code {{code}}",
+      "blockedTag": "Got blocked",
+      "notices": "WhatsApp",
+      "noticesEmpty": "No WhatsApp has been sent for this failure.",
+      "to": {
+        "signer": "To the signer",
+        "owner": "To the document creator"
+      },
+      "sent": "Sent to {{phone}}",
+      "sentNoPhone": "Sent",
+      "notSent": "Not sent: {{error}}",
+      "messageId": "Message id",
+      "reason": {
+        "SELFIE_BAJA_CALIDAD": "The selfie was not clear",
+        "CEDULA_ILEGIBLE": "The back of the ID card could not be read",
+        "DOCUMENTO_SIN_ROSTRO": "No face was found in the photo of the front of the ID card",
+        "FOTO_NO_VALIDA": "The photo of the front of the ID card could not be used to compare faces",
+        "IDENTIDAD_NO_COINCIDE": "The typed data does not match the registered data",
+        "CEDULA_NO_COINCIDE": "The ID number read does not match the registered one",
+        "ROSTRO_NO_COINCIDE": "The face does not match the ID card",
+        "IDENTIDAD_NO_VERIFICADA": "The check against the national registry did not recognize the face",
+        "PRUEBA_DE_VIDA_FALLIDA": "The liveness check did not pass",
+        "OTP_AGOTADA": "Entered the wrong code too many times",
+        "OTP_NO_ENVIADO": "The code could not be delivered on any channel",
+        "FIRMA_RECHAZADA": "The signature service rejected the signature",
+        "BIOMETRIA_NO_DISPONIBLE": "Face comparison was not available",
+        "RECAPTURE": "The photo seems taken from a screen, not from the person or the ID card",
+        "other": "Technical failure while signing"
+      }
+    },
+    "whatsapp": {
+      "mark": {
+        "received": "Received via WhatsApp",
+        "sent": "Sent via WhatsApp",
+        "failed": "Not sent via WhatsApp"
+      },
+      "error": {
+        "WHATSAPP_VENTANA_CERRADA": "More than 24 hours have passed since the person last wrote, and WhatsApp does not allow messaging them. The reply stays in the ticket only.",
+        "WHATSAPP_NO_ENVIADO": "WhatsApp did not accept it. The reply stays in the ticket only."
+      },
+      "openHint": "It is also sent via WhatsApp to {{phone}}. You can message them there until {{until}}.",
+      "closedHint": "The reply stays in the ticket.",
+      "closedWarning": "More than 24 hours have passed since {{phone}} last wrote: this reply stays in the ticket but will not be sent via WhatsApp. If the person writes again, you can reply again."
     }
   },
   "billing": {
@@ -4506,6 +4571,7 @@
       "legalEntities": "Companies",
       "documents": "Documents",
       "oneTouch": "One Touch",
+      "integrationChanges": "Integration changes",
       "history": "History"
     },
     "organizations": {
@@ -4609,6 +4675,7 @@
         "error": "We could not check who the change affects. You can still save."
       },
       "reasonRequired": "Write the reason: without it the changes cannot be saved.",
+      "resendNotice": "If they have documents in progress waiting for their signature, in any organization, we'll resend the request to the new contact and the previous link will stop working.",
       "expeditionDate": "Date of issue",
       "birthDate": "Date of birth",
       "dateHint": "YYYY-MM-DD",
@@ -4655,6 +4722,24 @@
         "document": "Tax ID",
         "role": "Role",
         "state": "State"
+      }
+    },
+    "changes": {
+      "loading": "Loading integration changes",
+      "errorTitle": "We could not load the integration changes.",
+      "emptyTitle": "No integration changes.",
+      "emptyLead": "When an integrator resends this signer with different data, each change will show up here with the organization that sent it.",
+      "count": "{{shown}} of {{total}}",
+      "more": "Show more",
+      "unknownOrg": "Deleted organization",
+      "sent": "updated the data through the integration",
+      "field": {
+        "firstName": "First names",
+        "lastName": "Last names",
+        "email": "Email",
+        "cellphone": "Mobile",
+        "expeditionCity": "Issuing city",
+        "expeditionDate": "Issue date"
       }
     }
   },
@@ -6842,6 +6927,7 @@
       "query": "Parameters",
       "body": "Received body",
       "stack": "Stack trace",
+      "detail": "Provider detail",
       "affected": "Affected documents"
     },
     "triageText": "{{admin}} · {{when}}",

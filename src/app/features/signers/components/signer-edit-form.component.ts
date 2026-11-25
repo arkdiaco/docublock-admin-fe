@@ -104,6 +104,14 @@ export const changesOf = (signer: PlatformSignerDetail, form: SignerFormValue): 
   return changes;
 };
 
+const sameEmail = (a: string, b: string): boolean =>
+  a.trim().toLowerCase() === b.trim().toLowerCase();
+const digitsOf = (value: string): string => value.replace(/\D/g, '');
+
+export const contactChangedOf = (signer: PlatformSignerDetail, form: SignerFormValue): boolean =>
+  !sameEmail(form.email, signer.email ?? '') ||
+  digitsOf(form.cellphone) !== digitsOf(signer.cellphone ?? '');
+
 @Component({
   selector: 'dba-signer-edit-form',
   imports: [
@@ -299,6 +307,9 @@ export const changesOf = (signer: PlatformSignerDetail, form: SignerFormValue): 
           [maxlength]="500"
           [(value)]="reason"
         />
+        @if (contactChanged()) {
+          <p class="form__note" role="status">{{ 'sig.edit.resendNotice' | translate }}</p>
+        }
         @if (reasonMissing()) {
           <p class="form__note">{{ 'sig.edit.reasonRequired' | translate }}</p>
         }
@@ -369,24 +380,26 @@ export class SignerEditFormComponent implements OnInit {
     const selected = this.types().find((type) => type.id === this.identificationTypeRepLegalId());
     return selected && !options.includes(selected) ? [selected, ...options] : options;
   });
-  private readonly changes = computed(() =>
-    changesOf(this.signer(), {
-      firstName: this.firstName(),
-      lastName: this.lastName(),
-      businessName: this.businessName(),
-      email: this.email(),
-      personalMail: this.personalMail(),
-      cellphone: this.cellphone(),
-      expeditionDate: this.expeditionDate(),
-      birthDate: this.birthDate(),
-      countryId: this.countryId(),
-      kindPersonId: this.kindPersonId(),
-      identificationTypeId: this.identificationTypeId(),
-      expeditionCityId: this.expeditionCityId(),
-      identification: this.identification(),
-      identificationRepLegal: this.identificationRepLegal(),
-      identificationTypeRepLegalId: this.identificationTypeRepLegalId(),
-    }),
+  private readonly formValue = computed<SignerFormValue>(() => ({
+    firstName: this.firstName(),
+    lastName: this.lastName(),
+    businessName: this.businessName(),
+    email: this.email(),
+    personalMail: this.personalMail(),
+    cellphone: this.cellphone(),
+    expeditionDate: this.expeditionDate(),
+    birthDate: this.birthDate(),
+    countryId: this.countryId(),
+    kindPersonId: this.kindPersonId(),
+    identificationTypeId: this.identificationTypeId(),
+    expeditionCityId: this.expeditionCityId(),
+    identification: this.identification(),
+    identificationRepLegal: this.identificationRepLegal(),
+    identificationTypeRepLegalId: this.identificationTypeRepLegalId(),
+  }));
+  private readonly changes = computed(() => changesOf(this.signer(), this.formValue()));
+  protected readonly contactChanged = computed(() =>
+    contactChangedOf(this.signer(), this.formValue()),
   );
   protected readonly identificationMissing = computed(() => !this.identification().trim());
   protected readonly numberMoved = computed(() => !!this.changes().identification);

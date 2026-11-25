@@ -120,6 +120,10 @@ import { safeDate } from '../../../shared/i18n/safe-date';
             <dl class="item sample__body">
               <dt>{{ 'errl.field.message' | translate }}</dt>
               <dd>{{ sample.message }}</dd>
+              @if (sample.detail) {
+                <dt>{{ 'errl.field.detail' | translate }}</dt>
+                <dd class="dba-mono">{{ sample.detail }}</dd>
+              }
               @if (sample.path) {
                 <dt>{{ 'errl.field.path' | translate }}</dt>
                 <dd class="dba-mono">{{ sample.path }}</dd>

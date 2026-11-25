@@ -127,3 +127,57 @@ export const ficha = (over: Partial<TicketDetail> = {}): TicketDetail => ({
   assignmentHistory: [],
   ...over,
 });
+
+export const automatico = (over: Partial<TicketDetail> = {}): TicketDetail =>
+  ficha({
+    subject: 'Julián Ruiz no pudo firmar «Contrato de obra»',
+    createdByType: 'system',
+    category: 'identity_validation',
+    requesterName: 'Julián Ruiz',
+    requesterEmail: undefined,
+    requesterPhone: '+573001112233',
+    documentId: 'd1',
+    tags: ['automatico', 'fallo-data'],
+    metadata: {
+      origin: 'signing_failure',
+      identityId: 'i1',
+      signerEmail: 'julian@x.co',
+      ownerId: 'u9',
+      documentName: 'Contrato de obra',
+      failures: [
+        {
+          code: 'CEDULA_NO_COINCIDE',
+          group: 'data',
+          blocked: false,
+          attempts: 1,
+          max: 3,
+          at: '2026-11-25T15:00:00.000Z',
+        },
+        {
+          code: 'CEDULA_NO_COINCIDE',
+          group: 'data',
+          blocked: true,
+          attempts: 3,
+          max: 3,
+          at: '2026-11-25T15:10:00.000Z',
+        },
+      ],
+      notices: [
+        {
+          to: 'owner',
+          sent: true,
+          phone: '+573109998877',
+          messageId: 'wamid.HBgM',
+          at: '2026-11-25T15:00:01.000Z',
+        },
+        {
+          to: 'owner',
+          sent: false,
+          phone: '+573109998877',
+          error: 'Plantilla no aprobada',
+          at: '2026-11-25T15:10:01.000Z',
+        },
+      ],
+    },
+    ...over,
+  });

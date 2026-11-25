@@ -17,6 +17,7 @@ import { IconComponent } from '../../../shared/ui/icon.component';
 import { OrgStateComponent } from '../../../shared/ui/org-state.component';
 import { TextAreaComponent } from '../../../shared/ui/text-area.component';
 import type { TicketMessage } from '../data/support.models';
+import type { WhatsappChatView } from '../data/whatsapp-chat';
 import { attachmentNameOf } from '../data/ticket-view';
 import { safeDate } from '../../../shared/i18n/safe-date';
 
@@ -25,12 +26,27 @@ export interface ReplyDraft {
   internal: boolean;
 }
 
+type WhatsappMark = 'received' | 'sent' | 'failed';
+
 interface MessageView extends TicketMessage {
   key: string;
   author: string;
   stamp: string;
   files: { ref: string; name: string }[];
+  whatsapp: WhatsappMark | null;
 }
+
+const WHATSAPP_STATE: Readonly<Record<WhatsappMark, string>> = {
+  received: 'trial',
+  sent: 'active',
+  failed: 'warning',
+};
+
+const whatsappMarkOf = (msg: TicketMessage): WhatsappMark | null => {
+  if (msg.channel !== 'whatsapp') return null;
+  if (msg.authorType !== 'agent') return 'received';
+  return msg.deliveryError ? 'failed' : 'sent';
+};
 
 const BODY_LIMIT = 5000;
 
@@ -69,9 +85,21 @@ const BODY_LIMIT = 5000;
                     variant="inline"
                   />
                 }
+                @if (msg.whatsapp; as mark) {
+                  <dba-org-state
+                    [state]="whatsappState[mark]"
+                    [labelKey]="'support.whatsapp.mark.' + mark"
+                    variant="inline"
+                  />
+                }
                 <span class="msg__stamp">{{ msg.stamp }}</span>
               </header>
               <p class="msg__body">{{ msg.body }}</p>
+              @if (msg.deliveryError) {
+                <p class="dba-meta msg__delivery">
+                  {{ 'support.whatsapp.error.' + msg.deliveryError | translate }}
+                </p>
+              }
               @if (msg.files.length) {
                 <div class="msg__files">
                   @for (file of msg.files; track file.ref) {
@@ -118,9 +146,7 @@ const BODY_LIMIT = 5000;
                 <label class="th__switchLabel" for="ticket-internal">{{
                   'support.thread.internal' | translate
                 }}</label>
-                <span class="dba-meta">{{
-                  (internal() ? 'support.thread.noteHint' : 'support.thread.replyHint') | translate
-                }}</span>
+                <span class="dba-meta">{{ hintKey() | translate: hintParams() }}</span>
               </span>
             </div>
             <button dba-button [busy]="sending()" [disabled]="!canSend()" (click)="submit()">
@@ -128,6 +154,11 @@ const BODY_LIMIT = 5000;
               {{ (internal() ? 'support.thread.saveNote' : 'support.thread.send') | translate }}
             </button>
           </div>
+          @if (windowClosed()) {
+            <p class="th__warn" role="note">
+              {{ 'support.whatsapp.closedWarning' | translate: { phone: whatsapp()?.phone } }}
+            </p>
+          }
           @if (closed() && !internal()) {
             <p class="dba-meta th__hint">{{ 'support.thread.closedHint' | translate }}</p>
           }
@@ -259,6 +290,21 @@ const BODY_LIMIT = 5000;
     .th__hint {
       margin: 0;
     }
+
+    .msg__delivery {
+      margin: 0;
+    }
+
+    .th__warn {
+      margin: 0;
+      padding: 10px 12px;
+      border: 1px solid var(--dba-state-warning-border);
+      border-radius: var(--dba-radius-control);
+      background: var(--dba-state-warning-bg);
+      color: var(--dba-state-warning-fg);
+      font-size: var(--dba-text-body);
+      line-height: 1.45;
+    }
   `,
 })
 export class TicketThreadComponent {
@@ -269,15 +315,33 @@ export class TicketThreadComponent {
   readonly sending = input(false);
   readonly opening = input<string | null>(null);
   readonly closed = input(false);
+  readonly whatsapp = input<WhatsappChatView | null>(null);
   readonly send = output<ReplyDraft>();
   readonly open = output<string>();
 
   protected readonly limit = BODY_LIMIT;
+  protected readonly whatsappState = WHATSAPP_STATE;
   protected readonly body = signal('');
   protected readonly internal = signal(false);
   protected readonly canSend = computed(
     () => this.body().trim().length > 0 && this.body().length <= BODY_LIMIT && !this.sending(),
   );
+
+  protected readonly windowClosed = computed(
+    () => !this.internal() && this.whatsapp()?.open === false,
+  );
+  protected readonly hintKey = computed(() => {
+    if (this.internal()) return 'support.thread.noteHint';
+    const chat = this.whatsapp();
+    if (!chat) return 'support.thread.replyHint';
+    return chat.open ? 'support.whatsapp.openHint' : 'support.whatsapp.closedHint';
+  });
+  protected readonly hintParams = computed(() => {
+    const chat = this.whatsapp();
+    return chat
+      ? { phone: chat.phone, until: safeDate(chat.closesAt, 'd/MM/y HH:mm', this.locale) }
+      : {};
+  });
 
   protected readonly views = computed<MessageView[]>(() =>
     this.messages().map((msg, index) => ({
@@ -286,6 +350,7 @@ export class TicketThreadComponent {
       author: msg.authorName || msg.authorEmail || '—',
       stamp: safeDate(msg.createdAt, 'd/MM/y HH:mm', this.locale),
       files: msg.attachments.map((ref) => ({ ref, name: attachmentNameOf(ref) })),
+      whatsapp: whatsappMarkOf(msg),
     })),
   );
 

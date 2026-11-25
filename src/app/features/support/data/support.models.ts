@@ -40,6 +40,10 @@ export const TICKET_CATEGORIES: readonly TicketCategory[] = [
 
 export const TICKET_CHANNELS: readonly TicketChannel[] = ['platform', 'signature_flow', 'admin'];
 
+export type TicketOrigin = 'automatic' | 'manual';
+
+export const TICKET_ORIGINS: readonly TicketOrigin[] = ['automatic', 'manual'];
+
 export interface NamedRef {
   id: string;
   name?: string;
@@ -95,7 +99,12 @@ export interface TicketMessage {
   attachments: string[];
   internalNote: boolean;
   createdAt: string;
+  channel?: 'whatsapp';
+  externalId?: string;
+  deliveryError?: WhatsappDeliveryError;
 }
+
+export type WhatsappDeliveryError = 'WHATSAPP_VENTANA_CERRADA' | 'WHATSAPP_NO_ENVIADO';
 
 export type TicketAuditAction =
   | 'created'
@@ -143,6 +152,7 @@ export interface TicketsQuery {
   priority?: TicketPriority;
   category?: TicketCategory;
   sourceChannel?: TicketChannel;
+  automatic?: boolean;
   organizationId?: string;
   assignedToId?: string;
   unassigned?: boolean;
