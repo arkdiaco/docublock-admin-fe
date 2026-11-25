@@ -2765,6 +2765,7 @@
       "admin_signer_removed": "Firmante quitado por administración",
       "admin_signer_links_revoked": "Enlaces del firmante revocados por administración",
       "admin_turn_fixed": "Turno corregido por administración",
+      "document_turn_reopened": "Turno abierto para el siguiente firmante",
       "document_filed": "Documento radicado"
     },
     "act": {

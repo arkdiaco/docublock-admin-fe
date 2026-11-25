@@ -2765,6 +2765,7 @@
       "admin_signer_removed": "Signer removed by admin",
       "admin_signer_links_revoked": "Signer links revoked by admin",
       "admin_turn_fixed": "Turn fixed by admin",
+      "document_turn_reopened": "Turn opened for the next signer",
       "document_filed": "Document filed"
     },
     "act": {

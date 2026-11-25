@@ -45,6 +45,7 @@ export const TRACE_KEYS: ReadonlySet<string> = new Set([
   'document_shared',
   'document_signed',
   'document_signed_pending_approval',
+  'document_turn_reopened',
   'document_unarchived',
   'document_version_added',
   'document_version_commented',
