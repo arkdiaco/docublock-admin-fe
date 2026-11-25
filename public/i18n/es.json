@@ -5506,6 +5506,11 @@
         "name": "Actividad por organización",
         "schedule": "Cada día, 3:00",
         "notice": "Calcula, por organización, la fecha de su último documento y de su última firma. Con eso se arma la lista de Clientes inactivos. No envía mensajes ni cambia documentos."
+      },
+      "inactiveExports": {
+        "name": "Rescate de descargas de documentos",
+        "schedule": "Cada 2 minutos",
+        "notice": "Retoma las descargas de Clientes inactivos que quedaron a medias, por ejemplo tras un reinicio del servidor. No envía mensajes ni cambia documentos."
       }
     },
     "mnt": {
@@ -6990,7 +6995,9 @@
       "last": "Última actividad",
       "signed": "Firmados",
       "plan": "Plan",
-      "email": "Correo"
+      "email": "Correo",
+      "notice": "Aviso",
+      "export": "Descarga"
     },
     "state": {
       "active": "Activa",
@@ -7013,6 +7020,82 @@
       "cutoffNote": "Más de {{months}} meses",
       "computed": "Último cálculo",
       "computedNote": "Se recalcula cada día a las 3:00"
+    },
+    "action": {
+      "label": "Acciones del cliente",
+      "for": "Acciones de {{name}}",
+      "export": "Descargar documentos",
+      "open": "Ver organización",
+      "notice": "Enviar aviso de eliminación",
+      "noEmail": "No tiene correo registrado"
+    },
+    "export": {
+      "title": "Descargar documentos",
+      "loading": "Consultando la última descarga…",
+      "errorTitle": "No pudimos consultar la descarga",
+      "runningTitle": "Armando la descarga",
+      "progress": "Van {{processed}} de {{total}} documentos",
+      "runningNote": "Puedes cerrar esta ventana: la descarga se sigue armando y el enlace queda aquí.",
+      "readyTitle": "El enlace está listo",
+      "copy": "Copiar enlace",
+      "copied": "Enlace copiado",
+      "summary": "{{parts}} partes · {{documents}} documentos · {{size}} MB",
+      "summaryOne": "1 parte · {{documents}} documentos · {{size}} MB",
+      "until": "Sirve hasta el {{date}}.",
+      "expired": "El último enlace venció el {{date}}.",
+      "failed": "La última descarga no se pudo armar. Puedes intentarlo de nuevo.",
+      "omittedTitle": "{{n}} documentos no se pudieron incluir",
+      "omittedTitleOne": "1 documento no se pudo incluir",
+      "reason": {
+        "MUY_GRANDE": "su expediente pesa más de 100 MB",
+        "NO_DISPONIBLE": "su expediente no se pudo armar"
+      },
+      "incompleteTitle": "{{n}} documentos van sin alguno de sus archivos",
+      "incompleteTitleOne": "1 documento va sin alguno de sus archivos",
+      "incompleteHint": "Entran en la descarga con el resto de su expediente; el archivo que falta no se encontró en el almacenamiento.",
+      "missing": "faltan {{files}}",
+      "missingOne": "falta {{files}}",
+      "lead": "Se arma un enlace con el expediente completo de cada documento de la organización, en archivos ZIP de hasta 100 MB. El enlace sirve 30 días desde que termina.",
+      "keepsWorking": "El enlace actual sigue sirviendo hasta que venza.",
+      "reasonPlaceholder": "Por qué se descargan sus documentos",
+      "again": "Generar un enlace nuevo",
+      "noneReadOnly": "Esta organización todavía no tiene un enlace de descarga.",
+      "generate": "Generar enlace",
+      "done": "Listo",
+      "alreadyRunning": "Ya se está armando una descarga para esta organización.",
+      "startError": "No pudimos iniciar la descarga. Inténtalo de nuevo."
+    },
+    "noticeCell": {
+      "sent": "Enviado el {{date}}",
+      "sentMany": "Enviado el {{date}} · {{n}} envíos",
+      "meta": "Se elimina desde {{date}}",
+      "none": "Sin aviso"
+    },
+    "exportCell": {
+      "none": "Sin descarga",
+      "running": "Armando",
+      "ready": "Lista",
+      "readyMeta": "Hasta {{date}}",
+      "expired": "Vencida",
+      "expiredMeta": "Desde {{date}}",
+      "failed": "Falló"
+    },
+    "notice": {
+      "title": "¿Enviar el aviso de eliminación a {{name}}?",
+      "message": "Le llega a {{email}}: su información se eliminará a partir del {{date}}. El aviso no borra nada ni bloquea la cuenta.",
+      "withLink": "El correo lleva el enlace de descarga vigente, que sirve hasta el {{date}}.",
+      "withoutLink": "No hay una descarga vigente: el correo lleva el botón para entrar a Docublock. Si quieres que lleve el enlace, genera primero la descarga.",
+      "alreadySent": "Ya se le avisó el {{date}}. Este será el envío número {{n}}.",
+      "reasonPlaceholder": "Por qué se le avisa",
+      "confirm": "Enviar aviso",
+      "verb": "enviar el aviso",
+      "sent": "Aviso enviado a {{email}}.",
+      "error": {
+        "CONFIRMACION_INVALIDA": "El NIT no coincide con el de la organización.",
+        "ORGANIZACION_SIN_CORREO": "La organización no tiene correo registrado.",
+        "ORGANIZACION_NO_ENCONTRADA": "La organización ya no existe.",
+        "generic": "No se pudo enviar el aviso. Inténtalo de nuevo."
+      }
     }
   }
 }

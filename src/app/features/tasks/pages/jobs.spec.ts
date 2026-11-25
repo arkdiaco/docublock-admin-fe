@@ -112,6 +112,18 @@ describe('Tareas: trabajos automáticos', () => {
     expect(texto).not.toMatch(LLAVE_CRUDA);
   });
 
+  it('el rescate de descargas de clientes inactivos sale con su nombre, su horario y sus retomadas', async () => {
+    const { root } = await montar(
+      ['platform:operations'],
+      [job({ key: 'inactiveExports', last: { ...CORRIDA, metrics: { resumed: 1 } } })],
+    );
+    const texto = root.textContent ?? '';
+    expect(texto).toContain('Rescate de descargas de documentos');
+    expect(texto).toContain('Cada 2 minutos');
+    expect(texto).toContain('Retomados 1');
+    expect(texto).not.toMatch(LLAVE_CRUDA);
+  });
+
   it('muestra error con reintento si la lista falla', async () => {
     const http = await configurar();
     conPermisos(['platform:operations']);

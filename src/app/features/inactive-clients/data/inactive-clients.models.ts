@@ -15,6 +15,30 @@ export interface InactiveOrganizationRow {
   signedDocuments: number;
   monthsInactive: number;
   plan: { code: string; name: string; state: InactivePlanState; periodEnd: string | null } | null;
+  lastNotice: InactiveNoticeSummary | null;
+  lastExport: InactiveRowExport | null;
+}
+
+export interface InactiveNoticeSummary {
+  sentAt: string;
+  deletionDate: string;
+  count: number;
+}
+
+export interface InactiveRowExport {
+  state: InactiveExportState;
+  createdAt: string;
+  expiresAt: string | null;
+  expired: boolean;
+}
+
+export interface InactiveNoticeSent {
+  id: string;
+  organizationId: string;
+  email: string;
+  sentAt: string;
+  deletionDate: string;
+  downloadUrl: string | null;
 }
 
 export interface InactiveOrganizationsPage {
@@ -29,4 +53,43 @@ export interface InactiveOrganizationsQuery {
   search?: string;
   page: number;
   limit: number;
+}
+
+export type InactiveExportState = 'running' | 'done' | 'failed';
+export type OmittedReason = 'MUY_GRANDE' | 'NO_DISPONIBLE';
+
+export interface InactiveExportPart {
+  index: number;
+  bytes: number;
+  documents: number;
+}
+
+export interface OmittedDocument {
+  id: string;
+  code: string | null;
+  name: string;
+  reason: OmittedReason;
+}
+
+export interface IncompleteDocument {
+  id: string;
+  code: string | null;
+  name: string;
+  missing: string[];
+}
+
+export interface InactiveExportView {
+  id: string;
+  state: InactiveExportState;
+  total: number;
+  processed: number;
+  parts: InactiveExportPart[];
+  omitted: OmittedDocument[];
+  incomplete: IncompleteDocument[];
+  createdAt: string;
+  finishedAt: string | null;
+  expiresAt: string | null;
+  expired: boolean;
+  url: string | null;
+  error: string | null;
 }

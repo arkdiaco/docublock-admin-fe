@@ -5506,6 +5506,11 @@
         "name": "Organization activity",
         "schedule": "Daily, 3:00",
         "notice": "Works out, for each organization, the date of its last document and its last signature. The Inactive clients list is built from it. It sends no messages and changes no documents."
+      },
+      "inactiveExports": {
+        "name": "Document download rescue",
+        "schedule": "Every 2 minutes",
+        "notice": "Resumes Inactive clients downloads left halfway, for example after a server restart. It sends no messages and changes no documents."
       }
     },
     "mnt": {
@@ -6990,7 +6995,9 @@
       "last": "Last activity",
       "signed": "Signed",
       "plan": "Plan",
-      "email": "Email"
+      "email": "Email",
+      "notice": "Notice",
+      "export": "Download"
     },
     "state": {
       "active": "Active",
@@ -7013,6 +7020,82 @@
       "cutoffNote": "More than {{months}} months",
       "computed": "Last calculation",
       "computedNote": "Recalculated every day at 3:00"
+    },
+    "action": {
+      "label": "Client actions",
+      "for": "Actions for {{name}}",
+      "export": "Download documents",
+      "open": "View organization",
+      "notice": "Send deletion notice",
+      "noEmail": "No email on file"
+    },
+    "export": {
+      "title": "Download documents",
+      "loading": "Checking the latest download…",
+      "errorTitle": "We couldn't check the download",
+      "runningTitle": "Preparing the download",
+      "progress": "{{processed}} of {{total}} documents done",
+      "runningNote": "You can close this window: the download keeps being prepared and the link stays here.",
+      "readyTitle": "The link is ready",
+      "copy": "Copy link",
+      "copied": "Link copied",
+      "summary": "{{parts}} parts · {{documents}} documents · {{size}} MB",
+      "summaryOne": "1 part · {{documents}} documents · {{size}} MB",
+      "until": "Valid until {{date}}.",
+      "expired": "The last link expired on {{date}}.",
+      "failed": "The last download could not be prepared. You can try again.",
+      "omittedTitle": "{{n}} documents could not be included",
+      "omittedTitleOne": "1 document could not be included",
+      "reason": {
+        "MUY_GRANDE": "its record is larger than 100 MB",
+        "NO_DISPONIBLE": "its record could not be built"
+      },
+      "incompleteTitle": "{{n}} documents are missing some of their files",
+      "incompleteTitleOne": "1 document is missing some of its files",
+      "incompleteHint": "They are included with the rest of their record; the missing file was not found in storage.",
+      "missing": "missing {{files}}",
+      "missingOne": "missing {{files}}",
+      "lead": "A link is prepared with the full record of every document of the organization, in ZIP files of up to 100 MB. The link is valid for 30 days after it finishes.",
+      "keepsWorking": "The current link keeps working until it expires.",
+      "reasonPlaceholder": "Why their documents are being downloaded",
+      "again": "Generate a new link",
+      "noneReadOnly": "This organization has no download link yet.",
+      "generate": "Generate link",
+      "done": "Done",
+      "alreadyRunning": "A download is already being prepared for this organization.",
+      "startError": "We couldn't start the download. Try again."
+    },
+    "noticeCell": {
+      "sent": "Sent on {{date}}",
+      "sentMany": "Sent on {{date}} · {{n}} sends",
+      "meta": "Deleted from {{date}}",
+      "none": "No notice"
+    },
+    "exportCell": {
+      "none": "No download",
+      "running": "Building",
+      "ready": "Ready",
+      "readyMeta": "Until {{date}}",
+      "expired": "Expired",
+      "expiredMeta": "Since {{date}}",
+      "failed": "Failed"
+    },
+    "notice": {
+      "title": "Send the deletion notice to {{name}}?",
+      "message": "It goes to {{email}}: their information will be deleted starting {{date}}. The notice deletes nothing and does not block the account.",
+      "withLink": "The email includes the current download link, valid until {{date}}.",
+      "withoutLink": "There is no current download: the email includes the button to sign in to Docublock. If you want it to include the link, generate the download first.",
+      "alreadySent": "They were already notified on {{date}}. This will be send number {{n}}.",
+      "reasonPlaceholder": "Why they are being notified",
+      "confirm": "Send notice",
+      "verb": "send the notice",
+      "sent": "Notice sent to {{email}}.",
+      "error": {
+        "CONFIRMACION_INVALIDA": "The tax ID does not match the organization.",
+        "ORGANIZACION_SIN_CORREO": "The organization has no email on file.",
+        "ORGANIZACION_NO_ENCONTRADA": "The organization no longer exists.",
+        "generic": "The notice could not be sent. Try again."
+      }
     }
   }
 }
