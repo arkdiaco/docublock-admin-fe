@@ -71,6 +71,7 @@ const DETALLE: ErrorGroupDetail = {
       query: { ciudad: 'Cali' },
       actor: { organizationId: 'org-1', integrationKeyId: 'llave-1' },
       requestId: 'req-77',
+      detail: 'commons_502',
       stack: 'ServiceUnavailableException: Fianzacredito\n    at send',
     },
   ],
@@ -224,6 +225,8 @@ describe('Plataforma › Fallos', () => {
     expect(texto).toContain('Llave de integración');
     expect(texto).toContain('llave-1');
     expect(texto).toContain('req-77');
+    expect(texto).toContain('Detalle del proveedor');
+    expect(texto).toContain('commons_502');
     expect(texto).toContain('"ciudad": "Cali"');
     expect(texto).toContain('at send');
     expect(texto).not.toMatch(LLAVE_CRUDA);

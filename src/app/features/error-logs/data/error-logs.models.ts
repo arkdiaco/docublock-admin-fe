@@ -58,6 +58,7 @@ export interface ErrorSample {
   actor?: ErrorActor;
   requestId?: string;
   stack?: string;
+  detail?: string;
   context?: ErrorContext;
 }
 

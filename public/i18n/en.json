@@ -6905,6 +6905,7 @@
       "query": "Parameters",
       "body": "Received body",
       "stack": "Stack trace",
+      "detail": "Provider detail",
       "affected": "Affected documents"
     },
     "triageText": "{{admin}} · {{when}}",

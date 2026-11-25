@@ -6905,6 +6905,7 @@
       "query": "Parámetros",
       "body": "Cuerpo recibido",
       "stack": "Traza",
+      "detail": "Detalle del proveedor",
       "affected": "Documentos afectados"
     },
     "triageText": "{{admin}} · {{when}}",
