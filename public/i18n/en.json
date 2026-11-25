@@ -4673,6 +4673,7 @@
         "error": "We could not check who the change affects. You can still save."
       },
       "reasonRequired": "Write the reason: without it the changes cannot be saved.",
+      "resendNotice": "If they have documents in progress waiting for their signature, in any organization, we'll resend the request to the new contact and the previous link will stop working.",
       "expeditionDate": "Date of issue",
       "birthDate": "Date of birth",
       "dateHint": "YYYY-MM-DD",

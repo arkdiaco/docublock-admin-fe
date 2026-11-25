@@ -4,6 +4,7 @@ import type { PlatformSignerDetail } from '../data/signers.models';
 import { configurar, ficha } from '../pages/signers-test-kit';
 import {
   changesOf,
+  contactChangedOf,
   SignerEditFormComponent,
   type SignerFormValue,
 } from './signer-edit-form.component';
@@ -93,6 +94,17 @@ describe('Firmantes › Formulario de datos', () => {
       identificationTypeId: 'ci',
       expeditionCityId: null,
     });
+  });
+});
+
+describe('Firmantes › Formulario: correo o celular corregidos', () => {
+  it('solo cuenta un correo o un celular distinto de verdad', () => {
+    expect(contactChangedOf(ficha(), sinCambios())).toBe(false);
+    expect(contactChangedOf(ficha(), { ...sinCambios(), firstName: 'Ana María' })).toBe(false);
+    expect(contactChangedOf(ficha(), { ...sinCambios(), email: ' ANA@correo.co ' })).toBe(false);
+    expect(contactChangedOf(ficha(), { ...sinCambios(), cellphone: '+57 300 111 2233' })).toBe(false);
+    expect(contactChangedOf(ficha(), { ...sinCambios(), email: 'ana.ruiz@correo.co' })).toBe(true);
+    expect(contactChangedOf(ficha(), { ...sinCambios(), cellphone: '+573009998877' })).toBe(true);
   });
 });
 
@@ -298,6 +310,21 @@ describe('Firmantes › Formulario con datos incompletos', () => {
     await texto(fixture, (host) => expect(host).toContain('Ese número ya es de otro firmante'));
     const enlace = (fixture.nativeElement as HTMLElement).querySelector('a[href*="s7"]');
     expect(enlace?.textContent).toContain('Abrir ese firmante');
+  });
+
+  it('corregir el correo o el celular avisa que la solicitud se reenvía, en cualquier organización', async () => {
+    const fixture = abrir(ficha());
+    responder();
+    fixture.componentInstance['firstName'].set('Ana María');
+    fixture.detectChanges();
+    expect(host(fixture)).not.toContain('le reenviaremos la solicitud');
+    fixture.componentInstance['email'].set('ana.ruiz@correo.co');
+    await texto(fixture, (host) =>
+      expect(host).toContain('en cualquier organización, le reenviaremos la solicitud al dato nuevo'),
+    );
+    expect(host(fixture)).not.toMatch(/\bsig\.edit\.[A-Za-z]/);
+    fixture.componentInstance['email'].set('ana@correo.co');
+    await texto(fixture, (host) => expect(host).not.toContain('le reenviaremos la solicitud'));
   });
 
   it('con cambios y sin motivo dice por qué no se puede guardar', async () => {

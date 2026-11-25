@@ -4673,6 +4673,7 @@
         "error": "No pudimos revisar a quién afecta el cambio. Puedes guardar igual."
       },
       "reasonRequired": "Escribe el motivo: sin él no se puede guardar.",
+      "resendNotice": "Si tiene documentos en curso esperando su firma, en cualquier organización, le reenviaremos la solicitud al dato nuevo y el enlace anterior dejará de servir.",
       "expeditionDate": "Fecha de expedición",
       "birthDate": "Fecha de nacimiento",
       "dateHint": "AAAA-MM-DD",
