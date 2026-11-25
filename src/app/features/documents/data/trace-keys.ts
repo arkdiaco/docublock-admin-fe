@@ -76,6 +76,7 @@ export const TRACE_KEYS: ReadonlySet<string> = new Set([
   'identity_registry_checked',
   'identity_verified',
   'notification_completion',
+  'notification_failure_whatsapp',
   'notification_reminder',
   'notification_resent',
   'notification_sent',

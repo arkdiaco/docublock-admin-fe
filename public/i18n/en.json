@@ -2719,6 +2719,7 @@
       "approval_decided": "Approval decided",
       "signer_unblocked": "Signer unblocked",
       "notification_reminder": "Reminder sent",
+      "notification_failure_whatsapp": "WhatsApp about a signing failure",
       "document_signed": "Signature recorded",
       "document_signed_pending_approval": "Signed, awaiting approval",
       "signature_auto_completed": "Automatic signature applied",

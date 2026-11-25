@@ -2719,6 +2719,7 @@
       "approval_decided": "Aprobación decidida",
       "signer_unblocked": "Firmante desbloqueado",
       "notification_reminder": "Recordatorio enviado",
+      "notification_failure_whatsapp": "WhatsApp por un fallo en la firma",
       "document_signed": "Firma registrada",
       "document_signed_pending_approval": "Firmado, a la espera de aprobación",
       "signature_auto_completed": "Firma automática aplicada",
