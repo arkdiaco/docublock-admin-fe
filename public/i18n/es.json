@@ -7267,7 +7267,13 @@
       "category": "Clasificación",
       "http": "HTTP",
       "code": "Código",
-      "message": "Mensaje"
+      "message": "Mensaje",
+      "when": "Fecha",
+      "answer": "Respuesta",
+      "document": "Documento",
+      "organization": "Organización",
+      "signer": "Firmante",
+      "group": "Grupo"
     },
     "group": {
       "identica": "Error de Identica",
@@ -7291,6 +7297,23 @@
       "matcher-facial": "Cotejo facial",
       "liveness": "Prueba de vida",
       "auth": "Inicio de sesión en Identica"
+    },
+    "list": {
+      "title": "Consultas con error o para revisar",
+      "lead": "Cada consulta que no salió bien, de la más nueva a la más vieja. Con el filtro de grupo también puedes ver las que salieron sin error.",
+      "allPending": "Todo lo que no salió bien",
+      "anyCategory": "Cualquier clasificación",
+      "anyService": "Cualquier servicio",
+      "loading": "Cargando las consultas…",
+      "errorTitle": "No pudimos cargar la lista de consultas",
+      "empty": "Ninguna consulta con error en el período",
+      "emptyFiltered": "Ninguna consulta coincide con el filtro",
+      "noDocument": "Sin documento",
+      "noOrganization": "Sin organización",
+      "noSigner": "Sin firmante",
+      "nit": "NIT {{nit}}",
+      "csv": "Descargar CSV",
+      "csvError": "No pudimos descargar el CSV."
     }
   }
 }

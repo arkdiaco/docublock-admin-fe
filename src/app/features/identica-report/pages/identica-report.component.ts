@@ -8,9 +8,16 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Select } from 'primeng/select';
+import { firstValueFrom } from 'rxjs';
+import { AuthStore } from '../../../core/auth/auth.store';
+import { canSeeSection, sectionPath } from '../../../core/layout/console-nav';
+import { DensityService } from '../../../core/preferences/density.service';
+import { NotificationService } from '../../../core/ui/notification.service';
+import { saveBlob } from '../../../shared/http/save-blob';
+import { safeDate } from '../../../shared/i18n/safe-date';
 import {
   type BarChartCategory,
   BarChartComponent,
@@ -21,6 +28,8 @@ import { ButtonComponent } from '../../../shared/ui/button.component';
 import { DataTableComponent, type DataColumn } from '../../../shared/ui/data-table.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state.component';
 import { FieldComponent } from '../../../shared/ui/field.component';
+import { FilterPillsComponent, type FilterPill } from '../../../shared/ui/filter-pills.component';
+import { IconComponent } from '../../../shared/ui/icon.component';
 import { SectionLoaderComponent } from '../../../shared/ui/section-loader.component';
 import { StatBandComponent, type StatCell } from '../../../shared/ui/stat-band.component';
 import { BlockLoad } from '../../platform-analytics/data/block-load';
@@ -28,6 +37,17 @@ import { shareOf } from '../../platform-analytics/data/platform-analytics-view';
 import { bucketLabelOf, todayIn } from '../../platform-analytics/data/signature-filters';
 import { browserTimeZone } from '../../validation-consumption/data/detail-view';
 import { IdenticaReportApi } from '../data/identica-report.api';
+import {
+  IDENTICA_QUERIES_LIMIT,
+  identicaCategoriesFor,
+  identicaExportRequestOf,
+  identicaListFiltersOf,
+  identicaListParamsOf,
+  identicaQueriesRequestOf,
+  isListFiltered,
+  withListChange,
+  type IdenticaListFilters,
+} from '../data/identica-query-filters';
 import {
   IDENTICA_PERIODS,
   identicaFiltersOf,
@@ -38,9 +58,16 @@ import {
 } from '../data/identica-report-filters';
 import {
   IDENTICA_GROUPS,
+  IDENTICA_SERVICES,
+  type IdenticaCategory,
   type IdenticaGroup,
+  type IdenticaQueriesPage,
+  type IdenticaReportRequest,
   type IdenticaReportSummary,
+  type IdenticaService,
 } from '../data/identica-report.models';
+
+const ANY = '';
 
 const GROUP_TONE: Record<IdenticaGroup, StatCell['tone']> = {
   identica: 'danger',
@@ -68,11 +95,23 @@ const REASON_COLUMNS: readonly DataColumn[] = [
   { key: 'message', labelKey: 'ide.col.message', width: 'minmax(0, 1.8fr)' },
 ];
 
+const QUERY_COLUMNS: readonly DataColumn[] = [
+  { key: 'when', labelKey: 'ide.col.when', width: '140px' },
+  { key: 'service', labelKey: 'ide.col.service', width: 'minmax(0, 1fr)' },
+  { key: 'category', labelKey: 'ide.col.category', width: 'minmax(0, 1.7fr)' },
+  { key: 'answer', labelKey: 'ide.col.answer', width: '110px' },
+  { key: 'message', labelKey: 'ide.col.message', width: 'minmax(0, 1.6fr)' },
+  { key: 'document', labelKey: 'ide.col.document', width: 'minmax(0, 1.2fr)' },
+  { key: 'organization', labelKey: 'ide.col.organization', width: 'minmax(0, 1.2fr)' },
+  { key: 'signer', labelKey: 'ide.col.signer', width: 'minmax(0, 1.1fr)' },
+];
+
 @Component({
   selector: 'dba-identica-report',
   imports: [
     FormsModule,
     TranslatePipe,
+    RouterLink,
     Select,
     BarChartComponent,
     BarListComponent,
@@ -80,6 +119,8 @@ const REASON_COLUMNS: readonly DataColumn[] = [
     DataTableComponent,
     EmptyStateComponent,
     FieldComponent,
+    FilterPillsComponent,
+    IconComponent,
     SectionLoaderComponent,
     StatBandComponent,
   ],
@@ -236,6 +277,175 @@ const REASON_COLUMNS: readonly DataColumn[] = [
               </dba-data-table>
             }
           </section>
+
+          <section class="ir__section">
+            <header class="ir__head">
+              <div class="ir__head-text">
+                <h2 class="dba-section">{{ 'ide.list.title' | translate }}</h2>
+                <span class="dba-meta">{{ 'ide.list.lead' | translate }}</span>
+              </div>
+              <button
+                dba-button
+                variant="secondary"
+                class="ir__export"
+                [busy]="exporting()"
+                [disabled]="exporting()"
+                (click)="exportCsv()"
+              >
+                <db-icon name="download" [size]="15" />
+                {{ 'ide.list.csv' | translate }}
+              </button>
+            </header>
+
+            <db-filter-pills
+              [pills]="pills()"
+              [active]="list().group ?? any"
+              [label]="'ide.col.group' | translate"
+              (activeChange)="applyList({ group: $any($event) || null })"
+            />
+
+            <div class="bl__tools">
+              <p-select
+                [options]="categoryOptions()"
+                optionLabel="label"
+                optionValue="id"
+                [ngModel]="list().category ?? any"
+                (ngModelChange)="applyList({ category: $event || null })"
+                [ariaLabel]="'ide.col.category' | translate"
+                appendTo="body"
+                styleClass="bl__select"
+              />
+              <p-select
+                [options]="serviceOptions()"
+                optionLabel="label"
+                optionValue="id"
+                [ngModel]="list().service ?? any"
+                (ngModelChange)="applyList({ service: $event || null })"
+                [ariaLabel]="'ide.col.service' | translate"
+                appendTo="body"
+                styleClass="bl__select"
+              />
+            </div>
+
+            @if (queries.state() === 'loading') {
+              <db-section-loader [label]="'ide.list.loading' | translate" />
+            } @else if (queries.state() === 'failed') {
+              <div class="bl__panel">
+                <dba-empty-state titleKey="ide.list.errorTitle" leadKey="pan.errorLead" />
+                <button dba-button variant="secondary" (click)="loadQueries()">
+                  {{ 'common.retry' | translate }}
+                </button>
+              </div>
+            } @else if (queries.data(); as page) {
+              @if (page.items.length === 0) {
+                <div class="bl__panel">
+                  <dba-empty-state
+                    [titleKey]="listFiltered() ? 'ide.list.emptyFiltered' : 'ide.list.empty'"
+                  />
+                </div>
+              } @else {
+                <dba-data-table
+                  [columns]="queryColumns"
+                  [label]="'ide.list.title' | translate"
+                  [dense]="density.compact()"
+                  minWidth="1680px"
+                  [total]="page.total"
+                  [from]="(page.page - 1) * limit + 1"
+                  [to]="rangeTo(page)"
+                  [page]="page.page"
+                  [pageCount]="pageCount(page)"
+                  (pageChange)="applyList({ page: $event })"
+                >
+                  @for (row of page.items; track row.id ?? $index) {
+                    <div class="dba-tr">
+                      <span class="dba-td cell">
+                        <span class="cell__muted dba-mono">{{ when(row.occurredAt) }}</span>
+                        @if (row.durationMs !== null) {
+                          <span class="cell__muted">{{ duration(row.durationMs) }}</span>
+                        }
+                      </span>
+                      <span class="dba-td cell"
+                        ><span class="cell__label">{{ serviceName(row.service) }}</span></span
+                      >
+                      <span class="dba-td cell">
+                        <span class="cell__text">{{
+                          'ide.category.' + row.category | translate
+                        }}</span>
+                        <span class="cell__muted">{{ 'ide.group.' + row.group | translate }}</span>
+                      </span>
+                      <span class="dba-td cell">
+                        <span class="dba-mono">{{
+                          row.httpStatus ?? ('ide.none' | translate)
+                        }}</span>
+                        @if (row.responseCode) {
+                          <span class="cell__muted dba-mono">{{ row.responseCode }}</span>
+                        }
+                      </span>
+                      <span class="dba-td cell"
+                        ><span class="cell__text" [attr.title]="row.message">{{
+                          row.message ?? ('ide.noMessage' | translate)
+                        }}</span></span
+                      >
+                      <span class="dba-td cell">
+                        @if (row.document; as document) {
+                          @if (canOpenDocument()) {
+                            <a
+                              class="ir__link dba-mono"
+                              [routerLink]="[documentsPath, document.id]"
+                              >{{ document.code ?? document.id }}</a
+                            >
+                          } @else {
+                            <span class="cell__label dba-mono">{{
+                              document.code ?? document.id
+                            }}</span>
+                          }
+                          @if (document.name) {
+                            <span class="cell__muted">{{ document.name }}</span>
+                          }
+                        } @else {
+                          <span class="cell__muted">{{ 'ide.list.noDocument' | translate }}</span>
+                        }
+                      </span>
+                      <span class="dba-td cell">
+                        @if (row.organization; as organization) {
+                          @if (canOpenOrganization()) {
+                            <a
+                              class="ir__link"
+                              [routerLink]="[organizationsPath, organization.id]"
+                              >{{ organization.name ?? organization.id }}</a
+                            >
+                          } @else {
+                            <span class="cell__label">{{
+                              organization.name ?? organization.id
+                            }}</span>
+                          }
+                          @if (organization.tributaryNumber) {
+                            <span class="cell__muted">{{
+                              'ide.list.nit' | translate: { nit: organization.tributaryNumber }
+                            }}</span>
+                          }
+                        } @else {
+                          <span class="cell__muted">{{
+                            'ide.list.noOrganization' | translate
+                          }}</span>
+                        }
+                      </span>
+                      <span class="dba-td cell">
+                        @if (row.signer; as signer) {
+                          <span class="cell__label">{{ signer.name ?? signer.id }}</span>
+                          @if (signer.identification) {
+                            <span class="cell__muted dba-mono">{{ signer.identification }}</span>
+                          }
+                        } @else {
+                          <span class="cell__muted">{{ 'ide.list.noSigner' | translate }}</span>
+                        }
+                      </span>
+                    </div>
+                  }
+                </dba-data-table>
+              }
+            }
+          </section>
         }
       }
     </section>
@@ -305,6 +515,33 @@ const REASON_COLUMNS: readonly DataColumn[] = [
       align-items: flex-end;
     }
 
+    .ir__head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: 12px;
+    }
+
+    .ir__head-text {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .ir__export {
+      margin-left: auto;
+    }
+
+    .ir__link {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: var(--dba-text-cell);
+      font-weight: 600;
+      color: var(--dba-violet-600);
+    }
+
     @media (max-width: 960px) {
       .ir__grid {
         grid-template-columns: minmax(0, 1fr);
@@ -325,6 +562,27 @@ export class IdenticaReportComponent {
   private readonly translate = inject(TranslateService);
   private readonly locale = inject(LOCALE_ID);
   private readonly timeZone = browserTimeZone();
+  private readonly auth = inject(AuthStore);
+  private readonly notify = inject(NotificationService);
+
+  protected readonly density = inject(DensityService);
+  protected readonly any = ANY;
+  protected readonly limit = IDENTICA_QUERIES_LIMIT;
+  protected readonly queryColumns = QUERY_COLUMNS;
+  protected readonly documentsPath = sectionPath('documents');
+  protected readonly organizationsPath = sectionPath('organizations');
+  protected readonly canOpenDocument = computed(() =>
+    canSeeSection(this.auth.platformPermissions(), 'documents'),
+  );
+  protected readonly canOpenOrganization = computed(() =>
+    canSeeSection(this.auth.platformPermissions(), 'organizations'),
+  );
+  protected readonly list = signal<IdenticaListFilters>(
+    identicaListFiltersOf(this.route.snapshot.queryParams),
+  );
+  protected readonly queries = new BlockLoad<IdenticaQueriesPage>();
+  protected readonly exporting = signal(false);
+  protected readonly listFiltered = computed(() => isListFiltered(this.list()));
 
   protected readonly serviceColumns = SERVICE_COLUMNS;
   protected readonly reasonColumns = REASON_COLUMNS;
@@ -394,33 +652,106 @@ export class IdenticaReportComponent {
     ];
   });
 
+  protected readonly pills = computed<FilterPill[]>(() => {
+    const totals = this.summary.data()?.totals;
+    return [
+      {
+        key: ANY,
+        labelKey: 'ide.list.allPending',
+        count: totals ? totals.identica + totals.review + totals.docublock : undefined,
+      },
+      ...IDENTICA_GROUPS.map((group) => ({
+        key: group,
+        labelKey: `ide.group.${group}`,
+        count: totals?.[group],
+        danger: group === 'identica' && (totals?.identica ?? 0) > 0,
+      })),
+    ];
+  });
+
+  protected readonly categoryOptions = computed(() => [
+    { id: ANY, label: this.text('ide.list.anyCategory') },
+    ...identicaCategoriesFor(this.list().group).map((id: IdenticaCategory) => ({
+      id,
+      label: this.text(`ide.category.${id}`),
+    })),
+  ]);
+
+  protected readonly serviceOptions = computed(() => [
+    { id: ANY, label: this.text('ide.list.anyService') },
+    ...IDENTICA_SERVICES.map((id: IdenticaService) => ({ id, label: this.serviceName(id) })),
+  ]);
+
   constructor() {
     this.load();
   }
 
   protected apply(change: Partial<IdenticaFilters>): void {
-    const next = { ...this.filters(), ...change };
-    this.filters.set(next);
-    void this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: identicaQueryParamsOf(next),
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-    });
+    this.filters.set({ ...this.filters(), ...change });
+    this.list.set({ ...this.list(), page: 1 });
+    this.syncUrl();
     this.load();
+  }
+
+  protected applyList(change: Partial<IdenticaListFilters>): void {
+    this.list.set(withListChange(this.list(), change));
+    this.syncUrl();
+    void this.loadQueries();
   }
 
   protected load(): void {
     if (this.issue()) {
       this.summary.cancel();
+      this.queries.cancel();
       return;
     }
-    const request = identicaRequestOf(
-      this.filters(),
-      todayIn(new Date(), this.timeZone),
-      this.timeZone,
-    );
+    const request = this.periodRequest();
     void this.summary.run(() => this.api.summary(request));
+    void this.loadQueries();
+  }
+
+  protected async loadQueries(): Promise<void> {
+    if (this.issue()) return;
+    const filters = this.list();
+    await this.queries.run(() =>
+      this.api.queries(identicaQueriesRequestOf(filters, this.periodRequest())),
+    );
+    const page = this.queries.data();
+    if (this.queries.state() !== 'ready' || !page || page.items.length > 0) return;
+    const last = this.pageCount(page);
+    if (filters.page > last) this.applyList({ page: last });
+  }
+
+  protected async exportCsv(): Promise<void> {
+    if (this.exporting() || this.issue()) return;
+    this.exporting.set(true);
+    try {
+      const file = await firstValueFrom(
+        this.api.queriesCsv(identicaExportRequestOf(this.list(), this.periodRequest())),
+      );
+      saveBlob(new Blob(['\uFEFF', file.blob], { type: 'text/csv;charset=utf-8' }), file.filename);
+    } catch {
+      this.notify.error(this.text('ide.list.csvError'));
+    } finally {
+      this.exporting.set(false);
+    }
+  }
+
+  protected pageCount(page: IdenticaQueriesPage): number {
+    return Math.max(1, Math.ceil(page.total / IDENTICA_QUERIES_LIMIT));
+  }
+
+  protected rangeTo(page: IdenticaQueriesPage): number {
+    return Math.min(page.total, page.page * IDENTICA_QUERIES_LIMIT);
+  }
+
+  protected when(value: string): string {
+    return safeDate(value, 'd/MM/y, HH:mm', this.locale);
+  }
+
+  protected duration(ms: number): string {
+    if (ms < 1000) return `${this.count(ms)} ms`;
+    return `${formatNumber(ms / 1000, this.locale, '1.0-1')} s`;
   }
 
   protected serviceName(service: string): string {
@@ -446,6 +777,22 @@ export class IdenticaReportComponent {
     });
     const day = (value: string) => format.format(new Date(`${value}T12:00:00Z`));
     return from === to ? day(from) : `${day(from)} – ${day(to)}`;
+  }
+
+  private periodRequest(): IdenticaReportRequest {
+    return identicaRequestOf(this.filters(), todayIn(new Date(), this.timeZone), this.timeZone);
+  }
+
+  private syncUrl(): void {
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        ...identicaQueryParamsOf(this.filters()),
+        ...identicaListParamsOf(this.list()),
+      },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 
   private text(key: string, params?: Record<string, unknown>): string {

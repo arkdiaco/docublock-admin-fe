@@ -7267,7 +7267,13 @@
       "category": "Classification",
       "http": "HTTP",
       "code": "Code",
-      "message": "Message"
+      "message": "Message",
+      "when": "Date",
+      "answer": "Response",
+      "document": "Document",
+      "organization": "Organization",
+      "signer": "Signer",
+      "group": "Group"
     },
     "group": {
       "identica": "Identica error",
@@ -7291,6 +7297,23 @@
       "matcher-facial": "Face match",
       "liveness": "Liveness check",
       "auth": "Identica sign-in"
+    },
+    "list": {
+      "title": "Queries with errors or to review",
+      "lead": "Every query that did not go well, newest first. Use the group filter to see the ones without errors too.",
+      "allPending": "Everything that did not go well",
+      "anyCategory": "Any classification",
+      "anyService": "Any service",
+      "loading": "Loading queries…",
+      "errorTitle": "We could not load the query list",
+      "empty": "No queries with errors in this period",
+      "emptyFiltered": "No query matches the filter",
+      "noDocument": "No document",
+      "noOrganization": "No organization",
+      "noSigner": "No signer",
+      "nit": "Tax ID {{nit}}",
+      "csv": "Download CSV",
+      "csvError": "We could not download the CSV."
     }
   }
 }
