@@ -22,6 +22,7 @@ export type ConsoleSection =
   | 'revenue'
   | 'validationConsumption'
   | 'validationHistory'
+  | 'identicaReport'
   | 'resellerDocuments'
   | 'consents'
   | 'countries'
@@ -110,6 +111,7 @@ export const CONSOLE_GROUPS: readonly ConsoleGroup[] = [
       },
       { key: 'validationConsumption', path: 'consumo-validaciones', labelKey: 'nav.validationConsumption' },
       { key: 'validationHistory', path: 'historico-validaciones', labelKey: 'nav.validationHistory' },
+      { key: 'identicaReport', path: 'consultas-identica', labelKey: 'nav.identicaReport' },
       { key: 'resellerDocuments', path: 'documentos-reseller', labelKey: 'nav.resellerDocuments' },
       { key: 'consents', path: 'tratamiento-datos', labelKey: 'nav.consents' },
     ],
