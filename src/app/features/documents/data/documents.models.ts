@@ -241,12 +241,20 @@ export interface RetryCounter {
   max: number;
 }
 
+export interface RegistraduriaCounter {
+  used: number;
+  max: number;
+}
+
+export type RegistraduriaKind = 'face' | 'data';
+
 export interface SignerAttempts {
   window: Record<AttemptKind, AttemptWindow>;
   counted: Partial<Record<RetryKind, number>>;
   retries: Record<RetryKind, RetryCounter>;
   reactivations: Record<ReactivationScope, number>;
   credits: { biometric: boolean; identity: boolean };
+  registraduria?: Record<RegistraduriaKind, RegistraduriaCounter>;
 }
 
 export interface SignerFile {

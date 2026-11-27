@@ -2443,7 +2443,12 @@
         "credits": "Créditos cobrados",
         "charged": "Cobrado",
         "notCharged": "Sin cobrar",
-        "reactivations": "Reactivaciones desde la consola"
+        "reactivations": "Reactivaciones desde la consola",
+        "registraduria": "Consultas a la Registraduría (Idéntica)",
+        "registraduriaKind": {
+          "face": "Rostro",
+          "data": "Datos"
+        }
       },
       "files": {
         "title": "Archivos",

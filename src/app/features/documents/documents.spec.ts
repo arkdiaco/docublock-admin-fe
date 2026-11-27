@@ -488,6 +488,8 @@ describe('Documentos: reactivar y cambiar características', () => {
       'docs.signer.reactivate',
       'docs.signer.features',
       'docs.sp.attempts.reactivations',
+      'docs.sp.attempts.registraduria',
+      ...['face', 'data'].map((kind) => `docs.sp.attempts.registraduriaKind.${kind}`),
       'docs.sp.history.reactivated',
       'docs.sp.history.registry',
     ]) {

@@ -1682,6 +1682,14 @@ describe('Operación › Documentos › ficha', () => {
         (dt) => `${dt.textContent?.trim()} ${dt.nextElementSibling?.textContent?.trim()}`,
       ),
     ).toEqual(['Selfie y Liveness 2', 'Documento de identidad 1', 'Registraduría 0']);
+    const consultas = [...panel.querySelectorAll('.sc__eyebrow')].find((p) =>
+      p.textContent?.includes('Consultas a la Registraduría (Idéntica)'),
+    )!;
+    expect(
+      [...consultas.nextElementSibling!.querySelectorAll('dt')].map(
+        (dt) => `${dt.textContent?.trim()} ${dt.nextElementSibling?.textContent?.trim()}`,
+      ),
+    ).toEqual(['Rostro 2 de 3', 'Datos 1 de 3']);
     const entrada = panel.querySelector('dba-signer-record .sr__note')?.textContent ?? '';
     const limpio = entrada.replace(/\s+/g, ' ');
     expect(limpio).toContain('Reactivada desde la consola');

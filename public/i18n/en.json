@@ -2443,7 +2443,12 @@
         "credits": "Credits charged",
         "charged": "Charged",
         "notCharged": "Not charged",
-        "reactivations": "Reactivations from the console"
+        "reactivations": "Reactivations from the console",
+        "registraduria": "Registry queries (Idéntica)",
+        "registraduriaKind": {
+          "face": "Face",
+          "data": "Data"
+        }
       },
       "files": {
         "title": "Files",

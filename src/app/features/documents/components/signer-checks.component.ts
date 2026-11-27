@@ -9,7 +9,11 @@ import {
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { deviceLabel } from '../../../shared/domain/device-label';
 import { OrgStateComponent } from '../../../shared/ui/org-state.component';
-import { REACTIVATION_SCOPES, type PlatformSigner } from '../data/documents.models';
+import {
+  REACTIVATION_SCOPES,
+  type PlatformSigner,
+  type RegistraduriaKind,
+} from '../data/documents.models';
 import { shortHash } from '../data/document-view';
 import {
   ATTEMPT_KINDS,
@@ -325,6 +329,20 @@ import { safeDate } from '../../../shared/i18n/safe-date';
             </dd>
           }
         </dl>
+        @if (s.attempts.registraduria; as queries) {
+          <p class="dba-eyebrow sc__eyebrow">{{ 'docs.sp.attempts.registraduria' | translate }}</p>
+          <dl class="bd__dl">
+            @for (kind of registraduriaKinds; track kind) {
+              <dt>{{ 'docs.sp.attempts.registraduriaKind.' + kind | translate }}</dt>
+              <dd>
+                {{
+                  'docs.sp.attempts.usedOf'
+                    | translate: { used: queries[kind].used, max: queries[kind].max }
+                }}
+              </dd>
+            }
+          </dl>
+        }
         @if (counted().length) {
           <p class="dba-eyebrow sc__eyebrow">{{ 'docs.sp.attempts.counted' | translate }}</p>
           <dl class="bd__dl">
@@ -460,6 +478,7 @@ export class SignerChecksComponent {
   protected readonly requirementKeys = REQUIREMENT_KEYS;
   protected readonly attemptKinds = ATTEMPT_KINDS;
   protected readonly retryKinds = ['document', 'biometric'] as const;
+  protected readonly registraduriaKinds: readonly RegistraduriaKind[] = ['face', 'data'];
   protected readonly scopes = REACTIVATION_SCOPES;
   protected readonly family = CHECK_FAMILY;
 
