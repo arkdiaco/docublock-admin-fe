@@ -104,6 +104,15 @@ const duplicateSignerOf = (error: unknown): string | null => {
             <button dba-button variant="secondary" (click)="editing.set(true)">
               {{ 'sig.action.edit' | translate }}
             </button>
+            <button
+              dba-button
+              variant="secondary"
+              [busy]="pending.key() === 'wallet'"
+              [disabled]="!!pending.key()"
+              (click)="viewWallet()"
+            >
+              {{ 'sig.action.wallet' | translate }}
+            </button>
           </div>
         }
 
@@ -328,6 +337,24 @@ export class SignerDetailComponent {
   protected closeEdit(): void {
     this.editing.set(false);
     this.duplicateOf.set(null);
+  }
+
+  protected async viewWallet(): Promise<void> {
+    const tab = window.open('', '_blank');
+    await this.pending.run('wallet', async () => {
+      try {
+        const { url } = await firstValueFrom(this.api.walletSession(this.id()));
+        if (tab) {
+          tab.opener = null;
+          tab.location.href = url;
+        } else {
+          window.open(url, '_blank', 'noopener');
+        }
+      } catch (error) {
+        tab?.close();
+        this.notifyFailure(error);
+      }
+    });
   }
 
   protected async disableAutoSign(): Promise<void> {

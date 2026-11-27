@@ -19,6 +19,7 @@ import type {
   SignerOneTouch,
   SignersPage,
   SignerView,
+  WalletSessionLink,
 } from './signers.models';
 
 const BASE = '/platform/signers';
@@ -47,6 +48,8 @@ export const SIGNER_ERRORS: readonly string[] = [
   'IDENTIFICACION_REQUERIDA',
   'FIRMANTE_EXISTE',
   'TIPO_IDENTIFICACION_REP_LEGAL_INVALIDO',
+  'SIN_WALLET',
+  'WALLET_SIN_URL',
 ];
 
 @Injectable({ providedIn: 'root' })
@@ -100,6 +103,14 @@ export class SignersApi {
     return this.http.post<PlatformSignerDetail>(
       `${BASE}/${id}/auto-sign/disable`,
       { reason },
+      { context: silent() },
+    );
+  }
+
+  walletSession(id: string): Observable<WalletSessionLink> {
+    return this.http.post<WalletSessionLink>(
+      `${BASE}/${id}/wallet-session`,
+      {},
       { context: silent() },
     );
   }

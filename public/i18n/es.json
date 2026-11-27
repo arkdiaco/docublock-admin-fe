@@ -605,7 +605,8 @@
       "one_touch_revoke": "revocó una llave de One Touch de un firmante",
       "organization_add": "vinculó a un firmante a {{org}}",
       "organization_remove": "desvinculó a un firmante de {{org}}",
-      "update": "editó los datos de un firmante"
+      "update": "editó los datos de un firmante",
+      "wallet_session": "vio como soporte la wallet de un firmante"
     },
     "legal_entities": {
       "activate": "activó una entidad jurídica",
@@ -4562,7 +4563,8 @@
       "unidentified": "Sin identificar"
     },
     "action": {
-      "edit": "Editar datos"
+      "edit": "Editar datos",
+      "wallet": "Ver su wallet"
     },
     "detail": {
       "loading": "Cargando el firmante",
@@ -4739,7 +4741,9 @@
       "IDENTIFICACION_INVALIDA": "El número no cumple el formato de ese tipo de documento.",
       "IDENTIFICACION_REQUERIDA": "Escribe el número de documento.",
       "FIRMANTE_EXISTE": "Ese número ya es de otro firmante.",
-      "TIPO_IDENTIFICACION_REP_LEGAL_INVALIDO": "El documento del representante legal debe ser de persona natural."
+      "TIPO_IDENTIFICACION_REP_LEGAL_INVALIDO": "El documento del representante legal debe ser de persona natural.",
+      "SIN_WALLET": "Este firmante no tiene wallet: su ficha no tiene una identificación con la que entrar.",
+      "WALLET_SIN_URL": "La dirección de la wallet no está configurada en el servidor. Pídele a quien despliega que la configure."
     },
     "legalEntities": {
       "loading": "Cargando empresas",

@@ -1,6 +1,7 @@
 import type { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { DialogService } from '../../../core/ui/dialog.service';
+import { NotificationService } from '../../../core/ui/notification.service';
 import type { PlatformSignerDetail } from '../data/signers.models';
 import { SignerDetailComponent } from './signer-detail.component';
 import { conPermisos, configurar, ficha } from './signers-test-kit';
@@ -44,6 +45,7 @@ describe('Firmantes › Ficha', () => {
     expect(host.textContent).not.toContain('Desactivar');
     expect(host.textContent).not.toContain('Desvincular');
     expect(host.textContent).not.toContain('Vincular a una organización');
+    expect(host.textContent).not.toContain('Ver su wallet');
   });
 
   it('las pestañas dependen del permiso, sin pedidos que den 403', async () => {
@@ -125,6 +127,83 @@ describe('Firmantes › Ficha', () => {
     });
     expect(host.querySelector('dba-signer-edit-form')).toBeNull();
     expect(host.textContent).not.toContain('Ese número ya es de otro firmante');
+  });
+
+  describe('ver su wallet', () => {
+    const pestanaFalsa = () => {
+      const pestana = { opener: {} as unknown, location: { href: '' }, close: vi.fn() };
+      const abrirVentana = vi.spyOn(window, 'open').mockReturnValue(pestana as unknown as Window);
+      return { pestana, abrirVentana };
+    };
+
+    it('abre una pestaña en el clic y la lleva a la wallet que da el core, sin diálogo', async () => {
+      const dialogo = vi.spyOn(TestBed.inject(DialogService), 'open');
+      const { pestana, abrirVentana } = pestanaFalsa();
+      const host = await abrir(['platform:clients:manage']);
+
+      pulsar(host, 'Ver su wallet');
+      expect(abrirVentana).toHaveBeenCalledWith('', '_blank');
+      const pedido = await vi.waitFor(() => http.expectOne('/platform/signers/s1/wallet-session'));
+      expect(pedido.request.method).toBe('POST');
+      expect(pedido.request.body).toEqual({});
+      pedido.flush({
+        url: 'https://wallet.test/sesion-soporte#codigo',
+        expiresAt: '2026-11-27T18:00:00Z',
+      });
+
+      await vi.waitFor(() =>
+        expect(pestana.location.href).toBe('https://wallet.test/sesion-soporte#codigo'),
+      );
+      expect(pestana.opener).toBeNull();
+      expect(pestana.close).not.toHaveBeenCalled();
+      expect(dialogo).not.toHaveBeenCalled();
+    });
+
+    it('si el navegador bloquea la pestaña abre la wallet aparte', async () => {
+      const abrirVentana = vi.spyOn(window, 'open').mockReturnValue(null);
+      const host = await abrir(['platform:clients:manage']);
+
+      pulsar(host, 'Ver su wallet');
+      const pedido = await vi.waitFor(() => http.expectOne('/platform/signers/s1/wallet-session'));
+      pedido.flush({ url: 'https://wallet.test/sesion-soporte#codigo', expiresAt: '' });
+
+      await vi.waitFor(() =>
+        expect(abrirVentana).toHaveBeenLastCalledWith(
+          'https://wallet.test/sesion-soporte#codigo',
+          '_blank',
+          'noopener',
+        ),
+      );
+    });
+
+    it.each([
+      [
+        'SIN_WALLET',
+        'Este firmante no tiene wallet: su ficha no tiene una identificación con la que entrar.',
+      ],
+      [
+        'WALLET_SIN_URL',
+        'La dirección de la wallet no está configurada en el servidor. Pídele a quien despliega que la configure.',
+      ],
+      ['OTRO', 'No pudimos completar la acción. Inténtalo de nuevo.'],
+    ])(
+      'si el core responde %s cierra la pestaña vacía y explica el motivo',
+      async (code, texto) => {
+        const { pestana } = pestanaFalsa();
+        const fallo = vi.spyOn(TestBed.inject(NotificationService), 'error');
+        const host = await abrir(['platform:clients:manage']);
+
+        pulsar(host, 'Ver su wallet');
+        const pedido = await vi.waitFor(() =>
+          http.expectOne('/platform/signers/s1/wallet-session'),
+        );
+        pedido.flush({ message: 'x', code }, { status: 409, statusText: 'Conflict' });
+
+        await vi.waitFor(() => expect(pestana.close).toHaveBeenCalled());
+        expect(fallo).toHaveBeenCalledWith(texto);
+        expect(pestana.location.href).toBe('');
+      },
+    );
   });
 
   it('un firmante que no existe ofrece volver', async () => {

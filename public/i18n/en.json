@@ -605,7 +605,8 @@
       "one_touch_revoke": "revoked a signer's One Touch key",
       "organization_add": "linked a signer to {{org}}",
       "organization_remove": "unlinked a signer from {{org}}",
-      "update": "edited a signer's details"
+      "update": "edited a signer's details",
+      "wallet_session": "viewed a signer's wallet as support"
     },
     "legal_entities": {
       "activate": "activated a legal entity",
@@ -4562,7 +4563,8 @@
       "unidentified": "Not identified"
     },
     "action": {
-      "edit": "Edit details"
+      "edit": "Edit details",
+      "wallet": "View their wallet"
     },
     "detail": {
       "loading": "Loading the signer",
@@ -4739,7 +4741,9 @@
       "IDENTIFICACION_INVALIDA": "The number does not match the format of that document type.",
       "IDENTIFICACION_REQUERIDA": "Enter the document number.",
       "FIRMANTE_EXISTE": "That number already belongs to another signer.",
-      "TIPO_IDENTIFICACION_REP_LEGAL_INVALIDO": "The legal representative document must be for a natural person."
+      "TIPO_IDENTIFICACION_REP_LEGAL_INVALIDO": "The legal representative document must be for a natural person.",
+      "SIN_WALLET": "This signer has no wallet: their record has no identification to sign in with.",
+      "WALLET_SIN_URL": "The wallet address is not set on the server. Ask whoever deploys to set it."
     },
     "legalEntities": {
       "loading": "Loading companies",

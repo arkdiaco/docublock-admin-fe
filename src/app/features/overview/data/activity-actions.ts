@@ -154,6 +154,7 @@ export const ACTIVITY_ACTIONS = [
   'signers.organization_add',
   'signers.organization_remove',
   'signers.update',
+  'signers.wallet_session',
   'users.block',
   'users.membership_add',
   'users.membership_duplicate_remove',

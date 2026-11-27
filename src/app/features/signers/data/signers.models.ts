@@ -154,3 +154,8 @@ export interface SignerIntegrationChange {
   changes: { field: SignerChangeField; before?: string; after: string }[];
   createdAt?: string;
 }
+
+export interface WalletSessionLink {
+  url: string;
+  expiresAt: string;
+}
