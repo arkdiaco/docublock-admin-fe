@@ -65,6 +65,7 @@ export const JOB_KEYS = [
   'digestWeekly',
   'organizationActivity',
   'inactiveExports',
+  'marketStudies',
 ] as const;
 export type JobKey = (typeof JOB_KEYS)[number];
 

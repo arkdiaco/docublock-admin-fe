@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, output, signal, viewChild } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Popover } from 'primeng/popover';
 import { IconComponent } from './icon.component';
+import { OpenMenuService } from './open-menu.service';
 
 export interface NavGroupLink {
   key: string;
@@ -32,7 +33,7 @@ export interface NavGroupLink {
         }
         <db-icon class="trigger__chevron" [class.trigger__chevron--open]="open()" name="chevronDown" [size]="12" />
       </button>
-      <p-popover #panel styleClass="dba-nav-pop" (onShow)="open.set(true)" (onHide)="open.set(false)">
+      <p-popover #panel styleClass="dba-nav-pop" (onShow)="shown()" (onHide)="hidden()">
         <ul class="list" [attr.aria-label]="labelKey() | translate">
           @for (link of links(); track link.key) {
             <li>
@@ -222,8 +223,26 @@ export class NavGroupComponent {
   readonly navigated = output<void>();
 
   private readonly panel = viewChild<Popover>('panel');
+  private readonly menus = inject(OpenMenuService);
+  private readonly menu = Symbol('nav-group');
   protected readonly open = signal(false);
   protected readonly total = computed(() => this.links().reduce((sum, link) => sum + (link.count ?? 0), 0));
+
+  constructor() {
+    effect(() => {
+      if (this.open() && this.menus.current() !== this.menu) this.panel()?.hide();
+    });
+  }
+
+  protected shown(): void {
+    this.open.set(true);
+    this.menus.claim(this.menu);
+  }
+
+  protected hidden(): void {
+    this.open.set(false);
+    this.menus.release(this.menu);
+  }
 
   protected pick(): void {
     this.panel()?.hide();

@@ -5628,6 +5628,11 @@
         "name": "Document download rescue",
         "schedule": "Every 2 minutes",
         "notice": "Resumes Inactive clients downloads left halfway, for example after a server restart. It sends no messages and changes no documents."
+      },
+      "marketStudies": {
+        "name": "Consignment market analysis",
+        "schedule": "Every 30 seconds",
+        "notice": "Asks Urbex for the market analysis of new Bogotá consignments in organizations that have it turned on, and sends the owner the consignment received email with the PDF attached. If Urbex fails, it retries twice and then sends the email without the analysis."
       }
     },
     "mnt": {
@@ -6302,6 +6307,10 @@
         "smartHome": {
           "label": "Smart home",
           "use": "Publishing the property when a consignment is approved"
+        },
+        "urbex": {
+          "label": "Urbex",
+          "use": "Market analysis attached to the consignment received email (Bogotá)"
         }
       }
     }
@@ -7239,7 +7248,7 @@
     "errorTitle": "We could not load the report",
     "range": "Queries from {{range}}, in your time zone.",
     "statsLabel": "Identica queries summary",
-    "definitions": "Identica error: their server failed, did not answer or answered with an error. To review: access denied or failures before calling, which may come from either side. From Docublock: Identica rejected data we sent. No error: a normal answer, approved or negative.",
+    "definitions": "Identica error: their server failed, did not answer, or answered with an error code (for example ANI003). To review: access denied, failures before the call or unrecognized errors, which may come from either side. Docublock: Identica rejected data we sent or our program failed while processing the query. No error: it answered correctly, approved or negative.",
     "scope": "Only counts what the identity service records; queries made by commons are not in this log.",
     "emptyTitle": "No queries in this period",
     "emptyLead": "Try a wider period.",
@@ -7289,6 +7298,7 @@
       "before_call": "Failed before calling (token or image)",
       "unclassified": "Unclassified",
       "request_rejected": "Rejected our data (other 4xx)",
+      "docublock_internal_error": "Our program failed while processing the query",
       "approved": "Approved",
       "negative": "Negative result"
     },

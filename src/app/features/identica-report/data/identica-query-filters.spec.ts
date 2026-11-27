@@ -100,6 +100,10 @@ describe('Filtros de la lista de consultas a Identica', () => {
       'identica_server_error',
       'identica_internal_error',
     ]);
-    expect(identicaCategoriesFor(null)).toHaveLength(9);
+    expect(identicaCategoriesFor('docublock')).toEqual([
+      'request_rejected',
+      'docublock_internal_error',
+    ]);
+    expect(identicaCategoriesFor(null)).toHaveLength(10);
   });
 });
