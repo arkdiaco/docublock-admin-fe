@@ -6307,6 +6307,10 @@
         "smartHome": {
           "label": "Smart home",
           "use": "Publishing the property when a consignment is approved"
+        },
+        "urbex": {
+          "label": "Urbex",
+          "use": "Market analysis attached to the consignment received email (Bogotá)"
         }
       }
     }

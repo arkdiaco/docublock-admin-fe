@@ -6307,6 +6307,10 @@
         "smartHome": {
           "label": "Hogar inteligente",
           "use": "Publicación del inmueble al aprobar una consignación"
+        },
+        "urbex": {
+          "label": "Urbex",
+          "use": "Análisis de mercado adjunto al correo de consignación recibida (Bogotá)"
         }
       }
     }

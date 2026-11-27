@@ -9,6 +9,7 @@ const KNOWN_GROUPS = new Set([
   'motor',
   'hc2',
   'smartHome',
+  'urbex',
 ]);
 
 const KNOWN_KINDS = new Set([
