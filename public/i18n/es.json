@@ -644,6 +644,10 @@
     "consent_policies": {
       "publish": "publicó una política de consentimiento"
     },
+    "communications_broadcast": {
+      "publish": "publicó un mensaje en vivo para los clientes",
+      "withdraw": "retiró un mensaje en vivo"
+    },
     "communications_whatsapp": {
       "create": "envió una campaña de WhatsApp",
       "image": "subió una imagen para WhatsApp",
@@ -5184,7 +5188,7 @@
     }
   },
   "comm": {
-    "lead": "Mensajes por WhatsApp con imagen y texto",
+    "lead": "Mensajes por WhatsApp y avisos en vivo en la plataforma",
     "loading": "Cargando destinatarios…",
     "search": "Buscar por nombre, correo o teléfono",
     "markPage": "Marcar esta página",
@@ -5304,7 +5308,8 @@
     "view": {
       "new": "Nuevo envío",
       "recipients": "Destinatarios",
-      "history": "Historial"
+      "history": "Historial",
+      "live": "Mensaje en vivo"
     },
     "state": {
       "queued": "En cola",
@@ -5371,6 +5376,67 @@
       "noFailed": "Ya no hay números fallidos.",
       "forbidden": "No tienes permiso para reenviar.",
       "unknown": "No se pudo confirmar el reenvío. Revisa el estado antes de reintentar."
+    },
+    "live": {
+      "compose": {
+        "title": "Nuevo mensaje en vivo",
+        "titleLabel": "Título",
+        "titlePlaceholder": "Ej. Mantenimiento programado esta noche",
+        "messageLabel": "Mensaje",
+        "messagePlaceholder": "Escribe lo que verán los clientes. Puedes usar saltos de línea.",
+        "messageHint": "Va tal cual lo escribes, sin enlaces ni formato.",
+        "publish": "Publicar",
+        "missing": "Escribe el título y el mensaje para publicar."
+      },
+      "preview": {
+        "title": "Así lo verá el cliente",
+        "from": "Mensaje de Docublock",
+        "noTitle": "Sin título todavía",
+        "noMessage": "Sin mensaje todavía",
+        "understood": "Entendido",
+        "note": "Le sale encima de la pantalla en la que esté, una sola vez por usuario."
+      },
+      "confirm": {
+        "title": "¿Publicar este mensaje?",
+        "publish": "Publicar ahora",
+        "notice": "Les aparece en menos de 20 segundos a todos los usuarios conectados de todas las organizaciones, y a quien entre mientras siga activo. Queda activo hasta que lo retires."
+      },
+      "publish": {
+        "done": "Mensaje publicado. Los clientes conectados lo verán en menos de 20 segundos.",
+        "empty": "Escribe el título y el mensaje.",
+        "forbidden": "Tu rol no puede publicar mensajes en vivo.",
+        "failed": "No se pudo publicar el mensaje. Inténtalo de nuevo."
+      },
+      "history": {
+        "title": "Mensajes publicados",
+        "loading": "Cargando mensajes…",
+        "errorTitle": "No se pudieron cargar los mensajes",
+        "emptyTitle": "Todavía no hay mensajes en vivo",
+        "emptyLead": "Los que publiques aparecen aquí con su estado.",
+        "withdrawnBy": "Retirado por {{name}} · {{date}}",
+        "col": {
+          "date": "Publicado",
+          "message": "Mensaje",
+          "by": "Publicó",
+          "state": "Estado",
+          "action": "Acción"
+        }
+      },
+      "state": {
+        "active": "Activo",
+        "withdrawn": "Retirado"
+      },
+      "withdraw": {
+        "action": "Retirar",
+        "title": "¿Retirar este mensaje?",
+        "confirm": "Retirar",
+        "notice": "Deja de aparecerles a los clientes en menos de 20 segundos, incluso a quien lo tenga abierto. No se puede volver a activar: si lo necesitas, publícalo de nuevo.",
+        "done": "Mensaje retirado.",
+        "already": "El mensaje ya estaba retirado.",
+        "missing": "El mensaje ya no existe.",
+        "forbidden": "Tu rol no puede retirar mensajes en vivo.",
+        "failed": "No se pudo retirar el mensaje. Inténtalo de nuevo."
+      }
     }
   },
   "task": {
