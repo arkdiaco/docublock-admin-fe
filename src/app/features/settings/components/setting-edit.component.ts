@@ -9,6 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { ChoiceListComponent, type ChoiceOption } from '../../../shared/ui/choice-list.component';
 import { FieldComponent } from '../../../shared/ui/field.component';
 import { ModalShellComponent } from '../../../shared/ui/modal-shell.component';
 import { TextAreaComponent } from '../../../shared/ui/text-area.component';
@@ -28,6 +29,7 @@ const OUT_OF_RECOMMENDED: Record<SettingKind, string> = {
   integer_list: 'cfg.edit.outOfRecommended',
   text: 'cfg.edit.outOfRecommendedText',
   text_list: 'cfg.edit.outOfRecommendedLines',
+  choice: 'cfg.edit.outOfRecommendedText',
 };
 
 export interface SettingEditResult {
@@ -37,7 +39,13 @@ export interface SettingEditResult {
 
 @Component({
   selector: 'dba-setting-edit',
-  imports: [TranslatePipe, FieldComponent, ModalShellComponent, TextAreaComponent],
+  imports: [
+    TranslatePipe,
+    ChoiceListComponent,
+    FieldComponent,
+    ModalShellComponent,
+    TextAreaComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <db-modal-shell
@@ -52,7 +60,14 @@ export interface SettingEditResult {
       (dismissed)="dismissed.emit()"
     >
       <div class="form">
-        @if (setting().kind === 'text_list') {
+        @if (setting().kind === 'choice') {
+          <dba-choice-list
+            [options]="choices()"
+            [value]="draft()"
+            [label]="fieldLabel() | translate"
+            (picked)="draft.set($event)"
+          />
+        } @else if (setting().kind === 'text_list') {
           <dba-text-area
             [label]="fieldLabel()"
             [rows]="setting().maxItems ?? 3"
@@ -116,6 +131,13 @@ export class SettingEditComponent {
       const { key, params } = valueLabelOf(this.setting().unit, value);
       return this.translate.instant(key, params) as string;
     }),
+  );
+  protected readonly choices = computed<ChoiceOption[]>(() =>
+    (this.setting().options ?? []).map((option) => ({
+      value: option,
+      labelKey: `cfg.option.${option}`,
+      leadKey: `cfg.option.${option}Lead`,
+    })),
   );
   protected readonly fieldLabel = computed(() => `cfg.editLabel.${this.setting().unit}`);
   protected readonly hint = computed(() => {

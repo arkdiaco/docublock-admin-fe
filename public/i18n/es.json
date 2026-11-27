@@ -5949,6 +5949,7 @@
       "signing": "Firma y documentos",
       "validation": "Validación",
       "texts": "Textos",
+      "channels": "Canales",
       "credentials": "Credenciales",
       "history": "Historial"
     },
@@ -6000,7 +6001,8 @@
       "rows": "Filas",
       "megabytes": "Megabytes (MB)",
       "text": "Texto",
-      "lines": "Líneas"
+      "lines": "Líneas",
+      "option": "Proveedor"
     },
     "item": {
       "alerts": {
@@ -6172,6 +6174,13 @@
           "audience": "Se ve en el sello de cada miembro",
           "hint": "Líneas que van al pie del sello que se genera para cada miembro. Aplica a los sellos que se generen desde ahora; los ya generados no cambian."
         }
+      },
+      "channels": {
+        "mail_provider": {
+          "label": "Proveedor de correo",
+          "audience": "Lo notan todos los que reciben correos",
+          "hint": "Por dónde salen los correos que envía la plataforma: claves de acceso, invitaciones a firmar, avisos y recordatorios. Cámbialo a SMTP de respaldo si Amazon SES deja de enviar, y vuelve a SES cuando se restablezca. El cambio aplica en menos de un minuto y no hay que desplegar. Antes de elegir SMTP, el servidor debe estar configurado en commons; si no lo está, los correos no salen. Los correos del CLM y de los otros servicios siguen la variable MAIL_TRANSPORT de commons."
+        }
       }
     },
     "detail": {
@@ -6313,6 +6322,12 @@
           "use": "Análisis de mercado adjunto al correo de consignación recibida (Bogotá)"
         }
       }
+    },
+    "option": {
+      "ses": "Amazon SES",
+      "sesLead": "El proveedor de siempre. Úsalo cuando la cuenta de AWS esté activa.",
+      "smtp": "SMTP de respaldo",
+      "smtpLead": "El servidor que se configure en commons (SMTP_HOST). Úsalo mientras SES no esté disponible."
     }
   },
   "cdl": {

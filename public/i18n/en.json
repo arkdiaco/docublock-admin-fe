@@ -5949,6 +5949,7 @@
       "signing": "Signing and documents",
       "validation": "Validation",
       "texts": "Texts",
+      "channels": "Channels",
       "credentials": "Credentials",
       "history": "History"
     },
@@ -6000,7 +6001,8 @@
       "rows": "Rows",
       "megabytes": "Megabytes (MB)",
       "text": "Text",
-      "lines": "Lines"
+      "lines": "Lines",
+      "option": "Provider"
     },
     "item": {
       "alerts": {
@@ -6172,6 +6174,13 @@
           "audience": "Shown on each member’s seal",
           "hint": "Lines printed at the bottom of the seal generated for each member. It applies to seals generated from now on; seals already generated do not change."
         }
+      },
+      "channels": {
+        "mail_provider": {
+          "label": "Email provider",
+          "audience": "Everyone who receives emails notices it",
+          "hint": "Where platform emails go out: access codes, signing invitations, notices and reminders. Switch to backup SMTP if Amazon SES stops sending, and back to SES when it is restored. The change applies in under a minute with no deploy. The SMTP server must be configured in commons first; otherwise emails are not sent. CLM and other services follow the MAIL_TRANSPORT variable in commons."
+        }
       }
     },
     "detail": {
@@ -6313,6 +6322,12 @@
           "use": "Market analysis attached to the consignment received email (Bogotá)"
         }
       }
+    },
+    "option": {
+      "ses": "Amazon SES",
+      "sesLead": "The usual provider. Use it while the AWS account is active.",
+      "smtp": "Backup SMTP",
+      "smtpLead": "The server configured in commons (SMTP_HOST). Use it while SES is unavailable."
     }
   },
   "cdl": {

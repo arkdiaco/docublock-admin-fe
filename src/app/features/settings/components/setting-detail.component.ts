@@ -51,8 +51,10 @@ import { safeDate } from '../../../shared/i18n/safe-date';
             <span class="item__line">{{ line }}</span>
           }
         </dd>
-        <dt>{{ 'cfg.detail.recommended' | translate }}</dt>
-        <dd>{{ rangeKey() | translate: rangeParams() }}</dd>
+        @if (setting().kind !== 'choice') {
+          <dt>{{ 'cfg.detail.recommended' | translate }}</dt>
+          <dd>{{ rangeKey() | translate: rangeParams() }}</dd>
+        }
         @if (setting().lastChange; as last) {
           <dt>{{ 'cfg.detail.lastChange' | translate }}</dt>
           <dd>{{ when(last.at) }} · {{ last.adminName || ('cfg.unknownAdmin' | translate) }}</dd>
