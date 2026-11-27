@@ -5628,6 +5628,11 @@
         "name": "Rescate de descargas de documentos",
         "schedule": "Cada 2 minutos",
         "notice": "Retoma las descargas de Clientes inactivos que quedaron a medias, por ejemplo tras un reinicio del servidor. No envía mensajes ni cambia documentos."
+      },
+      "marketStudies": {
+        "name": "Análisis de mercado de consignaciones",
+        "schedule": "Cada 30 segundos",
+        "notice": "Pide a Urbex el análisis de mercado de las consignaciones nuevas de Bogotá en las organizaciones que lo tienen activo, y manda al propietario el correo de consignación recibida con el PDF adjunto. Si Urbex falla, reintenta dos veces y luego manda el correo sin el análisis."
       }
     },
     "mnt": {

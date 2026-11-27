@@ -5628,6 +5628,11 @@
         "name": "Document download rescue",
         "schedule": "Every 2 minutes",
         "notice": "Resumes Inactive clients downloads left halfway, for example after a server restart. It sends no messages and changes no documents."
+      },
+      "marketStudies": {
+        "name": "Consignment market analysis",
+        "schedule": "Every 30 seconds",
+        "notice": "Asks Urbex for the market analysis of new Bogotá consignments in organizations that have it turned on, and sends the owner the consignment received email with the PDF attached. If Urbex fails, it retries twice and then sends the email without the analysis."
       }
     },
     "mnt": {
