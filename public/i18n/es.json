@@ -7239,7 +7239,7 @@
     "errorTitle": "No pudimos cargar el reporte",
     "range": "Consultas del {{range}}, en tu zona horaria.",
     "statsLabel": "Resumen de las consultas a Identica",
-    "definitions": "Error de Identica: su servidor falló, no respondió o respondió con error al consultar. Para revisar: acceso negado o fallas antes de llamar, que pueden ser de cualquiera de los dos. De Docublock: Identica rechazó un dato que le enviamos. Sin error: respondió bien, con resultado aprobado o negativo.",
+    "definitions": "Error de Identica: su servidor falló, no respondió o respondió con un código de error (por ejemplo ANI003). Para revisar: acceso negado, fallas antes de llamar o errores que no se reconocen, que pueden ser de cualquiera de los dos. De Docublock: Identica rechazó un dato que le enviamos o nuestro programa falló al procesar la consulta. Sin error: respondió bien, con resultado aprobado o negativo.",
     "scope": "Solo cuenta lo que registra el servicio de identidad; las consultas que hace el commons no quedan en este registro.",
     "emptyTitle": "Sin consultas en el período",
     "emptyLead": "Prueba con un período más amplio.",
@@ -7289,6 +7289,7 @@
       "before_call": "Falló antes de llamar (token o imagen)",
       "unclassified": "Sin clasificar",
       "request_rejected": "Rechazó un dato nuestro (otros 4xx)",
+      "docublock_internal_error": "Falla de nuestro programa al procesar la consulta",
       "approved": "Aprobada",
       "negative": "Resultado negativo"
     },

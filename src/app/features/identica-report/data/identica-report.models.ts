@@ -9,6 +9,7 @@ export const IDENTICA_CATEGORIES = [
   'before_call',
   'unclassified',
   'request_rejected',
+  'docublock_internal_error',
   'approved',
   'negative',
 ] as const;
@@ -22,6 +23,7 @@ export const IDENTICA_CATEGORY_GROUP: Record<IdenticaCategory, IdenticaGroup> = 
   before_call: 'review',
   unclassified: 'review',
   request_rejected: 'docublock',
+  docublock_internal_error: 'docublock',
   approved: 'ok',
   negative: 'ok',
 };
