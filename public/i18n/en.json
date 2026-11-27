@@ -92,7 +92,8 @@
     "validationHistory": "Validation history",
     "resellerDocuments": "Documents by reseller",
     "consents": "Data processing",
-    "errors": "Failures"
+    "errors": "Failures",
+    "identicaReport": "Identica queries"
   },
   "auth": {
     "title": "Platform access",
@@ -7230,6 +7231,89 @@
         "ORGANIZACION_NO_ENCONTRADA": "The organization no longer exists.",
         "generic": "The notice could not be sent. Try again."
       }
+    }
+  },
+  "ide": {
+    "lead": "Every query the identity service sends to Identica, split by who caused the error.",
+    "loading": "Loading Identica queries…",
+    "errorTitle": "We could not load the report",
+    "range": "Queries from {{range}}, in your time zone.",
+    "statsLabel": "Identica queries summary",
+    "definitions": "Identica error: their server failed, did not answer or answered with an error. To review: access denied or failures before calling, which may come from either side. From Docublock: Identica rejected data we sent. No error: a normal answer, approved or negative.",
+    "scope": "Only counts what the identity service records; queries made by commons are not in this log.",
+    "emptyTitle": "No queries in this period",
+    "emptyLead": "Try a wider period.",
+    "byCategory": "By classification",
+    "byMonth": "By month",
+    "byService": "By service",
+    "reasons": "Most frequent reasons",
+    "reasonsLead": "What went wrong, grouped by service, classification, HTTP, code and message.",
+    "noReasonsTitle": "Everything went fine",
+    "noReasonsLead": "No query failed in this period.",
+    "none": "—",
+    "noMessage": "No message",
+    "series": {
+      "total": "Queries"
+    },
+    "stat": {
+      "total": "Queries",
+      "share": "{{share}} of total"
+    },
+    "col": {
+      "service": "Service",
+      "total": "Queries",
+      "identicaShare": "% Identica error",
+      "count": "Times",
+      "category": "Classification",
+      "http": "HTTP",
+      "code": "Code",
+      "message": "Message",
+      "when": "Date",
+      "answer": "Response",
+      "document": "Document",
+      "organization": "Organization",
+      "signer": "Signer",
+      "group": "Group"
+    },
+    "group": {
+      "identica": "Identica error",
+      "review": "To review",
+      "docublock": "From Docublock",
+      "ok": "No error"
+    },
+    "category": {
+      "identica_no_response": "No answer (timeout or connection lost)",
+      "identica_server_error": "Server error (5xx, 408 or 429)",
+      "identica_internal_error": "Answered 200 with an internal error",
+      "access_denied": "Access denied (401 or 403)",
+      "before_call": "Failed before calling (token or image)",
+      "unclassified": "Unclassified",
+      "request_rejected": "Rejected our data (other 4xx)",
+      "approved": "Approved",
+      "negative": "Negative result"
+    },
+    "service": {
+      "ani": "Registry validation",
+      "matcher-facial": "Face match",
+      "liveness": "Liveness check",
+      "auth": "Identica sign-in"
+    },
+    "list": {
+      "title": "Queries with errors or to review",
+      "lead": "Every query that did not go well, newest first. Use the group filter to see the ones without errors too.",
+      "allPending": "Everything that did not go well",
+      "anyCategory": "Any classification",
+      "anyService": "Any service",
+      "loading": "Loading queries…",
+      "errorTitle": "We could not load the query list",
+      "empty": "No queries with errors in this period",
+      "emptyFiltered": "No query matches the filter",
+      "noDocument": "No document",
+      "noOrganization": "No organization",
+      "noSigner": "No signer",
+      "nit": "Tax ID {{nit}}",
+      "csv": "Download CSV",
+      "csvError": "We could not download the CSV."
     }
   }
 }

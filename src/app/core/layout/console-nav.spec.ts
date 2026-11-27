@@ -40,7 +40,7 @@ describe('menú de la consola', () => {
       ['comercial', ['planes', 'suscripciones', 'marketplace', 'promocionales', 'referidos', 'resellers', 'facturacion']],
       [
         'inteligencia',
-        ['analitica', 'ingresos', 'consumo-validaciones', 'historico-validaciones', 'documentos-reseller', 'tratamiento-datos'],
+        ['analitica', 'ingresos', 'consumo-validaciones', 'historico-validaciones', 'consultas-identica', 'documentos-reseller', 'tratamiento-datos'],
       ],
       ['catalogos', ['paises', 'ciudades', 'tipos-persona', 'tipos-identificacion', 'campos-firmante', 'inmuebles', 'politicas', 'comunicaciones']],
       ['plataforma', ['personal', 'auditoria', 'configuracion', 'fallos', 'salud']],
@@ -56,7 +56,7 @@ describe('menú de la consola', () => {
   });
 
   it('superadmin ve todo', () => {
-    expect(visibleGroups(SUPERADMIN).flatMap((group) => group.items).length).toBe(36);
+    expect(visibleGroups(SUPERADMIN).flatMap((group) => group.items).length).toBe(37);
   });
 
   it('support ve los seis grupos, pero Plataforma sin Personal', () => {

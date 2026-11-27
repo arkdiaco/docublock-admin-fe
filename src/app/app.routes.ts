@@ -397,6 +397,15 @@ const SECTION_PAGES: Partial<Record<ConsoleSection, Routes>> = {
         ),
     },
   ],
+  identicaReport: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./features/identica-report/pages/identica-report.component').then(
+          (m) => m.IdenticaReportComponent,
+        ),
+    },
+  ],
   resellerDocuments: [
     {
       path: '',

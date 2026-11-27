@@ -92,7 +92,8 @@
     "validationHistory": "Histórico de validaciones",
     "resellerDocuments": "Documentos por reseller",
     "consents": "Tratamiento de datos",
-    "errors": "Fallos"
+    "errors": "Fallos",
+    "identicaReport": "Consultas a Identica"
   },
   "auth": {
     "title": "Acceso a la plataforma",
@@ -7230,6 +7231,89 @@
         "ORGANIZACION_NO_ENCONTRADA": "La organización ya no existe.",
         "generic": "No se pudo enviar el aviso. Inténtalo de nuevo."
       }
+    }
+  },
+  "ide": {
+    "lead": "Todas las consultas que el servicio de identidad le hace a Identica, separadas por quién tuvo el error.",
+    "loading": "Cargando las consultas a Identica…",
+    "errorTitle": "No pudimos cargar el reporte",
+    "range": "Consultas del {{range}}, en tu zona horaria.",
+    "statsLabel": "Resumen de las consultas a Identica",
+    "definitions": "Error de Identica: su servidor falló, no respondió o respondió con error al consultar. Para revisar: acceso negado o fallas antes de llamar, que pueden ser de cualquiera de los dos. De Docublock: Identica rechazó un dato que le enviamos. Sin error: respondió bien, con resultado aprobado o negativo.",
+    "scope": "Solo cuenta lo que registra el servicio de identidad; las consultas que hace el commons no quedan en este registro.",
+    "emptyTitle": "Sin consultas en el período",
+    "emptyLead": "Prueba con un período más amplio.",
+    "byCategory": "Por clasificación",
+    "byMonth": "Por mes",
+    "byService": "Por servicio",
+    "reasons": "Motivos más repetidos",
+    "reasonsLead": "Lo que no salió bien, agrupado por servicio, clasificación, HTTP, código y mensaje.",
+    "noReasonsTitle": "Todo salió bien",
+    "noReasonsLead": "En este período ninguna consulta tuvo error.",
+    "none": "—",
+    "noMessage": "Sin mensaje",
+    "series": {
+      "total": "Consultas"
+    },
+    "stat": {
+      "total": "Consultas",
+      "share": "{{share}} del total"
+    },
+    "col": {
+      "service": "Servicio",
+      "total": "Consultas",
+      "identicaShare": "% error de Identica",
+      "count": "Veces",
+      "category": "Clasificación",
+      "http": "HTTP",
+      "code": "Código",
+      "message": "Mensaje",
+      "when": "Fecha",
+      "answer": "Respuesta",
+      "document": "Documento",
+      "organization": "Organización",
+      "signer": "Firmante",
+      "group": "Grupo"
+    },
+    "group": {
+      "identica": "Error de Identica",
+      "review": "Para revisar",
+      "docublock": "De Docublock",
+      "ok": "Sin error"
+    },
+    "category": {
+      "identica_no_response": "No respondió (tiempo agotado o conexión caída)",
+      "identica_server_error": "Error de su servidor (5xx, 408 o 429)",
+      "identica_internal_error": "Respondió 200 con error consultando su servicio",
+      "access_denied": "Acceso negado (401 o 403)",
+      "before_call": "Falló antes de llamar (token o imagen)",
+      "unclassified": "Sin clasificar",
+      "request_rejected": "Rechazó un dato nuestro (otros 4xx)",
+      "approved": "Aprobada",
+      "negative": "Resultado negativo"
+    },
+    "service": {
+      "ani": "Validación contra Registraduría",
+      "matcher-facial": "Cotejo facial",
+      "liveness": "Prueba de vida",
+      "auth": "Inicio de sesión en Identica"
+    },
+    "list": {
+      "title": "Consultas con error o para revisar",
+      "lead": "Cada consulta que no salió bien, de la más nueva a la más vieja. Con el filtro de grupo también puedes ver las que salieron sin error.",
+      "allPending": "Todo lo que no salió bien",
+      "anyCategory": "Cualquier clasificación",
+      "anyService": "Cualquier servicio",
+      "loading": "Cargando las consultas…",
+      "errorTitle": "No pudimos cargar la lista de consultas",
+      "empty": "Ninguna consulta con error en el período",
+      "emptyFiltered": "Ninguna consulta coincide con el filtro",
+      "noDocument": "Sin documento",
+      "noOrganization": "Sin organización",
+      "noSigner": "Sin firmante",
+      "nit": "NIT {{nit}}",
+      "csv": "Descargar CSV",
+      "csvError": "No pudimos descargar el CSV."
     }
   }
 }
