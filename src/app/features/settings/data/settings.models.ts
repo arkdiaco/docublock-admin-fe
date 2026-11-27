@@ -1,6 +1,12 @@
 export type SettingValue = number | number[] | string | string[];
-export type SettingKind = 'integer' | 'integer_list' | 'text' | 'text_list';
-export type SettingGroup = 'alerts' | 'access' | 'signing' | 'validation' | 'texts';
+export type SettingKind = 'integer' | 'integer_list' | 'text' | 'text_list' | 'choice';
+export type SettingGroup =
+  | 'alerts'
+  | 'access'
+  | 'signing'
+  | 'validation'
+  | 'texts'
+  | 'channels';
 export type SettingUnit =
   | 'percent'
   | 'days'
@@ -14,7 +20,8 @@ export type SettingUnit =
   | 'rows'
   | 'megabytes'
   | 'text'
-  | 'lines';
+  | 'lines'
+  | 'option';
 export type SettingCharset = 'name' | 'line';
 export type SettingChangeAction = 'change' | 'reset' | 'restore';
 
@@ -35,6 +42,7 @@ export interface SettingItem {
   recommended: SettingRange;
   maxItems: number | null;
   charset: SettingCharset | null;
+  options?: string[] | null;
   version: number;
   lastChange: { at: string; adminName: string | null; reason: string } | null;
 }

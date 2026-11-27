@@ -55,7 +55,11 @@ const parseLines = (item: SettingItem, text: string): string[] | null => {
   return values.every((line): line is string => line !== null) ? values : null;
 };
 
-export const isTextKind = (kind: SettingKind): boolean => kind === 'text' || kind === 'text_list';
+const parseChoice = (item: SettingItem, text: string): string | null =>
+  item.options?.includes(text) ? text : null;
+
+export const isTextKind = (kind: SettingKind): boolean =>
+  kind === 'text' || kind === 'text_list' || kind === 'choice';
 
 export const draftOf = (item: SettingItem): string =>
   asValues(item.value).join(item.kind === 'text_list' ? '\n' : ', ');
@@ -75,11 +79,13 @@ export const parseSettingDraft = (item: SettingItem, text: string): SettingValue
       return parseText(item, text);
     case 'text_list':
       return parseLines(item, text);
+    case 'choice':
+      return parseChoice(item, text);
   }
 };
 
 export const isRecommended = (item: SettingItem, value: SettingValue): boolean =>
-  asValues(value).every((one) => inRange(sizeOf(one), item.recommended));
+  item.kind === 'choice' || asValues(value).every((one) => inRange(sizeOf(one), item.recommended));
 
 export const rangeKeyOf = (kind: SettingKind): string => {
   if (kind === 'text') return 'cfg.rangeText';
@@ -102,6 +108,9 @@ export interface SettingValueLabel {
 
 export const valueLabelOf = (unit: SettingUnit, value: SettingValue): SettingValueLabel => {
   const values = asValues(value);
+  if (unit === 'option') {
+    return { key: `cfg.option.${String(values[0])}`, params: { value: String(values[0]) } };
+  }
   const singular = values.length === 1 && values[0] === 1;
   return {
     key: `cfg.unit.${unit}${singular ? 'One' : ''}`,

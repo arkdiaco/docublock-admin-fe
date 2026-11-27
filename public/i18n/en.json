@@ -644,6 +644,10 @@
     "consent_policies": {
       "publish": "published a consent policy"
     },
+    "communications_broadcast": {
+      "publish": "published a live message to clients",
+      "withdraw": "withdrew a live message"
+    },
     "communications_whatsapp": {
       "create": "sent a WhatsApp campaign",
       "image": "uploaded an image for WhatsApp",
@@ -5184,7 +5188,7 @@
     }
   },
   "comm": {
-    "lead": "WhatsApp messages with an image and text",
+    "lead": "WhatsApp messages and live notices in the platform",
     "loading": "Loading recipients…",
     "search": "Search by name, email or phone",
     "markPage": "Select this page",
@@ -5304,7 +5308,8 @@
     "view": {
       "new": "New send",
       "recipients": "Recipients",
-      "history": "History"
+      "history": "History",
+      "live": "Live message"
     },
     "state": {
       "queued": "Queued",
@@ -5371,6 +5376,67 @@
       "noFailed": "There are no failed numbers left.",
       "forbidden": "You do not have permission to resend.",
       "unknown": "The resend could not be confirmed. Check the state before trying again."
+    },
+    "live": {
+      "compose": {
+        "title": "New live message",
+        "titleLabel": "Title",
+        "titlePlaceholder": "E.g. Scheduled maintenance tonight",
+        "messageLabel": "Message",
+        "messagePlaceholder": "Write what clients will see. Line breaks are kept.",
+        "messageHint": "Shown exactly as written, without links or formatting.",
+        "publish": "Publish",
+        "missing": "Write the title and the message to publish."
+      },
+      "preview": {
+        "title": "What the client will see",
+        "from": "Message from Docublock",
+        "noTitle": "No title yet",
+        "noMessage": "No message yet",
+        "understood": "Got it",
+        "note": "It shows over whatever screen they are on, once per user."
+      },
+      "confirm": {
+        "title": "Publish this message?",
+        "publish": "Publish now",
+        "notice": "Every signed-in user of every organization sees it within 20 seconds, and so does anyone who signs in while it is active. It stays active until you withdraw it."
+      },
+      "publish": {
+        "done": "Message published. Signed-in clients will see it within 20 seconds.",
+        "empty": "Write the title and the message.",
+        "forbidden": "Your role cannot publish live messages.",
+        "failed": "The message could not be published. Try again."
+      },
+      "history": {
+        "title": "Published messages",
+        "loading": "Loading messages…",
+        "errorTitle": "Messages could not be loaded",
+        "emptyTitle": "No live messages yet",
+        "emptyLead": "The ones you publish show up here with their status.",
+        "withdrawnBy": "Withdrawn by {{name}} · {{date}}",
+        "col": {
+          "date": "Published",
+          "message": "Message",
+          "by": "Published by",
+          "state": "Status",
+          "action": "Action"
+        }
+      },
+      "state": {
+        "active": "Active",
+        "withdrawn": "Withdrawn"
+      },
+      "withdraw": {
+        "action": "Withdraw",
+        "title": "Withdraw this message?",
+        "confirm": "Withdraw",
+        "notice": "Clients stop seeing it within 20 seconds, even if they have it open. It cannot be reactivated: publish it again if you need it.",
+        "done": "Message withdrawn.",
+        "already": "The message was already withdrawn.",
+        "missing": "The message no longer exists.",
+        "forbidden": "Your role cannot withdraw live messages.",
+        "failed": "The message could not be withdrawn. Try again."
+      }
     }
   },
   "task": {
@@ -5949,6 +6015,7 @@
       "signing": "Signing and documents",
       "validation": "Validation",
       "texts": "Texts",
+      "channels": "Channels",
       "credentials": "Credentials",
       "history": "History"
     },
@@ -6000,7 +6067,8 @@
       "rows": "Rows",
       "megabytes": "Megabytes (MB)",
       "text": "Text",
-      "lines": "Lines"
+      "lines": "Lines",
+      "option": "Provider"
     },
     "item": {
       "alerts": {
@@ -6172,6 +6240,13 @@
           "audience": "Shown on each member’s seal",
           "hint": "Lines printed at the bottom of the seal generated for each member. It applies to seals generated from now on; seals already generated do not change."
         }
+      },
+      "channels": {
+        "mail_provider": {
+          "label": "Email provider",
+          "audience": "Everyone who receives emails notices it",
+          "hint": "Where platform emails go out: access codes, signing invitations, notices and reminders. Switch to backup SMTP if Amazon SES stops sending, and back to SES when it is restored. The change applies in under a minute with no deploy. The SMTP server must be configured in commons first; otherwise emails are not sent. CLM and other services follow the MAIL_TRANSPORT variable in commons."
+        }
       }
     },
     "detail": {
@@ -6313,6 +6388,12 @@
           "use": "Market analysis attached to the consignment received email (Bogotá)"
         }
       }
+    },
+    "option": {
+      "ses": "Amazon SES",
+      "sesLead": "The usual provider. Use it while the AWS account is active.",
+      "smtp": "Backup SMTP",
+      "smtpLead": "The server configured in commons (SMTP_HOST). Use it while SES is unavailable."
     }
   },
   "cdl": {

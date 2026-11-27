@@ -581,13 +581,106 @@ describe('Configuración: textos', () => {
     await asentar(fixture);
   });
 
-  it('la pestaña Textos va entre Validación y Credenciales', async () => {
+  it('la pestaña Textos va entre Validación y Canales', async () => {
     const { root } = await montarTextos(VER);
     const pestañas = [...root.querySelectorAll('dba-settings-tabs a')].map((a) =>
       a.textContent?.trim(),
     );
     const posicion = pestañas.indexOf('Textos');
     expect(pestañas[posicion - 1]).toBe('Validación');
+    expect(pestañas[posicion + 1]).toBe('Canales');
+  });
+});
+
+describe('Configuración: canales', () => {
+  const PROVEEDOR: SettingItem = {
+    ...CUPO,
+    key: 'channels.mail_provider',
+    group: 'channels',
+    kind: 'choice',
+    unit: 'option',
+    value: 'ses',
+    defaultValue: 'ses',
+    technical: { min: 1, max: 1 },
+    recommended: { min: 1, max: 1 },
+    options: ['ses', 'smtp'],
+    version: 0,
+  };
+
+  const montarCanales = async (permisos: string[] = ADMINISTRAR) => {
+    const http = await configurar();
+    conPermisos(permisos);
+    const fixture = TestBed.createComponent(SettingsComponent);
+    fixture.componentRef.setInput('group', 'channels');
+    listar(http, [CUPO, PROVEEDOR]);
+    await asentar(fixture);
+    return { fixture, http, root: fixture.nativeElement as HTMLElement };
+  };
+
+  it('solo acepta las opciones del ajuste y muestra su nombre', () => {
+    expect(parseSettingDraft(PROVEEDOR, 'smtp')).toBe('smtp');
+    expect(parseSettingDraft(PROVEEDOR, 'sendgrid')).toBeNull();
+    expect(parseSettingDraft(PROVEEDOR, '')).toBeNull();
+    expect(isRecommended(PROVEEDOR, 'smtp')).toBe(true);
+    expect(valueLabelOf('option', 'smtp').key).toBe('cfg.option.smtp');
+  });
+
+  it('muestra el proveedor por su nombre, sin rango recomendado ni llaves crudas', async () => {
+    const { fixture, root } = await montarCanales(VER);
+    const filas = root.querySelectorAll('.bl-row');
+    expect(filas).toHaveLength(1);
+    expect(filas[0].textContent).toContain('Proveedor de correo');
+    expect(filas[0].textContent).toContain('Amazon SES');
+    await abrir(fixture, root);
+    const modal = document.querySelector('dba-setting-detail')?.textContent ?? '';
+    expect(modal).toContain('Amazon SES');
+    expect(modal).not.toContain('Recomendado');
+    expect(root.textContent).not.toMatch(LLAVE_CRUDA);
+    expect(modal).not.toMatch(LLAVE_CRUDA);
+  });
+
+  it('cambia a SMTP eligiendo la opción y guarda con motivo', async () => {
+    const { fixture, http, root } = await montarCanales();
+    await abrir(fixture, root);
+    botonCon('Cambiar valor')?.click();
+    await asentar(fixture);
+
+    const modal = document.querySelector('dba-setting-edit');
+    expect(modal?.textContent).toContain('SMTP de respaldo');
+    expect(modal?.textContent).not.toMatch(LLAVE_CRUDA);
+    const smtp = [...document.querySelectorAll<HTMLInputElement>('dba-choice-list input')].find(
+      (radio) => radio.value === 'smtp',
+    );
+    smtp?.click();
+    await asentar(fixture);
+    expect(botonCon('Guardar cambio')?.disabled).toBe(true);
+    const motivo = document.querySelectorAll<HTMLInputElement>('dba-setting-edit dba-field input');
+    motivo[0].value = 'AWS bloqueado';
+    motivo[0].dispatchEvent(new Event('input'));
+    await asentar(fixture);
+    botonCon('Guardar cambio')?.click();
+    await asentar(fixture);
+
+    const put = http.expectOne((req) => req.method === 'PUT');
+    expect(put.request.url).toContain(`${BASE}/channels.mail_provider`);
+    expect(put.request.body).toEqual({
+      value: 'smtp',
+      reason: 'AWS bloqueado',
+      expectedVersion: 0,
+    });
+    put.flush({ ...PROVEEDOR, value: 'smtp', version: 1, isDefault: false });
+    await asentar(fixture);
+    listar(http, [CUPO, PROVEEDOR]);
+    await asentar(fixture);
+  });
+
+  it('la pestaña Canales va entre Textos y Credenciales', async () => {
+    const { root } = await montarCanales(VER);
+    const pestañas = [...root.querySelectorAll('dba-settings-tabs a')].map((a) =>
+      a.textContent?.trim(),
+    );
+    const posicion = pestañas.indexOf('Canales');
+    expect(pestañas[posicion - 1]).toBe('Textos');
     expect(pestañas[posicion + 1]).toBe('Credenciales');
   });
 });

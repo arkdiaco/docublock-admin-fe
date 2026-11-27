@@ -4,15 +4,17 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { sectionPath } from '../../../core/layout/console-nav';
 import { UnderlineTabsComponent, type UnderlineTab } from '../../../shared/ui/underline-tabs.component';
+import { BroadcastPanelComponent } from '../components/broadcast-panel.component';
 import { CampaignComposerComponent } from '../components/campaign-composer.component';
 import { CampaignHistoryComponent } from '../components/campaign-history.component';
+import { LIVE_VIEW } from '../data/broadcasts.models';
 import { HISTORY_VIEW } from '../data/campaign-state';
 
-type CommunicationsView = 'new' | 'history';
+type CommunicationsView = 'new' | 'history' | 'live';
 
 @Component({
   selector: 'dba-communications',
-  imports: [TranslatePipe, CampaignComposerComponent, CampaignHistoryComponent, UnderlineTabsComponent],
+  imports: [TranslatePipe, BroadcastPanelComponent, CampaignComposerComponent, CampaignHistoryComponent, UnderlineTabsComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="bl">
@@ -35,6 +37,9 @@ type CommunicationsView = 'new' | 'history';
       @if (view() === 'history') {
         <dba-campaign-history />
       }
+      @if (view() === 'live') {
+        <dba-broadcast-panel />
+      }
     </section>
   `,
   styleUrl: '../../../shared/ui/list-page.scss',
@@ -53,11 +58,13 @@ export class CommunicationsComponent {
       label: this.label(this.auth.canManage('catalogs') ? 'comm.view.new' : 'comm.view.recipients'),
     },
     { key: 'history', label: this.label('comm.view.history') },
+    { key: 'live', label: this.label('comm.view.live') },
   ]);
 
   constructor() {
     effect(() => {
       if (this.vista() === HISTORY_VIEW) this.view.set('history');
+      if (this.vista() === LIVE_VIEW) this.view.set('live');
     });
   }
 
